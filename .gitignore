@@ -1,0 +1,8 @@
+*.orig
+*.swp
+*.swo
+/_*.py
+/*.egg-info/
+/.tox
+/.venv
+__pycache__/
