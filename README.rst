@@ -10,6 +10,9 @@ Interface) for `SystemLink <https://ni.com/systemlink>`_ that uses HTTP to
 interact with a SystemLink Server. The package is implemented in Python. NI
 created and supports this package.
 
+.. image:: https://badge.fury.io/py/nisystemlink-clients.svg
+    :target: https://badge.fury.io/py/nisystemlink-clients
+
 Requirements
 ============
 **nisystemlink-clients** has the following requirements:
@@ -40,7 +43,7 @@ To install **nisystemlink-clients**, use one of the following methods:
 
 Usage
 =====
-Refer to the `documentation <https://nisystemlink-clients-python.readthedocs.io/en/latest/>`_
+Refer to the `documentation <https://python-docs.systemlink.io>`_
 for detailed information on how to use **nisystemlink-clients**.
 
 .. _support_section:
@@ -59,7 +62,7 @@ To report a bug or submit a feature request, please use the
 Documentation
 =============
 To view the documentation, visit the
-`systemlink.clients Documentation Page <https://nisystemlink-clients-python.readthedocs.io>`_.
+`systemlink.clients Documentation Page <https://python-docs.systemlink.io>`_.
 
 License
 =======
