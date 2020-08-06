@@ -56,8 +56,8 @@ def server_config(pytestconfig):
     if settings:
         return core.HttpConfiguration(
             settings.get("url", "http://localhost"),
-            settings.get("user", "admin"),
-            settings.get("password", "admin"),
+            username=settings.get("user", "admin"),
+            password=settings.get("password", "admin"),
         )
     try:
         return core.HttpConfigurationManager.get_configuration(
