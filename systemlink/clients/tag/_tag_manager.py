@@ -163,7 +163,10 @@ class TagManager(tbase.ITagReader):
                 "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
             )
         except core.ApiException as ex:
-            if ex.error is None or ex.error.name != "Tag.NoSuchTag" or not create:
+            error_name = None if ex.error is None else ex.error.name
+            if create and (error_name or "").startswith("Tag.NoSuchTag"):
+                pass  # continue on and create the tag
+            else:
                 raise
 
         if tag is not None:
@@ -173,7 +176,7 @@ class TagManager(tbase.ITagReader):
             return tbase.TagData.from_json_dict(tag)
         else:
             if data_type is None:
-                raise ValueError("value cannot be None when create is True")
+                raise ValueError("data_type cannot be None when create is True")
 
             # Tag didn't already exist, so try to create it.
             self._api.post("/tags", data={"type": data_type.api_name, "path": path})
@@ -223,7 +226,10 @@ class TagManager(tbase.ITagReader):
                 "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
             )
         except core.ApiException as ex:
-            if ex.error is None or ex.error.name != "Tag.NoSuchTag" or not create:
+            error_name = None if ex.error is None else ex.error.name
+            if create and (error_name or "").startswith("Tag.NoSuchTag"):
+                pass  # continue on and create the tag
+            else:
                 raise
 
         if tag is not None:
@@ -233,7 +239,7 @@ class TagManager(tbase.ITagReader):
             return tbase.TagData.from_json_dict(tag)
         else:
             if data_type is None:
-                raise ValueError("value cannot be None when create is True")
+                raise ValueError("data_type cannot be None when create is True")
 
             # Tag didn't already exist, so try to create it.
             await self._api.as_async.post(
