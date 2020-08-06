@@ -26,4 +26,4 @@ jobs:
         pip install tox tox-gh-actions
     - name: Run tox
       run: |
-        tox -- --cloud-api-key ${{ secrets.CLOUD_API_KEY }}
+        tox -- ${{ secrets.CLOUD_API_KEY && format('{0} {1}', '--cloud-api-key', secrets.CLOUD_API_KEY) || '-m unit' }}
