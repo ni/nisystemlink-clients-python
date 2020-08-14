@@ -1,4 +1,4 @@
-from setuptools import find_packages, setup  # type: ignore
+from setuptools import find_namespace_packages, find_packages, setup  # type: ignore
 from setuptools.command.test import test as TestCommand  # type: ignore
 
 
@@ -15,6 +15,10 @@ class PyTest(TestCommand):
 
 
 pypi_name = "nisystemlink-clients"
+
+packages = find_namespace_packages(include=["systemlink.*"]) + find_packages(
+    exclude=["systemlink", "examples", "tests"]
+)
 
 
 def _get_version(name):
@@ -46,7 +50,7 @@ setup(
     maintainer_email="paul.spangler@ni.com, alex.weaver@ni.com",
     keywords=["nisystemlink", "systemlink"],
     license="MIT",
-    packages=find_packages(exclude=["examples", "tests"]),
+    packages=packages,
     install_requires=[
         'aenum;python_version<"3.6"',
         "events",
@@ -54,6 +58,7 @@ setup(
         'requests;python_version<"3.6"',
         "typing-extensions",
     ],
+    setup_requires=["setuptools>=40.1.0"],
     tests_require=["pytest", "pytest-asyncio", "mypy"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
