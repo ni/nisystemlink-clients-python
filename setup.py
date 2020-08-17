@@ -56,6 +56,7 @@ setup(
         "events",
         'httpx;python_version>="3.6"',
         'requests;python_version<"3.6"',
+        "setuptools>=40.1.0",
         "typing-extensions",
     ],
     setup_requires=["setuptools>=40.1.0"],
