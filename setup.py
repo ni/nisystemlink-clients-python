@@ -17,7 +17,7 @@ class PyTest(TestCommand):
 pypi_name = "nisystemlink-clients"
 
 packages = find_namespace_packages(include=["systemlink.*"]) + find_packages(
-    exclude=["systemlink", "examples", "tests"]
+    exclude=["systemlink", "examples", "examples.*", "tests", "tests.*"]
 )
 
 
