@@ -203,7 +203,7 @@ class TagManagerTests:
                     ]
                 )
                 self.internal_test_write_and_read_tag(
-                    tag, writer, tbase.TagValueReader(self.tag_manager, tag), 3.0,
+                    tag, writer, tbase.TagValueReader(self.tag_manager, tag), 3.0
                 )
                 self.tag_manager.delete([tag])
 

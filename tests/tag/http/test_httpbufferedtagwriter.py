@@ -27,7 +27,7 @@ class TestHttpBufferedTagWriter(HttpClientTestBase):
 
         assert self._client.all_requests.call_count == 1
         call = self._client.all_requests.call_args_list[0]
-        assert ("POST", "/nitag/v2/update-current-values",) == call[0]
+        assert ("POST", "/nitag/v2/update-current-values") == call[0]
         data = call[1].get("data")
         assert isinstance(data, list)
         assert len(data) == 1
@@ -52,7 +52,7 @@ class TestHttpBufferedTagWriter(HttpClientTestBase):
 
         assert self._client.all_requests.call_count == 1
         call = self._client.all_requests.call_args_list[0]
-        assert ("POST", "/nitag/v2/update-current-values",) == call[0]
+        assert ("POST", "/nitag/v2/update-current-values") == call[0]
         data = call[1].get("data")
         assert isinstance(data, list)
         assert len(data) == 1
@@ -83,7 +83,7 @@ class TestHttpBufferedTagWriter(HttpClientTestBase):
 
         assert self._client.all_requests.call_count == 1
         call = self._client.all_requests.call_args_list[0]
-        assert ("POST", "/nitag/v2/update-current-values",) == call[0]
+        assert ("POST", "/nitag/v2/update-current-values") == call[0]
         data = call[1]["data"]
         assert len(data) == 2
         assert data[0]["path"] == path1
@@ -116,7 +116,7 @@ class TestHttpBufferedTagWriter(HttpClientTestBase):
 
         assert self._client.all_requests.call_count == 1
         call = self._client.all_requests.call_args_list[0]
-        assert ("POST", "/nitag/v2/update-current-values",) == call[0]
+        assert ("POST", "/nitag/v2/update-current-values") == call[0]
         data = call[1]["data"]
         assert data[0]["path"] == path
         utctime = datetime.utcfromtimestamp(timestamp.timestamp()).isoformat() + "Z"
@@ -138,8 +138,8 @@ class TestHttpBufferedTagWriter(HttpClientTestBase):
 
         assert self._client.all_requests.call_count == 2
         call1, call2 = self._client.all_requests.call_args_list
-        assert ("POST", "/nitag/v2/update-current-values",) == call1[0]
-        assert ("POST", "/nitag/v2/update-current-values",) == call2[0]
+        assert ("POST", "/nitag/v2/update-current-values") == call1[0]
+        assert ("POST", "/nitag/v2/update-current-values") == call2[0]
         data1 = call1[1]["data"]
         data2 = call2[1]["data"]
         assert data1[0]["path"] == path

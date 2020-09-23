@@ -61,7 +61,7 @@ class TagData:
         data_type_str = data.get("type") or "UNKNOWN"
         data_type = tbase.DataType.from_api_name(data_type_str)
         tag = cls(
-            data["path"], data_type, data.get("keywords"), data.get("properties"),
+            data["path"], data_type, data.get("keywords"), data.get("properties")
         )
         if data.get("collectAggregates"):
             tag.collect_aggregates = True
