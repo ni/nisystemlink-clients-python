@@ -519,7 +519,7 @@ class TestTagManager(HttpClientTestBase):
         assert dummy_tag.retention_type == tag.retention_type
 
     @pytest.mark.asyncio
-    async def test__tag_not_found__open_async_with_create_False__raises(self,):
+    async def test__tag_not_found__open_async_with_create_False__raises(self):
         err = core.ApiError()
         err.name = "Tag.NoSuchTag"
         ex = core.ApiException("404 tag not found", err)
@@ -534,7 +534,7 @@ class TestTagManager(HttpClientTestBase):
         )
 
     @pytest.mark.asyncio
-    async def test__tag_exists_with_different_datatype__open_async__raises(self,):
+    async def test__tag_exists_with_different_datatype__open_async__raises(self):
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request([{"type": "BOOLEAN", "path": "tag"}] * 3)
         )

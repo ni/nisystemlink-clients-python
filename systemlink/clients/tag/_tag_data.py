@@ -60,9 +60,7 @@ class TagData:
     def from_json_dict(cls, data: Dict[str, Any]) -> "TagData":
         data_type_str = data.get("type") or "UNKNOWN"
         data_type = tbase.DataType.from_api_name(data_type_str)
-        tag = cls(
-            data["path"], data_type, data.get("keywords"), data.get("properties"),
-        )
+        tag = cls(data["path"], data_type, data.get("keywords"), data.get("properties"))
         if data.get("collectAggregates"):
             tag.collect_aggregates = True
         return tag

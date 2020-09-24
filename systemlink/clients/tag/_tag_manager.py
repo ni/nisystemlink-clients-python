@@ -752,7 +752,7 @@ class TagManager(tbase.ITagReader):
             response3, http_response = self._api.get(
                 "/tags/{path}/values/current/value", params={"path": path}
             )
-            return self._handle_read(path, response3, http_response,)
+            return self._handle_read(path, response3, http_response)
 
     async def _read_async(
         self, path: str, include_timestamp: bool, include_aggregates: bool
@@ -799,7 +799,7 @@ class TagManager(tbase.ITagReader):
             response3, http_response = await self._api.as_async.get(
                 "/tags/{path}/values/current/value", params={"path": path}
             )
-            return self._handle_read(path, response3, http_response,)
+            return self._handle_read(path, response3, http_response)
 
     def _handle_read(
         self,

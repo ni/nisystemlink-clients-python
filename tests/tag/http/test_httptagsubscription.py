@@ -123,7 +123,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
 
         assert self._client.all_requests.call_count == 3
         self._client.all_requests.assert_called_with(
-            "GET", "/nitag/v2/subscriptions/{id}/values/current", params={"id": token},
+            "GET", "/nitag/v2/subscriptions/{id}/values/current", params={"id": token}
         )
         assert timer.start.call_count == 2
         assert len(timer.method_calls) == 2
@@ -244,7 +244,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
 
         assert self._client.all_requests.call_count == 3
         self._client.all_requests.assert_called_with(
-            "GET", "/nitag/v2/subscriptions/{id}/values/current", params={"id": token},
+            "GET", "/nitag/v2/subscriptions/{id}/values/current", params={"id": token}
         )
 
     def test__update_fails__update_timer_elapsed__error_ignored(self):

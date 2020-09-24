@@ -19,7 +19,7 @@ class TestHttpTagSelection(HttpClientTestBase):
             if method == "DELETE":
                 ret = None
             elif uri.startswith("/nitag/v2/selections"):
-                if uri in ("/nitag/v2/selections", "/nitag/v2/selections/{id}",):
+                if uri in ("/nitag/v2/selections", "/nitag/v2/selections/{id}"):
                     data = dict(data)
                     data.update({"id": token})
                     ret = data
@@ -317,7 +317,7 @@ class TestHttpTagSelection(HttpClientTestBase):
         ]
 
     @pytest.mark.asyncio
-    async def test__create_subscription_async__subscription_created_with_paths(self,):
+    async def test__create_subscription_async__subscription_created_with_paths(self):
         path1 = "tag1"
         path2 = "tag2"
         token = uuid.uuid4()
