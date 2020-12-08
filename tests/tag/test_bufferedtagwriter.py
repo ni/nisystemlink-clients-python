@@ -587,19 +587,22 @@ class TestBufferedTagWriter:
         for h in elapsed_handlers:
             h()
 
-    def test__writer_closed__flush_timer_elapsed__writes_not_sent(self):
+    def test__writer_closed__buffered_writes_sent(self):
         writer = self.MockBufferedTagWriter(None, 2, MockManualResetTimer())
         item = object()
+        buffer = [item]
 
         writer.mock_create_item.configure_mock(side_effect=None, return_value=item)
         writer.mock_buffer_value.configure_mock(side_effect=None)
+        writer.mock_copy_buffer.configure_mock(side_effect=None, return_value=buffer)
+        writer.mock_send_writes.configure_mock(side_effect=None)
         can_start_property = PropertyMock(return_value=True)
         type(writer.timer).can_start = can_start_property
 
         with writer:
             writer.write("tag", tbase.DataType.DOUBLE, 1.1, timestamp=self.timestamp)
-        writer.trigger_flush_event()
-        # The strict mock will assert the writes were never sent.
+        
+        writer.mock_send_writes.assert_called_once_with(buffer)
 
     @pytest.mark.asyncio
     async def test__writer_closed__methods_called__raises(self):
@@ -635,7 +638,6 @@ class TestBufferedTagWriter:
             self.mock_clear_buffer = Mock(side_effect=NotImplementedError)
             self.mock_copy_buffer = Mock(side_effect=NotImplementedError)
             self.mock_create_item = Mock(side_effect=NotImplementedError)
-            self.mock_send_writes = Mock(side_effect=NotImplementedError)
             self.mock_send_writes = Mock(side_effect=NotImplementedError)
             self.mock_send_writes_async = Mock(side_effect=NotImplementedError)
 

@@ -197,6 +197,7 @@ class BufferedTagWriter(tbase.ITagWriter):
         if self._closed:
             return False
 
+        self.send_buffered_writes()
         self._timer_generation += 1
         self._closed = True
 
@@ -212,6 +213,7 @@ class BufferedTagWriter(tbase.ITagWriter):
         if self._closed:
             return False
 
+        await self.send_buffered_writes_async()
         self._timer_generation += 1
         self._closed = True
 
