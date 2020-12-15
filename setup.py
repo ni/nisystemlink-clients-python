@@ -51,7 +51,7 @@ setup(
     packages=packages,
     install_requires=[
         'aenum;python_version<"3.6"',
-        "events",
+        "events==0.3",
         'httpx;python_version>="3.6"',
         'requests;python_version<"3.6"',
         "typing-extensions",
