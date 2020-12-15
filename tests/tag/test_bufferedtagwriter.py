@@ -601,7 +601,7 @@ class TestBufferedTagWriter:
 
         with writer:
             writer.write("tag", tbase.DataType.DOUBLE, 1.1, timestamp=self.timestamp)
-        
+
         writer.mock_send_writes.assert_called_once_with(buffer)
 
     @pytest.mark.asyncio
