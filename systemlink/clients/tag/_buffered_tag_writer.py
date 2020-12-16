@@ -198,7 +198,6 @@ class BufferedTagWriter(tbase.ITagWriter):
             return False
 
         self.send_buffered_writes()
-        self._timer_generation += 1
         self._closed = True
 
         suppress = self._flush_timer.__exit__(exc_type, exc_val, exc_tb)
@@ -214,7 +213,6 @@ class BufferedTagWriter(tbase.ITagWriter):
             return False
 
         await self.send_buffered_writes_async()
-        self._timer_generation += 1
         self._closed = True
 
         suppress = await self._flush_timer.__aexit__(exc_type, exc_val, exc_tb)
