@@ -103,7 +103,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
             self._client, paths, timer, ManualResetTimer.null_timer
         )
 
-        assert uut
+        assert uut is not None
         assert self._client.all_requests.call_args_list == [
             mock.call(
                 "POST",
@@ -580,7 +580,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
         uut = HttpTagSubscription.create(
             self._client, [], ManualResetTimer.null_timer, timer
         )
-        assert uut
+        assert uut is not None
         assert timer.start.call_count == 1
 
         timer.elapsed()
@@ -606,7 +606,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
             self._client, paths, ManualResetTimer.null_timer, timer
         )
 
-        assert uut
+        assert uut is not None
         assert timer.start.call_count == 1
         assert self._client.all_requests.call_count == 2
         assert self._client.all_requests.call_args_list == [
