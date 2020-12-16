@@ -5,6 +5,7 @@
 /*.egg-info/
 /.tox
 /.venv
+/.vscode
 __pycache__/
 .mypy_cache/
 build/
