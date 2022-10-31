@@ -44,7 +44,7 @@ sphinx-autodoc-typehints = "^1.19.4"
 sphinx-rtd-theme         = "^1.0.0"
 
 [tool.poe.tasks]
-test = "pytest tests --strict -m \"(not slow) and (not cloud)\""
+test = """pytest tests --strict -m "(not slow) and (not cloud)""""
 doctest = "pytest --doctest-modules docs"
 format = "black --exclude \".*\\.pyi\" --check systemlink examples tests"
 lint = "flake8 systemlink examples tests"
