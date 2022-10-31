@@ -1,5 +1,65 @@
-[build-system]
-requires = [
-    "setuptools>=40.1.0",
-    "wheel"
+[tool.poetry]
+name = "nisystemlink-clients"
+version = "1.0.0"
+description = "NI-SystemLink Python API"
+authors = ["National Instruments"]
+maintainers = ["Carson Moore <carson.moore@ni.com>", "Paul Spangler <paul.spangler@ni.com>"]
+keywords = ["nisystemlink", "systemlink"]
+license = "MIT"
+readme = "README.rst"
+packages = [{ include = "systemlink" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: System :: Hardware :: Hardware Drivers",
 ]
+
+[tool.poetry.dependencies]
+python   = "^3.8"
+aenum    = "^3.1.11"
+Events   = "^0.4"
+httpx    = "^0.23.0"
+requests = "^2.28.1"
+
+[tool.poetry.group.dev.dependencies]
+black                    = "^22.10.0"
+flake8                   = "^5.0.4"
+flake8-import-order      = "^0.18.1"
+pytest                   = "^7.2.0"
+pytest-asyncio           = "^0.20.1"
+mypy                     = "^0.982"
+flake8-docstrings        = "^1.6.0"
+poethepoet               = "^0.16.4"
+sphinx                   = "^5.3.0"
+sphinx-autodoc-typehints = "^1.19.4"
+sphinx-rtd-theme         = "^1.0.0"
+
+[tool.poe.tasks]
+test = "pytest tests --strict -m \"(not slow) and (not cloud)\""
+doctest = "pytest --doctest-modules docs"
+format = "black --exclude \".*\\.pyi\" --check systemlink examples tests"
+lint = "flake8 systemlink examples tests"
+types = "mypy --config-file mypy.ini systemlink examples/tag tests"
+build-docs = "sphinx-build -a -E -c docs -d \"./docs_doctree\" docs \"./docs_out\" --color -W -bhtml"
+
+[tool.pytest.ini_options]
+markers = [
+    "unit: mark a test as a unit test",
+    "integration: mark a test as an integration test",
+    "cloud: mark a test as a cloud integration test",
+    "webserver: mark a test as a webserver integration test",
+    "slow: mark a test as a slow test",
+]
+
+[build-system]
+requires      = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
