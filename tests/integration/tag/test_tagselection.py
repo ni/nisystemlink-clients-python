@@ -130,7 +130,7 @@ class TagSelectionTests:
             date_value = datetime.now(timezone.utc)
             int_value = -13
             string_value = "hello there"
-            uint64_value = 2 ** 31 + 3
+            uint64_value = 2**31 + 3
 
             writer.write(tags["BOOLEAN"].path, tags["BOOLEAN"].data_type, False)
             writer.write(

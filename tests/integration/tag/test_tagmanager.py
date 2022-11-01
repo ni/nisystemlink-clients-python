@@ -61,7 +61,7 @@ class TagManagerTests:
             tag = tbase.TagData(generate_tag_path(), tbase.DataType.INT32)
             tag.collect_aggregates = True
 
-            min_int = -(2 ** 31)
+            min_int = -(2**31)
             self.tag_manager.update([tag])
             aggregates = self.internal_test_write_and_read_tag(
                 tag,
@@ -92,7 +92,7 @@ class TagManagerTests:
             tag = tbase.TagData(generate_tag_path(), tbase.DataType.UINT64)
             tag.collect_aggregates = True
 
-            value = 2 ** 64 - 1
+            value = 2**64 - 1
             self.tag_manager.update([tag])
             aggregates = self.internal_test_write_and_read_tag(
                 tag,
@@ -127,8 +127,8 @@ class TagManagerTests:
             assert math.isclose(max, aggregates.max), (max, aggregates.max)
 
     def test__set_int_values__aggregate_values_are_correct(self, generate_tag_path):
-        min = random.randrange(-(2 ** 31), 0)
-        max = random.randrange(0, 2 ** 31 - 1)
+        min = random.randrange(-(2**31), 0)
+        max = random.randrange(0, 2**31 - 1)
         mean = (min + max) / 3.0
 
         with self.tag_manager.create_writer(buffer_size=3) as writer:
@@ -148,9 +148,9 @@ class TagManagerTests:
             assert max == aggregates.max
 
     def test__uint64_aggregates(self, generate_tag_path):
-        min = random.randrange(0, 2 ** 31)
-        max = random.randrange(2 ** 31, 2 ** 32)
-        mean = (min + max + 2 ** 31) / 3.0
+        min = random.randrange(0, 2**31)
+        max = random.randrange(2**31, 2**32)
+        mean = (min + max + 2**31) / 3.0
 
         with self.tag_manager.create_writer(buffer_size=3) as writer:
             tag = tbase.TagData(generate_tag_path(), tbase.DataType.UINT64)
@@ -162,7 +162,7 @@ class TagManagerTests:
                 writer,
                 tbase.TagValueReader(self.tag_manager, tag),
                 mean,
-                (max, min, 2 ** 31),
+                (max, min, 2**31),
             )
 
             assert min == aggregates.min

@@ -6,7 +6,6 @@ from unittest import mock
 
 import mypy.api
 import pytest
-from requests import delete  # type: ignore
 from systemlink.clients.tag import DataType, ITagWriter
 
 
@@ -113,7 +112,7 @@ class TestITagWriter:
         ITagWriter._validate_type(-1.1, DataType.DOUBLE)
         ITagWriter._validate_type(-1, DataType.DOUBLE)  # an int is valid for DOUBLE
         ITagWriter._validate_type(-1, DataType.INT32)
-        ITagWriter._validate_type(2 ** 35, DataType.UINT64)
+        ITagWriter._validate_type(2**35, DataType.UINT64)
         ITagWriter._validate_type("", DataType.STRING)
 
     def test__incorrect_type__validate_type__raises(self):
@@ -189,15 +188,15 @@ class TestITagWriter:
 
     def test__int_out_of_range__validate_type__raises(self):
         with pytest.raises(ValueError) as ex:
-            ITagWriter._validate_type(-(2 ** 32 + 1), DataType.INT32)
+            ITagWriter._validate_type(-(2**32 + 1), DataType.INT32)
             assert "range" in ex.message
         with pytest.raises(ValueError) as ex:
-            ITagWriter._validate_type(2 ** 32, DataType.INT32)
+            ITagWriter._validate_type(2**32, DataType.INT32)
             assert "range" in ex.message
 
         with pytest.raises(ValueError) as ex:
             ITagWriter._validate_type(-1, DataType.UINT64)
             assert "range" in ex.message
         with pytest.raises(ValueError) as ex:
-            ITagWriter._validate_type(2 ** 64, DataType.UINT64)
+            ITagWriter._validate_type(2**64, DataType.UINT64)
             assert "range" in ex.message
