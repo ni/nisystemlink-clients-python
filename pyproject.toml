@@ -42,7 +42,6 @@ poethepoet               = "^0.16.4"
 sphinx                   = "^5.3.0"
 sphinx-autodoc-typehints = "^1.19.4"
 sphinx-rtd-theme         = "^1.0.0"
-docutils                 = "0.16"
 
 [tool.poe.tasks]
 test       = "pytest tests -m \"(not slow) and (not cloud)\""
