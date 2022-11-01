@@ -14,7 +14,7 @@ pull request.
 See [GitHub's official documentation](https://help.github.com/articles/using-pull-requests/)
 for more details.
 
-# Getting Started
+## Getting Started
 
 To contribute to this project, it is recommended that you follow these steps:
 
@@ -31,54 +31,52 @@ To contribute to this project, it is recommended that you follow these steps:
 6. Send a GitHub Pull Request to the main repository's master branch. GitHub
    Pull Requests are the expected method of code collaboration on this project.
 
-# Testing
+## Testing
 
-Before running any tests, a supported version of Python must be installed.
-Version 3.5 is preferred, as that version is the most likely to be problematic.
-Installing multiple supported python versions is even better.
+Before running any tests, you must have a supported version of Python (3.8+) and [Poetry](https://python-poetry.org/docs/) installed locally.
 
 It is also helpful to install SystemLink Server and configure the NI Web Server
 to run on localhost.
 
 To install all development dependencies required:
+
 ```
-$ pip install -r .\requirements.txt
+poetry install
 ```
 
-Use the `tox` package for running all tests. To get set up:
+To run commands and scripts, spawn a shell within the virtual environment managed by Poetry:
+
 ```
-$ pip install tox
+poetry shell
 ```
 
-That should set up virtualenv and let you run tests on all supported environments.
-To run all tests, run the following command:
+There are a handful of helpful tasks in the `[tool.poe.tasks]` section of the `pyproject.toml` file. These can be run using [Poe](https://github.com/nat-n/poethepoet) like so:
+
 ```
-$ tox
+poe types
 ```
-Every time you run that the package will be created and all tests will run.
 
 To run all tests in place with your current python environment setup:
+
 ```
-$ pytest
+pytest
 ```
 
 To only run the tests in one particular folder, run
+
 ```
-$ pytest tests/myfolder
+pytest tests/myfolder
 ```
 
 To run the SystemLink Cloud tests,
 [create an API key](https://www.ni.com/documentation/en/systemlink-cloud/latest/manual/creating-an-api-key/)
 and then run
+
 ```
-$ pytest -m cloud --cloud-api-key XXXXX
-```
-or
-```
-$ tox -e py3 -- -m cloud --cloud-api-key XXXXX
+pytest -m cloud --cloud-api-key XXXXX
 ```
 
-# Developer Certificate of Origin (DCO)
+## Developer Certificate of Origin (DCO)
 
    Developer's Certificate of Origin 1.1
 
