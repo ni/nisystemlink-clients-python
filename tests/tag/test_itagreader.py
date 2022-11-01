@@ -97,7 +97,7 @@ class TestITagReader:
                 pytype_name = str(type(value).__name__)
                 code[data_type.name] = code_template % (pytype_name, data_type.name)
                 with tempfile.TemporaryFile(
-                    mode="w+", delete=False, prefix=data_type.name + "_", suffix=".py"
+                    mode="w+", prefix=data_type.name + "_", suffix=".py"
                 ) as f:
                     files.append(f.name)
                     f.write(code[data_type.name])
@@ -115,7 +115,7 @@ class TestITagReader:
             bad_type_name = "bool" if isinstance(value, str) else "str"
             code = code_template % (bad_type_name, data_type.name)
             try:
-                with tempfile.TemporaryFile(mode="w+", delete=False) as f:
+                with tempfile.TemporaryFile(mode="w+") as f:
                     f.write(code)
                 stdout, stderr, exit_code = mypy.api.run([f.name])
                 assert 0 != exit_code, "\n\n".join((stdout, stderr, code))
