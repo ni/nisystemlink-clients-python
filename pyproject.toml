@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nisystemlink-clients"
-version = "1.0.0"
+version = "0.1.4"
 description = "NI-SystemLink Python API"
 authors = ["National Instruments"]
 maintainers = ["Carson Moore <carson.moore@ni.com>", "Paul Spangler <paul.spangler@ni.com>"]
@@ -39,9 +39,6 @@ pytest-asyncio           = "^0.20.1"
 mypy                     = "^0.982"
 flake8-docstrings        = "^1.6.0"
 poethepoet               = "^0.16.4"
-sphinx                   = "^5.3.0"
-sphinx-autodoc-typehints = "^1.19.4"
-sphinx-rtd-theme         = "^1.0.0"
 
 [tool.poe.tasks]
 test       = "pytest tests -m \"(not slow) and (not cloud)\""
@@ -49,7 +46,6 @@ doctest    = "pytest --doctest-modules docs"
 format     = "black --exclude \".*\\.pyi\" --check systemlink examples tests"
 lint       = "flake8 systemlink examples tests"
 types      = "mypy --config-file mypy.ini systemlink examples/tag tests"
-build-docs = "sphinx-build -a -E -c docs -d \"./docs_doctree\" docs \"./docs_out\" --color -W -bhtml"
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"
