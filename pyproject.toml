@@ -44,7 +44,7 @@ sphinx-autodoc-typehints = "^1.19.4"
 sphinx-rtd-theme         = "^1.0.0"
 
 [tool.poe.tasks]
-test = "pytest tests --strict -m \"(not slow) and (not cloud)\""
+test = "pytest tests -m \"(not slow) and (not cloud)\""
 doctest = "pytest --doctest-modules docs"
 format = "black --exclude \".*\\.pyi\" --check systemlink examples tests"
 lint = "flake8 systemlink examples tests"
@@ -52,6 +52,7 @@ types = "mypy --config-file mypy.ini systemlink examples/tag tests"
 build-docs = "sphinx-build -a -E -c docs -d \"./docs_doctree\" docs \"./docs_out\" --color -W -bhtml"
 
 [tool.pytest.ini_options]
+addopts = "--strict-markers"
 markers = [
     "unit: mark a test as a unit test",
     "integration: mark a test as an integration test",

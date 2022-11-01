@@ -1436,8 +1436,6 @@ class TestTagSelection:
 
     class MockTagSelection(TagSelection):
         def __init__(self, tags, paths=None):
-            super().__init__(tags, paths)
-
             self.mock_buffer_value = Mock(side_effect=NotImplementedError)
             self.mock_close_internal = Mock(return_value=None)
             self.mock_close_internal_async = Mock(side_effect=NotImplementedError)
@@ -1468,6 +1466,8 @@ class TestTagSelection:
             self.mock_reset_aggregates_internal_async = Mock(
                 side_effect=NotImplementedError
             )
+
+            super().__init__(tags, paths)
 
         def _close_internal(self, *args, **kwargs):
             return self.mock_close_internal(*args, **kwargs)

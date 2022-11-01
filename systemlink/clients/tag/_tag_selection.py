@@ -41,6 +41,8 @@ class TagSelection(tbase.ITagReader):
             ValueError: if ``tags`` is None or empty.
             ValueError: if ``tags`` or ``paths`` contains duplicate tags.
         """
+        self._closed = False
+
         if tags is None:
             raise ValueError("tags cannot be None")
         if any(t is None for t in tags):
@@ -68,8 +70,6 @@ class TagSelection(tbase.ITagReader):
         }
 
         self._values = None  # type: Optional[Dict[str, SerializedTagWithAggregates]]
-
-        self._closed = False
 
     @property
     def paths(self) -> Tuple[str, ...]:  # noqa: D401
@@ -338,11 +338,18 @@ class TagSelection(tbase.ITagReader):
 
         self._close_internal()
         self._closed = True
-        self._paths.clear()
-        self._metadata.clear()
-        self._readers.clear()
-        if self._values is not None:
-            self._values.clear()
+        paths = getattr(self, "_paths", None)
+        if paths is not None:
+            paths.clear()
+        metadata = getattr(self, "_metadata", None)
+        if metadata is not None:
+            metadata.clear()
+        readers = getattr(self, "_readers", None)
+        if readers is not None:
+            readers.clear()
+        values = getattr(self, "_values", None)
+        if values is not None:
+            values.clear()
 
     async def close_async(self) -> None:
         """Asynchronously clean up server resources associated with the selection.
