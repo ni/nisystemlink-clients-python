@@ -18,4 +18,4 @@ jobs:
           python-version: "3.8"
           cache: "poetry"
       - run: poetry install
-      - run: poetry run poe test
+      - run: poetry run pytest --cloud-api-key ${{ secrets.CLOUD_API_KEY }}
