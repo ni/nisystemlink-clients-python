@@ -9,13 +9,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11]
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry
         run: pipx install poetry
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: ${{ matrix.python-version }}
           cache: "poetry"
       - run: poetry install
       - run: poetry run pytest --cloud-api-key ${{ secrets.CLOUD_API_KEY }}

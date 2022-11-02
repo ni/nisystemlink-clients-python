@@ -46,8 +46,10 @@ poetry install
 
 To run commands and scripts, spawn a shell within the virtual environment managed by Poetry:
 
-```
+```sh
 poetry shell
+# Alternatively, you can prefix commands with "poetry run"
+poetry run pytest
 ```
 
 There are a handful of helpful tasks in the `[tool.poe.tasks]` section of the `pyproject.toml` file. These can be run using [Poe](https://github.com/nat-n/poethepoet) like so:
