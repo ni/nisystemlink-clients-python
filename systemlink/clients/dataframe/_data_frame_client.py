@@ -1,4 +1,4 @@
-"""Implementation of TagManager."""
+"""Implementation of DataFrameClient."""
 
 
 class DataFrameClient():
