@@ -1,5 +1,5 @@
 """Implementation of DataFrameClient."""
 
 
-class DataFrameClient():
+class DataFrameClient:
     pass
