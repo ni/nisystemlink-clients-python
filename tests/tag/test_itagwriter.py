@@ -5,7 +5,7 @@ import textwrap
 from unittest import mock
 
 import mypy.api
-import pytest  # type: ignore
+import pytest
 from systemlink.clients.tag import DataType, ITagWriter
 
 
@@ -79,7 +79,7 @@ class TestITagWriter:
             code = {}
             for data_type, (_, value) in self.test_values.items():
                 code[data_type.name] = code_template % (repr(value), data_type.name)
-                with tempfile.TemporaryFile(
+                with tempfile.NamedTemporaryFile(
                     mode="w+", delete=False, prefix=data_type.name + "_", suffix=".py"
                 ) as f:
                     files.append(f.name)
@@ -98,7 +98,7 @@ class TestITagWriter:
             bad_type_name = "bool" if isinstance(value, str) else "str"
             code = code_template % (bad_type_name, data_type.name)
             try:
-                with tempfile.TemporaryFile(mode="w+", delete=False) as f:
+                with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
                     f.write(code)
                 stdout, stderr, exit_code = mypy.api.run([f.name])
                 assert 0 != exit_code, "\n\n".join((stdout, stderr, code))
@@ -112,7 +112,7 @@ class TestITagWriter:
         ITagWriter._validate_type(-1.1, DataType.DOUBLE)
         ITagWriter._validate_type(-1, DataType.DOUBLE)  # an int is valid for DOUBLE
         ITagWriter._validate_type(-1, DataType.INT32)
-        ITagWriter._validate_type(2 ** 35, DataType.UINT64)
+        ITagWriter._validate_type(2**35, DataType.UINT64)
         ITagWriter._validate_type("", DataType.STRING)
 
     def test__incorrect_type__validate_type__raises(self):
@@ -188,15 +188,15 @@ class TestITagWriter:
 
     def test__int_out_of_range__validate_type__raises(self):
         with pytest.raises(ValueError) as ex:
-            ITagWriter._validate_type(-(2 ** 32 + 1), DataType.INT32)
+            ITagWriter._validate_type(-(2**32 + 1), DataType.INT32)
             assert "range" in ex.message
         with pytest.raises(ValueError) as ex:
-            ITagWriter._validate_type(2 ** 32, DataType.INT32)
+            ITagWriter._validate_type(2**32, DataType.INT32)
             assert "range" in ex.message
 
         with pytest.raises(ValueError) as ex:
             ITagWriter._validate_type(-1, DataType.UINT64)
             assert "range" in ex.message
         with pytest.raises(ValueError) as ex:
-            ITagWriter._validate_type(2 ** 64, DataType.UINT64)
+            ITagWriter._validate_type(2**64, DataType.UINT64)
             assert "range" in ex.message

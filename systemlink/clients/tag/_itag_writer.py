@@ -198,13 +198,13 @@ class ITagWriter(_ITagWriterOverloads):
 
         if data_type == tbase.DataType.INT32:
             assert isinstance(value, int)
-            if not -(2 ** 31) <= value < 2 ** 31:
+            if not -(2**31) <= value < 2**31:
                 raise ValueError(
                     "value {} is not the valid range of an INT32".format(value)
                 )
         elif data_type == tbase.DataType.UINT64:
             assert isinstance(value, int)
-            if not 0 <= value < 2 ** 64:
+            if not 0 <= value < 2**64:
                 raise ValueError(
                     "value {} is not the valid range of a UINT64".format(value)
                 )

@@ -36,7 +36,7 @@ class TagSubscriptionTests:
         double_value = math.pi
         int_value = -13
         string_value = "hello there"
-        uint64_value = 2 ** 31 + 3
+        uint64_value = 2**31 + 3
 
         with contextlib.ExitStack() as exit_stack:
             selection = exit_stack.enter_context(

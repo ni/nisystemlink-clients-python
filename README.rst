@@ -19,7 +19,7 @@ Requirements
 
 * A SystemLink Server installation or a
   `SystemLink Cloud <https://www.systemlinkcloud.com/>`_ account to connect to
-* CPython 3.5+
+* CPython 3.8+
 
 .. _installation_section:
 
@@ -34,10 +34,6 @@ To install **nisystemlink-clients**, use one of the following methods:
 2. **easy_install** from `setuptools <https://pypi.python.org/pypi/setuptools>`_::
 
    $ python -m easy_install nisystemlink-clients
-
-3. Download the project source and run::
-
-   $ python setup.py install
 
 .. _usage_section:
 
