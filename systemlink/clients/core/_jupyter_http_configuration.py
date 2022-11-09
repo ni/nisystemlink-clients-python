@@ -8,7 +8,7 @@ from systemlink.clients import core
 
 
 class JupyterHttpConfiguration(core.HttpConfiguration):
-    """An :class:`HttpConfiguration` specifically for use in Jupyter notebooks."""
+    """An :class:`HttpConfiguration` for Jupyter notebooks running in a SystemLink environment."""
 
     _HTTP_URI_ENV_VAR = "SYSTEMLINK_HTTP_URI"
     _HTTP_API_KEY_ENV_VAR = "SYSTEMLINK_API_KEY"
