@@ -3,8 +3,6 @@
 
 """Implementation of DataFrameClient."""
 
-from typing import Any
-
 from systemlink.clients.core._uplink._base_client import BaseClient
 from uplink import get, returns
 
