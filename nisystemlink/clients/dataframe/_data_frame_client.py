@@ -9,6 +9,8 @@ from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from uplink import get, returns
 
+from . import models
+
 
 class DataFrameClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
@@ -26,7 +28,6 @@ class DataFrameClient(BaseClient):
 
     @returns.json()
     @get("nidataframe")
-    # TODO: Create model class for return type
-    def api_info(self) -> dict:
+    def api_info(self) -> models.ApiInfo:
         """Returns information about API versions and available operations."""
         pass
