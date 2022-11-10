@@ -43,8 +43,8 @@ poethepoet               = "^0.16.4"
 [tool.poe.tasks]
 test       = "pytest tests -m \"(not slow) and (not cloud)\""
 doctest    = "pytest --doctest-modules docs"
-check      = "black --exclude \".*\\.pyi\" --check nisystemlink examples tests"
-format     = "black --exclude \".*\\.pyi\" nisystemlink examples tests"
+check      = "black --check nisystemlink examples tests"
+format     = "black nisystemlink examples tests"
 lint       = "flake8 nisystemlink examples tests"
 types      = "mypy --config-file mypy.ini nisystemlink examples/tag tests"
 
@@ -57,6 +57,9 @@ markers = [
     "webserver: mark a test as a webserver integration test",
     "slow: mark a test as a slow test",
 ]
+
+[tool.black]
+exclude = ".*\\.pyi"
 
 [build-system]
 requires      = ["poetry-core"]
