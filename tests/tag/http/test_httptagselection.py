@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from unittest import mock
 
 import pytest  # type: ignore
-from systemlink.clients import core, tag as tbase
-from systemlink.clients.tag._http._http_tag_selection import HttpTagSelection
+from nisystemlink.clients import core, tag as tbase
+from nisystemlink.clients.tag._http._http_tag_selection import HttpTagSelection
 
 from .httpclienttestbase import HttpClientTestBase, MockResponse
 from ...anyorderlist import AnyOrderList

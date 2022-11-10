@@ -58,7 +58,7 @@ To report a bug or submit a feature request, please use the
 Documentation
 =============
 To view the documentation, visit the
-`systemlink.clients Documentation Page <https://python-docs.systemlink.io>`_.
+`nisystemlink.clients Documentation Page <https://python-docs.systemlink.io>`_.
 
 License
 =======

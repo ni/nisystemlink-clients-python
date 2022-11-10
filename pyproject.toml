@@ -7,7 +7,7 @@ maintainers = ["Carson Moore <carson.moore@ni.com>", "Paul Spangler <paul.spangl
 keywords = ["nisystemlink", "systemlink"]
 license = "MIT"
 readme = "README.rst"
-packages = [{ include = "systemlink" }]
+packages = [{ include = "nisystemlink" }]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -43,9 +43,9 @@ poethepoet               = "^0.16.4"
 [tool.poe.tasks]
 test       = "pytest tests -m \"(not slow) and (not cloud)\""
 doctest    = "pytest --doctest-modules docs"
-format     = "black --exclude \".*\\.pyi\" --check systemlink examples tests"
-lint       = "flake8 systemlink examples tests"
-types      = "mypy --config-file mypy.ini systemlink examples/tag tests"
+format     = "black --exclude \".*\\.pyi\" --check nisystemlink examples tests"
+lint       = "flake8 nisystemlink examples tests"
+types      = "mypy --config-file mypy.ini nisystemlink examples/tag tests"
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"

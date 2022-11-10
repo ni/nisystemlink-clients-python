@@ -4,10 +4,10 @@ from unittest import mock
 
 import events
 import pytest  # type: ignore
-from systemlink.clients import core, tag as tbase
-from systemlink.clients.core._internal._timestamp_utilities import TimestampUtilities
-from systemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
-from systemlink.clients.tag._http._http_tag_subscription import HttpTagSubscription
+from nisystemlink.clients import core, tag as tbase
+from nisystemlink.clients.core._internal._timestamp_utilities import TimestampUtilities
+from nisystemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
+from nisystemlink.clients.tag._http._http_tag_subscription import HttpTagSubscription
 
 from .httpclienttestbase import HttpClientTestBase, MockResponse
 

@@ -1,7 +1,7 @@
 from unittest.mock import Mock, PropertyMock
 
 import events.events  # type: ignore
-from systemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
+from nisystemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
 
 
 def MockManualResetTimer():  # noqa: N802
