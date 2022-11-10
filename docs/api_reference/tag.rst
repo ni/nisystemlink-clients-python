@@ -1,8 +1,8 @@
 .. _api_tag_page:
 
-systemlink.clients.tag
+nisystemlink.clients.tag
 ======================
 
-.. automodule:: systemlink.clients.tag
+.. automodule:: nisystemlink.clients.tag
    :members:
    :imported-members:

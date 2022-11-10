@@ -1,7 +1,7 @@
 import datetime
 import time
 
-from systemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
+from nisystemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
 
 
 class TestManualResetTimer:

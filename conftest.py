@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest  # type: ignore
-from systemlink.clients import core
+from nisystemlink.clients import core
 
 
 def pytest_addoption(parser):

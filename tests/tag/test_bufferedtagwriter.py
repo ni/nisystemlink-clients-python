@@ -2,12 +2,12 @@ import datetime
 from unittest import mock
 from unittest.mock import Mock, PropertyMock
 
+import nisystemlink.clients.core as core
+import nisystemlink.clients.tag as tbase
 import pytest  # type: ignore
-import systemlink.clients.core as core
-import systemlink.clients.tag as tbase
-from systemlink.clients.tag._core._itime_stamper import ITimeStamper
-from systemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
-from systemlink.clients.tag._core._system_time_stamper import SystemTimeStamper
+from nisystemlink.clients.tag._core._itime_stamper import ITimeStamper
+from nisystemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
+from nisystemlink.clients.tag._core._system_time_stamper import SystemTimeStamper
 
 from .mock_manualresettimer import MockManualResetTimer
 

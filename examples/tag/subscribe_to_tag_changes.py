@@ -1,7 +1,7 @@
 from contextlib import ExitStack
 from time import sleep
 
-from systemlink.clients.tag import DataType, TagData, TagManager, TagValueReader
+from nisystemlink.clients.tag import DataType, TagData, TagManager, TagValueReader
 
 SIMULATE_EXTERNAL_TAG_CHANGES = True
 

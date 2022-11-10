@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from systemlink.clients.tag import DataType, TagManager
+from nisystemlink.clients.tag import DataType, TagManager
 
 mgr = TagManager()
 tag = mgr.open("MyTags.Example Tag", DataType.DOUBLE, create=True)

@@ -4,8 +4,8 @@
 import uuid
 
 import pytest  # type: ignore
-from systemlink.clients import tag as tbase
-from systemlink.clients.core._internal._http_client import HttpClient
+from nisystemlink.clients import tag as tbase
+from nisystemlink.clients.core._internal._http_client import HttpClient
 
 
 class TagBaseMixin:
@@ -21,7 +21,7 @@ class TagBaseMixin:
             - The common prefix for each of the generated tags, including the trailing dot.
 
         Raises:
-            systemlink.clients.core.ApiException: if the API call fails.
+            nisystemlink.clients.core.ApiException: if the API call fails.
         """
 
         def fn():

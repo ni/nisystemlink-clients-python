@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 import pytest  # type: ignore
-from systemlink.clients import core, tag as tbase
+from nisystemlink.clients import core, tag as tbase
 
 from .http.httpclienttestbase import HttpClientTestBase, MockResponse
 from ..anyorderlist import AnyOrderList
@@ -20,7 +20,7 @@ class TestTagManager(HttpClientTestBase):
             return self._client
 
         with mock.patch(
-            "systemlink.clients.tag._tag_manager.HttpClient", get_client_mock
+            "nisystemlink.clients.tag._tag_manager.HttpClient", get_client_mock
         ):
             self._uut = tbase.TagManager(object())
 

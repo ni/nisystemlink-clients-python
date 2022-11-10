@@ -6,7 +6,7 @@ from unittest import mock
 
 import mypy.api
 import pytest
-from systemlink.clients.tag import DataType, ITagWriter
+from nisystemlink.clients.tag import DataType, ITagWriter
 
 
 class TestITagWriter:
@@ -62,7 +62,7 @@ class TestITagWriter:
         code_template = textwrap.dedent(
             """
             import datetime
-            from systemlink.clients.tag import DataType, TagManager
+            from nisystemlink.clients.tag import DataType, TagManager
 
             value = %s
 

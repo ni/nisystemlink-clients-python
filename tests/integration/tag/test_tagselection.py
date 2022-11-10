@@ -7,7 +7,7 @@ import time
 from datetime import datetime, timezone
 
 import pytest  # type: ignore
-from systemlink.clients import tag as tbase
+from nisystemlink.clients import tag as tbase
 
 from .mixins import CloudMixin, ServerMixin
 

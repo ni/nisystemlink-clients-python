@@ -1,7 +1,7 @@
 import asyncio
 from unittest import mock
 
-from systemlink.clients.core._internal._http_client import (
+from nisystemlink.clients.core._internal._http_client import (
     _AsyncHttpClientAtUri,
     _HttpClientAtUri,
     HttpClient,
