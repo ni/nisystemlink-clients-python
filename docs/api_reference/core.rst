@@ -1,8 +1,8 @@
 .. _api_core_page:
 
-systemlink.clients.core
+nisystemlink.clients.core
 =======================
 
-.. automodule:: systemlink.clients.core
+.. automodule:: nisystemlink.clients.core
    :members:
    :imported-members:

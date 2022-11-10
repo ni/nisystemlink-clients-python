@@ -1,8 +1,8 @@
 import asyncio
 
 import pytest  # type: ignore
-from systemlink.clients.core import ApiException
-from systemlink.clients.tag import AsyncTagQueryResultCollection, DataType, TagData
+from nisystemlink.clients.core import ApiException
+from nisystemlink.clients.tag import AsyncTagQueryResultCollection, DataType, TagData
 
 
 class TestAsyncTagQueryResultCollection:

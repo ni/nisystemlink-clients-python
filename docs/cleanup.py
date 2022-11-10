@@ -58,29 +58,29 @@ def _process_docstring(app, what, name, obj, options, lines):
 
 
 def modify_systemlink_paths(s: str) -> str:
-    """Modify systemlink.* paths in the given string to hide implementation modules.
+    """Modify nisystemlink.* paths in the given string to hide implementation modules.
 
     Examples:
         >>> # Basic usage
-        >>> modify_systemlink_paths("systemlink.foo._abc.Abc")
-        'systemlink.foo.Abc'
+        >>> modify_systemlink_paths("nisystemlink.foo._abc.Abc")
+        'nisystemlink.foo.Abc'
 
         >>> # Modify all paths in the string
-        >>> modify_systemlink_paths(" systemlink.f._abc.Abc systemlink.f._xyz.Xyz ")
-        ' systemlink.f.Abc systemlink.f.Xyz '
+        >>> modify_systemlink_paths(" nisystemlink.f._abc.Abc nisystemlink.f._xyz.Xyz ")
+        ' nisystemlink.f.Abc nisystemlink.f.Xyz '
 
         >>> # Don't change _internal or _core paths
-        >>> modify_systemlink_paths("systemlink.foo._internal._abc.Abc")
-        'systemlink.foo._internal._abc.Abc'
-        >>> modify_systemlink_paths("systemlink.foo._core._abc.Abc")
-        'systemlink.foo._core._abc.Abc'
+        >>> modify_systemlink_paths("nisystemlink.foo._internal._abc.Abc")
+        'nisystemlink.foo._internal._abc.Abc'
+        >>> modify_systemlink_paths("nisystemlink.foo._core._abc.Abc")
+        'nisystemlink.foo._core._abc.Abc'
     """
     return re.sub(r"(?<!\._internal)(?<!\._core)\._(?!internal|core)\w+.", ".", s)
 
 
 def _missing_reference(app, env, node, contnode):
     target = node["reftarget"]
-    if target.startswith("systemlink."):
+    if target.startswith("nisystemlink."):
         # For types that are parameters of overloaded functions, the process-docstring
         # code above will not have seen them; so do the appropriate string replacements
         # here, too.

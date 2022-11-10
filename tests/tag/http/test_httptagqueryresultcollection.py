@@ -1,8 +1,8 @@
 from unittest import mock
 
 import pytest  # type: ignore
-from systemlink.clients import core, tag as tbase
-from systemlink.clients.tag._http._http_tag_query_result_collection import (
+from nisystemlink.clients import core, tag as tbase
+from nisystemlink.clients.tag._http._http_tag_query_result_collection import (
     HttpTagQueryResultCollection,
 )
 

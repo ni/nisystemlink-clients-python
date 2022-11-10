@@ -4,7 +4,7 @@ import threading
 import time
 
 import pytest
-from systemlink.clients.tag._core._system_time_stamper import SystemTimeStamper
+from nisystemlink.clients.tag._core._system_time_stamper import SystemTimeStamper
 
 
 class TestSystemTimeStamper:

@@ -3,8 +3,8 @@ from unittest import mock
 from unittest.mock import Mock
 
 import pytest  # type: ignore
-from systemlink.clients.tag import DataType, TagData, TagSelection, TagSubscription
-from systemlink.clients.tag._core._serialized_tag_with_aggregates import (
+from nisystemlink.clients.tag import DataType, TagData, TagSelection, TagSubscription
+from nisystemlink.clients.tag._core._serialized_tag_with_aggregates import (
     SerializedTagWithAggregates,
 )
 

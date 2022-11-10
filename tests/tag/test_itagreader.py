@@ -6,8 +6,8 @@ from unittest import mock
 
 import mypy.api
 import pytest  # type: ignore
-from systemlink.clients.tag import DataType, ITagReader
-from systemlink.clients.tag._core._serialized_tag_with_aggregates import (
+from nisystemlink.clients.tag import DataType, ITagReader
+from nisystemlink.clients.tag._core._serialized_tag_with_aggregates import (
     SerializedTagWithAggregates,
 )
 
@@ -75,7 +75,7 @@ class TestITagReader:
         code_template = textwrap.dedent(
             """
             from datetime import datetime
-            from systemlink.clients.tag import DataType, ITagReader, TagManager
+            from nisystemlink.clients.tag import DataType, ITagReader, TagManager
 
             def validate_type(val: %s) -> None:
                 pass

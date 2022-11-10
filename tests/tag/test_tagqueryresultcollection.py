@@ -1,6 +1,6 @@
 import pytest  # type: ignore
-from systemlink.clients.core import ApiException
-from systemlink.clients.tag import DataType, TagData, TagQueryResultCollection
+from nisystemlink.clients.core import ApiException
+from nisystemlink.clients.tag import DataType, TagData, TagQueryResultCollection
 
 
 class TestTagQueryResultCollectionTests:
