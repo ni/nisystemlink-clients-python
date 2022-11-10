@@ -43,7 +43,8 @@ poethepoet               = "^0.16.4"
 [tool.poe.tasks]
 test       = "pytest tests -m \"(not slow) and (not cloud)\""
 doctest    = "pytest --doctest-modules docs"
-format     = "black --exclude \".*\\.pyi\" --check nisystemlink examples tests"
+check      = "black --exclude \".*\\.pyi\" --check nisystemlink examples tests"
+format     = "black --exclude \".*\\.pyi\" nisystemlink examples tests"
 lint       = "flake8 nisystemlink examples tests"
 types      = "mypy --config-file mypy.ini nisystemlink examples/tag tests"
 

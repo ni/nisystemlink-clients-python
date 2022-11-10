@@ -4,10 +4,8 @@ import ctypes
 from ctypes import wintypes
 from uuid import UUID
 
-
 class GUID(ctypes.Structure):
     def __init__(self, uuid_: UUID) -> None: ...
-
 
 class FOLDERID:
     AccountPictures = ...  # type: UUID
@@ -104,6 +102,5 @@ class FOLDERID:
     Videos = ...  # type: UUID
     VideosLibrary = ...  # type: UUID
     Windows = ...  # type: UUID
-
 
 def get_path(folderid: UUID, user_handle: wintypes.HANDLE = ...) -> str: ...

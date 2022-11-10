@@ -27,12 +27,16 @@ from nisystemlink.clients.tag._core._system_time_stamper import SystemTimeStampe
 from nisystemlink.clients.tag._http._http_async_tag_query_result_collection import (
     HttpAsyncTagQueryResultCollection,
 )
-from nisystemlink.clients.tag._http._http_buffered_tag_writer import HttpBufferedTagWriter
+from nisystemlink.clients.tag._http._http_buffered_tag_writer import (
+    HttpBufferedTagWriter,
+)
 from nisystemlink.clients.tag._http._http_tag_query_result_collection import (
     HttpTagQueryResultCollection,
 )
 from nisystemlink.clients.tag._http._http_tag_selection import HttpTagSelection
-from nisystemlink.clients.tag._http._temporary_tag_selection import TemporaryTagSelection
+from nisystemlink.clients.tag._http._temporary_tag_selection import (
+    TemporaryTagSelection,
+)
 from typing_extensions import final
 
 

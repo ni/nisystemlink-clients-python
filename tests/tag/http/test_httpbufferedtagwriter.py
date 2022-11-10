@@ -4,7 +4,9 @@ import pytest  # type: ignore
 from nisystemlink.clients import tag as tbase
 from nisystemlink.clients.tag._core._manual_reset_timer import ManualResetTimer
 from nisystemlink.clients.tag._core._system_time_stamper import SystemTimeStamper
-from nisystemlink.clients.tag._http._http_buffered_tag_writer import HttpBufferedTagWriter
+from nisystemlink.clients.tag._http._http_buffered_tag_writer import (
+    HttpBufferedTagWriter,
+)
 
 from .httpclienttestbase import HttpClientTestBase
 
