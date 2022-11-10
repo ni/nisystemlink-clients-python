@@ -12,6 +12,7 @@ from uplink import get, returns
 class DataFrameClient(BaseClient):
     @returns.json()
     @get("nidataframe")
-    def api_info(self) -> dict[str, Any]:
+    # TODO: Create model class for return type
+    def api_info(self) -> dict:
         """Returns information about API versions and available operations."""
         pass
