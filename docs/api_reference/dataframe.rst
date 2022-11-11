@@ -9,4 +9,3 @@ nisystemlink.clients.dataframe
 
 .. automodule:: nisystemlink.clients.dataframe.models
    :members:
-   :imported-members:
