@@ -45,7 +45,7 @@ nitpick_ignore = [
     ("py:data", "typing.Union"),
 ]
 autodoc_default_options = {
-    "inherited-members": True,
+    # "inherited-members": True,
     "special-members": "__init__",
     "no-private-members": True,
 }
