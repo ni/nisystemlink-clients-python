@@ -13,6 +13,8 @@ from . import models
 
 
 class DataFrameClient(BaseClient):
+    _BASE_PATH = "/nidataframe/v1"
+
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
 
@@ -27,7 +29,7 @@ class DataFrameClient(BaseClient):
         super().__init__(configuration)
 
     @returns.json()
-    @get("nidataframe/v1")
+    @get(_BASE_PATH)
     def api_info(self) -> models.ApiInfo:
         """Returns information about available API operations."""
         pass

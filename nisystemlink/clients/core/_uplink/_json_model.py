@@ -13,4 +13,4 @@ class JsonModel(BaseModel):
     class Config:
         alias_generator = _camelcase
         allow_population_by_field_name = True
-        extra = Extra.forbid
+        extra = Extra.ignore
