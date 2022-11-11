@@ -6,3 +6,4 @@ nisystemlink.clients.dataframe
 .. automodule:: nisystemlink.clients.dataframe
    :members:
    :imported-members:
+   :recursive:
