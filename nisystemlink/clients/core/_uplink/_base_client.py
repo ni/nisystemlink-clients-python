@@ -1,6 +1,6 @@
 # mypy: disable-error-code = misc
 
-from typing import Callable, cast, NoReturn, Optional
+from typing import Optional
 
 from nisystemlink.clients import core
 from requests import JSONDecodeError, Response
@@ -15,15 +15,25 @@ def _handle_http_status(response: Response) -> Optional[Response]:
         if response.status_code == 204:
             return None
         return response
+
+    msg = "Server responded with <{} {}> ({}).".format(
+        response.status_code, response.reason, response.url
+    )
+
     try:
         content = response.json()
-        if isinstance(content, dict) and "error" in content:
-            error = core.ApiError.from_json_dict(content["error"])
-            raise core.ApiException(error=error, http_status_code=response.status_code)
+        if content and "error" in content:
+            err_obj = core.ApiError.from_json_dict(content["error"])
         else:
-            cast(Callable[[], NoReturn], response.raise_for_status)()
+            err_obj = None
+
+        raise core.ApiException(
+            msg, error=err_obj, http_status_code=response.status_code
+        )
     except JSONDecodeError:
-        cast(Callable[[], NoReturn], response.raise_for_status)()
+        if response.text:
+            msg += ":\n\n" + response.text
+        raise core.ApiException(msg, http_status_code=response.status_code)
 
 
 class BaseClient(Consumer):
