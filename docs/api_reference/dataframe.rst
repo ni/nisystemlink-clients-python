@@ -9,3 +9,5 @@ nisystemlink.clients.dataframe
 
 .. automodule:: nisystemlink.clients.dataframe.models
    :members:
+   :inherited-members: False
+   :imported-members:
