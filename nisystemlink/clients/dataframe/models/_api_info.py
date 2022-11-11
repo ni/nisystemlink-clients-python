@@ -13,10 +13,10 @@ class OperationsV1(JsonModel):
 
     create_tables: Operation  #: The ability to create new DataFrame tables.
     delete_tables: Operation  #: The ability to delete tables and all of their data.
-    modify_metadata: Operation
-    list_tables: Operation
-    read_data: Operation
-    write_data: Operation
+    modify_metadata: Operation  #: The ability to modify metadata for tables.
+    list_tables: Operation  #: The ability to locate and read metadata for tables.
+    read_data: Operation  #: The ability to query and read data from tables.
+    write_data: Operation  #: The ability to append rows of data to tables.
 
 
 class ApiInfo(JsonModel):

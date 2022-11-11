@@ -54,3 +54,6 @@ autodoc_default_options = {
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
+
+# Configuration for https://autodoc-pydantic.readthedocs.io
+autodoc_pydantic_model_show_config = False
