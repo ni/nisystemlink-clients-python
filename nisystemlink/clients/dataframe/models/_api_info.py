@@ -15,10 +15,5 @@ class OperationsV1(JsonModel):
     write_data: Operation
 
 
-class ApiInfoV1(JsonModel):
-    operations: OperationsV1
-
-
 class ApiInfo(JsonModel):
-    v1: ApiInfoV1
-    version: str
+    operations: OperationsV1

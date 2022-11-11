@@ -27,7 +27,7 @@ class DataFrameClient(BaseClient):
         super().__init__(configuration)
 
     @returns.json()
-    @get("nidataframe")
+    @get("nidataframe/v1")
     def api_info(self) -> models.ApiInfo:
-        """Returns information about API versions and available operations."""
+        """Returns information about available API operations."""
         pass
