@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx_autodoc_typehints",
+    "sphinxcontrib.autodoc_pydantic",
     "docs.cleanup",
 ]
 master_doc = "index"
