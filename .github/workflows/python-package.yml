@@ -22,8 +22,8 @@ jobs:
           cache: "poetry"
       - run: poetry install
       - run: poetry run pytest
-      - run: poetry run pytest -m cloud --cloud-api-key ${{ secrets.CLOUD_API_KEY }}
-      - run: poetry run pytest -m enterprise --enterprise-api-key ${{ secrets.ENTERPRISE_API_KEY }}
+      - run: poetry run pytest -m cloud --cloud-api-key "${{ secrets.CLOUD_API_KEY }}"
+      - run: poetry run pytest -m enterprise --enterprise-api-key "${{ secrets.ENTERPRISE_API_KEY }}"
       - run: poetry run poe check
       - run: poetry run poe lint
       - run: poetry run poe types
