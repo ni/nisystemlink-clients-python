@@ -11,5 +11,5 @@ class TestDataFrame:
         client = DataFrameClient(enterprise_config)
 
         response = client.api_info()
-        
+
         assert len(response) != 0
