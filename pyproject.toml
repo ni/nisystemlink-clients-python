@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nisystemlink-clients"
-version = "0.1.4"
+version = "0.2.0"
 description = "NI-SystemLink Python API"
 authors = ["National Instruments"]
 maintainers = ["Carson Moore <carson.moore@ni.com>", "Paul Spangler <paul.spangler@ni.com>"]
@@ -64,6 +64,10 @@ markers = [
 
 [tool.black]
 exclude = ".*\\.pyi"
+
+[tool.semantic_release]
+version_toml         = ["pyproject.toml:tool.poetry.version"]
+upload_to_repository = false
 
 [build-system]
 requires      = ["poetry-core"]
