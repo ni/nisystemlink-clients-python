@@ -5,4 +5,5 @@ nisystemlink.clients.core
 
 .. automodule:: nisystemlink.clients.core
    :members:
+   :inherited-members:
    :imported-members:

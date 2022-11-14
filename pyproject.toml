@@ -41,14 +41,15 @@ pytest-asyncio      = "^0.20.1"
 mypy                = "^0.982"
 flake8-docstrings   = "^1.6.0"
 poethepoet          = "^0.16.4"
+types-requests      = "^2.28.11.4"
 
 [tool.poe.tasks]
-test       = "pytest tests -m \"(not slow) and (not cloud)\""
-doctest    = "pytest --doctest-modules docs"
-check      = "black --check nisystemlink examples tests"
-format     = "black nisystemlink examples tests"
-lint       = "flake8 nisystemlink examples tests"
-types      = "mypy --config-file mypy.ini nisystemlink examples/tag tests"
+test    = "pytest tests -m \"(not slow) and (not cloud)\""
+doctest = "pytest --doctest-modules docs"
+check   = "black --check nisystemlink examples tests"
+format  = "black nisystemlink examples tests"
+lint    = "flake8 nisystemlink examples tests"
+types   = "mypy --config-file mypy.ini nisystemlink examples/tag tests"
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"
