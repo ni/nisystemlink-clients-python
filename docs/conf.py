@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx_autodoc_typehints",
+    "sphinxcontrib.autodoc_pydantic",
     "docs.cleanup",
 ]
 master_doc = "index"
@@ -45,7 +46,6 @@ nitpick_ignore = [
     ("py:data", "typing.Union"),
 ]
 autodoc_default_options = {
-    "inherited-members": True,
     "special-members": "__init__",
     "no-private-members": True,
 }
@@ -54,3 +54,6 @@ autodoc_default_options = {
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
+
+# Configuration for https://autodoc-pydantic.readthedocs.io
+autodoc_pydantic_model_show_config_summary = False
