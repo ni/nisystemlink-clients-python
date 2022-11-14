@@ -78,12 +78,15 @@ and then run
 pytest -m cloud --cloud-api-key XXXXX
 ```
 
-To run the SystemLink Enterprise tests, obtain an API key from the
+To run the SystemLink Enterprise tests, obtain a session API key from the
 [main-test](https://test.lifecyclesolutions.ni.com/) cluster and then run
 
 ```
 pytest -m enterprise --enterprise-uri "https://test-api.lifecyclesolutions.ni.com" --enterprise-api-key XXXXX
 ```
+
+It is important to note that depending on the terminal you are using,
+you may need to escape special characters in the API key.
 
 ## Developer Certificate of Origin (DCO)
 

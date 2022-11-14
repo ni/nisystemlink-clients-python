@@ -12,4 +12,4 @@ class TestDataFrame:
 
         response = client.api_info()
 
-        assert len(response) != 0
+        assert len(response.dict()) != 0
