@@ -56,7 +56,7 @@ markers = [
     "unit: mark a test as a unit test",
     "integration: mark a test as an integration test",
     "cloud: mark a test as a cloud integration test",
-    "enterprise: mark a test as a enterprise integration test",
+    "enterprise: mark a test as an enterprise integration test",
     "webserver: mark a test as a webserver integration test",
     "slow: mark a test as a slow test",
 ]
