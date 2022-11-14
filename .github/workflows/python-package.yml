@@ -21,7 +21,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "poetry"
       - run: poetry install
-      - run: poetry run pytest --cloud-api-key ${{ secrets.CLOUD_API_KEY }}
+      - run: >
+          poetry run pytest
+          --cloud-api-key "${{ secrets.CLOUD_API_KEY }}"
+          --enterprise-uri "https://test-api.lifecyclesolutions.ni.com" --enterprise-api-key "${{ secrets.ENTERPRISE_API_KEY }}"
       - run: poetry run poe check
       - run: poetry run poe lint
       - run: poetry run poe types

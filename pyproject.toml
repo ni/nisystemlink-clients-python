@@ -44,7 +44,7 @@ poethepoet          = "^0.16.4"
 types-requests      = "^2.28.11.4"
 
 [tool.poe.tasks]
-test    = "pytest tests -m \"(not slow) and (not cloud)\""
+test    = "pytest tests -m \"(not slow) and (not cloud) and (not enterprise)\""
 doctest = "pytest --doctest-modules docs"
 check   = "black --check nisystemlink examples tests"
 format  = "black nisystemlink examples tests"
@@ -57,6 +57,7 @@ markers = [
     "unit: mark a test as a unit test",
     "integration: mark a test as an integration test",
     "cloud: mark a test as a cloud integration test",
+    "enterprise: mark a test as an enterprise integration test",
     "webserver: mark a test as a webserver integration test",
     "slow: mark a test as a slow test",
 ]

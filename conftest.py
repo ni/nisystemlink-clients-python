@@ -11,6 +11,8 @@ def pytest_addoption(parser):
     ``tox.ini``, in an ``addopts`` setting.
     """
     parser.addoption("--cloud-api-key", help="The cloud API key", type=str)
+    parser.addoption("--enterprise-uri", help="The enterprise URI", type=str)
+    parser.addoption("--enterprise-api-key", help="The enterprise API key", type=str)
     parser.addoption("--web-server-url", help="The web server's URL", type=str)
     parser.addoption("--web-server-user", help="The web server's user", type=str)
     parser.addoption(
@@ -65,3 +67,16 @@ def server_config(pytestconfig):
         )
     except core.ApiException:
         pytest.skip("--web-server-* settings not found, nor localhost config file")
+
+@pytest.fixture(scope="class")
+def enterprise_config(pytestconfig):
+    """Fixture to get a HttpConfiguration for testing Enterprise integration.
+
+    This requires the --enterprise-uri and --enterprise-api-key command line flag, or else skips the test.
+    """
+    uri = pytestconfig.getoption("enterprise_uri", default=None)
+    api_key = pytestconfig.getoption("enterprise_api_key", default=None)
+    if uri and api_key:
+        return core.HttpConfiguration(uri, api_key)
+    else:
+        pytest.skip("--enterprise-uri or --enterprise-api-key setting not found")
