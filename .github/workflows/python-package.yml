@@ -32,7 +32,7 @@ jobs:
         # if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
         run: |
           pip install python-semantic-release
-          semantic-release publish
+          semantic-release publish --verbosity=DEBUG
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           REPOSITORY_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
