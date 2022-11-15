@@ -7,7 +7,7 @@ from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from uplink import get, returns
+from uplink import get
 
 from . import models
 
@@ -28,8 +28,19 @@ class DataFrameClient(BaseClient):
 
         super().__init__(configuration)
 
-    @returns.json()
     @get(_BASE_PATH)
     def api_info(self) -> models.ApiInfo:
         """Returns information about available API operations."""
-        pass
+        ...
+
+    @get(_BASE_PATH + "/tables/{id}")
+    def get_table_metadata(self, id: str) -> models.TableMetadata:
+        """Retrieves the metadata and column information for a single table identified by its ID.
+
+        Args:
+            id (str): Unique ID of a DataFrame table.
+
+        Returns:
+            models.TableMetadata: The metadata for the table.
+        """
+        ...
