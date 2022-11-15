@@ -70,7 +70,6 @@ version_toml         = ["pyproject.toml:tool.poetry.version"]
 upload_to_repository = false
 major_on_zero        = false
 build_command        = "poetry build"
-version_source       = "tag"
 
 [build-system]
 requires      = ["poetry-core"]
