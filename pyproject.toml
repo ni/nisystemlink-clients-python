@@ -66,10 +66,10 @@ markers = [
 exclude = ".*\\.pyi"
 
 [tool.semantic_release]
+branch               = "master"
 version_toml         = ["pyproject.toml:tool.poetry.version"]
-upload_to_repository = false
-major_on_zero        = false
 build_command        = "poetry build"
+major_on_zero        = false
 
 [build-system]
 requires      = ["poetry-core"]
