@@ -14,6 +14,10 @@ pull request.
 See [GitHub's official documentation](https://help.github.com/articles/using-pull-requests/)
 for more details.
 
+**Important:** Commit titles and messages should adhere to the
+[Angular style](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits)
+to ensure proper semantic versioning.
+
 ## Getting Started
 
 To contribute to this project, it is recommended that you follow these steps:

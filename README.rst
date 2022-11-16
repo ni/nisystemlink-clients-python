@@ -8,7 +8,8 @@ About
 The **nisystemlink-clients** package contains an API (Application Programming
 Interface) for `SystemLink <https://ni.com/systemlink>`_ that uses HTTP to
 interact with a SystemLink Server. The package is implemented in Python. NI
-created and supports this package.
+created and supports this package. The 0.X.X versions are still under active
+development and the API is subject to change across these version.
 
 .. image:: https://badge.fury.io/py/nisystemlink-clients.svg
     :target: https://badge.fury.io/py/nisystemlink-clients
