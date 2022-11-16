@@ -1,5 +1,6 @@
 from ._api_info import ApiInfo, Operation, OperationsV1
-from ._column_metadata import ColumnMetadata
+from ._create_table_request import CreateTableRequest
+from ._column import Column
 from ._column_type import ColumnType
 from ._data_type import DataType
 from ._table_metadata import TableMetadata

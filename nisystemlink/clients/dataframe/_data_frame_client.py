@@ -7,7 +7,7 @@ from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from uplink import get
+from uplink import Body, delete, get, json, post, returns
 
 from . import models
 
@@ -33,6 +33,20 @@ class DataFrameClient(BaseClient):
         """Returns information about available API operations."""
         ...
 
+    @json
+    @returns.json(key="id")
+    @post(_BASE_PATH + "/tables", args=(Body,))
+    def create_table(self, table: models.CreateTableRequest) -> str:
+        """Create a new table with the provided metadata and column definitions.
+
+        Args:
+            table: The request create the table.
+
+        Returns:
+            The ID of the newly created table.
+        """
+        ...
+
     @get(_BASE_PATH + "/tables/{id}")
     def get_table_metadata(self, id: str) -> models.TableMetadata:
         """Retrieves the metadata and column information for a single table identified by its ID.
@@ -42,5 +56,14 @@ class DataFrameClient(BaseClient):
 
         Returns:
             models.TableMetadata: The metadata for the table.
+        """
+        ...
+
+    @delete(_BASE_PATH + "/tables/{id}")
+    def delete_table(self, id: str) -> None:
+        """Deletes a table.
+
+        Args:
+            id (str): Unique ID of a DataFrame table.
         """
         ...

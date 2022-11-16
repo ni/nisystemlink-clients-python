@@ -3,13 +3,13 @@ from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._column_metadata import ColumnMetadata
+from ._column import Column
 
 
 class TableMetadata(JsonModel):
     """Contains information about a table, including its properties and column definitions."""
 
-    columns: List[ColumnMetadata]
+    columns: List[Column]
     """The list of columns in the table."""
 
     created_at: datetime
@@ -27,7 +27,7 @@ class TableMetadata(JsonModel):
     name: str
     """The name associated with the table."""
 
-    properties: Dict
+    properties: Dict[str, str]
     """User-defined properties associated with the table."""
 
     row_count: int

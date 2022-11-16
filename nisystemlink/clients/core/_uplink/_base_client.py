@@ -1,10 +1,12 @@
 # mypy: disable-error-code = misc
 
-from typing import Optional
+from typing import Dict, Optional, Type
 
 from nisystemlink.clients import core
 from requests import JSONDecodeError, Response
-from uplink import Consumer, response_handler
+from uplink import Consumer, dumps, response_handler
+
+from ._json_model import JsonModel
 
 
 @response_handler
@@ -36,6 +38,12 @@ def _handle_http_status(response: Response) -> Optional[Response]:
         raise core.ApiException(msg, http_status_code=response.status_code)
 
 
+@dumps.to_json(JsonModel)
+def _deserialize_model(model_cls: Type[JsonModel], model_instance: JsonModel) -> Dict:
+    """Turns a :class:`.JsonModel` instance into a dictionary for serialization."""
+    return model_instance.dict(by_alias=True, exclude_unset=True)
+
+
 class BaseClient(Consumer):
     """Base class for SystemLink clients, built on top of `Uplink <https://github.com/prkumar/uplink>`_."""
 
@@ -45,6 +53,10 @@ class BaseClient(Consumer):
         Args:
             configuration: Defines the web server to connect to and information about how to connect.
         """
-        super().__init__(base_url=configuration.server_uri, hooks=[_handle_http_status])
+        super().__init__(
+            base_url=configuration.server_uri,
+            converter=_deserialize_model,
+            hooks=[_handle_http_status],
+        )
         if configuration.api_keys:
             self.session.headers.update(configuration.api_keys)
