@@ -2,6 +2,8 @@
 
 import pytest  # type: ignore
 from nisystemlink.clients import core
+from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Extra
 
 
 def pytest_addoption(parser):
@@ -68,6 +70,7 @@ def server_config(pytestconfig):
     except core.ApiException:
         pytest.skip("--web-server-* settings not found, nor localhost config file")
 
+
 @pytest.fixture(scope="class")
 def enterprise_config(pytestconfig):
     """Fixture to get a HttpConfiguration for testing Enterprise integration.
@@ -80,3 +83,9 @@ def enterprise_config(pytestconfig):
         return core.HttpConfiguration(uri, api_key)
     else:
         pytest.skip("--enterprise-uri or --enterprise-api-key setting not found")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def pydantic_forbid_extra_fields():
+    """Fixture to disable allowing extra fields in our Pydantic models."""
+    JsonModel.Config.extra = Extra.forbid
