@@ -30,12 +30,8 @@ jobs:
       - run: poetry run poe check
       - run: poetry run poe lint
       - run: poetry run poe types
-      # - uses: actions/checkout@v3
-      #   # if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
-      #   with:
-      #     ref: 'refs/heads/master'
       - name: Semantic release
-        # if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
         run: |
           pip install python-semantic-release
           semantic-release publish --verbosity=DEBUG
