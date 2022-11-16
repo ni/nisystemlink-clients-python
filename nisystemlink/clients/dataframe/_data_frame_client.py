@@ -3,11 +3,11 @@
 
 """Implementation of DataFrameClient."""
 
-from typing import Optional
+from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from uplink import Body, delete, get, json, post, returns
+from uplink import Body, delete, get, json, post, Query, returns
 
 from . import models
 
@@ -31,6 +31,41 @@ class DataFrameClient(BaseClient):
     @get(_BASE_PATH)
     def api_info(self) -> models.ApiInfo:
         """Returns information about available API operations."""
+        ...
+
+    @get(
+        _BASE_PATH + "/tables",
+        args=(
+            Query("take"),
+            Query("id"),
+            Query("orderBy"),
+            Query("orderByDescending"),
+            Query("continuationToken"),
+            Query("workspace"),
+        ),
+    )
+    def list_tables(
+        self,
+        take: Optional[int] = None,
+        id: Optional[List[str]] = None,
+        order_by: Optional[models.OrderBy] = None,
+        order_by_descending: Optional[bool] = None,
+        continuation_token: Optional[str] = None,
+        workspace: Optional[str] = None,
+    ) -> models.PagedTables:
+        """Lists available tables on the SystemLink DataFrame service.
+
+        Args:
+            take: Limits the returned list to the specified number of results. Defaults to 1000.
+            id: List of table IDs to filter by.
+            order_by: The sort order of the returned list of tables.
+            order_by_descending: Whether to sort descending instead of ascending. Defaults to false.
+            continuation_token: The token used to paginate results.
+            workspace: List of workspace IDs to filter by.
+
+        Returns:
+            models.PagedTables: The list of tables with a continuation token.
+        """
         ...
 
     @json

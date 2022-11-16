@@ -15,7 +15,7 @@ class Column(JsonModel):
     data_type: DataType
     """The data type of the column."""
 
-    column_type: Optional[ColumnType] = ColumnType.Normal
+    column_type: ColumnType = ColumnType.Normal
     """The column type. Defaults to ColumnType.Normal."""
 
     properties: Optional[Dict[str, str]] = None
