@@ -14,8 +14,6 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install poetry
         run: pipx install poetry
       - uses: actions/setup-python@v4
@@ -30,8 +28,22 @@ jobs:
       - run: poetry run poe check
       - run: poetry run poe lint
       - run: poetry run poe types
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+          cache: "poetry"
+      - run: poetry install
       - name: Semantic release
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
         run: |
           pip install python-semantic-release
           semantic-release publish --verbosity=DEBUG
