@@ -9,7 +9,7 @@ license = "MIT"
 readme = "README.rst"
 packages = [{ include = "nisystemlink" }]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Manufacturing",
     "Intended Audience :: Science/Research",
@@ -64,6 +64,12 @@ markers = [
 
 [tool.black]
 exclude = ".*\\.pyi"
+
+[tool.semantic_release]
+branch               = "master"
+version_toml         = ["pyproject.toml:tool.poetry.version"]
+build_command        = "poetry build"
+major_on_zero        = false
 
 [build-system]
 requires      = ["poetry-core"]
