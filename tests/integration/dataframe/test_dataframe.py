@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 import pytest  # type: ignore
@@ -111,24 +111,46 @@ class TestDataFrame:
     def test__list_tables__returns(
         self, client: DataFrameClient, test_tables: List[str]
     ):
-        take = len(test_tables) - 1
         first_page = client.list_tables(
-            take=take,
-            id=test_tables,
+            take=2,
+            id=test_tables[:3],
             order_by="NAME",
             order_by_descending=True,
         )
 
-        assert len(first_page.tables) == take
+        assert len(first_page.tables) == 2
         assert first_page.tables[0].id == test_tables[-1]  # Asserts descending order
         assert first_page.continuation_token is not None
 
         second_page = client.list_tables(
-            id=test_tables,
+            id=test_tables[:3],
             order_by="NAME",
             order_by_descending=True,
             continuation_token=first_page.continuation_token,
         )
 
+        assert len(second_page.tables) == 1
+        assert second_page.continuation_token is None
+
+    def test__query_tables__returns(
+        self, client: DataFrameClient, test_tables: List[str]
+    ):
+        query = models.QueryTablesRequest(
+            filter="(id == @0 or id == @1 or id == @2) and createdWithin <= RelativeTime.CurrentWeek",
+            substitutions=[test_tables[0], test_tables[1], test_tables[2]],
+            reference_time=datetime.now(tz=timezone.utc),
+            take=2,
+            order_by="NAME",
+            order_by_descending=True,
+        )
+        first_page = client.query_tables(query)
+
+        assert len(first_page.tables) == 2
+        assert first_page.tables[0].id == test_tables[-1]  # Asserts descending order
+        assert first_page.continuation_token is not None
+
+        query.continuation_token = first_page.continuation_token
+
+        second_page = client.query_tables(query)
         assert len(second_page.tables) == 1
         assert second_page.continuation_token is None

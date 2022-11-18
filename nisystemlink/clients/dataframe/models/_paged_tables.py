@@ -1,11 +1,11 @@
 from typing import List
 
-from nisystemlink.clients.core._uplink._paged_result import PagedResult
+from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
 from ._table_metadata import TableMetadata
 
 
-class PagedTables(PagedResult):
+class PagedTables(WithPaging):
     """The response for a table query containing the matched tables."""
 
     tables: List[TableMetadata]

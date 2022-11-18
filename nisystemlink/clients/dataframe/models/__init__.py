@@ -5,6 +5,7 @@ from ._column_type import ColumnType
 from ._data_type import DataType
 from ._order_by import OrderBy
 from ._paged_tables import PagedTables
+from ._query_tables_request import QueryTablesRequest
 from ._table_metadata import TableMetadata
 
 # flake8: noqa
