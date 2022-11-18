@@ -57,3 +57,4 @@ napoleon_include_special_with_doc = False
 
 # Configuration for https://autodoc-pydantic.readthedocs.io
 autodoc_pydantic_model_show_config_summary = False
+autodoc_pydantic_field_show_alias = False
