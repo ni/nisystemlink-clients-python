@@ -46,7 +46,9 @@ jobs:
       - name: Semantic release
         run: |
           pip install python-semantic-release
-          semantic-release publish --verbosity=DEBUG
+          git config --global user.name "github-actions"
+          git config --global user.email "action@github.com"
+          semantic-release publish -D commit_author="github-actions <action@github.com>" --verbosity=DEBUG
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           REPOSITORY_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
