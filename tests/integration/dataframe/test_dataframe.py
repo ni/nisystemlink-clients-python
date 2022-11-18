@@ -21,15 +21,14 @@ def create_table(client: DataFrameClient):
 
     def _create_table(table: models.CreateTableRequest) -> str:
         id = client.create_table(table)
-        print(f"Created table {id}")
         tables.append(id)
         return id
 
     yield _create_table
 
     for id in tables:
+        # TODO: Use multi-delete when implemented.
         client.delete_table(id)
-        print(f"Deleted table {id}")
 
 
 @pytest.fixture(scope="class")

@@ -1,6 +1,6 @@
 from typing import Literal
 
-
+# TODO: Migrate to Enum when this change is released: https://github.com/prkumar/uplink/pull/282
 OrderBy = Literal[
     "CREATED_AT", "METADATA_MODIFIED_AT", "NAME", "NUMBER_OF_ROWS", "ROWS_MODIFIED_AT"
 ]

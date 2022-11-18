@@ -51,7 +51,7 @@ class DataFrameClient(BaseClient):
         order_by: Optional[models.OrderBy] = None,
         order_by_descending: Optional[bool] = None,
         continuation_token: Optional[str] = None,
-        workspace: Optional[str] = None,
+        workspace: Optional[List[str]] = None,
     ) -> models.PagedTables:
         """Lists available tables on the SystemLink DataFrame service.
 
