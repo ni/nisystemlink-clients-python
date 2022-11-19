@@ -66,7 +66,7 @@ markers = [
 exclude = ".*\\.pyi"
 
 [tool.semantic_release]
-branch               = "master"
+branch               = "semantic-test"
 version_toml         = ["pyproject.toml:tool.poetry.version"]
 build_command        = "poetry build"
 major_on_zero        = false
