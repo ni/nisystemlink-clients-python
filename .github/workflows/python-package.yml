@@ -49,7 +49,7 @@ jobs:
           pip install python-semantic-release
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          semantic-release publish --verbosity=DEBUG
+          semantic-release publish
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           REPOSITORY_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
