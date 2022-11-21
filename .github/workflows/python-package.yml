@@ -51,7 +51,7 @@ jobs:
           git config --global user.email "action@github.com"
           semantic-release publish
         env:
-          # To generate a new token use the following guide, providing access to the "repo scope".
+          # To generate a new token use the following guide, providing access to the "repo" scope.
           # https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
           # Once you update the secret on the repo, ensure you update the master/main protected branch policy
           # to allow your user permissiong to "bypass required pull requests".
