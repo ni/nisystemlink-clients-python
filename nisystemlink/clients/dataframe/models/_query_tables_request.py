@@ -11,7 +11,9 @@ class QueryTablesRequest(WithPaging):
     """Request parameters for querying tables."""
 
     filter: str
-    """The table query filter in Dynamic LINQ format.
+    """The table query filter in Dynamic `LINQ`_ format.
+
+    .. _LINQ: https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language
 
     Allowed properties in the filter are:
 
@@ -57,7 +59,7 @@ class QueryTablesRequest(WithPaging):
 
     reference_time: Optional[datetime] = None
     """The date and time to use as the reference point for `RelativeTime` filters,
-    including time zone information. Defaults to the current time in UTC."""
+    including time zone information. Defaults to the time on the server in UTC."""
 
     take: Optional[int] = None
     """Limits the returned list to the specified number of results."""

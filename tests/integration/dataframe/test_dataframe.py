@@ -136,8 +136,10 @@ class TestDataFrame:
         self, client: DataFrameClient, test_tables: List[str]
     ):
         query = models.QueryTablesRequest(
-            filter="(id == @0 or id == @1 or id == @2) and createdWithin <= RelativeTime.CurrentWeek",
-            substitutions=[test_tables[0], test_tables[1], test_tables[2]],
+            filter="""(id == @0 or id == @1 or id == @2)
+                and createdWithin <= RelativeTime.CurrentWeek
+                and supportsAppend == @3 and rowCount < @4""",
+            substitutions=[test_tables[0], test_tables[1], test_tables[2], True, 1],
             reference_time=datetime.now(tz=timezone.utc),
             take=2,
             order_by="NAME",
