@@ -11,9 +11,9 @@ class QueryTablesRequest(WithPaging):
     """Request parameters for querying tables."""
 
     filter: str
-    """The table query filter in Dynamic `LINQ`_ format.
+    """The table query filter in `Dynamic LINQ`_ format.
 
-    .. _LINQ: https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language
+    .. _Dynamic LINQ: https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language
 
     Allowed properties in the filter are:
 
