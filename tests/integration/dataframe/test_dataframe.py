@@ -156,3 +156,62 @@ class TestDataFrame:
         second_page = client.query_tables(query)
         assert len(second_page.tables) == 1
         assert second_page.continuation_token is None
+
+    def test__modify_table__returns(self, client: DataFrameClient, create_table):
+        id = create_table(
+            models.CreateTableRequest(
+                columns=[
+                    models.Column(
+                        name="index",
+                        data_type=models.DataType.Int32,
+                        column_type=models.ColumnType.Index,
+                    )
+                ]
+            )
+        )
+
+        client.update_table_metadata(
+            id,
+            models.ModifyTableRequest(
+                metadata_revision=2,
+                name="Modified table",
+                properties={"cow": "moo"},
+                columns=[
+                    models.ColumnMetadataPatch(
+                        name="index", properties={"sheep": "baa"}
+                    )
+                ],
+            ),
+        )
+        table = client.get_table_metadata(id)
+
+        assert table.metadata_revision == 2
+        assert table.name == "Modified table"
+        assert table.properties == {"cow": "moo"}
+        assert table.columns[0].properties == {"sheep": "baa"}
+
+        client.update_table_metadata(
+            id, models.ModifyTableRequest(properties={"bee": "buzz"})
+        )
+        table = client.get_table_metadata(id)
+
+        assert table.properties == {"cow": "moo", "bee": "buzz"}
+        assert table.name == "Modified table"
+
+        client.update_table_metadata(
+            id,
+            models.ModifyTableRequest(
+                metadata_revision=4,
+                name=None,
+                properties={"cow": None},
+                columns=[
+                    models.ColumnMetadataPatch(name="index", properties={"sheep": None})
+                ],
+            ),
+        )
+        table = client.get_table_metadata(id)
+
+        assert table.metadata_revision == 4
+        assert table.name == id
+        assert table.properties == {"bee": "buzz"}
+        assert table.columns[0].properties == {}

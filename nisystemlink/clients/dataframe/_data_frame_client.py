@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from uplink import Body, delete, get, json, post, Query, returns
+from uplink import Body, Path, delete, get, json, patch, post, Query, returns
 
 from . import models
 
@@ -104,6 +104,17 @@ class DataFrameClient(BaseClient):
 
         Returns:
             models.TableMetadata: The metadata for the table.
+        """
+        ...
+
+    @json
+    @patch(_BASE_PATH + "/tables/{id}", args=(Path, Body))
+    def update_table_metadata(self, id: str, update: models.ModifyTableRequest) -> None:
+        """Modify properties of a table or its columns.
+
+        Args:
+            id: Unique ID of a DataFrame table.
+            update: The metadata to update.
         """
         ...
 
