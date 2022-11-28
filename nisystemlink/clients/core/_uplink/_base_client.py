@@ -1,5 +1,6 @@
 # mypy: disable-error-code = misc
 
+import json
 from typing import Dict, Optional, Type
 
 from nisystemlink.clients import core
@@ -41,7 +42,7 @@ def _handle_http_status(response: Response) -> Optional[Response]:
 @dumps.to_json(JsonModel)
 def _deserialize_model(model_cls: Type[JsonModel], model_instance: JsonModel) -> Dict:
     """Turns a :class:`.JsonModel` instance into a dictionary for serialization."""
-    return model_instance.dict(by_alias=True, exclude_unset=True)
+    return json.loads(model_instance.json(by_alias=True, exclude_unset=True))
 
 
 class BaseClient(Consumer):

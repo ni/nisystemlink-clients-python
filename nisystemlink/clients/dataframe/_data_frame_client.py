@@ -75,10 +75,23 @@ class DataFrameClient(BaseClient):
         """Create a new table with the provided metadata and column definitions.
 
         Args:
-            table: The request create the table.
+            table: The request to create the table.
 
         Returns:
             The ID of the newly created table.
+        """
+        ...
+
+    @json
+    @post(_BASE_PATH + "/query-tables", args=(Body,))
+    def query_tables(self, query: models.QueryTablesRequest) -> models.PagedTables:
+        """Queries available tables on the SystemLink DataFrame service and returns their metadata.
+
+        Args:
+            query: The request to query tables.
+
+        Returns:
+            models.PagedTables: The list of tables with a continuation token.
         """
         ...
 

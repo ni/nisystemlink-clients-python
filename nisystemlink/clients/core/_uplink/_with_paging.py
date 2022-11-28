@@ -3,8 +3,8 @@ from typing import Optional
 from ._json_model import JsonModel
 
 
-class PagedResult(JsonModel):
-    continuation_token: Optional[str]
+class WithPaging(JsonModel):
+    continuation_token: Optional[str] = None
     """A token which allows the user to resume a query at the next item in the matching results.
 
     When querying, a token will be returned if a query may be
