@@ -61,6 +61,11 @@ Documentation
 To view the documentation, visit the
 `nisystemlink.clients Documentation Page <https://python-docs.systemlink.io>`_.
 
+Changelog
+=============
+To view the changelog, visit the
+`GitHub repository CHANGELOG <https://github.com/ni/nisystemlink-clients-python/blob/master/CHANGELOG.md>`_.
+
 License
 =======
 **nisystemlink-clients** is licensed under an MIT-style license (see `LICENSE
