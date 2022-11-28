@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from uplink import Body, Path, delete, get, json, patch, post, Query, returns
+from uplink import Body, delete, get, json, patch, Path, post, Query, returns
 
 from . import models
 
