@@ -109,7 +109,7 @@ class DataFrameClient(BaseClient):
 
     @json
     @patch(_BASE_PATH + "/tables/{id}", args=(Path, Body))
-    def update_table_metadata(self, id: str, update: models.ModifyTableRequest) -> None:
+    def modify_table(self, id: str, update: models.ModifyTableRequest) -> None:
         """Modify properties of a table or its columns.
 
         Args:
