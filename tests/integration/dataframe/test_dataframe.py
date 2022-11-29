@@ -170,7 +170,7 @@ class TestDataFrame:
             )
         )
 
-        client.update_table_metadata(
+        client.modify_table(
             id,
             models.ModifyTableRequest(
                 metadata_revision=2,
@@ -190,7 +190,7 @@ class TestDataFrame:
         assert table.properties == {"cow": "moo"}
         assert table.columns[0].properties == {"sheep": "baa"}
 
-        client.update_table_metadata(
+        client.modify_table(
             id, models.ModifyTableRequest(properties={"bee": "buzz"})
         )
         table = client.get_table_metadata(id)
@@ -198,7 +198,7 @@ class TestDataFrame:
         assert table.properties == {"cow": "moo", "bee": "buzz"}
         assert table.name == "Modified table"
 
-        client.update_table_metadata(
+        client.modify_table(
             id,
             models.ModifyTableRequest(
                 metadata_revision=4,
