@@ -190,9 +190,7 @@ class TestDataFrame:
         assert table.properties == {"cow": "moo"}
         assert table.columns[0].properties == {"sheep": "baa"}
 
-        client.modify_table(
-            id, models.ModifyTableRequest(properties={"bee": "buzz"})
-        )
+        client.modify_table(id, models.ModifyTableRequest(properties={"bee": "buzz"}))
         table = client.get_table_metadata(id)
 
         assert table.properties == {"cow": "moo", "bee": "buzz"}
