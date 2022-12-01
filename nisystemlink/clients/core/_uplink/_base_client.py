@@ -85,12 +85,3 @@ class BaseClient(Consumer):
         )
         if configuration.api_keys:
             self.session.headers.update(configuration.api_keys)
-
-
-# def get(uri: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
-#     def decorator(func: F) -> F:
-#         if not args:
-#             spec = utils.get_arg_spec(func)
-#             default_args = [Query(_camelcase(arg)) for arg in spec.args[1:]]
-#         return commands.get(uri, args=args or default_args)(func)  # type: ignore
-#     return decorator
