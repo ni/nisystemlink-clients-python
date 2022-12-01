@@ -268,4 +268,4 @@ class TestDataFrame:
         assert response is not None
         assert response.deleted_table_ids == [id]
         assert response.failed_table_ids == ["invalid_id"]
-        assert response.error is not None
+        assert len(response.error.inner_errors) == 1
