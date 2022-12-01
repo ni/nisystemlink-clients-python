@@ -60,6 +60,7 @@ markers = [
     "enterprise: mark a test as an enterprise integration test",
     "webserver: mark a test as a webserver integration test",
     "slow: mark a test as a slow test",
+    "focus: focus a specific test during development",
 ]
 
 [tool.black]

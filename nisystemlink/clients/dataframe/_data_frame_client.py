@@ -1,13 +1,11 @@
-# TODO: Wrap Uplink decorators to add typing information
-# mypy: disable-error-code = misc
-
 """Implementation of DataFrameClient."""
 
 from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from uplink import Body, delete, get, json, patch, Path, post, Query, returns
+from nisystemlink.clients.core._uplink._methods import delete, get, patch, post
+from uplink import Body, Field, Path, Query
 
 from . import models
 
@@ -68,9 +66,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @json
-    @returns.json(key="id")
-    @post(_BASE_PATH + "/tables", args=(Body,))
+    @post(_BASE_PATH + "/tables", return_key="id")
     def create_table(self, table: models.CreateTableRequest) -> str:
         """Create a new table with the provided metadata and column definitions.
 
@@ -82,8 +78,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @json
-    @post(_BASE_PATH + "/query-tables", args=(Body,))
+    @post(_BASE_PATH + "/query-tables")
     def query_tables(self, query: models.QueryTablesRequest) -> models.PagedTables:
         """Queries available tables on the SystemLink DataFrame service and returns their metadata.
 
@@ -107,8 +102,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @json
-    @patch(_BASE_PATH + "/tables/{id}", args=(Path, Body))
+    @patch(_BASE_PATH + "/tables/{id}", args=[Path, Body])
     def modify_table(self, id: str, update: models.ModifyTableRequest) -> None:
         """Modify properties of a table or its columns.
 
@@ -124,5 +118,16 @@ class DataFrameClient(BaseClient):
 
         Args:
             id (str): Unique ID of a DataFrame table.
+        """
+        ...
+
+    @post(_BASE_PATH + "/delete-tables", args=[Field("ids")])
+    def delete_tables(
+        self, ids: List[str]
+    ) -> Optional[models.DeleteTablesPartialSuccess]:
+        """Deletes multiple tables.
+
+        Args:
+            ids (List[str]): List of unique IDs of DataFrame tables.
         """
         ...
