@@ -7,6 +7,16 @@ from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe import models
 
+basic_table_model = models.CreateTableRequest(
+    columns=[
+        models.Column(
+            name="index",
+            data_type=models.DataType.Int32,
+            column_type=models.ColumnType.Index,
+        )
+    ]
+)
+
 
 @pytest.fixture(scope="class")
 def client(enterprise_config):
@@ -20,7 +30,7 @@ def create_table(client: DataFrameClient):
     tables = []
 
     def _create_table(table: models.CreateTableRequest) -> str:
-        id = client.create_table(table)
+        id = client.create_table(table or basic_table_model)
         tables.append(id)
         return id
 
@@ -85,17 +95,7 @@ class TestDataFrame:
         ]
 
     def test__get_table__correct_timestamp(self, client: DataFrameClient, create_table):
-        id = create_table(
-            models.CreateTableRequest(
-                columns=[
-                    models.Column(
-                        name="index",
-                        data_type=models.DataType.Int32,
-                        column_type=models.ColumnType.Index,
-                    )
-                ]
-            )
-        )
+        id = create_table(basic_table_model)
         table = client.get_table_metadata(id)
 
         now = datetime.now().timestamp()
@@ -156,17 +156,7 @@ class TestDataFrame:
         assert second_page.continuation_token is None
 
     def test__modify_table__returns(self, client: DataFrameClient, create_table):
-        id = create_table(
-            models.CreateTableRequest(
-                columns=[
-                    models.Column(
-                        name="index",
-                        data_type=models.DataType.Int32,
-                        column_type=models.ColumnType.Index,
-                    )
-                ]
-            )
-        )
+        id = create_table(basic_table_model)
 
         client.modify_table(
             id,
@@ -213,17 +203,9 @@ class TestDataFrame:
         assert table.columns[0].properties == {}
 
     def test__delete_table__deletes(self, client: DataFrameClient):
-        id = client.create_table(  # Don't use fixture to avoid deleting the table twice
-            models.CreateTableRequest(
-                columns=[
-                    models.Column(
-                        name="index",
-                        data_type=models.DataType.Int32,
-                        column_type=models.ColumnType.Index,
-                    )
-                ]
-            )
-        )
+        id = client.create_table(
+            basic_table_model
+        )  # Don't use fixture to avoid deleting the table twice
 
         assert client.delete_table(id) is None
 
@@ -231,37 +213,14 @@ class TestDataFrame:
             client.get_table_metadata(id)
 
     def test__delete_tables__deletes(self, client: DataFrameClient):
-        ids = [
-            client.create_table(
-                models.CreateTableRequest(
-                    columns=[
-                        models.Column(
-                            name="index",
-                            data_type=models.DataType.Int32,
-                            column_type=models.ColumnType.Index,
-                        )
-                    ]
-                )
-            )
-            for _ in range(3)
-        ]
+        ids = [client.create_table(basic_table_model) for _ in range(3)]
 
         assert client.delete_tables(ids) is None
 
         assert client.list_tables(id=ids).tables == []
 
     def test__delete_tables__returns_partial_success(self, client: DataFrameClient):
-        id = client.create_table(
-            models.CreateTableRequest(
-                columns=[
-                    models.Column(
-                        name="index",
-                        data_type=models.DataType.Int32,
-                        column_type=models.ColumnType.Index,
-                    )
-                ]
-            )
-        )
+        id = client.create_table(basic_table_model)
 
         response = client.delete_tables([id, "invalid_id"])
 
@@ -269,3 +228,37 @@ class TestDataFrame:
         assert response.deleted_table_ids == [id]
         assert response.failed_table_ids == ["invalid_id"]
         assert len(response.error.inner_errors) == 1
+
+    @pytest.mark.focus
+    def test__modify_tables__modifies_tables(
+        self, client: DataFrameClient, create_table
+    ):
+        ids = [create_table(basic_table_model) for _ in range(3)]
+
+        updates = [
+            models.TableMetdataModification(
+                id=id, name="Modified table", properties={"duck": "quack"}
+            )
+            for id in ids
+        ]
+
+        assert client.modify_tables(models.ModifyTablesRequest(tables=updates)) is None
+
+        for table in client.list_tables(id=ids).tables:
+            assert table.name == "Modified table"
+            assert table.properties == {"duck": "quack"}
+
+        updates = [
+            models.TableMetdataModification(id=id, properties={"pig": "oink"})
+            for id in ids
+        ]
+
+        assert (
+            client.modify_tables(
+                models.ModifyTablesRequest(tables=updates, replace=True)
+            )
+            is None
+        )
+
+        for table in client.list_tables(id=ids).tables:
+            assert table.properties == {"pig": "oink"}
