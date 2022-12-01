@@ -13,7 +13,7 @@ class ApiError(JsonModel):
     name: Optional[str] = None
     """String error code."""
 
-    code: Optional[str] = None
+    code: Optional[int] = None
     """Numeric error code."""
 
     message: Optional[str] = None
