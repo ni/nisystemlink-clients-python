@@ -1,11 +1,10 @@
 """Wrappers around uplink HTTP decorators with proper type annotations."""
 
-from typing import Any, Callable, Optional, Sequence, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Optional, Sequence, Tuple, TypeVar, Union
 
 from uplink import Body, commands, json, returns
 
 F = TypeVar("F", bound=Callable[..., Any])
-T = TypeVar("T", bound=Type)
 
 
 def get(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
