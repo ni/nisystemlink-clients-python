@@ -26,9 +26,7 @@ def create_table(client: DataFrameClient):
 
     yield _create_table
 
-    for id in tables:
-        # TODO: Use multi-delete when implemented.
-        client.delete_table(id)
+    client.delete_tables(tables)
 
 
 @pytest.fixture(scope="class")
@@ -213,3 +211,61 @@ class TestDataFrame:
         assert table.name == id
         assert table.properties == {"bee": "buzz"}
         assert table.columns[0].properties == {}
+
+    def test__delete_table__deletes(self, client: DataFrameClient):
+        id = client.create_table(  # Don't use fixture to avoid deleting the table twice
+            models.CreateTableRequest(
+                columns=[
+                    models.Column(
+                        name="index",
+                        data_type=models.DataType.Int32,
+                        column_type=models.ColumnType.Index,
+                    )
+                ]
+            )
+        )
+
+        assert client.delete_table(id) is None
+
+        with pytest.raises(ApiException, match="404 Not Found"):
+            client.get_table_metadata(id)
+
+    def test__delete_tables__deletes(self, client: DataFrameClient):
+        ids = [
+            client.create_table(
+                models.CreateTableRequest(
+                    columns=[
+                        models.Column(
+                            name="index",
+                            data_type=models.DataType.Int32,
+                            column_type=models.ColumnType.Index,
+                        )
+                    ]
+                )
+            )
+            for _ in range(3)
+        ]
+
+        assert client.delete_tables(ids) is None
+
+        assert client.list_tables(id=ids).tables == []
+
+    def test__delete_tables__returns_partial_success(self, client: DataFrameClient):
+        id = client.create_table(
+            models.CreateTableRequest(
+                columns=[
+                    models.Column(
+                        name="index",
+                        data_type=models.DataType.Int32,
+                        column_type=models.ColumnType.Index,
+                    )
+                ]
+            )
+        )
+
+        response = client.delete_tables([id, "invalid_id"])
+
+        assert response is not None
+        assert response.deleted_table_ids == [id]
+        assert response.failed_table_ids == ["invalid_id"]
+        assert response.error is not None

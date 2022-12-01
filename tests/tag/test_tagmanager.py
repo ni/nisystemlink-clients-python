@@ -190,8 +190,7 @@ class TestTagManager(HttpClientTestBase):
         assert dummy_tag.retention_type == tag.retention_type
 
     def test___tag_not_found__open_without_datatype__raises(self):
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         ex = core.ApiException("404 tag not found", err)
         self._client.all_requests.configure_mock(side_effect=ex)
 
@@ -205,8 +204,7 @@ class TestTagManager(HttpClientTestBase):
 
     def test___tag_not_found__open_with_datatype__creates_tag(self):
         path = "tag"
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [core.ApiException("404 tag not found", err), None]
@@ -235,8 +233,7 @@ class TestTagManager(HttpClientTestBase):
 
     def test___tag_not_found__open_with_create_true__creates_tag(self):
         path = "tag"
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [core.ApiException("404 tag not found", err), None]
@@ -302,8 +299,7 @@ class TestTagManager(HttpClientTestBase):
         assert dummy_tag.retention_type == tag.retention_type
 
     def test__tag_not_found__open_with_create_False__raises(self):
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         ex = core.ApiException("404 tag not found", err)
         self._client.all_requests.configure_mock(side_effect=ex)
 
@@ -404,8 +400,7 @@ class TestTagManager(HttpClientTestBase):
 
     @pytest.mark.asyncio
     async def test___tag_not_found__open_async_without_datatype__raises(self):
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         ex = core.ApiException("404 tag not found", err)
         self._client.all_requests.configure_mock(side_effect=ex)
 
@@ -420,8 +415,7 @@ class TestTagManager(HttpClientTestBase):
     @pytest.mark.asyncio
     async def test___tag_not_found__open_async_with_datatype__creates_tag(self):
         path = "tag"
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [core.ApiException("404 tag not found", err), None]
@@ -451,8 +445,7 @@ class TestTagManager(HttpClientTestBase):
     @pytest.mark.asyncio
     async def test___tag_not_found__open_async_with_create_true__creates_tag(self):
         path = "tag"
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [core.ApiException("404 tag not found", err), None]
@@ -520,8 +513,7 @@ class TestTagManager(HttpClientTestBase):
 
     @pytest.mark.asyncio
     async def test__tag_not_found__open_async_with_create_False__raises(self):
-        err = core.ApiError()
-        err.name = "Tag.NoSuchTag"
+        err = core.ApiError(name="Tag.NoSuchTag")
         ex = core.ApiException("404 tag not found", err)
         self._client.all_requests.configure_mock(side_effect=ex)
 
@@ -1384,19 +1376,24 @@ class TestTagManager(HttpClientTestBase):
 
     def test__partial_success__update_with_tags__raises(self):
         path = "invalid"
-        error = core.ApiError()
-        error.name = "Tag.OneOrMoreErrorsOccurred"
-        error.message = "One or more errors occurred"
-        inner_errors = [core.ApiError(), core.ApiError()]
-        inner_errors[0].name = "Tag.InvalidDataType"
-        inner_errors[0].message = "Invalid data type"
-        inner_errors[0].resource_type = "tag"
-        inner_errors[0].resource_id = path
-        inner_errors[1].name = "Tag.Conflict"
-        inner_errors[1].message = "Conflict of some sort"
-        inner_errors[1].resource_type = "tag"
-        inner_errors[1].resource_id = "another"
-        error.inner_errors = inner_errors
+        error = core.ApiError(
+            name="Tag.OneOrMoreErrorsOccurred",
+            message="One or more errors occurred",
+            inner_errors=[
+                core.ApiError(
+                    name="Tag.InvalidDataType",
+                    message="Invalid data type",
+                    resource_type="tag",
+                    resource_id=path,
+                ),
+                core.ApiError(
+                    name="Tag.Conflict",
+                    message="Conflict of some sort",
+                    resource_type="tag",
+                    resource_id="another",
+                ),
+            ],
+        )
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -1527,19 +1524,24 @@ class TestTagManager(HttpClientTestBase):
 
     def test__partial_success__update_with_tag_updates__raises(self):
         path = "invalid"
-        error = core.ApiError()
-        error.name = ("Tag.OneOrMoreErrorsOccurred",)
-        error.message = ("One or more errors occurred",)
-        inner_errors = [core.ApiError(), core.ApiError()]
-        inner_errors[0].name = ("Tag.InvalidDataType",)
-        inner_errors[0].message = ("Invalid data type",)
-        inner_errors[0].resource_type = ("tag",)
-        inner_errors[0].resource_id = path
-        inner_errors[1].name = ("Tag.Conflict",)
-        inner_errors[1].message = ("Conflict of some sort",)
-        inner_errors[1].resource_type = ("tag",)
-        inner_errors[1].resource_id = "another"
-        error.inner_errors = inner_errors
+        error = core.ApiError(
+            name="Tag.OneOrMoreErrorsOccurred",
+            message="One or more errors occurred",
+            inner_errors=[
+                core.ApiError(
+                    name="Tag.InvalidDataType",
+                    message="Invalid data type",
+                    resource_type="tag",
+                    resource_id=path,
+                ),
+                core.ApiError(
+                    name="Tag.Conflict",
+                    message="Conflict of some sort",
+                    resource_type="tag",
+                    resource_id="another",
+                ),
+            ],
+        )
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -1651,19 +1653,24 @@ class TestTagManager(HttpClientTestBase):
     @pytest.mark.asyncio
     async def test__partial_success__update_async_with_tags__raises(self):
         path = "invalid"
-        error = core.ApiError()
-        error.name = ("Tag.OneOrMoreErrorsOccurred",)
-        error.message = ("One or more errors occurred",)
-        inner_errors = [core.ApiError(), core.ApiError()]
-        inner_errors[0].name = ("Tag.InvalidDataType",)
-        inner_errors[0].message = ("Invalid data type",)
-        inner_errors[0].resource_type = ("tag",)
-        inner_errors[0].resource_id = path
-        inner_errors[1].name = ("Tag.Conflict",)
-        inner_errors[1].message = ("Conflict of some sort",)
-        inner_errors[1].resource_type = ("tag",)
-        inner_errors[1].resource_id = "another"
-        error.inner_errors = inner_errors
+        error = core.ApiError(
+            name="Tag.OneOrMoreErrorsOccurred",
+            message="One or more errors occurred",
+            inner_errors=[
+                core.ApiError(
+                    name="Tag.InvalidDataType",
+                    message="Invalid data type",
+                    resource_type="tag",
+                    resource_id=path,
+                ),
+                core.ApiError(
+                    name="Tag.Conflict",
+                    message="Conflict of some sort",
+                    resource_type="tag",
+                    resource_id="another",
+                ),
+            ],
+        )
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -1797,19 +1804,24 @@ class TestTagManager(HttpClientTestBase):
     @pytest.mark.asyncio
     async def test__partial_success__update_async_with_tag_updates__raises(self):
         path = "invalid"
-        error = core.ApiError()
-        error.name = ("Tag.OneOrMoreErrorsOccurred",)
-        error.message = ("One or more errors occurred",)
-        inner_errors = [core.ApiError(), core.ApiError()]
-        inner_errors[0].name = ("Tag.InvalidDataType",)
-        inner_errors[0].message = ("Invalid data type",)
-        inner_errors[0].resource_type = ("tag",)
-        inner_errors[0].resource_id = path
-        inner_errors[1].name = ("Tag.Conflict",)
-        inner_errors[1].message = ("Conflict of some sort",)
-        inner_errors[1].resource_type = ("tag",)
-        inner_errors[1].resource_id = "another"
-        error.inner_errors = inner_errors
+        error = core.ApiError(
+            name="Tag.OneOrMoreErrorsOccurred",
+            message="One or more errors occurred",
+            inner_errors=[
+                core.ApiError(
+                    name="Tag.InvalidDataType",
+                    message="Invalid data type",
+                    resource_type="tag",
+                    resource_id=path,
+                ),
+                core.ApiError(
+                    name="Tag.Conflict",
+                    message="Conflict of some sort",
+                    resource_type="tag",
+                    resource_id="another",
+                ),
+            ],
+        )
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [

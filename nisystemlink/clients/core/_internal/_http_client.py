@@ -286,7 +286,7 @@ def _handle_response(response: HttpResponse, method: str, uri: str) -> Any:
 
         if data:
             err_dict = typing.cast(Dict[str, Any], data).get("error", {})
-            err_obj = core.ApiError.from_json_dict(err_dict) if err_dict else None
+            err_obj = core.ApiError.parse_obj(err_dict) if err_dict else None
         else:
             err_obj = None
 

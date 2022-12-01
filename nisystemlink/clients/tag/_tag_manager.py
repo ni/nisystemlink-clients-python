@@ -505,7 +505,7 @@ class TagManager(tbase.ITagReader):
                 # SystemLink Cloud has a bug in which it returns the error directly
                 # instead of under the "error" key
                 err_dict = partial_success
-            err_obj = core.ApiError.from_json_dict(err_dict) if err_dict else None
+            err_obj = core.ApiError.parse_obj(err_dict) if err_dict else None
             if err_dict is None:
                 assert False, partial_success
             raise core.ApiException(error=err_obj)
@@ -546,7 +546,7 @@ class TagManager(tbase.ITagReader):
                 # SystemLink Cloud has a bug in which it returns the error directly
                 # instead of under the "error" key
                 err_dict = partial_success
-            err_obj = core.ApiError.from_json_dict(err_dict) if err_dict else None
+            err_obj = core.ApiError.parse_obj(err_dict) if err_dict else None
             if err_dict is None:
                 assert False, partial_success
             raise core.ApiException(error=err_obj)

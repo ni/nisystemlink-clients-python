@@ -1,11 +1,12 @@
 # mypy: disable-error-code = misc
 
-import json
-from typing import Dict, Optional, Type
+from json import loads
+from typing import Any, Callable, Dict, get_origin, Optional, Type, Union
 
 from nisystemlink.clients import core
+from pydantic import parse_obj_as
 from requests import JSONDecodeError, Response
-from uplink import Consumer, dumps, response_handler
+from uplink import commands, Consumer, converters, response_handler, utils
 
 from ._json_model import JsonModel
 
@@ -26,7 +27,7 @@ def _handle_http_status(response: Response) -> Optional[Response]:
     try:
         content = response.json()
         if content and "error" in content:
-            err_obj = core.ApiError.from_json_dict(content["error"])
+            err_obj = core.ApiError.parse_obj(content["error"])
         else:
             err_obj = None
 
@@ -39,10 +40,33 @@ def _handle_http_status(response: Response) -> Optional[Response]:
         raise core.ApiException(msg, http_status_code=response.status_code)
 
 
-@dumps.to_json(JsonModel)
-def _deserialize_model(model_cls: Type[JsonModel], model_instance: JsonModel) -> Dict:
-    """Turns a :class:`.JsonModel` instance into a dictionary for serialization."""
-    return json.loads(model_instance.json(by_alias=True, exclude_unset=True))
+class _JsonModelConverter(converters.Factory):
+    def create_request_body_converter(
+        self, _class: Type, _: commands.RequestDefinition
+    ) -> Optional[Callable[[JsonModel], Dict]]:
+        def encoder(model: JsonModel) -> Dict:
+            return loads(model.json(by_alias=True, exclude_unset=True))
+
+        if utils.is_subclass(_class, JsonModel):
+            return encoder
+        else:
+            return None
+
+    def create_response_body_converter(
+        self, _class: Type, _: commands.RequestDefinition
+    ) -> Optional[Callable[[Response], Any]]:
+        def decoder(response: Response) -> Any:
+            try:
+                data = response.json()
+            except AttributeError:
+                data = response
+
+            return parse_obj_as(_class, data)
+
+        if get_origin(_class) is Union or utils.is_subclass(_class, JsonModel):
+            return decoder
+        else:
+            return None
 
 
 class BaseClient(Consumer):
@@ -56,8 +80,17 @@ class BaseClient(Consumer):
         """
         super().__init__(
             base_url=configuration.server_uri,
-            converter=_deserialize_model,
+            converter=_JsonModelConverter(),
             hooks=[_handle_http_status],
         )
         if configuration.api_keys:
             self.session.headers.update(configuration.api_keys)
+
+
+# def get(uri: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
+#     def decorator(func: F) -> F:
+#         if not args:
+#             spec = utils.get_arg_spec(func)
+#             default_args = [Query(_camelcase(arg)) for arg in spec.args[1:]]
+#         return commands.get(uri, args=args or default_args)(func)  # type: ignore
+#     return decorator
