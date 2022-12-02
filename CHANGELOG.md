@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2022-12-02)
+### Feature
+* Add modify_tables method ([#35](https://github.com/ni/nisystemlink-clients-python/issues/35)) ([`7be03be`](https://github.com/ni/nisystemlink-clients-python/commit/7be03be811d7c7d239e69883e00b765f8a316881))
+
 ## v0.6.0 (2022-12-01)
 ### Feature
 * Table multi-delete + refactoring core libs ([#34](https://github.com/ni/nisystemlink-clients-python/issues/34)) ([`ebe9ce3`](https://github.com/ni/nisystemlink-clients-python/commit/ebe9ce3c4d6a84049d38806b2966637ca318629d))
