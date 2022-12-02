@@ -229,7 +229,6 @@ class TestDataFrame:
         assert response.failed_table_ids == ["invalid_id"]
         assert len(response.error.inner_errors) == 1
 
-    @pytest.mark.focus
     def test__modify_tables__modifies_tables(
         self, client: DataFrameClient, create_table
     ):
@@ -262,3 +261,18 @@ class TestDataFrame:
 
         for table in client.list_tables(id=ids).tables:
             assert table.properties == {"pig": "oink"}
+
+    def test__modify_tables__returns_partial_success(self, client: DataFrameClient):
+        id = client.create_table(basic_table_model)
+
+        updates = [
+            models.TableMetdataModification(id=id, name="Modified table")
+            for id in [id, "invalid_id"]
+        ]
+
+        response = client.modify_tables(models.ModifyTablesRequest(tables=updates))
+
+        assert response is not None
+        assert response.modified_table_ids == [id]
+        assert response.failed_modifications == [updates[1]]
+        assert len(response.error.inner_errors) == 1
