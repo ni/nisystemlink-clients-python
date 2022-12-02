@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Optional
 
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
@@ -29,7 +29,7 @@ def create_table(client: DataFrameClient):
     """Fixture to return a factory that creates tables."""
     tables = []
 
-    def _create_table(table: models.CreateTableRequest) -> str:
+    def _create_table(table: Optional[models.CreateTableRequest] = None) -> str:
         id = client.create_table(table or basic_table_model)
         tables.append(id)
         return id
