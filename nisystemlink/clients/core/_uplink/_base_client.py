@@ -72,14 +72,15 @@ class _JsonModelConverter(converters.Factory):
 class BaseClient(Consumer):
     """Base class for SystemLink clients, built on top of `Uplink <https://github.com/prkumar/uplink>`_."""
 
-    def __init__(self, configuration: core.HttpConfiguration):
+    def __init__(self, configuration: core.HttpConfiguration, base_path: str = ""):
         """Initialize an instance.
 
         Args:
             configuration: Defines the web server to connect to and information about how to connect.
+            base_path: The base path for all API calls.
         """
         super().__init__(
-            base_url=configuration.server_uri,
+            base_url=configuration.server_uri + base_path,
             converter=_JsonModelConverter(),
             hooks=[_handle_http_status],
         )

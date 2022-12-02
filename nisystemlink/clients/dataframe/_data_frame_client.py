@@ -11,8 +11,6 @@ from . import models
 
 
 class DataFrameClient(BaseClient):
-    _BASE_PATH = "/nidataframe/v1"
-
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
 
@@ -24,15 +22,15 @@ class DataFrameClient(BaseClient):
         if configuration is None:
             configuration = core.JupyterHttpConfiguration()
 
-        super().__init__(configuration)
+        super().__init__(configuration, "/nidataframe/v1/")
 
-    @get(_BASE_PATH)
+    @get("")
     def api_info(self) -> models.ApiInfo:
         """Returns information about available API operations."""
         ...
 
     @get(
-        _BASE_PATH + "/tables",
+        "tables",
         args=(
             Query("take"),
             Query("id"),
@@ -66,7 +64,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @post(_BASE_PATH + "/tables", return_key="id")
+    @post("tables", return_key="id")
     def create_table(self, table: models.CreateTableRequest) -> str:
         """Create a new table with the provided metadata and column definitions.
 
@@ -78,7 +76,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @post(_BASE_PATH + "/query-tables")
+    @post("query-tables")
     def query_tables(self, query: models.QueryTablesRequest) -> models.PagedTables:
         """Queries available tables on the SystemLink DataFrame service and returns their metadata.
 
@@ -90,7 +88,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @get(_BASE_PATH + "/tables/{id}")
+    @get("tables/{id}")
     def get_table_metadata(self, id: str) -> models.TableMetadata:
         """Retrieves the metadata and column information for a single table identified by its ID.
 
@@ -102,7 +100,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @patch(_BASE_PATH + "/tables/{id}", args=[Path, Body])
+    @patch("tables/{id}", args=[Path, Body])
     def modify_table(self, id: str, update: models.ModifyTableRequest) -> None:
         """Modify properties of a table or its columns.
 
@@ -112,7 +110,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @delete(_BASE_PATH + "/tables/{id}")
+    @delete("tables/{id}")
     def delete_table(self, id: str) -> None:
         """Deletes a table.
 
@@ -121,7 +119,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @post(_BASE_PATH + "/delete-tables", args=[Field("ids")])
+    @post("delete-tables", args=[Field("ids")])
     def delete_tables(
         self, ids: List[str]
     ) -> Optional[models.DeleteTablesPartialSuccess]:
@@ -129,5 +127,24 @@ class DataFrameClient(BaseClient):
 
         Args:
             ids (List[str]): List of unique IDs of DataFrame tables.
+
+        Returns:
+            A partial success if any tables failed to delete, or None if all
+            tables were deleted successfully.
+        """
+        ...
+
+    @post("modify-tables")
+    def modify_tables(
+        self, updates: models.ModifyTablesRequest
+    ) -> Optional[models.ModifyTablesPartialSuccess]:
+        """Modify the properties associated with the tables identified by their IDs.
+
+        Args:
+            updates: The table modifications to apply.
+
+        Returns:
+            A partial success if any tables failed to be modified, or None if all
+            tables were modified successfully.
         """
         ...
