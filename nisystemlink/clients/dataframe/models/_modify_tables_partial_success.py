@@ -7,7 +7,7 @@ from ._modify_tables_request import TableMetdataModification
 
 
 class ModifyTablesPartialSuccess(JsonModel):
-    """The result of deleting multiple tables when one or more tables could not be deleted."""
+    """The result of modifying multiple tables when one or more tables could not be modified."""
 
     modified_table_ids: List[str]
     """The IDs of the tables that were successfully modified."""
