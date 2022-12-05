@@ -43,11 +43,10 @@ class DataFrame(JsonModel):
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_json.html.
 
     When providing a DataFrame for appending rows, any of the table's columns
-    not specified columns will receive a value of ``None``. If any such columns
-    aren't nullable, an error will be returned. If the entire columns property
-    is left out, each row is assumed to contain all columns in the order
-    specified when the table was created.
-
+    not specified will receive a value of ``None``. If any such columns aren't
+    nullable, an error will be returned. If the entire columns property is left
+    out, each row is assumed to contain all columns in the order specified when
+    the table was created.
     """
 
     columns: Optional[List[str]] = None
