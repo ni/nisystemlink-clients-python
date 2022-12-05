@@ -333,3 +333,5 @@ class TestDataFrame:
                 columns=["index", "value"],
                 data=[["3", "1.1"], ["1", "3.3"], ["2", None]],
             )
+
+            assert response.total_row_count == 3
