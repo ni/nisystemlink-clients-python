@@ -278,7 +278,6 @@ class TestDataFrame:
         assert response.failed_modifications == [updates[1]]
         assert len(response.error.inner_errors) == 1
 
-    @pytest.mark.focus
     def test__read_and_write_data__works(self, client: DataFrameClient, create_table):
         id = create_table(
             models.CreateTableRequest(
