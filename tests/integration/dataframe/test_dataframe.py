@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 import pytest  # type: ignore
+import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe import models
@@ -276,3 +277,60 @@ class TestDataFrame:
         assert response.modified_table_ids == [id]
         assert response.failed_modifications == [updates[1]]
         assert len(response.error.inner_errors) == 1
+
+    @pytest.mark.focus
+    def test__read_and_write_data__works(self, client: DataFrameClient, create_table):
+        id = create_table(
+            models.CreateTableRequest(
+                columns=[
+                    models.Column(
+                        name="index",
+                        data_type=models.DataType.Int32,
+                        column_type=models.ColumnType.Index,
+                    ),
+                    models.Column(
+                        name="value",
+                        data_type=models.DataType.Float64,
+                        column_type=models.ColumnType.Nullable,
+                    ),
+                    models.Column(
+                        name="ignore_me",
+                        data_type=models.DataType.Bool,
+                        column_type=models.ColumnType.Nullable,
+                    ),
+                ]
+            )
+        )
+
+        frame = models.DataFrame(
+            columns=["index", "value", "ignore_me"],
+            data=[["1", "3.3", "True"], ["2", None, "False"], ["3", "1.1", "True"]],
+        )
+
+        client.append_table_data(
+            id, models.AppendTableDataRequest(frame=frame, end_of_data=True)
+        )
+
+        # TODO: Remove mock when service supports flushing
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.GET,
+                f"{client.session.base_url}tables/{id}/data",
+                json={
+                    "frame": {
+                        "columns": ["index", "value"],
+                        "data": [["3", "1.1"], ["1", "3.3"], ["2", None]],
+                    },
+                    "totalRowCount": 3,
+                    "continuationToken": None,
+                },
+            )
+
+            response = client.get_table_data(
+                id, columns=["index", "value"], order_by=["value"]
+            )
+
+            assert response.frame == models.DataFrame(
+                columns=["index", "value"],
+                data=[["3", "1.1"], ["1", "3.3"], ["2", None]],
+            )

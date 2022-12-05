@@ -31,14 +31,14 @@ class DataFrameClient(BaseClient):
 
     @get(
         "tables",
-        args=(
+        args=[
             Query("take"),
             Query("id"),
             Query("orderBy"),
             Query("orderByDescending"),
             Query("continuationToken"),
             Query("workspace"),
-        ),
+        ],
     )
     def list_tables(
         self,
@@ -146,5 +146,54 @@ class DataFrameClient(BaseClient):
         Returns:
             A partial success if any tables failed to be modified, or None if all
             tables were modified successfully.
+        """
+        ...
+
+    @get(
+        "tables/{id}/data",
+        args=[
+            Path("id"),
+            Query("columns"),
+            Query("orderBy"),
+            Query("orderByDescending"),
+            Query("take"),
+            Query("continuationToken"),
+        ],
+    )
+    def get_table_data(
+        self,
+        id: str,
+        columns: Optional[List[str]] = None,
+        order_by: Optional[List[str]] = None,
+        order_by_descending: Optional[bool] = None,
+        take: Optional[int] = None,
+        continuation_token: Optional[str] = None,
+    ) -> models.PagedTableRows:
+        """Reads raw data from the table identified by its ID.
+
+        Args:
+            id: Unique ID of a DataFrame table.
+            columns: Columns to include in the response. Data will be returned in the same order as
+                the columns. If not specified, all columns are returned.
+            order_by: List of columns to sort by. Multiple columns may be specified to order rows
+                that have the same value for prior columns. The columns used for ordering do not
+                need to be included in the columns list, in which case they are not returned. If
+                not specified, then the order in which results are returned is undefined.
+            order_by_descending: Whether to sort descending instead of ascending. Defaults to false.
+            take: Limits the returned list to the specified number of results. Defaults to 500.
+            continuation_token: The token used to paginate results.
+
+        Returns:
+            models.PagedTableRows: The table data and total number of rows with a continuation token.
+        """
+        ...
+
+    @post("tables/{id}/data", args=[Path, Body])
+    def append_table_data(self, id: str, data: models.AppendTableDataRequest) -> None:
+        """Appends one or more rows of data to the table identified by its ID.
+
+        Args:
+            id: Unique ID of a DataFrame table.
+            data: The rows of data to append and any additional options.
         """
         ...

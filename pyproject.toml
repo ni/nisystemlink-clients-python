@@ -3,7 +3,11 @@ name = "nisystemlink-clients"
 version = "0.7.0"
 description = "NI-SystemLink Python API"
 authors = ["National Instruments"]
-maintainers = ["Carson Moore <carson.moore@ni.com>", "Paul Spangler <paul.spangler@ni.com>", "Cameron Waterman <cameron.waterman@ni.com>"]
+maintainers = [
+    "Carson Moore <carson.moore@ni.com>",
+    "Paul Spangler <paul.spangler@ni.com>",
+    "Cameron Waterman <cameron.waterman@ni.com>",
+]
 keywords = ["nisystemlink", "systemlink"]
 license = "MIT"
 readme = "README.rst"
@@ -42,6 +46,7 @@ mypy                = "^0.982"
 flake8-docstrings   = "^1.6.0"
 poethepoet          = "^0.16.4"
 types-requests      = "^2.28.11.4"
+responses           = "^0.22.0"
 
 [tool.poe.tasks]
 test    = "pytest tests -m \"(not slow) and (not cloud) and (not enterprise)\""
@@ -67,10 +72,10 @@ markers = [
 exclude = ".*\\.pyi"
 
 [tool.semantic_release]
-branch               = "master"
-version_toml         = ["pyproject.toml:tool.poetry.version"]
-build_command        = "poetry build"
-major_on_zero        = false
+branch        = "master"
+version_toml  = ["pyproject.toml:tool.poetry.version"]
+build_command = "poetry build"
+major_on_zero = false
 
 [build-system]
 requires      = ["poetry-core"]
