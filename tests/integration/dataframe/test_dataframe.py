@@ -329,9 +329,8 @@ class TestDataFrame:
                 id, columns=["index", "value"], order_by=["value"]
             )
 
+            assert response.total_row_count == 3
             assert response.frame == models.DataFrame(
                 columns=["index", "value"],
                 data=[["3", "1.1"], ["1", "3.3"], ["2", None]],
             )
-
-            assert response.total_row_count == 3
