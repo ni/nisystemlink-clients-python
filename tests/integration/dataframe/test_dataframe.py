@@ -334,3 +334,14 @@ class TestDataFrame:
                 columns=["index", "value"],
                 data=[["3", "1.1"], ["1", "3.3"], ["2", None]],
             )
+
+    def test__write_invalid_data__raises(self, client: DataFrameClient, test_tables: List[str]):
+        id = test_tables[0]
+
+        frame = models.DataFrame(
+            columns=["index", "non_existent_column"],
+            data=[["1", "2"], ["2", "2"], ["3", "3"]],
+        )
+
+        with pytest.raises(ApiException, match="400 Bad Request"):
+            client.append_table_data(id, models.AppendTableDataRequest(frame=frame))
