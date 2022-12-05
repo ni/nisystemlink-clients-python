@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2022-12-05)
+### Feature
+* Read and append table data ([#36](https://github.com/ni/nisystemlink-clients-python/issues/36)) ([`d7a7642`](https://github.com/ni/nisystemlink-clients-python/commit/d7a7642f12543be4c1393435c9fd11604288a17f))
+
 ## v0.7.0 (2022-12-02)
 ### Feature
 * Add modify_tables method ([#35](https://github.com/ni/nisystemlink-clients-python/issues/35)) ([`7be03be`](https://github.com/ni/nisystemlink-clients-python/commit/7be03be811d7c7d239e69883e00b765f8a316881))
