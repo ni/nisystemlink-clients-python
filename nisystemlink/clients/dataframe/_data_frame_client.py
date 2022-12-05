@@ -197,3 +197,15 @@ class DataFrameClient(BaseClient):
             data: The rows of data to append and any additional options.
         """
         ...
+
+    @post("tables/{id}/query-data", args=[Path, Body])
+    def query_table_data(
+        self, id: str, query: models.QueryTableDataRequest
+    ) -> models.PagedTableRows:
+        """Reads rows of data that match a filter from the table identified by its ID.
+
+        Args:
+            id: Unique ID of a DataFrame table.
+            query: The filtering and sorting to apply when reading data.
+        """
+        ...
