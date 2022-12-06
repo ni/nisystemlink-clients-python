@@ -197,3 +197,33 @@ class DataFrameClient(BaseClient):
             data: The rows of data to append and any additional options.
         """
         ...
+
+    @post("tables/{id}/query-data", args=[Path, Body])
+    def query_table_data(
+        self, id: str, query: models.QueryTableDataRequest
+    ) -> models.PagedTableRows:
+        """Reads rows of data that match a filter from the table identified by its ID.
+
+        Args:
+            id: Unique ID of a DataFrame table.
+            query: The filtering and sorting to apply when reading data.
+
+        Returns:
+            models.PagedTableRows: The table data and total number of rows with a continuation token.
+        """
+        ...
+
+    @post("tables/{id}/query-decimated-data", args=[Path, Body])
+    def query_decimated_data(
+        self, id: str, query: models.QueryDecimatedDataRequest
+    ) -> models.TableRows:
+        """Reads decimated rows of data from the table identified by its ID.
+
+        Args:
+            id: Unique ID of a DataFrame table.
+            query: The filtering and decimation options to apply when reading data.
+
+        Returns:
+            models.TableRows: The decimated table data.
+        """
+        ...

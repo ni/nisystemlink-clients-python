@@ -6,17 +6,34 @@ import pytest  # type: ignore
 import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.dataframe import DataFrameClient
-from nisystemlink.clients.dataframe import models
-
-basic_table_model = models.CreateTableRequest(
-    columns=[
-        models.Column(
-            name="index",
-            data_type=models.DataType.Int32,
-            column_type=models.ColumnType.Index,
-        )
-    ]
+from nisystemlink.clients.dataframe.models import (
+    AppendTableDataRequest,
+    Column,
+    ColumnFilter,
+    ColumnMetadataPatch,
+    ColumnOrderBy,
+    ColumnType,
+    CreateTableRequest,
+    DataFrame,
+    DataType,
+    DecimationMethod,
+    DecimationOptions,
+    FilterOperation,
+    ModifyTableRequest,
+    ModifyTablesRequest,
+    QueryDecimatedDataRequest,
+    QueryTableDataRequest,
+    QueryTablesRequest,
+    TableMetdataModification,
 )
+from responses import matchers
+
+
+int_index_column = Column(
+    name="index", data_type=DataType.Int32, column_type=ColumnType.Index
+)
+
+basic_table_model = CreateTableRequest(columns=[int_index_column])
 
 
 @pytest.fixture(scope="class")
@@ -30,7 +47,7 @@ def create_table(client: DataFrameClient):
     """Fixture to return a factory that creates tables."""
     tables = []
 
-    def _create_table(table: Optional[models.CreateTableRequest] = None) -> str:
+    def _create_table(table: Optional[CreateTableRequest] = None) -> str:
         id = client.create_table(table or basic_table_model)
         tables.append(id)
         return id
@@ -47,15 +64,15 @@ def test_tables(create_table):
     for i in range(1, 4):
         ids.append(
             create_table(
-                models.CreateTableRequest(
+                CreateTableRequest(
                     columns=[
-                        models.Column(
+                        Column(
                             name="time",
-                            data_type=models.DataType.Timestamp,
-                            column_type=models.ColumnType.Index,
+                            data_type=DataType.Timestamp,
+                            column_type=ColumnType.Index,
                             properties={"cat": "meow"},
                         ),
-                        models.Column(name="value", data_type=models.DataType.Int32),
+                        Column(name="value", data_type=DataType.Int32),
                     ],
                     name=f"Python API test table {i} (delete me)",
                     properties={"dog": "woof"},
@@ -81,16 +98,16 @@ class TestDataFrame:
         assert table_metadata.name == "Python API test table 1 (delete me)"
         assert table_metadata.properties == {"dog": "woof"}
         assert table_metadata.columns == [
-            models.Column(
+            Column(
                 name="time",
-                data_type=models.DataType.Timestamp,
-                column_type=models.ColumnType.Index,
+                data_type=DataType.Timestamp,
+                column_type=ColumnType.Index,
                 properties={"cat": "meow"},
             ),
-            models.Column(
+            Column(
                 name="value",
-                data_type=models.DataType.Int32,
-                column_type=models.ColumnType.Normal,
+                data_type=DataType.Int32,
+                column_type=ColumnType.Normal,
                 properties={},
             ),
         ]
@@ -134,7 +151,7 @@ class TestDataFrame:
     def test__query_tables__returns(
         self, client: DataFrameClient, test_tables: List[str]
     ):
-        query = models.QueryTablesRequest(
+        query = QueryTablesRequest(
             filter="""(id == @0 or id == @1 or id == @2)
                 and createdWithin <= RelativeTime.CurrentWeek
                 and supportsAppend == @3 and rowCount < @4""",
@@ -161,14 +178,12 @@ class TestDataFrame:
 
         client.modify_table(
             id,
-            models.ModifyTableRequest(
+            ModifyTableRequest(
                 metadata_revision=2,
                 name="Modified table",
                 properties={"cow": "moo"},
                 columns=[
-                    models.ColumnMetadataPatch(
-                        name="index", properties={"sheep": "baa"}
-                    )
+                    ColumnMetadataPatch(name="index", properties={"sheep": "baa"})
                 ],
             ),
         )
@@ -179,7 +194,7 @@ class TestDataFrame:
         assert table.properties == {"cow": "moo"}
         assert table.columns[0].properties == {"sheep": "baa"}
 
-        client.modify_table(id, models.ModifyTableRequest(properties={"bee": "buzz"}))
+        client.modify_table(id, ModifyTableRequest(properties={"bee": "buzz"}))
         table = client.get_table_metadata(id)
 
         assert table.properties == {"cow": "moo", "bee": "buzz"}
@@ -187,13 +202,11 @@ class TestDataFrame:
 
         client.modify_table(
             id,
-            models.ModifyTableRequest(
+            ModifyTableRequest(
                 metadata_revision=4,
                 name=None,
                 properties={"cow": None},
-                columns=[
-                    models.ColumnMetadataPatch(name="index", properties={"sheep": None})
-                ],
+                columns=[ColumnMetadataPatch(name="index", properties={"sheep": None})],
             ),
         )
         table = client.get_table_metadata(id)
@@ -236,27 +249,24 @@ class TestDataFrame:
         ids = [create_table(basic_table_model) for _ in range(3)]
 
         updates = [
-            models.TableMetdataModification(
+            TableMetdataModification(
                 id=id, name="Modified table", properties={"duck": "quack"}
             )
             for id in ids
         ]
 
-        assert client.modify_tables(models.ModifyTablesRequest(tables=updates)) is None
+        assert client.modify_tables(ModifyTablesRequest(tables=updates)) is None
 
         for table in client.list_tables(id=ids).tables:
             assert table.name == "Modified table"
             assert table.properties == {"duck": "quack"}
 
         updates = [
-            models.TableMetdataModification(id=id, properties={"pig": "oink"})
-            for id in ids
+            TableMetdataModification(id=id, properties={"pig": "oink"}) for id in ids
         ]
 
         assert (
-            client.modify_tables(
-                models.ModifyTablesRequest(tables=updates, replace=True)
-            )
+            client.modify_tables(ModifyTablesRequest(tables=updates, replace=True))
             is None
         )
 
@@ -267,11 +277,11 @@ class TestDataFrame:
         id = client.create_table(basic_table_model)
 
         updates = [
-            models.TableMetdataModification(id=id, name="Modified table")
+            TableMetdataModification(id=id, name="Modified table")
             for id in [id, "invalid_id"]
         ]
 
-        response = client.modify_tables(models.ModifyTablesRequest(tables=updates))
+        response = client.modify_tables(ModifyTablesRequest(tables=updates))
 
         assert response is not None
         assert response.modified_table_ids == [id]
@@ -280,34 +290,30 @@ class TestDataFrame:
 
     def test__read_and_write_data__works(self, client: DataFrameClient, create_table):
         id = create_table(
-            models.CreateTableRequest(
+            CreateTableRequest(
                 columns=[
-                    models.Column(
-                        name="index",
-                        data_type=models.DataType.Int32,
-                        column_type=models.ColumnType.Index,
-                    ),
-                    models.Column(
+                    int_index_column,
+                    Column(
                         name="value",
-                        data_type=models.DataType.Float64,
-                        column_type=models.ColumnType.Nullable,
+                        data_type=DataType.Float64,
+                        column_type=ColumnType.Nullable,
                     ),
-                    models.Column(
+                    Column(
                         name="ignore_me",
-                        data_type=models.DataType.Bool,
-                        column_type=models.ColumnType.Nullable,
+                        data_type=DataType.Bool,
+                        column_type=ColumnType.Nullable,
                     ),
                 ]
             )
         )
 
-        frame = models.DataFrame(
+        frame = DataFrame(
             columns=["index", "value", "ignore_me"],
             data=[["1", "3.3", "True"], ["2", None, "False"], ["3", "1.1", "True"]],
         )
 
         client.append_table_data(
-            id, models.AppendTableDataRequest(frame=frame, end_of_data=True)
+            id, AppendTableDataRequest(frame=frame, end_of_data=True)
         )
 
         # TODO: Remove mock when service supports flushing
@@ -330,7 +336,7 @@ class TestDataFrame:
             )
 
             assert response.total_row_count == 3
-            assert response.frame == models.DataFrame(
+            assert response.frame == DataFrame(
                 columns=["index", "value"],
                 data=[["3", "1.1"], ["1", "3.3"], ["2", None]],
             )
@@ -340,10 +346,230 @@ class TestDataFrame:
     ):
         id = test_tables[0]
 
-        frame = models.DataFrame(
+        frame = DataFrame(
             columns=["index", "non_existent_column"],
             data=[["1", "2"], ["2", "2"], ["3", "3"]],
         )
 
         with pytest.raises(ApiException, match="400 Bad Request"):
-            client.append_table_data(id, models.AppendTableDataRequest(frame=frame))
+            client.append_table_data(id, AppendTableDataRequest(frame=frame))
+
+    def test__query_table_data__sorts(self, client: DataFrameClient, create_table):
+        id = create_table(
+            CreateTableRequest(
+                columns=[
+                    int_index_column,
+                    Column(name="col1", data_type=DataType.Float64),
+                    Column(name="col2", data_type=DataType.Float64),
+                ]
+            )
+        )
+
+        frame = DataFrame(
+            data=[["1", "1.5", "5.5"], ["2", "2.5", "6.5"], ["3", "2.5", "7.5"]],
+        )
+
+        client.append_table_data(
+            id, AppendTableDataRequest(frame=frame, end_of_data=True)
+        )
+
+        # TODO: Remove mock when service supports flushing
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.POST,
+                f"{client.session.base_url}tables/{id}/query-data",
+                json={
+                    "frame": {
+                        "columns": ["index", "col1", "col2"],
+                        "data": [
+                            ["1", "1.5", "5.5"],
+                            ["3", "2.5", "7.5"],
+                            ["2", "2.5", "6.5"],
+                        ],
+                    },
+                    "totalRowCount": 3,
+                    "continuationToken": None,
+                },
+                match=[
+                    matchers.json_params_matcher(
+                        {
+                            "orderBy": [
+                                {"column": "col1"},
+                                {"column": "col2", "descending": True},
+                            ]
+                        }
+                    )
+                ],
+            )
+
+            response = client.query_table_data(
+                id,
+                QueryTableDataRequest(
+                    order_by=[
+                        ColumnOrderBy(column="col1"),
+                        ColumnOrderBy(column="col2", descending=True),
+                    ],
+                ),
+            )
+
+            assert response.total_row_count == 3
+            assert response.frame.data == [
+                ["1", "1.5", "5.5"],
+                ["3", "2.5", "7.5"],
+                ["2", "2.5", "6.5"],
+            ]
+
+    def test__query_table_data__filters(self, client: DataFrameClient, create_table):
+        id = create_table(
+            CreateTableRequest(
+                columns=[
+                    int_index_column,
+                    Column(name="float", data_type=DataType.Float64),
+                    Column(
+                        name="int",
+                        data_type=DataType.Int64,
+                        column_type=ColumnType.Nullable,
+                    ),
+                    Column(name="string", data_type=DataType.String),
+                ]
+            )
+        )
+
+        frame = DataFrame(
+            data=[
+                ["1", "1.5", "10", "dog"],
+                ["2", "2.5", None, "cat"],
+                ["3", "3.5", "30", "bunny"],
+                ["4", "4.5", "40", "cow"],
+            ],
+        )
+
+        client.append_table_data(
+            id, AppendTableDataRequest(frame=frame, end_of_data=True)
+        )
+
+        # TODO: Remove mock when service supports flushing
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.POST,
+                f"{client.session.base_url}tables/{id}/query-data",
+                json={
+                    "frame": {
+                        "columns": ["index", "float", "int", "string"],
+                        "data": [["4", "4.5", "40", "cow"]],
+                    },
+                    "totalRowCount": 1,
+                    "continuationToken": None,
+                },
+                match=[
+                    matchers.json_params_matcher(
+                        {
+                            "filters": [
+                                {
+                                    "column": "float",
+                                    "operation": "GREATER_THAN",
+                                    "value": "1.5",
+                                },
+                                {
+                                    "column": "int",
+                                    "operation": "NOT_EQUALS",
+                                    "value": None,
+                                },
+                                {
+                                    "column": "string",
+                                    "operation": "NOT_CONTAINS",
+                                    "value": "bun",
+                                },
+                            ]
+                        }
+                    )
+                ],
+            )
+
+            response = client.query_table_data(
+                id,
+                QueryTableDataRequest(
+                    filters=[
+                        ColumnFilter(
+                            column="float",
+                            operation=FilterOperation.GreaterThan,
+                            value="1.5",
+                        ),
+                        ColumnFilter(
+                            column="int",
+                            operation=FilterOperation.NotEquals,
+                            value=None,
+                        ),
+                        ColumnFilter(
+                            column="string",
+                            operation=FilterOperation.NotContains,
+                            value="bun",
+                        ),
+                    ]
+                ),
+            )
+
+            assert response.frame.data == [["4", "4.5", "40", "cow"]]
+
+    def test__query_decimated_data__works(self, client: DataFrameClient, create_table):
+        id = create_table(
+            CreateTableRequest(
+                columns=[
+                    int_index_column,
+                    Column(name="col1", data_type=DataType.Float64),
+                    Column(name="col2", data_type=DataType.Float64),
+                ]
+            )
+        )
+
+        frame = DataFrame(
+            data=[
+                ["1", "1.5", "3.5"],
+                ["2", "2.5", "2.5"],
+                ["3", "3.5", "1.5"],
+                ["4", "4.5", "4.5"],
+            ],
+        )
+
+        client.append_table_data(
+            id, AppendTableDataRequest(frame=frame, end_of_data=True)
+        )
+
+        # TODO: Remove mock when service supports flushing
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.POST,
+                f"{client.session.base_url}tables/{id}/query-decimated-data",
+                json={
+                    "frame": {
+                        "columns": ["index", "col1", "col2"],
+                        "data": [["1", "1.5", "3.5"], ["4", "4.5", "4.5"]],
+                    },
+                },
+                match=[
+                    matchers.json_params_matcher(
+                        {
+                            "decimation": {
+                                "xColumn": "index",
+                                "yColumns": ["col1"],
+                                "intervals": 1,
+                                "method": "MAX_MIN",
+                            }
+                        }
+                    )
+                ],
+            )
+
+            response = client.query_decimated_data(
+                id,
+                QueryDecimatedDataRequest(
+                    decimation=DecimationOptions(
+                        x_column="index",
+                        y_columns=["col1"],
+                        intervals=1,
+                        method=DecimationMethod.MaxMin,
+                    )
+                ),
+            )
+
+            assert response.frame.data == [["1", "1.5", "3.5"], ["4", "4.5", "4.5"]]
