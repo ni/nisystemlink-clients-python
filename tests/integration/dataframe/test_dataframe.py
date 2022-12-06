@@ -16,13 +16,18 @@ from nisystemlink.clients.dataframe.models import (
     CreateTableRequest,
     DataFrame,
     DataType,
+    DecimationMethod,
+    DecimationOptions,
     FilterOperation,
     ModifyTableRequest,
     ModifyTablesRequest,
+    QueryDecimatedDataRequest,
     QueryTableDataRequest,
     QueryTablesRequest,
     TableMetdataModification,
 )
+from responses import matchers
+
 
 int_index_column = Column(
     name="index", data_type=DataType.Int32, column_type=ColumnType.Index
@@ -385,6 +390,16 @@ class TestDataFrame:
                     "totalRowCount": 3,
                     "continuationToken": None,
                 },
+                match=[
+                    matchers.json_params_matcher(
+                        {
+                            "orderBy": [
+                                {"column": "col1"},
+                                {"column": "col2", "descending": True},
+                            ]
+                        }
+                    )
+                ],
             )
 
             response = client.query_table_data(
@@ -446,6 +461,29 @@ class TestDataFrame:
                     "totalRowCount": 1,
                     "continuationToken": None,
                 },
+                match=[
+                    matchers.json_params_matcher(
+                        {
+                            "filters": [
+                                {
+                                    "column": "float",
+                                    "operation": "GREATER_THAN",
+                                    "value": "1.5",
+                                },
+                                {
+                                    "column": "int",
+                                    "operation": "NOT_EQUALS",
+                                    "value": None,
+                                },
+                                {
+                                    "column": "string",
+                                    "operation": "NOT_CONTAINS",
+                                    "value": "bun",
+                                },
+                            ]
+                        }
+                    )
+                ],
             )
 
             response = client.query_table_data(
@@ -472,3 +510,66 @@ class TestDataFrame:
             )
 
             assert response.frame.data == [["4", "4.5", "40", "cow"]]
+
+    def test__query_decimated_data__works(self, client: DataFrameClient, create_table):
+        id = create_table(
+            CreateTableRequest(
+                columns=[
+                    int_index_column,
+                    Column(name="col1", data_type=DataType.Float64),
+                    Column(name="col2", data_type=DataType.Float64),
+                ]
+            )
+        )
+
+        frame = DataFrame(
+            data=[
+                ["1", "1.5", "3.5"],
+                ["2", "2.5", "2.5"],
+                ["3", "3.5", "1.5"],
+                ["4", "4.5", "4.5"],
+            ],
+        )
+
+        client.append_table_data(
+            id, AppendTableDataRequest(frame=frame, end_of_data=True)
+        )
+
+        # TODO: Remove mock when service supports flushing
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.POST,
+                f"{client.session.base_url}tables/{id}/query-decimated-data",
+                json={
+                    "frame": {
+                        "columns": ["index", "col1", "col2"],
+                        "data": [["1", "1.5", "3.5"], ["4", "4.5", "4.5"]],
+                    },
+                },
+                match=[
+                    matchers.json_params_matcher(
+                        {
+                            "decimation": {
+                                "xColumn": "index",
+                                "yColumns": ["col1"],
+                                "intervals": 1,
+                                "method": "MAX_MIN",
+                            }
+                        }
+                    )
+                ],
+            )
+
+            response = client.query_decimated_data(
+                id,
+                QueryDecimatedDataRequest(
+                    decimation=DecimationOptions(
+                        x_column="index",
+                        y_columns=["col1"],
+                        intervals=1,
+                        method=DecimationMethod.MaxMin,
+                    )
+                ),
+            )
+
+            assert response.frame.data == [["1", "1.5", "3.5"], ["4", "4.5", "4.5"]]
