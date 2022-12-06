@@ -41,14 +41,17 @@ class DecimationOptions(JsonModel):
     ``TIMESTAMP``."""
 
     intervals: Optional[int] = None
-    """Number of intervals to use for decimation."""
+    """Number of intervals to use for decimation. Defaults to 1000."""
 
     method: Optional[DecimationMethod] = None
-    """Specifies the method used to decimate the data"""
+    """Specifies the method used to decimate the data. Defaults to
+    :class:`DecimationMethod.Lossy`"""
 
 
 class QueryDecimatedDataRequest(QueryTableDataBase):
     """Specifies the columns, filters and decimation parameters for a query."""
 
     decimation: Optional[DecimationOptions] = None
-    """The decimation options to use when querying data."""
+    """The decimation options to use when querying data. If not specified, the
+    default is to use :class:`DecimationMethod.Lossy` with 1000 intervals over
+    the table's index column."""
