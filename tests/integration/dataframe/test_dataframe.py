@@ -404,7 +404,6 @@ class TestDataFrame:
                 ["2", "2.5", "6.5"],
             ]
 
-    @pytest.mark.focus
     def test__query_table_data__filters(self, client: DataFrameClient, create_table):
         id = create_table(
             CreateTableRequest(
