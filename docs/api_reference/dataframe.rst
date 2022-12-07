@@ -4,8 +4,8 @@ nisystemlink.clients.dataframe
 ======================
 
 .. autoclass:: nisystemlink.clients.dataframe.DataFrameClient
+   :special-members: __init__
 
-   .. automethod:: __init__
    .. automethod:: api_info
    .. automethod:: list_tables
    .. automethod:: create_table
