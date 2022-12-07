@@ -3,9 +3,9 @@
 nisystemlink.clients.dataframe
 ======================
 
-.. automodule:: nisystemlink.clients.dataframe
+.. autoclass:: nisystemlink.clients.dataframe.DataFrameClient
    :members:
-   :imported-members:
+   .. automethod:: delete_table(id)
 
 .. automodule:: nisystemlink.clients.dataframe.models
    :members:
