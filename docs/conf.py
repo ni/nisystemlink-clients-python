@@ -46,7 +46,7 @@ nitpick_ignore = [
     ("py:data", "typing.Union"),
 ]
 autodoc_default_options = {
-    "autoclass_content": "both",
+    "special-members": "__init__",
     "no-private-members": True,
 }
 # Don't let napoleon force methods to be included in the docs; use autodoc flags and our
