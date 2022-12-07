@@ -4,6 +4,7 @@ nisystemlink.clients.dataframe
 ======================
 
 .. autoclass:: nisystemlink.clients.dataframe.DataFrameClient
+   :exclude-members: __init__
 
    .. automethod:: __init__
    .. automethod:: api_info
