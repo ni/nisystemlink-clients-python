@@ -8,7 +8,7 @@ from nisystemlink.clients.dataframe.models import (
     ColumnType,
     CreateTableRequest,
     DataFrame,
-    DataType
+    DataType,
 )
 
 client = DataFrameClient()
