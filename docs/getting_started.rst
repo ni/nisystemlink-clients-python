@@ -91,11 +91,11 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.DataFrameClient` object, you can:
 
-* Retrieve information about available API operations
+* Create and delete Data Frame Tables.
 
-* Query, create, modify, and delete Data Frame Tables and associated metadata
+* Modify table metadata and query for tables by their metadata.
 
-* Query, query decimated, and append Data Frame Table data
+* Append rows of data to a table, query for rows of data from a table, and decimate table data.
 
 Examples
 ~~~~~~~~
@@ -109,11 +109,5 @@ Create and write data to a table
 Query and read data from a table
 
 .. literalinclude:: ../examples/dataframe/query_read_data.py
-   :language: python
-   :linenos:
-
-Delete a table
-
-.. literalinclude:: ../examples/dataframe/delete_table.py
    :language: python
    :linenos:
