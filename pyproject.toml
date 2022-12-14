@@ -54,7 +54,7 @@ doctest = "pytest --doctest-modules docs"
 check   = "black --check nisystemlink examples tests"
 format  = "black nisystemlink examples tests"
 lint    = "flake8 nisystemlink examples tests"
-types   = "mypy --config-file mypy.ini nisystemlink examples/tag tests"
+types   = "mypy --config-file mypy.ini nisystemlink examples tests"
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"

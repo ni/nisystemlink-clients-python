@@ -75,3 +75,39 @@ Subscribe to tag changes
 .. literalinclude:: ../examples/tag/subscribe_to_tag_changes.py
    :language: python
    :linenos:
+
+Data Frame API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.DataFrameClient` class is the primary entry point of the Data Frame API.
+
+When constructing a :class:`.DataFrameClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.DataFrameClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.DataFrameClient` object, you can:
+
+* Create and delete Data Frame Tables.
+
+* Modify table metadata and query for tables by their metadata.
+
+* Append rows of data to a table, query for rows of data from a table, and decimate table data.
+
+Examples
+~~~~~~~~
+
+Create and write data to a table
+
+.. literalinclude:: ../examples/dataframe/create_write_data.py
+   :language: python
+   :linenos:
+
+Query and read data from a table
+
+.. literalinclude:: ../examples/dataframe/query_read_data.py
+   :language: python
+   :linenos:
