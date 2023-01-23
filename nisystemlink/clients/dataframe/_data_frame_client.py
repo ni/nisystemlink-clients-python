@@ -17,7 +17,7 @@ class DataFrameClient(BaseClient):
         Args:
             configuration: Defines the web server to connect to and information about
                 how to connect. If not provided, an instance of
-                :class:`JupyterHttpConfiguration <core.JupyterHttpConfiguration>` is used.
+                :class:`nisystemlink.clients.core.JupyterHttpConfiguration` is used.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service.
