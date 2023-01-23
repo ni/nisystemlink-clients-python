@@ -102,7 +102,7 @@ class DataFrameClient(BaseClient):
             query: The request to query tables.
 
         Returns:
-            models.PagedTables: The list of tables with a continuation token.
+            The list of tables with a continuation token.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service
@@ -118,7 +118,7 @@ class DataFrameClient(BaseClient):
             id (str): Unique ID of a DataFrame table.
 
         Returns:
-            models.TableMetadata: The metadata for the table.
+            The metadata for the table.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service
@@ -226,7 +226,7 @@ class DataFrameClient(BaseClient):
             continuation_token: The token used to paginate results.
 
         Returns:
-            models.PagedTableRows: The table data and total number of rows with a continuation token.
+            The table data and total number of rows with a continuation token.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service
@@ -259,7 +259,7 @@ class DataFrameClient(BaseClient):
             query: The filtering and sorting to apply when reading data.
 
         Returns:
-            models.PagedTableRows: The table data and total number of rows with a continuation token.
+            The table data and total number of rows with a continuation token.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service
@@ -278,7 +278,7 @@ class DataFrameClient(BaseClient):
             query: The filtering and decimation options to apply when reading data.
 
         Returns:
-            models.TableRows: The decimated table data.
+            The decimated table data.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service
