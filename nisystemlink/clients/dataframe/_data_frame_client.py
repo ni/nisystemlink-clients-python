@@ -33,7 +33,7 @@ class DataFrameClient(BaseClient):
 
         Returns:
             Information about available API operations.
-        
+
         Raises:
             ApiException: If unable to communicate with the Data Frame service.
         """
