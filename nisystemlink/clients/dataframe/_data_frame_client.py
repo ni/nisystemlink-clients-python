@@ -32,7 +32,7 @@ class DataFrameClient(BaseClient):
         """Returns information about available API operations.
 
         Returns:
-            models.ApiInfo: Information about available API operations.
+            Information about available API operations.
         
         Raises:
             ApiException: If unable to communicate with the Data Frame service.
@@ -70,7 +70,7 @@ class DataFrameClient(BaseClient):
             workspace: List of workspace IDs to filter by.
 
         Returns:
-            models.PagedTables: The list of tables with a continuation token.
+            The list of tables with a continuation token.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service
