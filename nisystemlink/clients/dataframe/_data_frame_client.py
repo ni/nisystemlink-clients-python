@@ -17,7 +17,7 @@ class DataFrameClient(BaseClient):
         Args:
             configuration: Defines the web server to connect to and information about
                 how to connect. If not provided, an instance of
-                :class:`JupyterHttpConfiguration` is used.
+                :class:`~core.JupyterHttpConfiguration` is used.
 
         Raises:
             ApiException: If unable to communicate with the Data Frame service.
@@ -29,7 +29,7 @@ class DataFrameClient(BaseClient):
 
     @get("")
     def api_info(self) -> models.ApiInfo:
-        """Returns information about available API operations.
+        """Get information about available API operations.
 
         Returns:
             Information about available API operations.
