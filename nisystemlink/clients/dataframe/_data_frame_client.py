@@ -21,7 +21,7 @@ class DataFrameClient(BaseClient):
                 is used.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service.
+            ApiException: if unable to communicate with the Data Frame service.
         """
         if configuration is None:
             configuration = core.JupyterHttpConfiguration()
@@ -36,7 +36,7 @@ class DataFrameClient(BaseClient):
             Information about available API operations.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service.
+            ApiException: if unable to communicate with the Data Frame service.
         """
         ...
 
@@ -74,7 +74,7 @@ class DataFrameClient(BaseClient):
             The list of tables with a continuation token.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -90,7 +90,7 @@ class DataFrameClient(BaseClient):
             The ID of the newly created table.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -106,7 +106,7 @@ class DataFrameClient(BaseClient):
             The list of tables with a continuation token.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -122,7 +122,7 @@ class DataFrameClient(BaseClient):
             The metadata for the table.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -136,7 +136,7 @@ class DataFrameClient(BaseClient):
             update: The metadata to update.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -149,7 +149,7 @@ class DataFrameClient(BaseClient):
             id (str): Unique ID of a DataFrame table.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -168,7 +168,7 @@ class DataFrameClient(BaseClient):
             tables were deleted successfully.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -187,7 +187,7 @@ class DataFrameClient(BaseClient):
             tables were modified successfully.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -230,7 +230,7 @@ class DataFrameClient(BaseClient):
             The table data and total number of rows with a continuation token.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -244,7 +244,7 @@ class DataFrameClient(BaseClient):
             data: The rows of data to append and any additional options.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -263,7 +263,7 @@ class DataFrameClient(BaseClient):
             The table data and total number of rows with a continuation token.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
@@ -282,7 +282,7 @@ class DataFrameClient(BaseClient):
             The decimated table data.
 
         Raises:
-            ApiException: If unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the Data Frame service
                 or provided an invalid argument.
         """
         ...
