@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.1 (2023-01-26)
+### Fix
+* Fix various documentation issues ([#42](https://github.com/ni/nisystemlink-clients-python/issues/42)) ([`872e9ac`](https://github.com/ni/nisystemlink-clients-python/commit/872e9accdc959e8fc8a400518bb74ba8fb0cf30c))
+
 ## v1.0.0 (2022-12-15)
 ### Breaking
 * Preparation for 1.0.0 release. ([`c61925c`](https://github.com/ni/nisystemlink-clients-python/commit/c61925c902ebcdf6e1e4c8c24905caf0c304cb31))
