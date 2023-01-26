@@ -17,7 +17,11 @@ class DataFrameClient(BaseClient):
         Args:
             configuration: Defines the web server to connect to and information about
                 how to connect. If not provided, an instance of
-                :class:`core.JupyterHttpConfiguration` is used.
+                :class:`JupyterHttpConfiguration <nisystemlink.clients.core.JupyterHttpConfiguration>`
+                is used.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service.
         """
         if configuration is None:
             configuration = core.JupyterHttpConfiguration()
@@ -26,7 +30,14 @@ class DataFrameClient(BaseClient):
 
     @get("")
     def api_info(self) -> models.ApiInfo:
-        """Returns information about available API operations."""
+        """Get information about available API operations.
+
+        Returns:
+            Information about available API operations.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service.
+        """
         ...
 
     @get(
@@ -60,7 +71,11 @@ class DataFrameClient(BaseClient):
             workspace: List of workspace IDs to filter by.
 
         Returns:
-            models.PagedTables: The list of tables with a continuation token.
+            The list of tables with a continuation token.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -73,6 +88,10 @@ class DataFrameClient(BaseClient):
 
         Returns:
             The ID of the newly created table.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -84,7 +103,11 @@ class DataFrameClient(BaseClient):
             query: The request to query tables.
 
         Returns:
-            models.PagedTables: The list of tables with a continuation token.
+            The list of tables with a continuation token.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -96,7 +119,11 @@ class DataFrameClient(BaseClient):
             id (str): Unique ID of a DataFrame table.
 
         Returns:
-            models.TableMetadata: The metadata for the table.
+            The metadata for the table.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -107,6 +134,10 @@ class DataFrameClient(BaseClient):
         Args:
             id: Unique ID of a DataFrame table.
             update: The metadata to update.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -116,6 +147,10 @@ class DataFrameClient(BaseClient):
 
         Args:
             id (str): Unique ID of a DataFrame table.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -131,6 +166,10 @@ class DataFrameClient(BaseClient):
         Returns:
             A partial success if any tables failed to delete, or None if all
             tables were deleted successfully.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -146,6 +185,10 @@ class DataFrameClient(BaseClient):
         Returns:
             A partial success if any tables failed to be modified, or None if all
             tables were modified successfully.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -184,7 +227,11 @@ class DataFrameClient(BaseClient):
             continuation_token: The token used to paginate results.
 
         Returns:
-            models.PagedTableRows: The table data and total number of rows with a continuation token.
+            The table data and total number of rows with a continuation token.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -195,6 +242,10 @@ class DataFrameClient(BaseClient):
         Args:
             id: Unique ID of a DataFrame table.
             data: The rows of data to append and any additional options.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -209,7 +260,11 @@ class DataFrameClient(BaseClient):
             query: The filtering and sorting to apply when reading data.
 
         Returns:
-            models.PagedTableRows: The table data and total number of rows with a continuation token.
+            The table data and total number of rows with a continuation token.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
 
@@ -224,6 +279,10 @@ class DataFrameClient(BaseClient):
             query: The filtering and decimation options to apply when reading data.
 
         Returns:
-            models.TableRows: The decimated table data.
+            The decimated table data.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
         """
         ...
