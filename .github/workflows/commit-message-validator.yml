@@ -1,6 +1,12 @@
 name: Commit message validation
 
-on: pull_request
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
 
 jobs:
   commit-message-validation:
