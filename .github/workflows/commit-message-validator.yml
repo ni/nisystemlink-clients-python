@@ -1,0 +1,16 @@
+name: Commit message validation on PR
+
+on: pull_request
+
+jobs:
+  commit-message-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Commit message validation
+        uses: lumapps/commit-message-validator@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
