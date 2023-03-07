@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class TableMetdataModification(JsonModel):
+class TableMetadataModification(JsonModel):
     """Contains the metadata properties to modify. Values not included in the
     request or included with a ``None`` value will remain unchanged.
     """
@@ -37,7 +37,7 @@ class TableMetdataModification(JsonModel):
 class ModifyTablesRequest(JsonModel):
     """Contains one or more table modifications to apply."""
 
-    tables: List[TableMetdataModification]
+    tables: List[TableMetadataModification]
     """The table modifications to apply. Each table may only appear once in the list."""
 
     replace: Optional[bool] = None
