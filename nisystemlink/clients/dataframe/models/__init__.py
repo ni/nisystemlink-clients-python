@@ -24,3 +24,6 @@ from ._table_metadata import TableMetadata
 from ._table_rows import TableRows
 
 # flake8: noqa
+
+# Alias to provide backwards compatibility for misnamed class, fixed in 1.0.2
+TableMetdataModification = TableMetadataModification
