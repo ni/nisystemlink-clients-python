@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.2 (2023-03-08)
+### Fix
+* Correct spelling for model class TableMetadataModification ([#44](https://github.com/ni/nisystemlink-clients-python/issues/44)) ([`30c760c`](https://github.com/ni/nisystemlink-clients-python/commit/30c760c2eb9af8e17ddb8c6730f6ef5aae20e973))
+
 ## v1.0.1 (2023-01-26)
 ### Fix
 * Fix various documentation issues ([#42](https://github.com/ni/nisystemlink-clients-python/issues/42)) ([`872e9ac`](https://github.com/ni/nisystemlink-clients-python/commit/872e9accdc959e8fc8a400518bb74ba8fb0cf30c))
