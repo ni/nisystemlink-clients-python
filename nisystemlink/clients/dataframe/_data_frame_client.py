@@ -286,3 +286,22 @@ class DataFrameClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
+
+    @post("tables/{id}/export-data", args=[Path, Body])
+    def export_table_data(
+        self, id: str, query: models.ExportTableDataRequest
+    ):
+        """Exports rows of data that match a filter from the table identified by its ID.
+
+        Args:
+            id: Unique ID of a DataFrame table.
+            query: The filtering and sorting to apply when exporting data.
+
+        Returns:
+            The table data.
+
+        Raises:
+            ApiException: if unable to communicate with the Data Frame service
+                or provided an invalid argument.
+        """
+        ...

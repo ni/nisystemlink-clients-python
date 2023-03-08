@@ -18,6 +18,8 @@ from nisystemlink.clients.dataframe.models import (
     DataType,
     DecimationMethod,
     DecimationOptions,
+    ExportFormat,
+    ExportTableDataRequest,
     FilterOperation,
     ModifyTableRequest,
     ModifyTablesRequest,
