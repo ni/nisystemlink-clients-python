@@ -3,7 +3,7 @@ from typing import List
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._modify_tables_request import TableMetdataModification
+from ._modify_tables_request import TableMetadataModification
 
 
 class ModifyTablesPartialSuccess(JsonModel):
@@ -12,7 +12,7 @@ class ModifyTablesPartialSuccess(JsonModel):
     modified_table_ids: List[str]
     """The IDs of the tables that were successfully modified."""
 
-    failed_modifications: List[TableMetdataModification]
+    failed_modifications: List[TableMetadataModification]
     """The requested modifications that could not be applied."""
 
     error: ApiError

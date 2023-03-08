@@ -24,7 +24,7 @@ from nisystemlink.clients.dataframe.models import (
     QueryDecimatedDataRequest,
     QueryTableDataRequest,
     QueryTablesRequest,
-    TableMetdataModification,
+    TableMetadataModification,
 )
 from responses import matchers
 
@@ -90,7 +90,7 @@ class TestDataFrame:
 
         assert len(response.dict()) != 0
 
-    def test__create_table__metadata_is_corect(
+    def test__create_table__metadata_is_correct(
         self, client: DataFrameClient, test_tables: List[str]
     ):
         table_metadata = client.get_table_metadata(test_tables[0])
@@ -249,7 +249,7 @@ class TestDataFrame:
         ids = [create_table(basic_table_model) for _ in range(3)]
 
         updates = [
-            TableMetdataModification(
+            TableMetadataModification(
                 id=id, name="Modified table", properties={"duck": "quack"}
             )
             for id in ids
@@ -262,7 +262,7 @@ class TestDataFrame:
             assert table.properties == {"duck": "quack"}
 
         updates = [
-            TableMetdataModification(id=id, properties={"pig": "oink"}) for id in ids
+            TableMetadataModification(id=id, properties={"pig": "oink"}) for id in ids
         ]
 
         assert (
@@ -277,7 +277,7 @@ class TestDataFrame:
         id = client.create_table(basic_table_model)
 
         updates = [
-            TableMetdataModification(id=id, name="Modified table")
+            TableMetadataModification(id=id, name="Modified table")
             for id in [id, "invalid_id"]
         ]
 
