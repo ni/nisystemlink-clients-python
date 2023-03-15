@@ -1,4 +1,5 @@
-"""A class that wraps a GeneratorType in a file-like object."""
+"""A file-like object adapter that wraps a python generator, providing a way to
+iterate over the generator as if it was a file."""
 
 
 class GeneratorFileLike:
@@ -7,9 +8,9 @@ class GeneratorFileLike:
         self._buffer = b''
 
     def read(self, size=-1):
-        """Read data from the generator. Store any data in a buffer for the
-        next call to readline. If size is negative, read all data until the
-        generator is exhausted.
+        """Read data from the generator. Store any data in a buffer for the next
+        call to read. If size is negative, read all data until the generator is
+        exhausted.
         """
         while size < 0 or len(self._buffer) < size:
             try:
