@@ -2,14 +2,17 @@ from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from._column_order_by import ColumnOrderBy
-from._column_filter import ColumnFilter
+
+from ._column_filter import ColumnFilter
+from ._column_order_by import ColumnOrderBy
+
 
 class ExportFormat(str, Enum):
     """The format of the exported data."""
 
     CSV = 'CSV'
     """Comma-separated values."""
+
 
 class ExportTableDataRequest(JsonModel):
     """Specifies the parameters for a data export with ordering and filtering."""
@@ -20,7 +23,7 @@ class ExportTableDataRequest(JsonModel):
     columns are included in the order specified at table creation if this
     property is excluded."""
 
-    orderBy: Optional[List[ColumnOrderBy]] = None
+    order_by: Optional[List[ColumnOrderBy]] = None
     """A list of columns to order the results by. Multiple columns may be
     specified to order rows that have the same value for prior columns. The
     columns used for sorting do not need to be included in the columns list, in
@@ -32,6 +35,6 @@ class ExportTableDataRequest(JsonModel):
     filtering do not need to be included in the columns list, in which case
     they are not included in the export."""
 
-    responseFormat: ExportFormat = None
+    response_format: ExportFormat = None
     """The format of the exported data. The only response format
     currently supported is ``CSV``."""

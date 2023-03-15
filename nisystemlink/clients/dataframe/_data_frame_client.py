@@ -1,11 +1,13 @@
 """Implementation of DataFrameClient."""
 
+
 from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, patch, post
-from uplink import Body, Field, Path, Query
+from nisystemlink.clients.core.helpers.generator_file_like import GeneratorFileLike
+from uplink import Body, Field, Path, Query, response_handler
 
 from . import models
 
@@ -21,7 +23,7 @@ class DataFrameClient(BaseClient):
                 is used.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service.
+            ApiException: if unable to communicate with the DataFrame Service.
         """
         if configuration is None:
             configuration = core.JupyterHttpConfiguration()
@@ -36,7 +38,7 @@ class DataFrameClient(BaseClient):
             Information about available API operations.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service.
+            ApiException: if unable to communicate with the DataFrame Service.
         """
         ...
 
@@ -74,7 +76,7 @@ class DataFrameClient(BaseClient):
             The list of tables with a continuation token.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -90,7 +92,7 @@ class DataFrameClient(BaseClient):
             The ID of the newly created table.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -106,7 +108,7 @@ class DataFrameClient(BaseClient):
             The list of tables with a continuation token.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -122,7 +124,7 @@ class DataFrameClient(BaseClient):
             The metadata for the table.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -136,7 +138,7 @@ class DataFrameClient(BaseClient):
             update: The metadata to update.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -149,7 +151,7 @@ class DataFrameClient(BaseClient):
             id (str): Unique ID of a DataFrame table.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -168,7 +170,7 @@ class DataFrameClient(BaseClient):
             tables were deleted successfully.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -187,7 +189,7 @@ class DataFrameClient(BaseClient):
             tables were modified successfully.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -230,7 +232,7 @@ class DataFrameClient(BaseClient):
             The table data and total number of rows with a continuation token.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -244,7 +246,7 @@ class DataFrameClient(BaseClient):
             data: The rows of data to append and any additional options.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -263,7 +265,7 @@ class DataFrameClient(BaseClient):
             The table data and total number of rows with a continuation token.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
@@ -282,11 +284,16 @@ class DataFrameClient(BaseClient):
             The decimated table data.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...
 
+    @response_handler()
+    def iter_content_filelike_wrapper(response):
+        return GeneratorFileLike(response.iter_content(chunk_size=4096))
+
+    @iter_content_filelike_wrapper
     @post("tables/{id}/export-data", args=[Path, Body])
     def export_table_data(
         self, id: str, query: models.ExportTableDataRequest
@@ -295,13 +302,13 @@ class DataFrameClient(BaseClient):
 
         Args:
             id: Unique ID of a DataFrame table.
-            query: The filtering and sorting to apply when exporting data.
+            query: The filtering, sorting, and export format to apply when exporting data.
 
         Returns:
-            The table data.
+            A file-like object for reading the exported data.
 
         Raises:
-            ApiException: if unable to communicate with the Data Frame service
+            ApiException: if unable to communicate with the DataFrame Service
                 or provided an invalid argument.
         """
         ...

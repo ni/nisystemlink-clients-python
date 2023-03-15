@@ -1,10 +1,10 @@
 from typing import List, Optional
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
+from ._column_order_by import ColumnOrderBy
 from ._query_table_data_base import QueryTableDataBase
-from._column_order_by import ColumnOrderBy
+
 
 class QueryTableDataRequest(QueryTableDataBase, WithPaging):
     """Contains the filtering and sorting options to use when querying table data."""

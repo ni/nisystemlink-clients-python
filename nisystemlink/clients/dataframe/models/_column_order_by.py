@@ -1,5 +1,7 @@
 from typing import Optional
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 
 class ColumnOrderBy(JsonModel):
     """Specifies a column to order by and the ordering direction."""

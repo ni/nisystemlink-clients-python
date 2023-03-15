@@ -2,7 +2,8 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from._column_filter import ColumnFilter
+from ._column_filter import ColumnFilter
+
 
 class QueryTableDataBase(JsonModel):
     """Contains the common set of options when querying table data."""

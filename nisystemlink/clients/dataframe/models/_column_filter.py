@@ -1,7 +1,8 @@
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 
 class FilterOperation(str, Enum):
     """Represents the different operations that can be used in a filter."""

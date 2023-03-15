@@ -368,7 +368,7 @@ class TestDataFrame:
         )
 
         frame = DataFrame(
-            data=[["1", "1.5", "5.5"], ["2", "2.5", "6.5"], ["3", "2.5", "7.5"]],
+            data=[["1", "2.5", "6.5"], ["2", "1.5", "5.5"], ["3", "2.5", "7.5"]],
         )
 
         client.append_table_data(
@@ -384,9 +384,9 @@ class TestDataFrame:
                     "frame": {
                         "columns": ["index", "col1", "col2"],
                         "data": [
-                            ["1", "1.5", "5.5"],
+                            ["2", "1.5", "5.5"],
                             ["3", "2.5", "7.5"],
-                            ["2", "2.5", "6.5"],
+                            ["1", "2.5", "6.5"],
                         ],
                     },
                     "totalRowCount": 3,
@@ -416,9 +416,9 @@ class TestDataFrame:
 
             assert response.total_row_count == 3
             assert response.frame.data == [
-                ["1", "1.5", "5.5"],
+                ["2", "1.5", "5.5"],
                 ["3", "2.5", "7.5"],
-                ["2", "2.5", "6.5"],
+                ["1", "2.5", "6.5"],
             ]
 
     def test__query_table_data__filters(self, client: DataFrameClient, create_table):
@@ -575,3 +575,46 @@ class TestDataFrame:
             )
 
             assert response.frame.data == [["1", "1.5", "3.5"], ["4", "4.5", "4.5"]]
+
+    def test__export_table_data__works(self, client: DataFrameClient, create_table):
+        id = create_table(
+            CreateTableRequest(
+                columns=[
+                    int_index_column,
+                    Column(name="col1", data_type=DataType.Float64),
+                    Column(name="col2", data_type=DataType.Float64),
+                ]
+            )
+        )
+
+        frame = DataFrame(
+            data=[["1", "2.5", "6.5"], ["2", "1.5", "5.5"], ["3", "2.5", "7.5"]],
+        )
+
+        client.append_table_data(
+            id, AppendTableDataRequest(frame=frame, end_of_data=True)
+        )
+
+        # TODO: Remove mock when service supports flushing
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.POST,
+                f"{client.session.base_url}tables/{id}/export-data",
+                body=b'1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5',
+                match=[
+                    matchers.json_params_matcher(
+                        {
+                            "responseFormat": "CSV"
+                        }
+                    )
+                ],
+            )
+
+            response = client.export_table_data(
+                id,
+                ExportTableDataRequest(
+                    response_format=ExportFormat.CSV
+                ),
+            )
+
+            assert response.read() == b'1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5'
