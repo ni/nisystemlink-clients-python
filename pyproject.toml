@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python   = "^3.8"
+python   = ">=3.8,<3.12"
 aenum    = "^3.1.11"
 Events   = "^0.4"
 httpx    = "^0.23.0"
@@ -44,6 +44,8 @@ flake8-import-order = "^0.18.1"
 pytest              = "^7.2.0"
 pytest-asyncio      = "^0.20.1"
 mypy                = "^0.982"
+pandas              = "^1.5.3"
+pandas-stubs        = "^1.5.3"
 flake8-docstrings   = "^1.6.0"
 poethepoet          = "^0.16.4"
 types-requests      = "^2.28.11.4"
