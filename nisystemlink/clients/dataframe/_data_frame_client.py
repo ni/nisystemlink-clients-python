@@ -1,6 +1,5 @@
 """Implementation of DataFrameClient."""
 
-
 from typing import List, Optional
 
 from nisystemlink.clients import core

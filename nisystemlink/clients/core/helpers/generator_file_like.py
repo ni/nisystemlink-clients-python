@@ -1,5 +1,6 @@
 """A file-like object adapter that wraps a python generator, providing a way to
-iterate over the generator as if it was a file."""
+iterate over the generator as if it was a file.
+"""
 
 
 class GeneratorFileLike:

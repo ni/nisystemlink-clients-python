@@ -98,7 +98,7 @@ With a :class:`.DataFrameClient` object, you can:
 * Append rows of data to a table, query for rows of data from a table, and
   decimate table data.
 
-* Export table data as a comma-separated values (CSV) file.
+* Export table data in a comma-separated values (CSV) format.
 
 Examples
 ~~~~~~~~
