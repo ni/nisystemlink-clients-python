@@ -5,7 +5,7 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, patch, post
-from nisystemlink.clients.core.helpers.generator_file_like import GeneratorFileLike
+from nisystemlink.clients.core.helpers.iterator_file_like import IteratorFileLike
 from uplink import Body, Field, Path, Query, response_handler
 
 from . import models
@@ -289,14 +289,14 @@ class DataFrameClient(BaseClient):
         ...
 
     @response_handler()
-    def iter_content_filelike_wrapper(response) -> GeneratorFileLike:
-        return GeneratorFileLike(response.iter_content(chunk_size=4096))
+    def iter_content_filelike_wrapper(response) -> IteratorFileLike:
+        return IteratorFileLike(response.iter_content(chunk_size=4096))
 
     @iter_content_filelike_wrapper
     @post("tables/{id}/export-data", args=[Path, Body])
     def export_table_data(
         self, id: str, query: models.ExportTableDataRequest
-    ) -> GeneratorFileLike:
+    ) -> IteratorFileLike:
         """Exports rows of data that match a filter from the table identified by its ID.
 
         Args:

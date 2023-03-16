@@ -1,21 +1,23 @@
-"""A file-like object adapter that wraps a python generator, providing a way to
-iterate over the generator as if it was a file.
+"""A file-like object adapter that wraps a python iterator, providing a way to
+read from the iterator as if it was a file.
 """
 
+from typing import Any, Iterator
 
-class GeneratorFileLike:
-    def __init__(self, generator):
-        self._generator = generator
+
+class iteratorFileLike:
+    def __init__(self, iterator: Iterator[Any]) -> None:
+        self._iterator = iterator
         self._buffer = b""
 
-    def read(self, size=-1):
+    def read(self, size: int = -1) -> bytes:
         """Read at most `size` bytes from the file-like object. If `size` is not
-        specified or is negative, read until the generator is exhausted and
+        specified or is negative, read until the iterator is exhausted and
         returns all bytes or characters read.
         """
         while size < 0 or len(self._buffer) < size:
             try:
-                chunk = next(self._generator)
+                chunk = next(self._iterator)
                 self._buffer += chunk
             except StopIteration:
                 break
