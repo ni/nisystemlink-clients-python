@@ -28,7 +28,7 @@ data = client.export_table_data(id=table.id, query=request)
 
 # Write the export data to a file
 with open(f"{table.name}.csv", "wb") as f:
-    copyfileobj(response, f)
+    copyfileobj(data, f)
 
 # Alternatively, load the export data into a pandas dataframe
 df = pd.read_csv(data)
