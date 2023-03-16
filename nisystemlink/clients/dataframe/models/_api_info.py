@@ -32,9 +32,6 @@ class OperationsV1(JsonModel):
     write_data: Operation
     """The ability to append rows of data to tables."""
 
-    export_data: Operation
-    """The ability to export data from tables."""
-
 
 class ApiInfo(JsonModel):
     """Information about the available API operations."""
