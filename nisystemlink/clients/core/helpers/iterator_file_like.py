@@ -5,7 +5,7 @@ read from the iterator as if it was a file.
 from typing import Any, Iterator
 
 
-class iteratorFileLike:
+class IteratorFileLike:
     def __init__(self, iterator: Iterator[Any]) -> None:
         self._iterator = iterator
         self._buffer = b""
