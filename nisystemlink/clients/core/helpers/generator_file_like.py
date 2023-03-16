@@ -11,7 +11,8 @@ class GeneratorFileLike:
     def read(self, size=-1):
         """Read at most `size` bytes from the file-like object. If `size` is not
         specified or is negative, read until the generator is exhausted and
-        returns all bytes or characters read. """
+        returns all bytes or characters read.
+        """
         while size < 0 or len(self._buffer) < size:
             try:
                 chunk = next(self._generator)
