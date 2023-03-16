@@ -117,7 +117,7 @@ class DataFrameClient(BaseClient):
         """Retrieves the metadata and column information for a single table identified by its ID.
 
         Args:
-            id (str): Unique ID of a DataFrame table.
+            id (str): Unique ID of a data table.
 
         Returns:
             The metadata for the table.
@@ -133,7 +133,7 @@ class DataFrameClient(BaseClient):
         """Modify properties of a table or its columns.
 
         Args:
-            id: Unique ID of a DataFrame table.
+            id: Unique ID of a data table.
             update: The metadata to update.
 
         Raises:
@@ -147,7 +147,7 @@ class DataFrameClient(BaseClient):
         """Deletes a table.
 
         Args:
-            id (str): Unique ID of a DataFrame table.
+            id (str): Unique ID of a data table.
 
         Raises:
             ApiException: if unable to communicate with the DataFrame Service
@@ -162,7 +162,7 @@ class DataFrameClient(BaseClient):
         """Deletes multiple tables.
 
         Args:
-            ids (List[str]): List of unique IDs of DataFrame tables.
+            ids (List[str]): List of unique IDs of data tables.
 
         Returns:
             A partial success if any tables failed to delete, or None if all
@@ -216,7 +216,7 @@ class DataFrameClient(BaseClient):
         """Reads raw data from the table identified by its ID.
 
         Args:
-            id: Unique ID of a DataFrame table.
+            id: Unique ID of a data table.
             columns: Columns to include in the response. Data will be returned in the same order as
                 the columns. If not specified, all columns are returned.
             order_by: List of columns to sort by. Multiple columns may be specified to order rows
@@ -241,7 +241,7 @@ class DataFrameClient(BaseClient):
         """Appends one or more rows of data to the table identified by its ID.
 
         Args:
-            id: Unique ID of a DataFrame table.
+            id: Unique ID of a data table.
             data: The rows of data to append and any additional options.
 
         Raises:
@@ -257,7 +257,7 @@ class DataFrameClient(BaseClient):
         """Reads rows of data that match a filter from the table identified by its ID.
 
         Args:
-            id: Unique ID of a DataFrame table.
+            id: Unique ID of a data table.
             query: The filtering and sorting to apply when reading data.
 
         Returns:
@@ -276,7 +276,7 @@ class DataFrameClient(BaseClient):
         """Reads decimated rows of data from the table identified by its ID.
 
         Args:
-            id: Unique ID of a DataFrame table.
+            id: Unique ID of a data table.
             query: The filtering and decimation options to apply when reading data.
 
         Returns:
@@ -300,7 +300,7 @@ class DataFrameClient(BaseClient):
         """Exports rows of data that match a filter from the table identified by its ID.
 
         Args:
-            id: Unique ID of a DataFrame table.
+            id: Unique ID of a data table.
             query: The filtering, sorting, and export format to apply when exporting data.
 
         Returns:
