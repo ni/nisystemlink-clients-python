@@ -6,7 +6,7 @@ iterate over the generator as if it was a file.
 class GeneratorFileLike:
     def __init__(self, generator):
         self._generator = generator
-        self._buffer = b''
+        self._buffer = b""
 
     def read(self, size=-1):
         """Read at most `size` bytes from the file-like object. If `size` is not
@@ -21,7 +21,7 @@ class GeneratorFileLike:
                 break
         if size < 0:
             data = self._buffer
-            self._buffer = b''
+            self._buffer = b""
         else:
             data = self._buffer[:size]
             self._buffer = self._buffer[size:]

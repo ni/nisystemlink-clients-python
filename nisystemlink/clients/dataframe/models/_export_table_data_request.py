@@ -10,7 +10,7 @@ from ._column_order_by import ColumnOrderBy
 class ExportFormat(str, Enum):
     """The format of the exported data."""
 
-    CSV = 'CSV'
+    CSV = "CSV"
     """Comma-separated values."""
 
 
@@ -35,6 +35,6 @@ class ExportTableDataRequest(JsonModel):
     filtering do not need to be included in the columns list, in which case
     they are not included in the export."""
 
-    response_format: ExportFormat = None
+    response_format: ExportFormat
     """The format of the exported data. The only response format
     currently supported is ``CSV``."""

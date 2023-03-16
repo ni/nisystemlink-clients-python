@@ -600,21 +600,13 @@ class TestDataFrame:
             rsps.add(
                 responses.POST,
                 f"{client.session.base_url}tables/{id}/export-data",
-                body=b'1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5',
-                match=[
-                    matchers.json_params_matcher(
-                        {
-                            "responseFormat": "CSV"
-                        }
-                    )
-                ],
+                body=b"1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5",
+                match=[matchers.json_params_matcher({"responseFormat": "CSV"})],
             )
 
             response = client.export_table_data(
                 id,
-                ExportTableDataRequest(
-                    response_format=ExportFormat.CSV
-                ),
+                ExportTableDataRequest(response_format=ExportFormat.CSV),
             )
 
-            assert response.read() == b'1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5'
+            assert response.read() == b"1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5"

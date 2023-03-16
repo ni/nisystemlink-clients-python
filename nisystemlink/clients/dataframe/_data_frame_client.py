@@ -289,14 +289,14 @@ class DataFrameClient(BaseClient):
         ...
 
     @response_handler()
-    def iter_content_filelike_wrapper(response):
+    def iter_content_filelike_wrapper(response) -> GeneratorFileLike:
         return GeneratorFileLike(response.iter_content(chunk_size=4096))
 
     @iter_content_filelike_wrapper
     @post("tables/{id}/export-data", args=[Path, Body])
     def export_table_data(
         self, id: str, query: models.ExportTableDataRequest
-    ):
+    ) -> GeneratorFileLike:
         """Exports rows of data that match a filter from the table identified by its ID.
 
         Args:
