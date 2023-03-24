@@ -20,7 +20,9 @@ table = response.tables[0]
 request = ExportTableDataRequest(
     columns=["col1"],
     order_by=[ColumnOrderBy(column="col2", descending=True)],
-    filters=[ColumnFilter(column="col1", operation=FilterOperation.NotEquals, value=0)],
+    filters=[
+        ColumnFilter(column="col1", operation=FilterOperation.NotEquals, value="0")
+    ],
     response_format=ExportFormat.CSV,
 )
 

@@ -19,8 +19,8 @@ nisystemlink.clients.dataframe
    .. automethod:: get_table_data
    .. automethod:: append_table_data
    .. automethod:: query_table_data
-   .. automethod:: query_decimated_data
    .. automethod:: export_table_data
+   .. automethod:: query_decimated_data
 
 .. automodule:: nisystemlink.clients.dataframe.models
    :members:

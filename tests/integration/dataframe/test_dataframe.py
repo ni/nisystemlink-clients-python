@@ -583,6 +583,7 @@ class TestDataFrame:
                     int_index_column,
                     Column(name="col1", data_type=DataType.Float64),
                     Column(name="col2", data_type=DataType.Float64),
+                    Column(name="col3", data_type=DataType.Float64),
                 ]
             )
         )
@@ -600,7 +601,7 @@ class TestDataFrame:
             rsps.add(
                 responses.POST,
                 f"{client.session.base_url}tables/{id}/export-data",
-                body=b"1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5",
+                body=b'"col1","col2","col3"\r\n1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5',
                 match=[matchers.json_params_matcher({"responseFormat": "CSV"})],
             )
 
@@ -609,4 +610,7 @@ class TestDataFrame:
                 ExportTableDataRequest(response_format=ExportFormat.CSV),
             )
 
-            assert response.read() == b"1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5"
+            assert (
+                response.read()
+                == b'"col1","col2","col3"\r\n1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5'
+            )

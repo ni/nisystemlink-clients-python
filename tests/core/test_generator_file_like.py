@@ -1,4 +1,4 @@
-from nisystemlink.clients.core.helpers.iterator_file_like import IteratorFileLike
+from nisystemlink.clients.core.helpers import IteratorFileLike
 
 
 class TestIteratorFileLike:

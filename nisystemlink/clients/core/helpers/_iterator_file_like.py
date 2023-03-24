@@ -1,12 +1,12 @@
-"""A file-like object adapter that wraps a python iterator, providing a way to
-read from the iterator as if it was a file.
-"""
-
 from typing import Any, Iterator
 
 
 class IteratorFileLike:
-    def __init__(self, iterator: Iterator[Any]) -> None:
+    """A file-like object adapter that wraps a python iterator, providing a way to
+    read from the iterator as if it was a file.
+    """
+
+    def __init__(self, iterator: Iterator[Any]):
         self._iterator = iterator
         self._buffer = b""
 

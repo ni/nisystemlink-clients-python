@@ -5,7 +5,7 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, patch, post
-from nisystemlink.clients.core.helpers.iterator_file_like import IteratorFileLike
+from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
 from uplink import Body, Field, Path, Query, response_handler
 
@@ -289,11 +289,12 @@ class DataFrameClient(BaseClient):
         """
         ...
 
+    # Suppress type checking because we can't add typing to uplink.response_handler
     @response_handler()  # type: ignore
-    def iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
+    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
         return IteratorFileLike(response.iter_content(chunk_size=4096))
 
-    @iter_content_filelike_wrapper  # type: ignore
+    @_iter_content_filelike_wrapper  # type: ignore
     @post("tables/{id}/export-data", args=[Path, Body])
     def export_table_data(
         self, id: str, query: models.ExportTableDataRequest
