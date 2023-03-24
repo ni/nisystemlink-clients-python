@@ -583,7 +583,6 @@ class TestDataFrame:
                     int_index_column,
                     Column(name="col1", data_type=DataType.Float64),
                     Column(name="col2", data_type=DataType.Float64),
-                    Column(name="col3", data_type=DataType.Float64),
                 ]
             )
         )
