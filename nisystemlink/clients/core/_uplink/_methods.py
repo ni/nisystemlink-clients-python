@@ -6,8 +6,8 @@ from uplink import (
     Body,
     commands,
     json,
-    returns,
     response_handler as uplink_response_handler,
+    returns,
 )
 
 F = TypeVar("F", bound=Callable[..., Any])
