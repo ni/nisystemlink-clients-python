@@ -7,3 +7,7 @@ nisystemlink.clients.core
    :members:
    :inherited-members:
    :imported-members:
+   
+.. automodule:: nisystemlink.clients.core.helpers
+   :members:
+   :imported-members:

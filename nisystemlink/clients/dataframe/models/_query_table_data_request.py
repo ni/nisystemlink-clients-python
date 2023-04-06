@@ -1,19 +1,9 @@
 from typing import List, Optional
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
+from ._column_order_by import ColumnOrderBy
 from ._query_table_data_base import QueryTableDataBase
-
-
-class ColumnOrderBy(JsonModel):
-    """Specifies a column to order by and the ordering direction."""
-
-    column: str
-    """The name of the column to order by."""
-
-    descending: Optional[bool] = None
-    """Whether the ordering should be in descending order."""
 
 
 class QueryTableDataRequest(QueryTableDataBase, WithPaging):
