@@ -1,6 +1,5 @@
 from shutil import copyfileobj
 
-import pandas as pd
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import (
     ColumnFilter,
@@ -33,4 +32,5 @@ with open(f"{table.name}.csv", "wb") as f:
     copyfileobj(data, f)
 
 # Alternatively, load the export data into a pandas dataframe
-df = pd.read_csv(data)
+# import pandas as pd
+# df = pd.read_csv(data)

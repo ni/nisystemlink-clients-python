@@ -2,7 +2,13 @@
 
 from typing import Any, Callable, Optional, Sequence, Tuple, TypeVar, Union
 
-from uplink import Body, commands, json, returns
+from uplink import (
+    Body,
+    commands,
+    json,
+    returns,
+    response_handler as uplink_response_handler,
+)
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -48,5 +54,16 @@ def delete(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
 
     def decorator(func: F) -> F:
         return commands.delete(path, args=args)(func)  # type: ignore
+
+    return decorator
+
+
+def response_handler(
+    handler: Any, requires_consumer: Optional[bool] = False
+) -> Callable[[F], F]:
+    """Annotation for creating custom response handlers."""
+
+    def decorator(func: F) -> F:
+        return uplink_response_handler(handler, requires_consumer)(func)  # type: ignore
 
     return decorator
