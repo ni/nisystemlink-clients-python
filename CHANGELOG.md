@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.0 (2023-04-06)
+### Feature
+* Add CSV export capability to DataFrameClient ([#45](https://github.com/ni/nisystemlink-clients-python/issues/45)) ([`5cc2d01`](https://github.com/ni/nisystemlink-clients-python/commit/5cc2d01c0655fdd8ab1d5e1895d5be38020c9cd0))
+
 ## v1.0.2 (2023-03-08)
 ### Fix
 * Correct spelling for model class TableMetadataModification ([#44](https://github.com/ni/nisystemlink-clients-python/issues/44)) ([`30c760c`](https://github.com/ni/nisystemlink-clients-python/commit/30c760c2eb9af8e17ddb8c6730f6ef5aae20e973))
