@@ -289,12 +289,11 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    # Suppress type checking because we can't add typing to uplink.response_handler
-    @response_handler()  # type: ignore
     def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
         return IteratorFileLike(response.iter_content(chunk_size=4096))
 
-    @_iter_content_filelike_wrapper  # type: ignore
+    # Suppress type checking because we can't add typing to uplink.response_handler
+    @response_handler(_iter_content_filelike_wrapper)  # type: ignore
     @post("tables/{id}/export-data", args=[Path, Body])
     def export_table_data(
         self, id: str, query: models.ExportTableDataRequest
