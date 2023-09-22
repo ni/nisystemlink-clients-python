@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.1 (2023-09-22)
+
+### Fix
+
+* Bump certifi from 2022.12.7 to 2023.7.22 ([#47](https://github.com/ni/nisystemlink-clients-python/issues/47)) ([`79f6aad`](https://github.com/ni/nisystemlink-clients-python/commit/79f6aadcbe545143051386f7fcc7b7d38613a36e))
+
 ## v1.1.0 (2023-04-06)
 ### Feature
 * Add CSV export capability to DataFrameClient ([#45](https://github.com/ni/nisystemlink-clients-python/issues/45)) ([`5cc2d01`](https://github.com/ni/nisystemlink-clients-python/commit/5cc2d01c0655fdd8ab1d5e1895d5be38020c9cd0))
