@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Extra, Field
+from pydantic import Field
 
 from ._auth_models import Error, User, Org, Workspace, AuthPolicy
 
 
 class AuthResponse(JsonModel):
-    """Information about the authenticated caller"""
+    """Information about the authenticated caller."""
 
     user: Optional[User]
     """Details of authenticated caller"""
