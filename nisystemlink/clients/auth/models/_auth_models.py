@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
@@ -168,23 +168,31 @@ class User(JsonModel):
         None, alias="firstName", example="user-first-name"
     )
     """
-    The first name
+    The user's first name
     """
     last_name: Optional[str] = Field(None, alias="lastName", example="user-last-name")
     """
-    The last name
+    The user's last name
     """
     email: Optional[str] = Field(None, example="example@email.com")
     """
-    The email
+    The user's email
+    """
+    phone: Optional[str] = Field(None, example="555-555-5555")
+    """
+    The user's contact phone number
     """
     niua_id: Optional[str] = Field(None, alias="niuaId", example="example@email.com")
     """
     The external id (niuaId, SID, login name)
     """
+    login: Optional[str] = None
+    """
+    The login name of the user. This the "username" or equivalent entered when the user authenticates with the identity provider.
+    """
     accepted_to_s: Optional[bool] = Field(None, alias="acceptedToS", example=True)
     """
-    Whether the user accepted the terms of service
+    (deprecated) Whether the user accepted the terms of service
     """
     properties: Optional[Dict[str, str]] = Field(None, example={"key1": "value1"})
     """
@@ -213,6 +221,10 @@ class User(JsonModel):
     status: Optional[Status] = Field(None, example="active")
     """
     The status of the users' registration
+    """
+    entitlements: Optional[Any] = None
+    """
+    (deprecated) Features to which the user is entitled within the application.
     """
 
 
