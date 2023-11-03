@@ -39,7 +39,7 @@ class TestAuth:
         query = WebAppsAdvancedQuery(
             filter=id_fitler, take=1
         )  # test continuation tokens
-        webapps:List[WebApp] = []
+        webapps: List[WebApp] = []
 
         while True:
             resp = client.query_webapps(query=query)
