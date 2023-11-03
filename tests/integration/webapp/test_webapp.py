@@ -3,7 +3,7 @@ from typing import List
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.webapp import WebappClient
-from nisystemlink.clients.webapp.models import WebAppsAdvancedQuery
+from nisystemlink.clients.webapp.models import WebAppsAdvancedQuery, WebApp
 
 
 @pytest.fixture(scope="class")
@@ -39,11 +39,12 @@ class TestAuth:
         query = WebAppsAdvancedQuery(
             filter=id_fitler, take=1
         )  # test continuation tokens
-        webapps = []
+        webapps:List[WebApp] = []
 
         while True:
             resp = client.query_webapps(query=query)
-            webapps += resp.webapps
+            if resp.webapps:
+                webapps += resp.webapps
             query.continuation_token = resp.continuation_token
             if resp.continuation_token is None:
                 break
