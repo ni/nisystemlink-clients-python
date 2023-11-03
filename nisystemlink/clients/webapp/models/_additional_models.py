@@ -13,7 +13,9 @@ class WebAppsResponse(JsonModel):
     """
     List of webapps.
     """
-    continuation_token: Optional[str] = Field(None, alias="continuationToken", example="token")
+    continuation_token: Optional[str] = Field(
+        None, alias="continuationToken", example="token"
+    )
     """
     The continuation token can be used to paginate through the webapp query results.
     Provide this token in the next query webapps call.

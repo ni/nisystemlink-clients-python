@@ -97,12 +97,12 @@ class Policy(JsonModel):
         None, alias="templateId", example="policy-template-id"
     )
     """
-    The id of the policy template. Only set if the policy has been created based on a template and 
+    The id of the policy template. Only set if the policy has been created based on a template and
     does not contain inline statements.
     """
     workspace: Optional[str] = Field(None, example="workspace-id")
     """
-    The workspace the policy template applies to. Only set if the policy has been created based on a 
+    The workspace the policy template applies to. Only set if the policy has been created based on a
     template and does not contain inline statements.
     """
 
@@ -190,7 +190,8 @@ class User(JsonModel):
     """
     login: Optional[str] = None
     """
-    The login name of the user. This the "username" or equivalent entered when the user authenticates with the identity provider.
+    The login name of the user. This the "username" or equivalent entered when
+    the user authenticates with the identity provider.
     """
     accepted_to_s: Optional[bool] = Field(None, alias="acceptedToS", example=True)
     """

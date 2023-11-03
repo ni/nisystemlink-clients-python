@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field, conint
+from pydantic import conint, Field
 
 
 class Type(Enum):
@@ -31,6 +31,10 @@ class WebApp(JsonModel):
     id: Optional[str] = Field(None, example="asdsad-17a6-45323-b64b-65325287372d")
     """
     The webapp Id
+    """
+    org_id: Optional[str] = Field(None, alias="orgId")
+    """
+    (Deprecated) The id of the organization
     """
     type: Optional[Type] = None
     """
@@ -81,7 +85,8 @@ class WebApp(JsonModel):
 class WebAppContent(JsonModel):
     __root__: bytes = Field(..., title="WebApp Content")
     """
-    The webapp binary content. Depending on the webapp's type it can be a dashboard, template or *.nipkg file exported from LabVIEW NXG
+    The webapp binary content. Depending on the webapp's type it can be a dashboard,
+    template or *.nipkg file exported from LabVIEW NXG
     """
 
 
@@ -90,7 +95,9 @@ class WebAppsAdvancedQuery(JsonModel):
         None, example='name.StartsWith("myWebApp") || type == "WebVI"'
     )
     """
-    The filter criteria for webapps, consisting of a string of queries composed using AND/OR operators. String values need to be enclosed in double quotes. Parenthesis can be used within the filter to better define the order of operations.
+    The filter criteria for webapps, consisting of a string of queries composed using AND/OR operators.
+    String values need to be enclosed in double quotes. Parenthesis can be used within the filter to
+    better define the order of operations.
 
     Filter syntax: '[property name][operator][operand] and [property name][operator][operand]'
     Operators:
@@ -102,10 +109,14 @@ class WebAppsAdvancedQuery(JsonModel):
     - Less than or equal operator '<='. Example: 'x <= y'
     - Logical AND operator 'and'. Example: 'x and y'
     - Logical OR operator 'or'. Example: 'x or y'
-    - Starts with operator '.StartsWith()', used to check whether a string starts with another string. Example: 'x.StartsWith(y)'
-    - Does not start with operator '!.StartsWith()', used to check whether a string does not start with another string. Example: '!x.StartsWith(y)'
-    - String null or empty 'string.IsNullOrEmpty()', used to check whether a string is null or empty. Example: 'string.IsNullOrEmpty(x)'
-    - String is not null or empty '!string.IsNullOrEmpty()', used to check whether a string is not null or empty. Example: '!string.IsNullOrEmpty(x)'
+    - Starts with operator '.StartsWith()', used to check whether a string starts with another string.
+      Example: 'x.StartsWith(y)'
+    - Does not start with operator '!.StartsWith()', used to check whether a string does not start with another string.
+      Example: '!x.StartsWith(y)'
+    - String null or empty 'string.IsNullOrEmpty()', used to check whether a string is null or empty.
+      Example: 'string.IsNullOrEmpty(x)'
+    - String is not null or empty '!string.IsNullOrEmpty()', used to check whether a string is not null or empty.
+      Example: '!string.IsNullOrEmpty(x)'
 
     Valid webapp properties that can be used in the filter:
     - id
@@ -124,7 +135,8 @@ class WebAppsAdvancedQuery(JsonModel):
         None, alias="continuationToken", example="token"
     )
     """
-    The continuation token can be used to paginate through the webapp query results. Provide this token in the next query webapps call.
+    The continuation token can be used to paginate through the webapp query results.
+    Provide this token in the next query webapps call.
     """
 
 
