@@ -1,5 +1,6 @@
-import pytest  # type: ignore
 from typing import List
+
+import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.webapp import WebappClient
 from nisystemlink.clients.webapp.models import WebAppsAdvancedQuery
@@ -15,8 +16,8 @@ def client(enterprise_config):
 def test_webapps(client: WebappClient) -> List[str]:
     """Fixture to return the pre-created WebApp IDs for testing."""
     webapp_ids = [
-        "0c5b1fab-1c21-4559-89d9-9f3b02e301f4",  # 'ADC' dataspace
-        "8c5e4eb0-4f24-4704-a886-7e7352637322",  # 'CS_STDF_T2KFT' dataspace
+        "452bc11b-6a8a-4c3e-8eb1-721270157eb8",  # 'PyAPI_Test1' dataspace
+        "0345a956-3747-42e1-9296-6ed06545bd0d",  # 'PyAPI_Test2' dataspace
     ]
     return webapp_ids
 
