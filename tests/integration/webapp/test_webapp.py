@@ -3,7 +3,7 @@ from typing import List
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.webapp import WebappClient
-from nisystemlink.clients.webapp.models import WebAppsAdvancedQuery, WebApp
+from nisystemlink.clients.webapp.models import WebApp, WebAppsAdvancedQuery
 
 
 @pytest.fixture(scope="class")
