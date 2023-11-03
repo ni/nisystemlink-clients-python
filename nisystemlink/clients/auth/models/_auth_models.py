@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
@@ -97,11 +97,13 @@ class Policy(JsonModel):
         None, alias="templateId", example="policy-template-id"
     )
     """
-    The id of the policy template. Only set if the policy has been created based on a template and does not contain inline statements.
+    The id of the policy template. Only set if the policy has been created based on a template and 
+    does not contain inline statements.
     """
     workspace: Optional[str] = Field(None, example="workspace-id")
     """
-    The workspace the policy template applies to. Only set if the policy has been created based on a template and does not contain inline statements.
+    The workspace the policy template applies to. Only set if the policy has been created based on a 
+    template and does not contain inline statements.
     """
 
 
