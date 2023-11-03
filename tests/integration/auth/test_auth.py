@@ -14,4 +14,5 @@ class TestAuth:
     def test__get_auth__returns(self, client: AuthClient):
         auth_response = client.get_auth()
         assert getattr(auth_response, "error") is None
+        assert auth_response.workspaces is not None
         assert len(auth_response.workspaces) >= 1

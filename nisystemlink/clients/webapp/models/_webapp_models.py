@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import conint, Field
+from pydantic import Field
 
 
 class Type(Enum):
@@ -127,7 +127,7 @@ class WebAppsAdvancedQuery(JsonModel):
     - type
     - workspace
     """
-    take: Optional[conint(ge=0, le=1000)] = Field(None, example=10)
+    take: Optional[int] = Field(None, example=10, ge=0, le=1000)
     """
     The maximum number of webapps to return
     """
