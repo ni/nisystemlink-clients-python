@@ -21,5 +21,3 @@ class AuthInfo(JsonModel):
     """List of policies for the authenticated caller"""
     properties: Optional[Dict[str, str]] = Field(None, example={"key1": "value1"})
     """A map of key value properties"""
-    error: Optional[Error]
-    """Error response"""

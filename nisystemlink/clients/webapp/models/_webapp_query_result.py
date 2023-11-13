@@ -20,7 +20,3 @@ class WebAppsQueryResult(JsonModel):
     The continuation token can be used to paginate through the webapp query results.
     Provide this token in the next query webapps call.
     """
-    error: Optional[Error]
-    """
-    Error response.
-    """
