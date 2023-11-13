@@ -1,3 +1,3 @@
-from ._additional_models import AuthResponse
+from ._auth_info import AuthInfo
 
 # flake8: noqa

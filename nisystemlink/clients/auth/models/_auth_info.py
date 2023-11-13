@@ -8,7 +8,7 @@ from pydantic import Field
 from ._auth_models import AuthPolicy, Error, Org, User, Workspace
 
 
-class AuthResponse(JsonModel):
+class AuthInfo(JsonModel):
     """Information about the authenticated caller."""
 
     user: Optional[User]

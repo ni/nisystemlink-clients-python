@@ -8,7 +8,7 @@ from pydantic import Field
 from ._webapp_models import Error, WebApp
 
 
-class WebAppsResponse(JsonModel):
+class WebAppsQueryResult(JsonModel):
     webapps: Optional[List[WebApp]]
     """
     List of webapps.

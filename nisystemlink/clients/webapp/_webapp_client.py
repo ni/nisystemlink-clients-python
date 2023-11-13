@@ -31,7 +31,7 @@ class WebappClient(BaseClient):
     @post("query", args=[Body])
     def query_webapps(
         self, query: models.WebAppsAdvancedQuery
-    ) -> models.WebAppsResponse:
+    ) -> models.WebAppsQueryResult:
         """Use the Dynamic Linq query language to specify filters for webapps.
         An empty request body queries all webapps.
         """
