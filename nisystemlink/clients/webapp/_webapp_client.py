@@ -1,6 +1,6 @@
 """Implementation of WebappClient."""
 
-from typing import Any, Optional
+from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -55,7 +55,7 @@ class WebappClient(BaseClient):
 
     @response_handler(_iter_content_filelike_wrapper)
     @get("{id}/content")
-    def get_content(self, id: str) -> Any:
+    def get_content(self, id: str) -> IteratorFileLike:
         """Get the content of a webapp. ContentType varies from JSON for dashboards
         and templates or redirect to main HTML for WebVIs.
 
