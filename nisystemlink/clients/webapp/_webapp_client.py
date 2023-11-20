@@ -12,6 +12,10 @@ from uplink import Body
 from . import models
 
 
+def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
+    return IteratorFileLike(response.iter_content(chunk_size=4096))
+
+
 class WebappClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
@@ -34,11 +38,11 @@ class WebappClient(BaseClient):
     def query_webapps(
         self, query: models.WebAppsAdvancedQuery
     ) -> models.WebAppsQueryResult:
-        """Use the Dynamic Linq query language to specify filters for webapps.
-        An empty request body queries all webapps.
+        """Query webapps using dynamic LINQ formatted query.
 
         Args:
-            query (models.WebAppsAdvancedQuery): The filter criteria for webapps, consisting of a string of queries composed using AND/OR operators.
+            query (models.WebAppsAdvancedQuery): The filter criteria for webapps, consisting of a
+            string of queries composed using AND/OR operators.
 
         Returns:
             models.WebAppsQueryResult: Paged result of WebApps that match the query.
@@ -47,11 +51,7 @@ class WebappClient(BaseClient):
             ApiException: if unable to communicate with the WebApp Service
                 or provided an invalid argument.
         """
-
         ...
-
-    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
-        return IteratorFileLike(response.iter_content(chunk_size=4096))
 
     @response_handler(_iter_content_filelike_wrapper)
     @get("{id}/content")

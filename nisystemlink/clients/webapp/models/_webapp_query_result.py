@@ -5,7 +5,7 @@ from typing import List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
 
-from ._webapp_models import Error, WebApp
+from ._webapp_models import WebApp
 
 
 class WebAppsQueryResult(JsonModel):

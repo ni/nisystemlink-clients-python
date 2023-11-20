@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
 
-from ._auth_models import AuthPolicy, Error, Org, User, Workspace
+from ._auth_models import AuthPolicy, Org, User, Workspace
 
 
 class AuthInfo(JsonModel):
