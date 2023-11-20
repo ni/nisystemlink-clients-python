@@ -4,7 +4,9 @@ from typing import Any, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get, post
+from nisystemlink.clients.core._uplink._methods import get, post, response_handler
+from nisystemlink.clients.core.helpers import IteratorFileLike
+from requests.models import Response
 from uplink import Body
 
 from . import models
@@ -34,9 +36,24 @@ class WebappClient(BaseClient):
     ) -> models.WebAppsQueryResult:
         """Use the Dynamic Linq query language to specify filters for webapps.
         An empty request body queries all webapps.
+
+        Args:
+            query (models.WebAppsAdvancedQuery): The filter criteria for webapps, consisting of a string of queries composed using AND/OR operators.
+
+        Returns:
+            models.WebAppsQueryResult: Paged result of WebApps that match the query.
+
+        Raises:
+            ApiException: if unable to communicate with the WebApp Service
+                or provided an invalid argument.
         """
+
         ...
 
+    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
+        return IteratorFileLike(response.iter_content(chunk_size=4096))
+
+    @response_handler(_iter_content_filelike_wrapper)
     @get("{id}/content")
     def get_content(self, id: str) -> Any:
         """Get the content of a webapp. ContentType varies from JSON for dashboards
@@ -46,6 +63,10 @@ class WebappClient(BaseClient):
             id (str): Webapp id to get the content of.
 
         Returns:
-            Any: Content of the Webapp
+            A file-like object for reading the WebApp content.
+
+        Raises:
+            ApiException: if unable to communicate with the WebApp Service
+                or provided an invalid id.
         """
         ...
