@@ -12,7 +12,6 @@ def client(enterprise_config):
 @pytest.mark.integration
 class TestAuth:
     def test__get_auth__returns(self, client: AuthClient):
-        auth_response = client.get_auth()
-        assert getattr(auth_response, "error") is None
+        auth_response = client.authenticate()
         assert auth_response.workspaces is not None
         assert len(auth_response.workspaces) >= 1

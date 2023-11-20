@@ -28,6 +28,6 @@ class AuthClient(BaseClient):
         super().__init__(configuration, base_path="/niauth/v1/")
 
     @get("auth")
-    def get_auth(self) -> models.AuthInfo:
+    def authenticate(self) -> models.AuthInfo:
         """Authenticates the given x-ni-api-key and returns information about the caller."""
         ...
