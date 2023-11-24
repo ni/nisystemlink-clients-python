@@ -35,9 +35,7 @@ class WebappClient(BaseClient):
         super().__init__(configuration, base_path="/niapp/v1/webapps/")
 
     @post("query", args=[Body])
-    def query_webapps(
-        self, query: models.WebAppsAdvancedQuery
-    ) -> models.WebAppsQueryResult:
+    def query_webapps(self, query: models.WebAppsAdvancedQuery) -> models.PagedWebApps:
         """Query webapps using dynamic LINQ formatted query.
 
         Args:

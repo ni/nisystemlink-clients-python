@@ -2,21 +2,15 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field
+from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
 from ._webapp_models import WebApp
 
 
-class WebAppsQueryResult(JsonModel):
-    webapps: Optional[List[WebApp]]
+class PagedWebApps(WithPaging):
+    """The response for a WebApp query containing the matched WebApps."""
+
+    webapps: Optional[List[WebApp]] = None
     """
     List of webapps.
-    """
-    continuation_token: Optional[str] = Field(
-        None, alias="continuationToken", example="token"
-    )
-    """
-    The continuation token can be used to paginate through the webapp query results.
-    Provide this token in the next query webapps call.
     """
