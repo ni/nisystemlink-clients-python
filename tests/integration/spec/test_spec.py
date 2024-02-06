@@ -1,5 +1,4 @@
 import pytest
-
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 
