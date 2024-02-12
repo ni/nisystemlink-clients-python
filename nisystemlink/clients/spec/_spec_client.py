@@ -28,12 +28,39 @@ class SpecClient(BaseClient):
         """
         ...
 
-    @post("specs", args=[Body])
+    @post("specs")
     def create_specs(
         self, specs: models.CreateSpecificationsRequest
-    ) -> models.CreateSpecificationsPartialSuccessResponse: ...
+    ) -> models.CreateSpecificationsPartialSuccessResponse:
+        """Creates one or more specifications.
 
-    @post("delete-specs", args=[Body])
+        Args:
+            specs: A list of specifications to create.
+
+        Returns:
+            A list of specs that were successfully created and ones that failed to be created.
+
+        Raises:
+            ApiException: if unable to communicate with the `/nispec` service or if there are
+            invalid arguments.
+        """
+        ...
+
+    @post("delete-specs")
     def delete_specs(
         self, spec_ids: models.DeleteSpecificationsRequest
-    ) -> Optional[models.DeleteSpecificationsPartialSuccessResponse]: ...
+    ) -> Optional[models.DeleteSpecificationsPartialSuccessResponse]:
+        """Deletes one or more specifications by global id.
+
+        Args:
+            spec_ids: a list of specification ids. Note that these are the global ids and not the
+            `specId` that is local to a product and workspace.
+
+        Returns:
+            None if all deletes succeed otherwise a list of which ids failed and which succeeded.
+
+        Raises:
+            ApiException: if unable to communicate with the `nispec` service or if there are invalid
+            arguments.
+        """
+        ...
