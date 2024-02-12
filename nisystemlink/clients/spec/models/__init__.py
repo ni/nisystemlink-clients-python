@@ -14,6 +14,10 @@ from ._create_specs_request import (
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationResponseObject,
 )
+from .__delete_specs_request import (
+    DeleteSpecificationsRequest,
+    DeleteSpecificationsPartialSuccessResponse,
+)
 
 
 # flake8: noqa

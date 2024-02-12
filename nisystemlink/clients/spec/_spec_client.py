@@ -32,3 +32,8 @@ class SpecClient(BaseClient):
     def create_specs(
         self, specs: models.CreateSpecificationsRequest
     ) -> models.CreateSpecificationsPartialSuccessResponse: ...
+
+    @post("delete-specs", args=[Body])
+    def delete_specs(
+        self, spec_ids: models.DeleteSpecificationsRequest
+    ) -> Optional[models.DeleteSpecificationsPartialSuccessResponse]: ...
