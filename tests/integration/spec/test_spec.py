@@ -71,3 +71,28 @@ class TestSpec:
             )
         )
         assert delete_response is None
+
+    def test__create_duplicate_spec__errors(self, client: SpecClient):
+        duplicate_id = "spec1"
+        productId = "TestProduct"
+        spec = CreateSpecificationRequestObject(
+            productId=productId,
+            specId=duplicate_id,
+            type=Type.FUNCTIONAL,
+            keywords=["work", "reviewed"],
+            category="Parametric Specs",
+            block="newBlock",
+        )
+        response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        assert response is not None
+        assert len(response.created_specs) == 1
+
+        fail_response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        assert len(fail_response.failed_specs) == 1
+        assert len(fail_response.created_specs) == 0
+        assert fail_response.failed_specs[0].spec_id == duplicate_id
+
+        delete_response = client.delete_specs(
+            DeleteSpecificationsRequest(ids=[response.created_specs[0].id])
+        )
+        assert delete_response is None
