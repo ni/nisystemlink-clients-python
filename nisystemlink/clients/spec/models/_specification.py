@@ -1,100 +1,89 @@
-from __future__ import annotations
-
-from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from ._condition import Condition, ConditionType
-from pydantic import Extra, Field
+from ._condition import Condition
 
 
 class SpecificationLimit(JsonModel):
-    class Config:
-        extra = Extra.forbid
+    """A limit for a specification.
 
-    min: Optional[float] = Field(None, example=-66.54)
+    The limit is the value that a measurement should be compared against during analysis to
+    determine the health or pass/fail status of that measurement.
     """
-    Minimum value of the specification.
+
+    min: Optional[float]
+    """Minimum limit of the specification.
+    
+    All measurements that map to this specification should be > this limit.
     """
-    typical: Optional[float] = Field(None, example=180)
-    """
-    Typical value of the specification.
-    """
-    max: Optional[float] = Field(None, example=303.659)
-    """
-    Maximum value of the specification.
+
+    typical: Optional[float]
+    """Typical value of the specification."""
+
+    max: Optional[float]
+    """Maximum value of the specification.
+    
+    All measurements that map to this specification should be < this limit.
     """
 
 
 class Type(Enum):
+    """The overall type of the specification."""
+
     PARAMETRIC = "PARAMETRIC"
+    """Parametric specs have limits."""
+
     FUNCTIONAL = "FUNCTIONAL"
+    """Functional specs only have pass/fail status."""
 
 
 class SpecificationBase(JsonModel):
-    class Config:
-        extra = Extra.forbid
 
-    product_id: str = Field(
-        ...,
-        alias="productId",
-        example="110ac9e8-4187-9870-a0b4-10dabfa02a0e",
-        min_length=1,
-    )
-    """
-    Id of the product to which the specification will be associated.
-    """
-    spec_id: str = Field(..., alias="specId", example="Vsat01", min_length=1)
-    """
-    User provided value using which the specification will be identified.
+    product_id: str
+    """Id of the product to which the specification will be associated."""
+
+    spec_id: str
+    """User provided value using which the specification will be identified.
+
     This should be unique for a product and workspace combination.
     """
-    name: Optional[str] = Field(None, example="Saturation voltage")
+
+    name: Optional[str]
+    """Name of the specification."""
+
+    category: Optional[str]
+    """Category of the specification."""
+
+    type: Type
+    """Type of the specification."""
+
+    symbol: Optional[str]
+    """Short form identifier of the specification."""
+
+    block: Optional[str]
+    """Block name of the specification.
+    
+    Typically a block is one of the subsystems of the overall product being specified.
     """
-    Name of the specification.
-    """
-    category: Optional[str] = Field(None, example="Electrical characteristics")
-    """
-    Category of the specification.
-    """
-    type: Type = Field(..., example="PARAMETRIC")
-    """
-    Type of the specification.
-    """
-    symbol: Optional[str] = Field(None, example="VSat")
-    """
-    Short form identifier of the specification.
-    """
-    block: Optional[str] = Field(None, example="USB")
-    """
-    Block name of the specification.
-    """
-    limit: Optional[SpecificationLimit] = None
-    unit: Optional[str] = Field(None, example="mV")
-    """
-    Unit of the specification.
-    """
-    conditions: Optional[List[Condition]] = None
-    """
-    Conditions associated with the specification.
-    """
-    keywords: Optional[List[str]] = Field(
-        None, example=["Test specification only", "First"]
-    )
-    """
-    Keywords or phrases associated with the specification.
-    """
-    properties: Optional[Dict[str, str]] = Field(
-        None, example={"Product manager": "Jim", "Spec owner": "Jacob"}
-    )
-    """
-    Properties associated with the specification.
-    """
-    workspace: Optional[str] = Field(
-        None, example="990ac9e8-41ac-9870-a0b4-10dddfa02a0e"
-    )
-    """
-    Id of the workspace to which the specification will be associated.
+
+    limit: Optional[SpecificationLimit]
+    """The limits for this spec."""
+
+    unit: Optional[str]
+    """Unit of the specification."""
+
+    conditions: Optional[List[Condition]]
+    """Conditions associated with the specification."""
+
+    keywords: Optional[List[str]]
+    """Keywords or phrases associated with the specification."""
+
+    properties: Optional[Dict[str, str]]
+    """Additional properties associated with the specification."""
+
+    workspace: Optional[str]
+    """Id of the workspace to which the specification will be associated.
+    
     Default workspace will be taken if the value is not given.
     """
