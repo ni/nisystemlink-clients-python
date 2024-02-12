@@ -4,7 +4,8 @@ from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get
+from nisystemlink.clients.core._uplink._methods import get, post
+from uplink import Body
 
 from . import models
 
@@ -26,3 +27,8 @@ class SpecClient(BaseClient):
             ApiException: if unable to communicate with the DataFrame Service.
         """
         ...
+
+    @post("specs", args=[Body])
+    def create_specs(
+        self, specs: models.CreateSpecificationsRequest
+    ) -> models.CreateSpecificationsPartialSuccessResponse: ...
