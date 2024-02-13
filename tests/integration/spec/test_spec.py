@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 import pytest
+
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
@@ -8,6 +9,7 @@ from nisystemlink.clients.spec.models import (
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
+    QuerySpecificationsRequest,
     Type,
     UpdateSpecificationRequestObject,
     UpdateSpecificationsRequest,
@@ -38,6 +40,25 @@ def create_specs(client: SpecClient):
     client.delete_specs(
         DeleteSpecificationsRequest(ids=[spec.id for spec in created_specs])
     )
+
+
+@pytest.fixture
+def create_specs_for_query(create_specs):
+    """Fixture for creating a set of specs that can be used to test query operations."""
+    product = "TestProduct"
+    spec_documents = [
+        {"specId": "spec1", "type": Type.FUNCTIONAL, "category": "ParametricSpecs"}
+    ]
+    spec_requests = []
+    for spec in spec_documents:
+        new_spec = CreateSpecificationRequestObject(
+            product_id=product,
+            spec_id=spec["specId"],
+            type=spec["type"],
+            category=spec["category"],
+        )
+        spec_requests.append(new_spec)
+    return create_specs(CreateSpecificationsRequest(specs=spec_requests))
 
 
 @pytest.mark.integration
@@ -164,3 +185,11 @@ class TestSpec:
         assert len(update_response.updated_specs) == 1
         updated_spec = update_response.updated_specs[0]
         assert updated_spec.version == 1
+
+    def test__query_product__all_returned(
+        self, client: SpecClient, create_specs, create_specs_for_query
+    ):
+        request = QuerySpecificationsRequest(productIds=["TestProduct"])
+
+        response = client.query_specs(request)
+        assert len(response.specs) == 1

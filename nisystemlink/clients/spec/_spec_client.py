@@ -64,6 +64,20 @@ class SpecClient(BaseClient):
         """
         ...
 
+    @post("query-specs")
+    def query_specs(
+        self, query: models.QuerySpecificationsRequest
+    ) -> models.QuerySpecificationsResponse:
+        """Queries for specs that match the filters.
+
+        Args:
+            query: The query contains a product id as well as a filter for specs under that product.
+
+        Returns:
+            A list of specifications that match the filter.
+        """
+        ...
+
     @post("update-specs")
     def update_specs(
         self, specs: models.UpdateSpecificationsRequest
