@@ -109,6 +109,28 @@ class TestSpec:
         assert len(fail_response.created_specs) == 0
         assert fail_response.failed_specs[0].spec_id == duplicate_id
 
+    def test__delete_existing_spec__succeeds(self, client: SpecClient):
+        # Not using the fixture here so that we can inspect delete response.
+        specId = "spec1"
+        productId = "TestProduct"
+        spec = CreateSpecificationRequestObject(
+            productId=productId,
+            specId=specId,
+            type=Type.FUNCTIONAL,
+        )
+        response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        created_spec = response.created_specs[0]
+
+        delete_response = client.delete_specs(
+            DeleteSpecificationsRequest(ids=[created_spec.id])
+        )
+        assert delete_response is None
+
+    def test__delete_non_existant_spec__delete_fails(self, client: SpecClient):
+        bad_id = "DEADBEEF"
+        delete_response = client.delete_specs(DeleteSpecificationsRequest(ids=[bad_id]))
+        assert bad_id in delete_response.failed_spec_ids
+
     def test__update_single_same_version__version_updates(
         self, client: SpecClient, create_specs
     ):
