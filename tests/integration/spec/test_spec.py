@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 import pytest
 
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
@@ -6,9 +8,10 @@ from nisystemlink.clients.spec.models import (
     CreateSpecificationRequestObject,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
+    Type,
     UpdateSpecificationRequestObject,
     UpdateSpecificationsRequest,
-    Type,
+    CreateSpecificationsPartialSuccessResponse,
 )
 
 
@@ -18,15 +21,49 @@ def client(enterprise_config: HttpConfiguration) -> SpecClient:
     return SpecClient(enterprise_config)
 
 
+@pytest.fixture
+def create_specs(client: SpecClient):
+    """Fixture to return a factory that creates specs."""
+    responses: List[CreateSpecificationsPartialSuccessResponse] = []
+
+    def _create_specs(new_specs: Optional[CreateSpecificationsRequest]) -> str:
+        response = client.create_specs(new_specs)
+        responses.append(response)
+        return response
+
+    yield _create_specs
+
+    created_specs = []
+    for response in responses:
+        created_specs = created_specs + response.created_specs
+    client.delete_specs(
+        DeleteSpecificationsRequest(ids=[spec.id for spec in created_specs])
+    )
+
+
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestSpec:
+
+    def test__fixture(self, client: SpecClient, create_specs):
+        specId = "spec1"
+        productId = "TestProduct"
+        spec = CreateSpecificationRequestObject(
+            productId=productId,
+            specId=specId,
+            type=Type.FUNCTIONAL,
+            keywords=["work", "reviewed"],
+            category="Parametric Specs",
+            block="newBlock",
+        )
+        response = create_specs(CreateSpecificationsRequest(specs=[spec]))
+
     def test__api_info__returns(self, client: SpecClient):
         response = client.api_info()
         assert len(response.dict()) != 0
 
     def test__create_single_spec__one_created_with_right_field_values(
-        self, client: SpecClient
+        self, client: SpecClient, create_specs
     ):
         specId = "spec1"
         productId = "TestProduct"
@@ -38,19 +75,16 @@ class TestSpec:
             category="Parametric Specs",
             block="newBlock",
         )
-        response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        response = create_specs(CreateSpecificationsRequest(specs=[spec]))
         assert response is not None
         assert len(response.created_specs) == 1
         created_spec = response.created_specs[0]
         assert created_spec.product_id == productId
         assert created_spec.spec_id == specId
 
-        delete_response = client.delete_specs(
-            DeleteSpecificationsRequest(ids=[created_spec.id])
-        )
-        assert delete_response is None
-
-    def test__create_multiple_specs__all_succeed(self, client: SpecClient):
+    def test__create_multiple_specs__all_succeed(
+        self, client: SpecClient, create_specs
+    ):
         specIds = ["spec1", "spec2"]
         productId = "TestProduct"
         specs = []
@@ -64,18 +98,11 @@ class TestSpec:
                 block="newBlock",
             )
             specs.append(spec)
-        response = client.create_specs(CreateSpecificationsRequest(specs=specs))
+        response = create_specs(CreateSpecificationsRequest(specs=specs))
         assert response is not None
         assert len(response.created_specs) == 2
 
-        delete_response = client.delete_specs(
-            DeleteSpecificationsRequest(
-                ids=[spec.id for spec in response.created_specs]
-            )
-        )
-        assert delete_response is None
-
-    def test__create_duplicate_spec__errors(self, client: SpecClient):
+    def test__create_duplicate_spec__errors(self, client: SpecClient, create_specs):
         duplicate_id = "spec1"
         productId = "TestProduct"
         spec = CreateSpecificationRequestObject(
@@ -86,21 +113,18 @@ class TestSpec:
             category="Parametric Specs",
             block="newBlock",
         )
-        response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        response = create_specs(CreateSpecificationsRequest(specs=[spec]))
         assert response is not None
         assert len(response.created_specs) == 1
 
-        fail_response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        fail_response = create_specs(CreateSpecificationsRequest(specs=[spec]))
         assert len(fail_response.failed_specs) == 1
         assert len(fail_response.created_specs) == 0
         assert fail_response.failed_specs[0].spec_id == duplicate_id
 
-        delete_response = client.delete_specs(
-            DeleteSpecificationsRequest(ids=[response.created_specs[0].id])
-        )
-        assert delete_response is None
-
-    def test__update_single_same_version__version_updates(self, client: SpecClient):
+    def test__update_single_same_version__version_updates(
+        self, client: SpecClient, create_specs
+    ):
         spec = CreateSpecificationRequestObject(
             productId="TestProduct",
             specId="spec1",
@@ -109,7 +133,7 @@ class TestSpec:
             category="Parametric Specs",
             block="newBlock",
         )
-        response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        response = create_specs(CreateSpecificationsRequest(specs=[spec]))
         assert response is not None
         assert len(response.created_specs) == 1
         created_spec = response.created_specs[0]
@@ -133,8 +157,3 @@ class TestSpec:
         assert len(update_response.updated_specs) == 1
         updated_spec = update_response.updated_specs[0]
         assert updated_spec.version == 1
-
-        delete_response = client.delete_specs(
-            DeleteSpecificationsRequest(ids=[response.created_specs[0].id])
-        )
-        assert delete_response is None
