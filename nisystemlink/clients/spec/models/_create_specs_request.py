@@ -1,10 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
 
-from nisystemlink.clients.spec.models._specification import SpecificationBase
-
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.spec.models._specification import SpecificationBase
 
 
 class CreateSpecificationRequestObject(SpecificationBase):
@@ -30,10 +29,10 @@ class CreateSpecificationResponseObject(JsonModel):
     """Id of the product to which the specification is associated."""
 
     spec_id: Optional[str]
-    """User provided value using which the specification is identified. 
-    
-    This is unique for a product and workspace combination. This is not the same as `id` which is 
-    the globally unique identifier for a specification. 
+    """User provided value using which the specification is identified.
+
+    This is unique for a product and workspace combination. This is not the same as `id` which is
+    the globally unique identifier for a specification.
     """
 
     workspace: Optional[str]

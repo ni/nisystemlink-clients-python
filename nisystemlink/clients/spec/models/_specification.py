@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 from ._condition import Condition
 
 
@@ -14,7 +15,7 @@ class SpecificationLimit(JsonModel):
 
     min: Optional[float]
     """Minimum limit of the specification.
-    
+
     All measurements that map to this specification should be > this limit.
     """
 
@@ -23,7 +24,7 @@ class SpecificationLimit(JsonModel):
 
     max: Optional[float]
     """Maximum value of the specification.
-    
+
     All measurements that map to this specification should be < this limit.
     """
 
@@ -63,7 +64,7 @@ class SpecificationBase(JsonModel):
 
     block: Optional[str]
     """Block name of the specification.
-    
+
     Typically a block is one of the subsystems of the overall product being specified.
     """
 
@@ -84,6 +85,6 @@ class SpecificationBase(JsonModel):
 
     workspace: Optional[str]
     """Id of the workspace to which the specification will be associated.
-    
+
     Default workspace will be taken if the value is not given.
     """

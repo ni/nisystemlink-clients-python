@@ -1,17 +1,16 @@
-from typing import Optional, List
+from typing import List, Optional
 
 import pytest
-
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
     CreateSpecificationRequestObject,
+    CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
     Type,
     UpdateSpecificationRequestObject,
     UpdateSpecificationsRequest,
-    CreateSpecificationsPartialSuccessResponse,
 )
 
 
@@ -44,7 +43,6 @@ def create_specs(client: SpecClient):
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestSpec:
-
     def test__api_info__returns(self, client: SpecClient):
         response = client.api_info()
         assert len(response.dict()) != 0

@@ -80,5 +80,4 @@ class SpecClient(BaseClient):
             A list of specs that were successfully updated and a list of ones that were not along
             with error messages for updates that failed.
         """
-
         ...

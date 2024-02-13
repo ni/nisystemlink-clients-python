@@ -1,9 +1,9 @@
-from nisystemlink.clients.spec.models._specification import SpecificationBase
 from datetime import datetime
 from typing import List, Optional
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core import ApiError
+from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.spec.models._specification import SpecificationBase
 
 
 class UpdateSpecificationRequestObject(SpecificationBase):
@@ -12,8 +12,8 @@ class UpdateSpecificationRequestObject(SpecificationBase):
 
     version: int
     """
-    Current version of the specification to be updated. 
-    
+    Current version of the specification to be updated.
+
     When an update is applied, the version is automatically incremented.
     """
 
@@ -37,7 +37,7 @@ class UpdateSpecificationResponseObject(JsonModel):
 
     spec_id: Optional[str]
     """User provided identifier for the specification.
-    
+
     This will be unique for a product and workspace combination.
     """
 

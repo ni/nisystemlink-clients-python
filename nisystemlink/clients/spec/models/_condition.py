@@ -37,7 +37,8 @@ class ConditionValueBase(JsonModel):
 class NumericConditionValue(ConditionValueBase):
     """A numeric condition.
 
-    Numeric conditions can contain a combination of ranges and discrete lists."""
+    Numeric conditions can contain a combination of ranges and discrete lists.
+    """
 
     range: Optional[List[ConditionRange]] = None
     """List of condition range values."""
