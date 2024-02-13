@@ -5,7 +5,6 @@ from typing import Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
-from uplink import Body
 
 from . import models
 
@@ -63,4 +62,23 @@ class SpecClient(BaseClient):
             ApiException: if unable to communicate with the `nispec` service or if there are invalid
             arguments.
         """
+        ...
+
+    @post("update-specs")
+    def update_specs(
+        self, specs: models.UpdateSpecificationsRequest
+    ) -> Optional[models.UpdateSpecificationsPartialSuccessResponse]:
+        """Updates one or more specifications.
+
+        Update requires that the version field matches the version being updated from.
+
+        Args:
+            specs: a list of specifications that are to be updated. Must include the global id and
+            each spec being updated must match the version currently on the server.
+
+        Returns
+            A list of specs that were successfully updated and a list of ones that were not along
+            with error messages for updates that failed.
+        """
+
         ...

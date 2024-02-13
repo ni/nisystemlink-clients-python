@@ -6,6 +6,8 @@ from nisystemlink.clients.spec.models import (
     CreateSpecificationRequestObject,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
+    UpdateSpecificationRequestObject,
+    UpdateSpecificationsRequest,
     Type,
 )
 
@@ -92,6 +94,45 @@ class TestSpec:
         assert len(fail_response.failed_specs) == 1
         assert len(fail_response.created_specs) == 0
         assert fail_response.failed_specs[0].spec_id == duplicate_id
+
+        delete_response = client.delete_specs(
+            DeleteSpecificationsRequest(ids=[response.created_specs[0].id])
+        )
+        assert delete_response is None
+
+    def test__update_single_same_version__version_updates(self, client: SpecClient):
+        spec = CreateSpecificationRequestObject(
+            productId="TestProduct",
+            specId="spec1",
+            type=Type.FUNCTIONAL,
+            keywords=["work", "reviewed"],
+            category="Parametric Specs",
+            block="newBlock",
+        )
+        response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        assert response is not None
+        assert len(response.created_specs) == 1
+        created_spec = response.created_specs[0]
+        assert created_spec.version == 0
+
+        update_spec = UpdateSpecificationRequestObject(
+            id=created_spec.id,
+            product_id=created_spec.product_id,
+            spec_id=created_spec.spec_id,
+            type=Type.FUNCTIONAL,
+            keywords=["work", "reveiwed"],
+            block="modifiedBlock",
+            version=created_spec.version,
+            workspace=created_spec.workspace,
+        )
+
+        update_response = client.update_specs(
+            specs=UpdateSpecificationsRequest(specs=[update_spec])
+        )
+        assert update_response is not None
+        assert len(update_response.updated_specs) == 1
+        updated_spec = update_response.updated_specs[0]
+        assert updated_spec.version == 1
 
         delete_response = client.delete_specs(
             DeleteSpecificationsRequest(ids=[response.created_specs[0].id])
