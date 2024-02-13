@@ -45,19 +45,6 @@ def create_specs(client: SpecClient):
 @pytest.mark.enterprise
 class TestSpec:
 
-    def test__fixture(self, client: SpecClient, create_specs):
-        specId = "spec1"
-        productId = "TestProduct"
-        spec = CreateSpecificationRequestObject(
-            productId=productId,
-            specId=specId,
-            type=Type.FUNCTIONAL,
-            keywords=["work", "reviewed"],
-            category="Parametric Specs",
-            block="newBlock",
-        )
-        response = create_specs(CreateSpecificationsRequest(specs=[spec]))
-
     def test__api_info__returns(self, client: SpecClient):
         response = client.api_info()
         assert len(response.dict()) != 0
