@@ -47,7 +47,24 @@ def create_specs_for_query(create_specs):
     """Fixture for creating a set of specs that can be used to test query operations."""
     product = "TestProduct"
     spec_documents = [
-        {"specId": "spec1", "type": Type.FUNCTIONAL, "category": "ParametricSpecs"}
+        {
+            "specId": "spec1",
+            "name": "output voltage",
+            "type": Type.FUNCTIONAL,
+            "category": "ParametricSpecs",
+        },
+        {
+            "specId": "spec2",
+            "name": "noise",
+            "type": Type.FUNCTIONAL,
+            "category": "Noise Thresholds",
+        },
+        {
+            "specId": "spec3",
+            "name": "input voltage",
+            "type": Type.FUNCTIONAL,
+            "category": "ParametricSpecs",
+        },
     ]
     spec_requests = []
     for spec in spec_documents:
@@ -56,6 +73,7 @@ def create_specs_for_query(create_specs):
             spec_id=spec["specId"],
             type=spec["type"],
             category=spec["category"],
+            name=spec["name"],
         )
         spec_requests.append(new_spec)
     return create_specs(CreateSpecificationsRequest(specs=spec_requests))
@@ -191,5 +209,23 @@ class TestSpec:
     ):
         request = QuerySpecificationsRequest(productIds=["TestProduct"])
 
+        response = client.query_specs(request)
+        assert len(response.specs) == 3
+
+    def test__query_spec_name__two_returned(
+        self, client: SpecClient, create_specs, create_specs_for_query
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=["TestProduct"], filter='name.Contains("voltage")'
+        )
+        response = client.query_specs(request)
+        assert len(response.specs) == 2
+
+    def test__query_spec_category_one_returned(
+        self, client: SpecClient, create_specs, create_specs_for_query
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=["TestProduct"], filter='category == "Noise Thresholds"'
+        )
         response = client.query_specs(request)
         assert len(response.specs) == 1
