@@ -5,11 +5,16 @@ import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
+    Condition,
+    ConditionRange,
+    ConditionType,
     CreateSpecificationRequestObject,
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
+    NumericConditionValue,
     QuerySpecificationsRequest,
+    SpecificationLimit,
     Type,
     UpdateSpecificationRequestObject,
     UpdateSpecificationsRequest,
@@ -46,36 +51,51 @@ def create_specs(client: SpecClient):
 def create_specs_for_query(create_specs):
     """Fixture for creating a set of specs that can be used to test query operations."""
     product = "TestProduct"
-    spec_documents = [
-        {
-            "specId": "spec1",
-            "name": "output voltage",
-            "type": Type.FUNCTIONAL,
-            "category": "ParametricSpecs",
-        },
-        {
-            "specId": "spec2",
-            "name": "noise",
-            "type": Type.FUNCTIONAL,
-            "category": "Noise Thresholds",
-        },
-        {
-            "specId": "spec3",
-            "name": "input voltage",
-            "type": Type.FUNCTIONAL,
-            "category": "ParametricSpecs",
-        },
-    ]
-    spec_requests = []
-    for spec in spec_documents:
-        new_spec = CreateSpecificationRequestObject(
+    spec_requests = [
+        CreateSpecificationRequestObject(
             product_id=product,
-            spec_id=spec["specId"],
-            type=spec["type"],
-            category=spec["category"],
-            name=spec["name"],
-        )
-        spec_requests.append(new_spec)
+            spec_id="spec1",
+            type=Type.PARAMETRIC,
+            category="Parametric Specs",
+            name="output voltage",
+            limit=SpecificationLimit(min=1.2, max=1.5),
+            unit="mV",
+        ),
+        CreateSpecificationRequestObject(
+            product_id=product,
+            spec_id="spec2",
+            type=Type.PARAMETRIC,
+            category="Parametric Specs",
+            name="input voltage",
+            limit=SpecificationLimit(min=0.02, max=0.15),
+            unit="mV",
+            conditions=[
+                Condition(
+                    name="Temperature",
+                    value=NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        unit="C",
+                    ),
+                ),
+                Condition(
+                    name="Supply Voltage",
+                    value=NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="mV",
+                    ),
+                ),
+            ],
+        ),
+        CreateSpecificationRequestObject(
+            product_id=product,
+            spec_id="spec3",
+            type=Type.FUNCTIONAL,
+            category="Noise Thresholds",
+            name="noise",
+        ),
+    ]
     return create_specs(CreateSpecificationsRequest(specs=spec_requests))
 
 
@@ -229,3 +249,14 @@ class TestSpec:
         )
         response = client.query_specs(request)
         assert len(response.specs) == 1
+
+    def test__query_spec_id__conditions_match(
+        self, client: SpecClient, create_specs, create_specs_for_query
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=["TestProduct"], filter='specId == "spec2"'
+        )
+        response = client.query_specs(request)
+        assert len(response.specs) == 1
+        voltage_spec = response.specs[0]
+        assert len(voltage_spec.conditions) == 2
