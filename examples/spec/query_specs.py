@@ -7,6 +7,7 @@ from nisystemlink.clients.spec.models import (
     CreateSpecificationRequestObject,
     CreateSpecificationsRequest,
     NumericConditionValue,
+    QuerySpecificationsRequest,
     SpecificationLimit,
     Type,
 )
@@ -46,7 +47,15 @@ spec_requests = [
                     range=[ConditionRange(min=-25, step=20, max=85)],
                     unit="C",
                 ),
-            )
+            ),
+            Condition(
+                name="Supply Voltage",
+                value=NumericConditionValue(
+                    condition_type=ConditionType.NUMERIC,
+                    discrete=[1.3, 1.5, 1.7],
+                    unit="mV",
+                ),
+            ),
         ],
     ),
     CreateSpecificationRequestObject(
@@ -60,3 +69,30 @@ spec_requests = [
 
 # Create the specs on the server
 response = client.create_specs(CreateSpecificationsRequest(specs=spec_requests))
+
+# You can query specs based on any field using DynamicLinq syntax.
+# These are just some representative examples.
+
+response = client.query_specs(QuerySpecificationsRequest(productIds=[product]))
+all_product_specs = response.specs
+
+# Query based on spec id
+response = client.query_specs(
+    QuerySpecificationsRequest(product_ids=[product], filter='specId == "spec2"')
+)
+spec2 = response.specs[0]
+
+# Query based on name
+response = client.query_specs(
+    QuerySpecificationsRequest(product_ids=[product], filter='name.Contains("voltage")')
+)
+voltage_specs = response.specs
+
+# Query based on Category
+response = client.query_specs(
+    QuerySpecificationsRequest(
+        product_ids=[product], filter='category == "Noise Thresholds"'
+    )
+)
+noise_category = response.specs
+print(noise_category)
