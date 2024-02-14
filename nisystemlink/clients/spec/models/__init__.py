@@ -22,7 +22,7 @@ from ._create_specs_request import (
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
 )
-from ._specification import SpecificationBase, Type
+from ._specification import SpecificationBase, Type, SpecificationLimit
 from ._update_specs_request import (
     UpdateSpecificationRequestObject,
     UpdateSpecificationResponseObject,

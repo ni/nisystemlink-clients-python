@@ -120,3 +120,27 @@ Export data from a table
 .. literalinclude:: ../examples/dataframe/export_data.py
    :language: python
    :linenos:
+
+Spec API
+-------
+
+Overview
+~~~~~~~~
+
+
+The :class:`.SpecClient` class is the primary entry point of the Tag API.
+
+When constructing a :class:`.SpecClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.SpecClient` use the
+default connection. The default connection depends on your environment.
+
+
+Examples
+~~~~~~~~
+
+Query Specifications
+
+.. literalinclude:: ../examples/spec/query_specs.py
+   :language: python
+   :linenos:
