@@ -139,8 +139,14 @@ default connection. The default connection depends on your environment.
 Examples
 ~~~~~~~~
 
-Query Specifications
+Create and Query Specifications
 
 .. literalinclude:: ../examples/spec/query_specs.py
+   :language: python
+   :linenos:
+
+Update and Delete Specifications
+
+.. literalinclude:: ../examples/spec/update_and_delete_specs.py
    :language: python
    :linenos:
