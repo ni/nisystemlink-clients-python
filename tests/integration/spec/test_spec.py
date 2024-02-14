@@ -1,3 +1,4 @@
+import uuid
 from typing import List, Optional
 
 import pytest
@@ -54,7 +55,7 @@ def create_specs_for_query(create_specs):
     spec_requests = [
         CreateSpecificationRequestObject(
             product_id=product,
-            spec_id="spec1",
+            spec_id=uuid.uuid1().hex,
             type=Type.PARAMETRIC,
             category="Parametric Specs",
             name="output voltage",
@@ -63,7 +64,7 @@ def create_specs_for_query(create_specs):
         ),
         CreateSpecificationRequestObject(
             product_id=product,
-            spec_id="spec2",
+            spec_id=uuid.uuid1().hex,
             type=Type.PARAMETRIC,
             category="Parametric Specs",
             name="input voltage",
@@ -90,7 +91,7 @@ def create_specs_for_query(create_specs):
         ),
         CreateSpecificationRequestObject(
             product_id=product,
-            spec_id="spec3",
+            spec_id=uuid.uuid1().hex,
             type=Type.FUNCTIONAL,
             category="Noise Thresholds",
             name="noise",
@@ -109,7 +110,7 @@ class TestSpec:
     def test__create_single_spec__one_created_with_right_field_values(
         self, client: SpecClient, create_specs
     ):
-        specId = "spec1"
+        specId = uuid.uuid1().hex
         productId = "TestProduct"
         spec = CreateSpecificationRequestObject(
             productId=productId,
@@ -147,7 +148,7 @@ class TestSpec:
         assert len(response.created_specs) == 2
 
     def test__create_duplicate_spec__errors(self, client: SpecClient, create_specs):
-        duplicate_id = "spec1"
+        duplicate_id = uuid.uuid1().hex
         productId = "TestProduct"
         spec = CreateSpecificationRequestObject(
             productId=productId,
@@ -168,7 +169,7 @@ class TestSpec:
 
     def test__delete_existing_spec__succeeds(self, client: SpecClient):
         # Not using the fixture here so that we can inspect delete response.
-        specId = "spec1"
+        specId = uuid.uuid1().hex
         productId = "TestProduct"
         spec = CreateSpecificationRequestObject(
             productId=productId,
@@ -250,11 +251,11 @@ class TestSpec:
         response = client.query_specs(request)
         assert len(response.specs) == 1
 
-    def test__query_spec_id__conditions_match(
+    def test__query_input_voltage__conditions_match(
         self, client: SpecClient, create_specs, create_specs_for_query
     ):
         request = QuerySpecificationsRequest(
-            product_ids=["TestProduct"], filter='specId == "spec2"'
+            product_ids=["TestProduct"], filter=f'name == "input voltage"'
         )
         response = client.query_specs(request)
         assert len(response.specs) == 1
