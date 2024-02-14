@@ -2,7 +2,6 @@ import uuid
 from typing import List, Optional
 
 import pytest
-
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
@@ -255,7 +254,7 @@ class TestSpec:
         self, client: SpecClient, create_specs, create_specs_for_query
     ):
         request = QuerySpecificationsRequest(
-            product_ids=["TestProduct"], filter=f'name == "input voltage"'
+            product_ids=["TestProduct"], filter='name == "input voltage"'
         )
         response = client.query_specs(request)
         assert len(response.specs) == 1

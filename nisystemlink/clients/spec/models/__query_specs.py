@@ -48,16 +48,16 @@ class QuerySpecificationsRequest(JsonModel):
     """IDs of the products to query the specifications for."""
 
     take: Optional[int]
-    """Maximum number of specifications to return in the current API response. 
-    
+    """Maximum number of specifications to return in the current API response.
+
     Uses the default if the specified value is negative. The default value is `1000` specs.
     """
 
     continuation_token: Optional[str]
     """Allows users to continue the query at the next specification that matches the given criteria.
-    
+
     To retrieve the next batch of specifications, pass the continuation token from the previous
-    batch in the next request. The service responds with the next batch of data and provides a new 
+    batch in the next request. The service responds with the next batch of data and provides a new
     continuation token. To paginate results, continue sending requests with the newest continuation
     token provided in each response.
     """
@@ -65,12 +65,12 @@ class QuerySpecificationsRequest(JsonModel):
     filter: Optional[str]
     """
     The specification query filter in Dynamic Linq format.
-                
+
     Allowed properties in the filter are:
     - `specId`: String representing the SpecID of a specification.
     - `name`: String representing the name of a specification.
     - `category`: String representing the category of a specification.
-    - `type`: String enumeration representing the type of the specification. 
+    - `type`: String enumeration representing the type of the specification.
         Possible values are : PARAMETRIC, FUNCTIONAL
     - `block`: String representing the block of a specification.
     - `symbol`: String representing the symbol of a specification.
@@ -82,23 +82,23 @@ class QuerySpecificationsRequest(JsonModel):
     - `updatedAt`: ISO-8601 formatted UTC timestamp indicating when the specification was updated.
 
     See [Dynamic Linq](https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language)
-    documentation for more details. 
+    documentation for more details.
     """
 
     projection: Optional[List[ProjectionEnum]]
-    """Specifies the fields to include in the returned specifications. 
-    
+    """Specifies the fields to include in the returned specifications.
+
     Fields you do not specify are excluded. Returns all fields if no value is specified.
     """
 
     order_by: Optional[OrderBy]
-    """Specifies the field to use to sort specifications. 
-    
+    """Specifies the field to use to sort specifications.
+
     By default, specifications are sorted by `ID`.
     """
     order_by_descending: Optional[bool]
-    """Specifies whether to return the specifications in descending order. 
-    
+    """Specifies whether to return the specifications in descending order.
+
     By default, this value is `false` and specifications are sorted in ascending order.
     """
 
@@ -129,17 +129,17 @@ class QuerySpecificationsResponse(JsonModel):
     """The list of matching specifications and a continuation token to get the next items."""
 
     specs: Optional[List[QuerySpecificationResponseObject]] = None
-    """List of queried specifications. 
-    
+    """List of queried specifications.
+
     An empty list indicates that there are no specifications meeting the criteria provided in the
     request.
     """
     continuation_token: Optional[str]
     """Allows users to continue the query at the next specification that matches the given criteria.
-    
-    To retrieve the next batch of specifications, pass the continuation token from the previous 
+
+    To retrieve the next batch of specifications, pass the continuation token from the previous
     batch in the next request. The service responds with the next batch of data and provides a new
-    continuation token. The continuation token will be null when there are no more specifications 
-    to return. To paginate results, continue sending requests with the newest continuation token 
+    continuation token. The continuation token will be null when there are no more specifications
+    to return. To paginate results, continue sending requests with the newest continuation token
     provided in each response.
     """
