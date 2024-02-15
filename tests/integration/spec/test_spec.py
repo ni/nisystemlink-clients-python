@@ -24,6 +24,7 @@ from nisystemlink.clients.spec.models import (
 
 @pytest.fixture(scope="class")
 def product() -> str:
+    """Unique product id for this test run."""
     return uuid.uuid1().hex
 
 
