@@ -23,9 +23,10 @@ product = "Amplifier"
 response = client.query_specs(
     QuerySpecificationsRequest(product_ids=[product], filter='specId == "spec1"')
 )
-original_spec1 = response.specs[0]
-print(f"Original spec1 block: {original_spec1.block}")
-print(f"Original spec1 version: {original_spec1.version}")
+if response.specs:
+    original_spec1 = response.specs[0]
+    print(f"Original spec1 block: {original_spec1.block}")
+    print(f"Original spec1 version: {original_spec1.version}")
 
 # make the modifications
 modified_spec = UpdateSpecificationRequestObject(
@@ -41,18 +42,21 @@ modified_spec = UpdateSpecificationRequestObject(
 update_response = client.update_specs(
     specs=UpdateSpecificationsRequest(specs=[modified_spec])
 )
-print(f"New spec1 version: {update_response.updated_specs[0].version}")
+if update_response.updated_specs:
+    print(f"New spec1 version: {update_response.updated_specs[0].version}")
 
 # query again to see new version
 response = client.query_specs(
     QuerySpecificationsRequest(product_ids=[product], filter='specId == "spec1"')
 )
-original_spec1 = response.specs[0]
-print(f"Modified spec1 block: {original_spec1.block}")
+if response.specs:
+    original_spec1 = response.specs[0]
+    print(f"Modified spec1 block: {original_spec1.block}")
 
 # delete all the specs for the product
 # query all specs
 response = client.query_specs(QuerySpecificationsRequest(product_ids=[product]))
-client.delete_specs(
-    DeleteSpecificationsRequest(ids=[spec.id for spec in response.specs])
-)
+if response.specs:
+    client.delete_specs(
+        DeleteSpecificationsRequest(ids=[spec.id for spec in response.specs])
+    )
