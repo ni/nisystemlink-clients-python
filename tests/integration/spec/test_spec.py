@@ -23,6 +23,11 @@ from nisystemlink.clients.spec.models import (
 
 
 @pytest.fixture(scope="class")
+def product() -> str:
+    return uuid.uuid1().hex
+
+
+@pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> SpecClient:
     """Fixture ot create a SpecClient instance."""
     return SpecClient(enterprise_config)
@@ -36,6 +41,7 @@ def create_specs(client: SpecClient):
     def _create_specs(
         new_specs: CreateSpecificationsRequest,
     ) -> CreateSpecificationsPartialSuccessResponse:
+        print(f"Creating spec for product: {new_specs.specs[0].product_id}")
         response = client.create_specs(new_specs)
         responses.append(response)
         return response
@@ -52,9 +58,9 @@ def create_specs(client: SpecClient):
 
 
 @pytest.fixture
-def create_specs_for_query(create_specs):
+def create_specs_for_query(create_specs, product):
     """Fixture for creating a set of specs that can be used to test query operations."""
-    product = "TestProduct"
+    product = product
     spec_requests = [
         CreateSpecificationRequestObject(
             product_id=product,
@@ -111,10 +117,10 @@ class TestSpec:
         assert len(response.dict()) != 0
 
     def test__create_single_spec__one_created_with_right_field_values(
-        self, client: SpecClient, create_specs
+        self, client: SpecClient, create_specs, product
     ):
         specId = uuid.uuid1().hex
-        productId = "TestProduct"
+        productId = product
         spec = CreateSpecificationRequestObject(
             productId=productId,
             specId=specId,
@@ -131,10 +137,10 @@ class TestSpec:
         assert created_spec.spec_id == specId
 
     def test__create_multiple_specs__all_succeed(
-        self, client: SpecClient, create_specs
+        self, client: SpecClient, create_specs, product
     ):
         specIds = ["spec1", "spec2"]
-        productId = "TestProduct"
+        productId = product
         specs = []
         for id in specIds:
             spec = CreateSpecificationRequestObject(
@@ -150,9 +156,11 @@ class TestSpec:
         assert response is not None
         assert len(response.created_specs) == 2
 
-    def test__create_duplicate_spec__errors(self, client: SpecClient, create_specs):
+    def test__create_duplicate_spec__errors(
+        self, client: SpecClient, create_specs, product
+    ):
         duplicate_id = uuid.uuid1().hex
-        productId = "TestProduct"
+        productId = product
         spec = CreateSpecificationRequestObject(
             productId=productId,
             specId=duplicate_id,
@@ -170,10 +178,10 @@ class TestSpec:
         assert len(fail_response.created_specs) == 0
         assert fail_response.failed_specs[0].spec_id == duplicate_id
 
-    def test__delete_existing_spec__succeeds(self, client: SpecClient):
+    def test__delete_existing_spec__succeeds(self, client: SpecClient, product):
         # Not using the fixture here so that we can inspect delete response.
         specId = uuid.uuid1().hex
-        productId = "TestProduct"
+        productId = product
         spec = CreateSpecificationRequestObject(
             productId=productId,
             specId=specId,
@@ -196,10 +204,10 @@ class TestSpec:
         assert bad_id in delete_response.failed_spec_ids
 
     def test__update_single_same_version__version_updates(
-        self, client: SpecClient, create_specs
+        self, client: SpecClient, create_specs, product
     ):
         spec = CreateSpecificationRequestObject(
-            productId="TestProduct",
+            productId=product,
             specId="spec1",
             type=Type.FUNCTIONAL,
             keywords=["work", "reviewed"],
@@ -233,39 +241,39 @@ class TestSpec:
         assert updated_spec.version == 1
 
     def test__query_product__all_returned(
-        self, client: SpecClient, create_specs, create_specs_for_query
+        self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
-        request = QuerySpecificationsRequest(productIds=["TestProduct"])
+        request = QuerySpecificationsRequest(productIds=[product])
 
         response = client.query_specs(request)
         assert response.specs
         assert len(response.specs) == 3
 
     def test__query_spec_name__two_returned(
-        self, client: SpecClient, create_specs, create_specs_for_query
+        self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         request = QuerySpecificationsRequest(
-            product_ids=["TestProduct"], filter='name.Contains("voltage")'
+            product_ids=[product], filter='name.Contains("voltage")'
         )
         response = client.query_specs(request)
         assert response.specs
         assert len(response.specs) == 2
 
     def test__query_spec_category_one_returned(
-        self, client: SpecClient, create_specs, create_specs_for_query
+        self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         request = QuerySpecificationsRequest(
-            product_ids=["TestProduct"], filter='category == "Noise Thresholds"'
+            product_ids=[product], filter='category == "Noise Thresholds"'
         )
         response = client.query_specs(request)
         assert response.specs
         assert len(response.specs) == 1
 
     def test__query_input_voltage__conditions_match(
-        self, client: SpecClient, create_specs, create_specs_for_query
+        self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         request = QuerySpecificationsRequest(
-            product_ids=["TestProduct"], filter='name == "input voltage"'
+            product_ids=[product], filter='name == "input voltage"'
         )
         response = client.query_specs(request)
         assert response.specs
