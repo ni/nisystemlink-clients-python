@@ -42,7 +42,7 @@ modified_spec = UpdateSpecificationRequestObject(
 update_response = client.update_specs(
     specs=UpdateSpecificationsRequest(specs=[modified_spec])
 )
-if update_response.updated_specs:
+if update_response and update_response.updated_specs:
     print(f"New spec1 version: {update_response.updated_specs[0].version}")
 
 # query again to see new version

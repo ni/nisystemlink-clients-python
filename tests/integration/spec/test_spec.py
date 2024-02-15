@@ -1,5 +1,5 @@
 import uuid
-from typing import List, Optional
+from typing import List
 
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
@@ -9,6 +9,7 @@ from nisystemlink.clients.spec.models import (
     ConditionRange,
     ConditionType,
     CreateSpecificationRequestObject,
+    CreateSpecificationResponseObject,
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
@@ -32,16 +33,19 @@ def create_specs(client: SpecClient):
     """Fixture to return a factory that creates specs."""
     responses: List[CreateSpecificationsPartialSuccessResponse] = []
 
-    def _create_specs(new_specs: Optional[CreateSpecificationsRequest]) -> str:
+    def _create_specs(
+        new_specs: CreateSpecificationsRequest,
+    ) -> CreateSpecificationsPartialSuccessResponse:
         response = client.create_specs(new_specs)
         responses.append(response)
         return response
 
     yield _create_specs
 
-    created_specs = []
+    created_specs: List[CreateSpecificationResponseObject] = []
     for response in responses:
-        created_specs = created_specs + response.created_specs
+        if response.created_specs:
+            created_specs = created_specs + response.created_specs
     client.delete_specs(
         DeleteSpecificationsRequest(ids=[spec.id for spec in created_specs])
     )
@@ -176,6 +180,7 @@ class TestSpec:
             type=Type.FUNCTIONAL,
         )
         response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
+        assert response.created_specs
         created_spec = response.created_specs[0]
 
         delete_response = client.delete_specs(
@@ -186,6 +191,8 @@ class TestSpec:
     def test__delete_non_existant_spec__delete_fails(self, client: SpecClient):
         bad_id = "DEADBEEF"
         delete_response = client.delete_specs(DeleteSpecificationsRequest(ids=[bad_id]))
+        assert delete_response
+        assert delete_response.failed_spec_ids
         assert bad_id in delete_response.failed_spec_ids
 
     def test__update_single_same_version__version_updates(
@@ -219,7 +226,8 @@ class TestSpec:
         update_response = client.update_specs(
             specs=UpdateSpecificationsRequest(specs=[update_spec])
         )
-        assert update_response is not None
+        assert update_response
+        assert update_response.updated_specs
         assert len(update_response.updated_specs) == 1
         updated_spec = update_response.updated_specs[0]
         assert updated_spec.version == 1
@@ -230,6 +238,7 @@ class TestSpec:
         request = QuerySpecificationsRequest(productIds=["TestProduct"])
 
         response = client.query_specs(request)
+        assert response.specs
         assert len(response.specs) == 3
 
     def test__query_spec_name__two_returned(
@@ -239,6 +248,7 @@ class TestSpec:
             product_ids=["TestProduct"], filter='name.Contains("voltage")'
         )
         response = client.query_specs(request)
+        assert response.specs
         assert len(response.specs) == 2
 
     def test__query_spec_category_one_returned(
@@ -248,6 +258,7 @@ class TestSpec:
             product_ids=["TestProduct"], filter='category == "Noise Thresholds"'
         )
         response = client.query_specs(request)
+        assert response.specs
         assert len(response.specs) == 1
 
     def test__query_input_voltage__conditions_match(
@@ -257,6 +268,8 @@ class TestSpec:
             product_ids=["TestProduct"], filter='name == "input voltage"'
         )
         response = client.query_specs(request)
+        assert response.specs
         assert len(response.specs) == 1
         voltage_spec = response.specs[0]
+        assert voltage_spec.conditions
         assert len(voltage_spec.conditions) == 2
