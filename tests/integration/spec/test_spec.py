@@ -25,7 +25,8 @@ from nisystemlink.clients.spec.models import (
 @pytest.fixture(scope="class")
 def product() -> str:
     """Unique product id for this test run."""
-    return uuid.uuid1().hex
+    product_id = uuid.uuid1().hex
+    return product_id
 
 
 @pytest.fixture(scope="class")
@@ -42,7 +43,6 @@ def create_specs(client: SpecClient):
     def _create_specs(
         new_specs: CreateSpecificationsRequest,
     ) -> CreateSpecificationsPartialSuccessResponse:
-        print(f"Creating spec for product: {new_specs.specs[0].product_id}")
         response = client.create_specs(new_specs)
         responses.append(response)
         return response
@@ -61,7 +61,6 @@ def create_specs(client: SpecClient):
 @pytest.fixture
 def create_specs_for_query(create_specs, product):
     """Fixture for creating a set of specs that can be used to test query operations."""
-    product = product
     spec_requests = [
         CreateSpecificationRequestObject(
             product_id=product,
