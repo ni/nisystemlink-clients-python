@@ -3,7 +3,7 @@ from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
     DeleteSpecificationsRequest,
     QuerySpecificationsRequest,
-    Type,
+    SpecificationType,
     UpdateSpecificationRequestObject,
     UpdateSpecificationsRequest,
 )
@@ -33,7 +33,7 @@ modified_spec = UpdateSpecificationRequestObject(
     id=original_spec1.id,
     product_id=original_spec1.product_id,
     spec_id=original_spec1.spec_id,
-    type=Type.FUNCTIONAL,
+    type=SpecificationType.FUNCTIONAL,
     keywords=["work", "reviewed"],
     block="modifiedBlock",
     version=original_spec1.version,

@@ -29,7 +29,7 @@ class SpecificationLimit(JsonModel):
     """
 
 
-class Type(Enum):
+class SpecificationType(Enum):
     """The overall type of the specification."""
 
     PARAMETRIC = "PARAMETRIC"
@@ -56,7 +56,7 @@ class SpecificationBase(JsonModel):
     category: Optional[str] = None
     """Category of the specification."""
 
-    type: Type
+    type: SpecificationType
     """Type of the specification."""
 
     symbol: Optional[str] = None

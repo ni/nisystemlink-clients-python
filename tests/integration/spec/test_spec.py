@@ -16,7 +16,7 @@ from nisystemlink.clients.spec.models import (
     NumericConditionValue,
     QuerySpecificationsRequest,
     SpecificationLimit,
-    Type,
+    SpecificationType,
     UpdateSpecificationRequestObject,
     UpdateSpecificationsRequest,
 )
@@ -65,7 +65,7 @@ def create_specs_for_query(create_specs, product):
         CreateSpecificationRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
-            type=Type.PARAMETRIC,
+            type=SpecificationType.PARAMETRIC,
             category="Parametric Specs",
             name="output voltage",
             limit=SpecificationLimit(min=1.2, max=1.5),
@@ -74,7 +74,7 @@ def create_specs_for_query(create_specs, product):
         CreateSpecificationRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
-            type=Type.PARAMETRIC,
+            type=SpecificationType.PARAMETRIC,
             category="Parametric Specs",
             name="input voltage",
             limit=SpecificationLimit(min=0.02, max=0.15),
@@ -101,7 +101,7 @@ def create_specs_for_query(create_specs, product):
         CreateSpecificationRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
-            type=Type.FUNCTIONAL,
+            type=SpecificationType.FUNCTIONAL,
             category="Noise Thresholds",
             name="noise",
         ),
@@ -124,7 +124,7 @@ class TestSpec:
         spec = CreateSpecificationRequestObject(
             productId=productId,
             specId=specId,
-            type=Type.FUNCTIONAL,
+            type=SpecificationType.FUNCTIONAL,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
             block="newBlock",
@@ -146,7 +146,7 @@ class TestSpec:
             spec = CreateSpecificationRequestObject(
                 productId=productId,
                 specId=id,
-                type=Type.FUNCTIONAL,
+                type=SpecificationType.FUNCTIONAL,
                 keywords=["work", "reviewed"],
                 category="Parametric Specs",
                 block="newBlock",
@@ -164,7 +164,7 @@ class TestSpec:
         spec = CreateSpecificationRequestObject(
             productId=productId,
             specId=duplicate_id,
-            type=Type.FUNCTIONAL,
+            type=SpecificationType.FUNCTIONAL,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
             block="newBlock",
@@ -185,7 +185,7 @@ class TestSpec:
         spec = CreateSpecificationRequestObject(
             productId=productId,
             specId=specId,
-            type=Type.FUNCTIONAL,
+            type=SpecificationType.FUNCTIONAL,
         )
         response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
         assert response.created_specs
@@ -209,7 +209,7 @@ class TestSpec:
         spec = CreateSpecificationRequestObject(
             productId=product,
             specId="spec1",
-            type=Type.FUNCTIONAL,
+            type=SpecificationType.FUNCTIONAL,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
             block="newBlock",
@@ -224,7 +224,7 @@ class TestSpec:
             id=created_spec.id,
             product_id=created_spec.product_id,
             spec_id=created_spec.spec_id,
-            type=Type.FUNCTIONAL,
+            type=SpecificationType.FUNCTIONAL,
             keywords=["work", "reveiwed"],
             block="modifiedBlock",
             version=created_spec.version,

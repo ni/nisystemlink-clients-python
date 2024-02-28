@@ -22,7 +22,7 @@ from ._query_specs import (
     QuerySpecificationsRequest,
     QuerySpecificationsResponse,
 )
-from ._specification import SpecificationBase, SpecificationLimit, Type
+from ._specification import SpecificationBase, SpecificationLimit, SpecificationType
 from ._update_specs_request import (
     UpdateSpecificationRequestObject,
     UpdateSpecificationResponseObject,

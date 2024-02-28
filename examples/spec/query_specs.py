@@ -9,7 +9,7 @@ from nisystemlink.clients.spec.models import (
     NumericConditionValue,
     QuerySpecificationsRequest,
     SpecificationLimit,
-    Type,
+    SpecificationType,
 )
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
@@ -25,7 +25,7 @@ spec_requests = [
     CreateSpecificationRequestObject(
         product_id=product,
         spec_id="spec1",
-        type=Type.PARAMETRIC,
+        type=SpecificationType.PARAMETRIC,
         category="Parametric Specs",
         name="output voltage",
         limit=SpecificationLimit(min=1.2, max=1.5),
@@ -34,7 +34,7 @@ spec_requests = [
     CreateSpecificationRequestObject(
         product_id=product,
         spec_id="spec2",
-        type=Type.PARAMETRIC,
+        type=SpecificationType.PARAMETRIC,
         category="Parametric Specs",
         name="input voltage",
         limit=SpecificationLimit(min=0.02, max=0.15),
@@ -61,7 +61,7 @@ spec_requests = [
     CreateSpecificationRequestObject(
         product_id=product,
         spec_id="spec3",
-        type=Type.FUNCTIONAL,
+        type=SpecificationType.FUNCTIONAL,
         category="Noise Thresholds",
         name="noise",
     ),
