@@ -128,7 +128,7 @@ Overview
 ~~~~~~~~
 
 
-The :class:`.SpecClient` class is the primary entry point of the Tag API.
+The :class:`.SpecClient` class is the primary entry point of the Specification Management API.
 
 When constructing a :class:`.SpecClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the
