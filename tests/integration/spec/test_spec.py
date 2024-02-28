@@ -31,7 +31,7 @@ def product() -> str:
 
 @pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> SpecClient:
-    """Fixture ot create a SpecClient instance."""
+    """Fixture to create a SpecClient instance."""
     return SpecClient(enterprise_config)
 
 
