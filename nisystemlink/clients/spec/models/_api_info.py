@@ -1,14 +1,5 @@
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-
-
-class Operation(JsonModel):
-    """Represents an operation that can be performed on a specification."""
-
-    available: bool
-    """ Whether the operation is available to the caller """
-
-    version: int
-    """ Version of the available operation. """
+from nisystemlink.clients.core._api_info import Operation
 
 
 class V1Operations(JsonModel):
