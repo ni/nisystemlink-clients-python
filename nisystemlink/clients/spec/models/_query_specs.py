@@ -6,7 +6,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.spec.models._specification import SpecificationBase
 
 
-class ProjectionEnum(Enum):
+class Projection(str, Enum):
     """The allowed projections for query.
 
     When using projection, only the fields specified by the projection element will be included in
@@ -85,7 +85,7 @@ class QuerySpecificationsRequest(JsonModel):
     documentation for more details.
     """
 
-    projection: Optional[List[ProjectionEnum]]
+    projection: Optional[List[Projection]]
     """Specifies the fields to include in the returned specifications.
 
     Fields you do not specify are excluded. Returns all fields if no value is specified.
