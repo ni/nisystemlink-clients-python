@@ -1,5 +1,5 @@
-from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._api_info import Operation
+from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class OperationsV1(JsonModel):
