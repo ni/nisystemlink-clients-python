@@ -18,7 +18,7 @@ table_id = client.create_table(
     CreateTableRequest(
         name="Example Table",
         columns=[
-            Column(name="index", data_type=DataType.Int32, column_type=ColumnType.Index),
+            Column(name="ix", data_type=DataType.Int32, column_type=ColumnType.Index),
             Column(name="Float_Column", data_type=DataType.Float32),
             Column(name="Timestamp_Column", data_type=DataType.Timestamp),
         ],
