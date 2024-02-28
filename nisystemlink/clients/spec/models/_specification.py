@@ -13,16 +13,16 @@ class SpecificationLimit(JsonModel):
     determine the health or pass/fail status of that measurement.
     """
 
-    min: Optional[float]
+    min: Optional[float] = None
     """Minimum limit of the specification.
 
     All measurements that map to this specification should be > this limit.
     """
 
-    typical: Optional[float]
+    typical: Optional[float] = None
     """Typical value of the specification."""
 
-    max: Optional[float]
+    max: Optional[float] = None
     """Maximum value of the specification.
 
     All measurements that map to this specification should be < this limit.
@@ -50,40 +50,40 @@ class SpecificationBase(JsonModel):
     This should be unique for a product and workspace combination.
     """
 
-    name: Optional[str]
+    name: Optional[str] = None
     """Name of the specification."""
 
-    category: Optional[str]
+    category: Optional[str] = None
     """Category of the specification."""
 
     type: Type
     """Type of the specification."""
 
-    symbol: Optional[str]
+    symbol: Optional[str] = None
     """Short form identifier of the specification."""
 
-    block: Optional[str]
+    block: Optional[str] = None
     """Block name of the specification.
 
     Typically a block is one of the subsystems of the overall product being specified.
     """
 
-    limit: Optional[SpecificationLimit]
+    limit: Optional[SpecificationLimit] = None
     """The limits for this spec."""
 
-    unit: Optional[str]
+    unit: Optional[str] = None
     """Unit of the specification."""
 
-    conditions: Optional[List[Condition]]
+    conditions: Optional[List[Condition]] = None
     """Conditions associated with the specification."""
 
-    keywords: Optional[List[str]]
+    keywords: Optional[List[str]] = None
     """Keywords or phrases associated with the specification."""
 
-    properties: Optional[Dict[str, str]]
+    properties: Optional[Dict[str, str]] = None
     """Additional properties associated with the specification."""
 
-    workspace: Optional[str]
+    workspace: Optional[str] = None
     """Id of the workspace to which the specification will be associated.
 
     Default workspace will be taken if the value is not given.

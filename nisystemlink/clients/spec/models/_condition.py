@@ -17,13 +17,13 @@ class ConditionType(Enum):
 class ConditionRange(JsonModel):
     """Specifies the range of values that the condition must cover."""
 
-    min: Optional[float]
+    min: Optional[float] = None
     """Minimum value of the condition range."""
 
-    max: Optional[float]
+    max: Optional[float] = None
     """Maximum value of the condition range."""
 
-    step: Optional[float]
+    step: Optional[float] = None
     """Step value of the condition range."""
 
 
@@ -43,10 +43,10 @@ class NumericConditionValue(ConditionValueBase):
     range: Optional[List[ConditionRange]] = None
     """List of condition range values."""
 
-    discrete: Optional[List[float]]
+    discrete: Optional[List[float]] = None
     """List of condition discrete values."""
 
-    unit: Optional[str]
+    unit: Optional[str] = None
     """Unit of the condition."""
 
 
@@ -56,15 +56,15 @@ class StringConditionValue(ConditionValueBase):
     String conditions may only contain discrete lists of values.
     """
 
-    discrete: Optional[List[str]]
+    discrete: Optional[List[str]] = None
     """List of condition discrete values."""
 
 
 class Condition(JsonModel):
     """A single condition."""
 
-    name: Optional[str]
+    name: Optional[str] = None
     """Name of the condition."""
 
-    value: Optional[Union[NumericConditionValue, StringConditionValue]]
+    value: Optional[Union[NumericConditionValue, StringConditionValue]] = None
     """Value of the condition."""

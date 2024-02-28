@@ -48,13 +48,13 @@ class QuerySpecificationsRequest(JsonModel):
     product_ids: List[str]
     """IDs of the products to query the specifications for."""
 
-    take: Optional[int]
+    take: Optional[int] = None
     """Maximum number of specifications to return in the current API response.
 
     Uses the default if the specified value is negative. The default value is `1000` specs.
     """
 
-    continuation_token: Optional[str]
+    continuation_token: Optional[str] = None
     """Allows users to continue the query at the next specification that matches the given criteria.
 
     To retrieve the next batch of specifications, pass the continuation token from the previous
@@ -63,7 +63,7 @@ class QuerySpecificationsRequest(JsonModel):
     token provided in each response.
     """
 
-    filter: Optional[str]
+    filter: Optional[str] = None
     """
     The specification query filter in Dynamic Linq format.
 
@@ -86,18 +86,18 @@ class QuerySpecificationsRequest(JsonModel):
     documentation for more details.
     """
 
-    projection: Optional[List[Projection]]
+    projection: Optional[List[Projection]] = None
     """Specifies the fields to include in the returned specifications.
 
     Fields you do not specify are excluded. Returns all fields if no value is specified.
     """
 
-    order_by: Optional[OrderBy]
+    order_by: Optional[OrderBy] = None
     """Specifies the field to use to sort specifications.
 
     By default, specifications are sorted by `ID`.
     """
-    order_by_descending: Optional[bool]
+    order_by_descending: Optional[bool] = None
     """Specifies whether to return the specifications in descending order.
 
     By default, this value is `false` and specifications are sorted in ascending order.
@@ -107,22 +107,22 @@ class QuerySpecificationsRequest(JsonModel):
 class QuerySpecificationResponseObject(SpecificationBase):
     """A single spec that matches the query."""
 
-    id: Optional[str]
+    id: Optional[str] = None
     """The global Id of the specification."""
 
-    created_at: Optional[datetime]
+    created_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was created."""
 
-    created_by: Optional[str]
+    created_by: Optional[str] = None
     """Id of the user who created the specification."""
 
-    updated_at: Optional[datetime]
+    updated_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was last updated."""
 
-    updated_by: Optional[str]
+    updated_by: Optional[str] = None
     """Id of the user who last updated the specification."""
 
-    version: Optional[int]
+    version: Optional[int] = None
     """Version of the specification."""
 
 
