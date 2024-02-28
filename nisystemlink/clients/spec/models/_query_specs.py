@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.core._uplink._with_paging import WithPaging
 from nisystemlink.clients.spec.models._specification import SpecificationBase
 
 
@@ -125,7 +126,7 @@ class QuerySpecificationResponseObject(SpecificationBase):
     """Version of the specification."""
 
 
-class QuerySpecificationsResponse(JsonModel):
+class QuerySpecificationsResponse(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
     specs: Optional[List[QuerySpecificationResponseObject]] = None
@@ -133,13 +134,4 @@ class QuerySpecificationsResponse(JsonModel):
 
     An empty list indicates that there are no specifications meeting the criteria provided in the
     request.
-    """
-    continuation_token: Optional[str]
-    """Allows users to continue the query at the next specification that matches the given criteria.
-
-    To retrieve the next batch of specifications, pass the continuation token from the previous
-    batch in the next request. The service responds with the next batch of data and provides a new
-    continuation token. The continuation token will be null when there are no more specifications
-    to return. To paginate results, continue sending requests with the newest continuation token
-    provided in each response.
     """
