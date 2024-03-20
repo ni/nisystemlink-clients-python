@@ -584,9 +584,11 @@ class TagManager(tbase.ITagReader):
             raise ValueError("tags cannot contain None")
 
         validated_paths = [
-            tbase.TagPathUtilities.validate(t)
-            if isinstance(t, str)
-            else t.validate_path()
+            (
+                tbase.TagPathUtilities.validate(t)
+                if isinstance(t, str)
+                else t.validate_path()
+            )
             for t in tags
         ]
 
@@ -615,9 +617,11 @@ class TagManager(tbase.ITagReader):
                 raise ValueError("tags cannot contain None")
 
             validated_paths = [
-                tbase.TagPathUtilities.validate(t)
-                if isinstance(t, str)
-                else t.validate_path()
+                (
+                    tbase.TagPathUtilities.validate(t)
+                    if isinstance(t, str)
+                    else t.validate_path()
+                )
                 for t in tags
             ]
         except Exception as ex:
