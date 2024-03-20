@@ -75,7 +75,7 @@ class TagSubscriptionTests:
             values
         )  # len(set(t.tag.data_type for t in values))
 
-        for (tag, reader) in values:
+        for tag, reader in values:
             assert reader is not None
             if tag.data_type == tbase.DataType.DOUBLE:
                 assert double_value == reader.read().value
