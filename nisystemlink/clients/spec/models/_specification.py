@@ -106,6 +106,8 @@ class Specification(SpecificationDefinition):
 
 
 class SpecificationCreation(JsonModel):
+    """When the spec was created and when."""
+
     created_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was created."""
 
@@ -113,11 +115,17 @@ class SpecificationCreation(JsonModel):
     """Id of the user who created the specification."""
 
 
-class SpecificationWithHistory(Specification, SpecificationCreation):
-    """A full specification."""
+class SpecificationUpdated(JsonModel):
+    """When the spec was updated and when."""
 
     updated_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was last updated."""
 
     updated_by: Optional[str] = None
     """Id of the user who last updated the specification."""
+
+
+class SpecificationWithHistory(
+    Specification, SpecificationCreation, SpecificationUpdated
+):
+    """A full specification."""
