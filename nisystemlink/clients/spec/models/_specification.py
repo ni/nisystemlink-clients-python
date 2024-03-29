@@ -128,4 +128,4 @@ class SpecificationUpdated(JsonModel):
 class SpecificationWithHistory(
     Specification, SpecificationCreation, SpecificationUpdated
 ):
-    """A full specification."""
+    """A full specification with update and create history."""
