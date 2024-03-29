@@ -3,7 +3,10 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.spec.models._specification import Specification
+from nisystemlink.clients.spec.models._specification import (
+    Specification,
+    SpecificationUpdated,
+)
 
 
 class UpdateSpecificationsRequest(JsonModel):
@@ -12,7 +15,7 @@ class UpdateSpecificationsRequest(JsonModel):
     """List of specifications to be updated."""
 
 
-class UpdateSpecificationResponseObject(JsonModel):
+class UpdateSpecificationResponseObject(SpecificationUpdated):
 
     id: Optional[str] = None
     """The global Id of the specification."""
@@ -31,12 +34,6 @@ class UpdateSpecificationResponseObject(JsonModel):
 
     workspace: Optional[str] = None
     """Id of the workspace to which the specification is associated."""
-
-    updated_at: Optional[datetime] = None
-    """ISO-8601 formatted UTC timestamp of when the specification was updated."""
-
-    updated_by: Optional[str] = None
-    """Id of the user who last updated the specification."""
 
 
 class UpdateSpecificationsPartialSuccessResponse(JsonModel):

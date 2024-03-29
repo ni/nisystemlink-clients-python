@@ -25,6 +25,8 @@ from ._specification import (
     Specification,
     SpecificationLimit,
     SpecificationType,
+    SpecificationCreation,
+    SpecificationUpdated,
     SpecificationWithHistory,
 )
 from ._update_specs_request import (
