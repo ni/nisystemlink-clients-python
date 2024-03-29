@@ -14,10 +14,10 @@ from nisystemlink.clients.spec.models import (
     DeleteSpecificationsRequest,
     NumericConditionValue,
     QuerySpecificationsRequest,
+    Specification,
     SpecificationDefinition,
     SpecificationLimit,
     SpecificationType,
-    Specification,
     UpdateSpecificationsRequest,
 )
 
