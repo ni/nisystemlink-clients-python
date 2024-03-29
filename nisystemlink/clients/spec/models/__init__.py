@@ -16,21 +16,20 @@ from ._delete_specs_request import (
     DeleteSpecificationsPartialSuccessResponse,
     DeleteSpecificationsRequest,
 )
-from ._query_specs import (
-    QuerySpecificationsRequest,
-    QuerySpecificationsResponse,
-)
+from ._query_specs import QuerySpecificationsRequest, QuerySpecificationsResponse
 from ._specification import (
-    SpecificationDefinition,
     Specification,
-    SpecificationLimit,
-    SpecificationType,
     SpecificationCreation,
+    SpecificationDefinition,
+    SpecificationLimit,
+    SpecificationServerManaged,
+    SpecificationType,
     SpecificationUpdated,
+    SpecificationUserSettableBase,
     SpecificationWithHistory,
 )
 from ._update_specs_request import (
-    UpdateSpecificationResponseObject,
+    UpdatedSpecification,
     UpdateSpecificationsPartialSuccessResponse,
     UpdateSpecificationsRequest,
 )

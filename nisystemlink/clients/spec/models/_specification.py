@@ -40,8 +40,7 @@ class SpecificationType(Enum):
     """Functional specs only have pass/fail status."""
 
 
-class SpecificationDefinition(JsonModel):
-
+class SpecificationUserSettableBase(JsonModel):
     product_id: str
     """Id of the product to which the specification will be associated."""
 
@@ -56,6 +55,21 @@ class SpecificationDefinition(JsonModel):
 
     Default workspace will be taken if the value is not given.
     """
+
+
+class SpecificationServerManaged(JsonModel):
+    id: str
+    """The global Id of the specification."""
+
+    version: int
+    """
+    Current version of the specification.
+
+    When an update is applied, the version is automatically incremented.
+    """
+
+
+class SpecificationDefinition(SpecificationUserSettableBase):
 
     name: Optional[str] = None
     """Name of the specification."""
@@ -91,18 +105,8 @@ class SpecificationDefinition(JsonModel):
     """Additional properties associated with the specification."""
 
 
-class Specification(SpecificationDefinition):
-    """The Server set fields for a specification."""
-
-    id: str
-    """The global Id of the specification."""
-
-    version: int
-    """
-    Current version of the specification.
-
-    When an update is applied, the version is automatically incremented.
-    """
+class Specification(SpecificationDefinition, SpecificationServerManaged):
+    """The complete definition of a specification."""
 
 
 class SpecificationCreation(JsonModel):
