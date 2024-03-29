@@ -1,10 +1,9 @@
-from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.spec.models._specification import SpecificationBase
+from nisystemlink.clients.spec.models._specification import Specification
 
 
 class Projection(str, Enum):
@@ -102,28 +101,6 @@ class QuerySpecificationsRequest(JsonModel):
 
     By default, this value is `false` and specifications are sorted in ascending order.
     """
-
-
-class Specification(SpecificationBase):
-    """A single spec that matches the query."""
-
-    id: Optional[str] = None
-    """The global Id of the specification."""
-
-    version: Optional[int] = None
-    """Version of the specification."""
-
-    created_at: Optional[datetime] = None
-    """ISO-8601 formatted timestamp indicating when the specification was created."""
-
-    created_by: Optional[str] = None
-    """Id of the user who created the specification."""
-
-    updated_at: Optional[datetime] = None
-    """ISO-8601 formatted timestamp indicating when the specification was last updated."""
-
-    updated_by: Optional[str] = None
-    """Id of the user who last updated the specification."""
 
 
 class QuerySpecificationsResponse(WithPaging):

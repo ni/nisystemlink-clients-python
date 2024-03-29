@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
@@ -88,3 +89,25 @@ class SpecificationBase(JsonModel):
 
     Default workspace will be taken if the value is not given.
     """
+
+
+class Specification(SpecificationBase):
+    """A single spec that matches the query."""
+
+    id: Optional[str] = None
+    """The global Id of the specification."""
+
+    version: Optional[int] = None
+    """Version of the specification."""
+
+    created_at: Optional[datetime] = None
+    """ISO-8601 formatted timestamp indicating when the specification was created."""
+
+    created_by: Optional[str] = None
+    """Id of the user who created the specification."""
+
+    updated_at: Optional[datetime] = None
+    """ISO-8601 formatted timestamp indicating when the specification was last updated."""
+
+    updated_by: Optional[str] = None
+    """Id of the user who last updated the specification."""

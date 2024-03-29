@@ -18,11 +18,15 @@ from ._delete_specs_request import (
     DeleteSpecificationsRequest,
 )
 from ._query_specs import (
-    Specification,
     QuerySpecificationsRequest,
     QuerySpecificationsResponse,
 )
-from ._specification import SpecificationBase, SpecificationLimit, SpecificationType
+from ._specification import (
+    SpecificationBase,
+    SpecificationLimit,
+    SpecificationType,
+    Specification,
+)
 from ._update_specs_request import (
     UpdateSpecificationRequestObject,
     UpdateSpecificationResponseObject,
