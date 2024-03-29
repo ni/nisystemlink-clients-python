@@ -3,8 +3,8 @@ from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
     DeleteSpecificationsRequest,
     QuerySpecificationsRequest,
+    SpecificationDefinition,
     SpecificationType,
-    UpdateSpecificationRequestObject,
     UpdateSpecificationsRequest,
 )
 
@@ -29,7 +29,7 @@ if response.specs:
     print(f"Original spec1 version: {original_spec1.version}")
 
 # make the modifications
-modified_spec = UpdateSpecificationRequestObject(
+modified_spec = SpecificationDefinition(
     id=original_spec1.id,
     product_id=original_spec1.product_id,
     spec_id=original_spec1.spec_id,

@@ -4,10 +4,10 @@ from nisystemlink.clients.spec.models import (
     Condition,
     ConditionRange,
     ConditionType,
-    CreateSpecificationRequestObject,
     CreateSpecificationsRequest,
     NumericConditionValue,
     QuerySpecificationsRequest,
+    SpecificationDefinition,
     SpecificationLimit,
     SpecificationType,
 )
@@ -22,7 +22,7 @@ client = SpecClient(configuration=server_configuration)
 # Create the spec requests
 product = "Amplifier"
 spec_requests = [
-    CreateSpecificationRequestObject(
+    SpecificationDefinition(
         product_id=product,
         spec_id="spec1",
         type=SpecificationType.PARAMETRIC,
@@ -31,7 +31,7 @@ spec_requests = [
         limit=SpecificationLimit(min=1.2, max=1.5),
         unit="mV",
     ),
-    CreateSpecificationRequestObject(
+    SpecificationDefinition(
         product_id=product,
         spec_id="spec2",
         type=SpecificationType.PARAMETRIC,
@@ -58,7 +58,7 @@ spec_requests = [
             ),
         ],
     ),
-    CreateSpecificationRequestObject(
+    SpecificationDefinition(
         product_id=product,
         spec_id="spec3",
         type=SpecificationType.FUNCTIONAL,
