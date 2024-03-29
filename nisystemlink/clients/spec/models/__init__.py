@@ -18,7 +18,7 @@ from ._delete_specs_request import (
     DeleteSpecificationsRequest,
 )
 from ._query_specs import (
-    QuerySpecificationResponseObject,
+    Specification,
     QuerySpecificationsRequest,
     QuerySpecificationsResponse,
 )
