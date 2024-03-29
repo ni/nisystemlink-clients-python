@@ -17,9 +17,6 @@ class UpdateSpecificationRequestObject(SpecificationBase):
     When an update is applied, the version is automatically incremented.
     """
 
-    workspace: str
-    """Id of the workspace to which the specification will be associated."""
-
 
 class UpdateSpecificationsRequest(JsonModel):
 
