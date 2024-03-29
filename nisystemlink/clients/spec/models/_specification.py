@@ -40,7 +40,7 @@ class SpecificationType(Enum):
     """Functional specs only have pass/fail status."""
 
 
-class SpecificationBase(JsonModel):
+class SpecificationDefinition(JsonModel):
 
     product_id: str
     """Id of the product to which the specification will be associated."""
@@ -49,6 +49,12 @@ class SpecificationBase(JsonModel):
     """User provided value using which the specification will be identified.
 
     This should be unique for a product and workspace combination.
+    """
+
+    workspace: Optional[str] = None
+    """Id of the workspace to which the specification will be associated.
+
+    Default workspace will be taken if the value is not given.
     """
 
     name: Optional[str] = None
@@ -84,14 +90,8 @@ class SpecificationBase(JsonModel):
     properties: Optional[Dict[str, str]] = None
     """Additional properties associated with the specification."""
 
-    workspace: Optional[str] = None
-    """Id of the workspace to which the specification will be associated.
 
-    Default workspace will be taken if the value is not given.
-    """
-
-
-class Specification(SpecificationBase):
+class Specification(SpecificationDefinition):
     """The Server set fields for a specification."""
 
     id: str
@@ -105,14 +105,16 @@ class Specification(SpecificationBase):
     """
 
 
-class SpecificationWithHistory(Specification):
-    """A full specification."""
-
+class SpecificationCreation(JsonModel):
     created_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was created."""
 
     created_by: Optional[str] = None
     """Id of the user who created the specification."""
+
+
+class SpecificationWithHistory(Specification, SpecificationCreation):
+    """A full specification."""
 
     updated_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was last updated."""

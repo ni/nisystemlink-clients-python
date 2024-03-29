@@ -21,7 +21,7 @@ from ._query_specs import (
     QuerySpecificationsResponse,
 )
 from ._specification import (
-    SpecificationBase,
+    SpecificationDefinition,
     Specification,
     SpecificationLimit,
     SpecificationType,

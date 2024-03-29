@@ -3,13 +3,13 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.spec.models._specification import SpecificationBase
+from nisystemlink.clients.spec.models._specification import SpecificationDefinition
 
 
 class CreateSpecificationsRequest(JsonModel):
     """Create multiple specifications."""
 
-    specs: Optional[List[SpecificationBase]] = None
+    specs: Optional[List[SpecificationDefinition]] = None
     """List of specifications to be created."""
 
 
@@ -48,7 +48,7 @@ class CreateSpecificationsPartialSuccessResponse(JsonModel):
     created_specs: Optional[List[CreateSpecificationResponseObject]] = None
     """Information about the created specification(s)"""
 
-    failed_specs: Optional[List[SpecificationBase]] = None
+    failed_specs: Optional[List[SpecificationDefinition]] = None
     """List of specification requests that failed during creation."""
 
     error: Optional[ApiError] = None

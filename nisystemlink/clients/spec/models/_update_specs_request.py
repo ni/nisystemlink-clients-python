@@ -17,6 +17,9 @@ class UpdateSpecificationResponseObject(JsonModel):
     id: Optional[str] = None
     """The global Id of the specification."""
 
+    version: Optional[int] = None
+    """The new version of the specification after the update has been applied."""
+
     product_id: Optional[str] = None
     """Id of the product to which the specification is associated."""
 
@@ -34,9 +37,6 @@ class UpdateSpecificationResponseObject(JsonModel):
 
     updated_by: Optional[str] = None
     """Id of the user who last updated the specification."""
-
-    version: Optional[int] = None
-    """The new version of the specification after the update has been applied."""
 
 
 class UpdateSpecificationsPartialSuccessResponse(JsonModel):
