@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.spec.models._specification import Specification
+from nisystemlink.clients.spec.models._specification import SpecificationWithHistory
 
 
 class Projection(str, Enum):
@@ -106,7 +106,7 @@ class QuerySpecificationsRequest(JsonModel):
 class QuerySpecificationsResponse(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
-    specs: Optional[List[Specification]] = None
+    specs: Optional[List[SpecificationWithHistory]] = None
     """List of queried specifications.
 
     An empty list indicates that there are no specifications meeting the criteria provided in the

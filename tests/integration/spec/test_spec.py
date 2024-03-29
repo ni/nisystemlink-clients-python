@@ -17,7 +17,7 @@ from nisystemlink.clients.spec.models import (
     SpecificationBase,
     SpecificationLimit,
     SpecificationType,
-    SpecificationDefinition,
+    Specification,
     UpdateSpecificationsRequest,
 )
 
@@ -220,7 +220,7 @@ class TestSpec:
         created_spec = response.created_specs[0]
         assert created_spec.version == 0
 
-        update_spec = SpecificationDefinition(
+        update_spec = Specification(
             id=created_spec.id,
             product_id=created_spec.product_id,
             spec_id=created_spec.spec_id,

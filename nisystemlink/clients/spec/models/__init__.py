@@ -22,10 +22,10 @@ from ._query_specs import (
 )
 from ._specification import (
     SpecificationBase,
-    SpecificationDefinition,
+    Specification,
     SpecificationLimit,
     SpecificationType,
-    Specification,
+    SpecificationWithHistory,
 )
 from ._update_specs_request import (
     UpdateSpecificationResponseObject,

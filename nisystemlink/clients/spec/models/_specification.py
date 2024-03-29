@@ -91,7 +91,7 @@ class SpecificationBase(JsonModel):
     """
 
 
-class SpecificationDefinition(SpecificationBase):
+class Specification(SpecificationBase):
     """The Server set fields for a specification."""
 
     id: str
@@ -105,7 +105,7 @@ class SpecificationDefinition(SpecificationBase):
     """
 
 
-class Specification(SpecificationDefinition):
+class SpecificationWithHistory(Specification):
     """A full specification."""
 
     created_at: Optional[datetime] = None
