@@ -8,7 +8,7 @@ from ._condition import (
     StringConditionValue,
 )
 from ._create_specs_request import (
-    CreateSpecificationResponseObject,
+    CreatedSpecification,
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
 )

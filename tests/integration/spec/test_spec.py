@@ -8,7 +8,7 @@ from nisystemlink.clients.spec.models import (
     Condition,
     ConditionRange,
     ConditionType,
-    CreateSpecificationResponseObject,
+    CreatedSpecification,
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
@@ -49,7 +49,7 @@ def create_specs(client: SpecClient):
 
     yield _create_specs
 
-    created_specs: List[CreateSpecificationResponseObject] = []
+    created_specs: List[CreatedSpecification] = []
     for response in responses:
         if response.created_specs:
             created_specs = created_specs + response.created_specs
