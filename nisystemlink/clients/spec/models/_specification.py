@@ -92,25 +92,21 @@ class SpecificationBase(JsonModel):
 
 
 class SpecificationDefinition(SpecificationBase):
+    """The Server set fields for a specification."""
+
     id: str
-    """The global Id of the specification to be updated."""
+    """The global Id of the specification."""
 
     version: int
     """
-    Current version of the specification to be updated.
+    Current version of the specification.
 
     When an update is applied, the version is automatically incremented.
     """
 
 
-class Specification(SpecificationBase):
-    """A single spec that matches the query."""
-
-    id: Optional[str] = None
-    """The global Id of the specification."""
-
-    version: Optional[int] = None
-    """Version of the specification."""
+class Specification(SpecificationDefinition):
+    """A full specification."""
 
     created_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was created."""
