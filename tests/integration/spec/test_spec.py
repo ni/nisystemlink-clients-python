@@ -8,13 +8,13 @@ from nisystemlink.clients.spec.models import (
     Condition,
     ConditionRange,
     ConditionType,
-    CreateSpecificationRequestObject,
     CreateSpecificationResponseObject,
     CreateSpecificationsPartialSuccessResponse,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
     NumericConditionValue,
     QuerySpecificationsRequest,
+    SpecificationBase,
     SpecificationLimit,
     SpecificationType,
     UpdateSpecificationRequestObject,
@@ -62,7 +62,7 @@ def create_specs(client: SpecClient):
 def create_specs_for_query(create_specs, product):
     """Fixture for creating a set of specs that can be used to test query operations."""
     spec_requests = [
-        CreateSpecificationRequestObject(
+        SpecificationBase(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.PARAMETRIC,
@@ -71,7 +71,7 @@ def create_specs_for_query(create_specs, product):
             limit=SpecificationLimit(min=1.2, max=1.5),
             unit="mV",
         ),
-        CreateSpecificationRequestObject(
+        SpecificationBase(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.PARAMETRIC,
@@ -98,7 +98,7 @@ def create_specs_for_query(create_specs, product):
                 ),
             ],
         ),
-        CreateSpecificationRequestObject(
+        SpecificationBase(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.FUNCTIONAL,
@@ -121,7 +121,7 @@ class TestSpec:
     ):
         specId = uuid.uuid1().hex
         productId = product
-        spec = CreateSpecificationRequestObject(
+        spec = SpecificationBase(
             productId=productId,
             specId=specId,
             type=SpecificationType.FUNCTIONAL,
@@ -143,7 +143,7 @@ class TestSpec:
         productId = product
         specs = []
         for id in specIds:
-            spec = CreateSpecificationRequestObject(
+            spec = SpecificationBase(
                 productId=productId,
                 specId=id,
                 type=SpecificationType.FUNCTIONAL,
@@ -161,7 +161,7 @@ class TestSpec:
     ):
         duplicate_id = uuid.uuid1().hex
         productId = product
-        spec = CreateSpecificationRequestObject(
+        spec = SpecificationBase(
             productId=productId,
             specId=duplicate_id,
             type=SpecificationType.FUNCTIONAL,
@@ -182,7 +182,7 @@ class TestSpec:
         # Not using the fixture here so that we can inspect delete response.
         specId = uuid.uuid1().hex
         productId = product
-        spec = CreateSpecificationRequestObject(
+        spec = SpecificationBase(
             productId=productId,
             specId=specId,
             type=SpecificationType.FUNCTIONAL,
@@ -206,7 +206,7 @@ class TestSpec:
     def test__update_single_same_version__version_updates(
         self, client: SpecClient, create_specs, product
     ):
-        spec = CreateSpecificationRequestObject(
+        spec = SpecificationBase(
             productId=product,
             specId="spec1",
             type=SpecificationType.FUNCTIONAL,

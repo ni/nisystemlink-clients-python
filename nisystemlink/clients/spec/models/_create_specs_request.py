@@ -6,16 +6,10 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.spec.models._specification import SpecificationBase
 
 
-class CreateSpecificationRequestObject(SpecificationBase):
-    """Used to create specifications."""
-
-    pass
-
-
 class CreateSpecificationsRequest(JsonModel):
     """Create multiple specifications."""
 
-    specs: Optional[List[CreateSpecificationRequestObject]] = None
+    specs: Optional[List[SpecificationBase]] = None
     """List of specifications to be created."""
 
 
@@ -54,7 +48,7 @@ class CreateSpecificationsPartialSuccessResponse(JsonModel):
     created_specs: Optional[List[CreateSpecificationResponseObject]] = None
     """Information about the created specification(s)"""
 
-    failed_specs: Optional[List[CreateSpecificationRequestObject]] = None
+    failed_specs: Optional[List[SpecificationBase]] = None
     """List of specification requests that failed during creation."""
 
     error: Optional[ApiError] = None
