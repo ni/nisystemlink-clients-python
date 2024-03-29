@@ -6,7 +6,7 @@ from nisystemlink.clients.spec.models._specification import (
     Specification,
     SpecificationServerManaged,
     SpecificationUpdated,
-    SpecificationUserSettableBase,
+    SpecificationUserManaged,
 )
 
 
@@ -17,7 +17,7 @@ class UpdateSpecificationsRequest(JsonModel):
 
 
 class UpdatedSpecification(
-    SpecificationUserSettableBase,
+    SpecificationUserManaged,
     SpecificationServerManaged,
     SpecificationUpdated,
 ):

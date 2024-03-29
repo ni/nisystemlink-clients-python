@@ -25,7 +25,7 @@ from ._specification import (
     SpecificationServerManaged,
     SpecificationType,
     SpecificationUpdated,
-    SpecificationUserSettableBase,
+    SpecificationUserManaged,
     SpecificationWithHistory,
 )
 from ._update_specs_request import (

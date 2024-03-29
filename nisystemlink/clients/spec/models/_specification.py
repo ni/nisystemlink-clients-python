@@ -40,7 +40,7 @@ class SpecificationType(Enum):
     """Functional specs only have pass/fail status."""
 
 
-class SpecificationUserSettableBase(JsonModel):
+class SpecificationUserManaged(JsonModel):
     product_id: str
     """Id of the product to which the specification will be associated."""
 
@@ -69,7 +69,7 @@ class SpecificationServerManaged(JsonModel):
     """
 
 
-class SpecificationDefinition(SpecificationUserSettableBase):
+class SpecificationDefinition(SpecificationUserManaged):
 
     name: Optional[str] = None
     """Name of the specification."""
