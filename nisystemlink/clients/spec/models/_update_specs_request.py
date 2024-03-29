@@ -3,24 +3,12 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.spec.models._specification import SpecificationBase
-
-
-class UpdateSpecificationRequestObject(SpecificationBase):
-    id: str
-    """The global Id of the specification to be updated."""
-
-    version: int
-    """
-    Current version of the specification to be updated.
-
-    When an update is applied, the version is automatically incremented.
-    """
+from nisystemlink.clients.spec.models._specification import SpecificationDefinition
 
 
 class UpdateSpecificationsRequest(JsonModel):
 
-    specs: Optional[List[UpdateSpecificationRequestObject]] = None
+    specs: Optional[List[SpecificationDefinition]] = None
     """List of specifications to be updated."""
 
 
@@ -56,7 +44,7 @@ class UpdateSpecificationsPartialSuccessResponse(JsonModel):
     updated_specs: Optional[List[UpdateSpecificationResponseObject]] = None
     """Information about each of the updated specification(s)."""
 
-    failed_specs: Optional[List[UpdateSpecificationRequestObject]] = None
+    failed_specs: Optional[List[SpecificationDefinition]] = None
     """Information about each of the specification request(s) that failed during the update."""
 
     error: Optional[ApiError] = None

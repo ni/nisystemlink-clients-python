@@ -91,6 +91,18 @@ class SpecificationBase(JsonModel):
     """
 
 
+class SpecificationDefinition(SpecificationBase):
+    id: str
+    """The global Id of the specification to be updated."""
+
+    version: int
+    """
+    Current version of the specification to be updated.
+
+    When an update is applied, the version is automatically incremented.
+    """
+
+
 class Specification(SpecificationBase):
     """A single spec that matches the query."""
 
