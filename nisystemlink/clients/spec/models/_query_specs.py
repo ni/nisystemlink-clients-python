@@ -103,7 +103,7 @@ class QuerySpecificationsRequest(JsonModel):
     """
 
 
-class QuerySpecificationsResponse(WithPaging):
+class QuerySpecifications(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
     specs: Optional[List[SpecificationWithHistory]] = None

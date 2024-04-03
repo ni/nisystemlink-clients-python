@@ -3,20 +3,19 @@ from ._condition import (
     Condition,
     ConditionRange,
     ConditionType,
-    ConditionValueBase,
     NumericConditionValue,
     StringConditionValue,
 )
 from ._create_specs_request import (
     CreatedSpecification,
-    CreateSpecificationsPartialSuccessResponse,
+    CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
 )
 from ._delete_specs_request import (
-    DeleteSpecificationsPartialSuccessResponse,
+    DeleteSpecificationsPartialSuccess,
     DeleteSpecificationsRequest,
 )
-from ._query_specs import QuerySpecificationsRequest, QuerySpecificationsResponse
+from ._query_specs import QuerySpecificationsRequest, QuerySpecifications
 from ._specification import (
     Specification,
     SpecificationCreation,
@@ -30,7 +29,7 @@ from ._specification import (
 )
 from ._update_specs_request import (
     UpdatedSpecification,
-    UpdateSpecificationsPartialSuccessResponse,
+    UpdateSpecificationsPartialSuccess,
     UpdateSpecificationsRequest,
 )
 

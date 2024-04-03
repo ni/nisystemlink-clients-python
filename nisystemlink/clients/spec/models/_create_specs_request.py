@@ -23,7 +23,7 @@ class CreatedSpecification(
     """A specification successfully created on the server."""
 
 
-class CreateSpecificationsPartialSuccessResponse(JsonModel):
+class CreateSpecificationsPartialSuccess(JsonModel):
     """When some specs can not be created, this contains the list that was and was not created."""
 
     created_specs: Optional[List[CreatedSpecification]] = None

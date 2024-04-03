@@ -24,7 +24,7 @@ class UpdatedSpecification(
     """A specification that was updated on the server."""
 
 
-class UpdateSpecificationsPartialSuccessResponse(JsonModel):
+class UpdateSpecificationsPartialSuccess(JsonModel):
 
     updated_specs: Optional[List[UpdatedSpecification]] = None
     """Information about each of the updated specification(s)."""

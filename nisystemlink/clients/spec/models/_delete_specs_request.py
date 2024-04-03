@@ -12,7 +12,7 @@ class DeleteSpecificationsRequest(JsonModel):
     """Global IDs of the specifications to delete."""
 
 
-class DeleteSpecificationsPartialSuccessResponse(JsonModel):
+class DeleteSpecificationsPartialSuccess(JsonModel):
     """The results of deleting multiple specs when one or more of the specs could not be deleted."""
 
     deleted_spec_ids: List[str]

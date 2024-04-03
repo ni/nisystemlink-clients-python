@@ -9,7 +9,7 @@ from nisystemlink.clients.spec.models import (
     ConditionRange,
     ConditionType,
     CreatedSpecification,
-    CreateSpecificationsPartialSuccessResponse,
+    CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
     DeleteSpecificationsRequest,
     NumericConditionValue,
@@ -38,11 +38,11 @@ def client(enterprise_config: HttpConfiguration) -> SpecClient:
 @pytest.fixture
 def create_specs(client: SpecClient):
     """Fixture to return a factory that creates specs."""
-    responses: List[CreateSpecificationsPartialSuccessResponse] = []
+    responses: List[CreateSpecificationsPartialSuccess] = []
 
     def _create_specs(
         new_specs: CreateSpecificationsRequest,
-    ) -> CreateSpecificationsPartialSuccessResponse:
+    ) -> CreateSpecificationsPartialSuccess:
         response = client.create_specs(new_specs)
         responses.append(response)
         return response

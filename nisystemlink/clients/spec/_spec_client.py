@@ -30,7 +30,7 @@ class SpecClient(BaseClient):
     @post("specs")
     def create_specs(
         self, specs: models.CreateSpecificationsRequest
-    ) -> models.CreateSpecificationsPartialSuccessResponse:
+    ) -> models.CreateSpecificationsPartialSuccess:
         """Creates one or more specifications.
 
         Args:
@@ -48,7 +48,7 @@ class SpecClient(BaseClient):
     @post("delete-specs")
     def delete_specs(
         self, spec_ids: models.DeleteSpecificationsRequest
-    ) -> Optional[models.DeleteSpecificationsPartialSuccessResponse]:
+    ) -> Optional[models.DeleteSpecificationsPartialSuccess]:
         """Deletes one or more specifications by global id.
 
         Args:
@@ -67,7 +67,7 @@ class SpecClient(BaseClient):
     @post("query-specs")
     def query_specs(
         self, query: models.QuerySpecificationsRequest
-    ) -> models.QuerySpecificationsResponse:
+    ) -> models.QuerySpecifications:
         """Queries for specs that match the filters.
 
         Args:
@@ -81,7 +81,7 @@ class SpecClient(BaseClient):
     @post("update-specs")
     def update_specs(
         self, specs: models.UpdateSpecificationsRequest
-    ) -> Optional[models.UpdateSpecificationsPartialSuccessResponse]:
+    ) -> Optional[models.UpdateSpecificationsPartialSuccess]:
         """Updates one or more specifications.
 
         Update requires that the version field matches the version being updated from.
