@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2024-04-04)
+
+### Feature
+
+* Add spec client, examples, and docs ([#53](https://github.com/ni/nisystemlink-clients-python/issues/53)) ([`7c88535`](https://github.com/ni/nisystemlink-clients-python/commit/7c8853587cbe1ae21b5039e59d3f1d125f851288))
+
 ## v1.1.2 (2023-10-03)
 
 ### Fix
