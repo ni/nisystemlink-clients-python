@@ -11,10 +11,7 @@ from ._create_specs_request import (
     CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
 )
-from ._delete_specs_request import (
-    DeleteSpecificationsPartialSuccess,
-    DeleteSpecificationsRequest,
-)
+from ._delete_specs_request import DeleteSpecificationsPartialSuccess
 from ._query_specs import QuerySpecificationsRequest, QuerySpecifications
 from ._specification import (
     Specification,

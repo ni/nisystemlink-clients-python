@@ -11,7 +11,6 @@ from nisystemlink.clients.spec.models import (
     CreatedSpecification,
     CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
-    DeleteSpecificationsRequest,
     NumericConditionValue,
     QuerySpecificationsRequest,
     Specification,
@@ -53,9 +52,7 @@ def create_specs(client: SpecClient):
     for response in responses:
         if response.created_specs:
             created_specs = created_specs + response.created_specs
-    client.delete_specs(
-        DeleteSpecificationsRequest(ids=[spec.id for spec in created_specs])
-    )
+    client.delete_specs(ids=[spec.id for spec in created_specs])
 
 
 @pytest.fixture
@@ -191,14 +188,12 @@ class TestSpec:
         assert response.created_specs
         created_spec = response.created_specs[0]
 
-        delete_response = client.delete_specs(
-            DeleteSpecificationsRequest(ids=[created_spec.id])
-        )
+        delete_response = client.delete_specs(ids=[created_spec.id])
         assert delete_response is None
 
     def test__delete_non_existant_spec__delete_fails(self, client: SpecClient):
         bad_id = "DEADBEEF"
-        delete_response = client.delete_specs(DeleteSpecificationsRequest(ids=[bad_id]))
+        delete_response = client.delete_specs(ids=[bad_id])
         assert delete_response
         assert delete_response.failed_spec_ids
         assert bad_id in delete_response.failed_spec_ids

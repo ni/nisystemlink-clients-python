@@ -1,7 +1,6 @@
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
-    DeleteSpecificationsRequest,
     QuerySpecificationsRequest,
     SpecificationDefinition,
     SpecificationType,
@@ -57,6 +56,4 @@ if response.specs:
 # query all specs
 response = client.query_specs(QuerySpecificationsRequest(product_ids=[product]))
 if response.specs:
-    client.delete_specs(
-        DeleteSpecificationsRequest(ids=[spec.id for spec in response.specs])
-    )
+    client.delete_specs(ids=[spec.id for spec in response.specs])

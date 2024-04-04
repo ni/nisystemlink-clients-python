@@ -1,10 +1,11 @@
 """Implementation of SpecClient"""
 
-from typing import Optional
+from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
+from uplink import Field
 
 from . import models
 
@@ -45,14 +46,14 @@ class SpecClient(BaseClient):
         """
         ...
 
-    @post("delete-specs")
+    @post("delete-specs", args=[Field("ids")])
     def delete_specs(
-        self, spec_ids: models.DeleteSpecificationsRequest
+        self, ids: List[str]
     ) -> Optional[models.DeleteSpecificationsPartialSuccess]:
         """Deletes one or more specifications by global id.
 
         Args:
-            spec_ids: a list of specification ids. Note that these are the global ids and not the
+            ids: a list of specification ids. Note that these are the global ids and not the
             `specId` that is local to a product and workspace.
 
         Returns:
