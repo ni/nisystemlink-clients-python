@@ -119,8 +119,8 @@ class TestSpec:
         specId = uuid.uuid1().hex
         productId = product
         spec = SpecificationDefinition(
-            productId=productId,
-            specId=specId,
+            product_id=productId,
+            spec_id=specId,
             type=SpecificationType.FUNCTIONAL,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
@@ -141,8 +141,8 @@ class TestSpec:
         specs = []
         for id in specIds:
             spec = SpecificationDefinition(
-                productId=productId,
-                specId=id,
+                product_id=productId,
+                spec_id=id,
                 type=SpecificationType.FUNCTIONAL,
                 keywords=["work", "reviewed"],
                 category="Parametric Specs",
@@ -159,8 +159,8 @@ class TestSpec:
         duplicate_id = uuid.uuid1().hex
         productId = product
         spec = SpecificationDefinition(
-            productId=productId,
-            specId=duplicate_id,
+            product_id=productId,
+            spec_id=duplicate_id,
             type=SpecificationType.FUNCTIONAL,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
@@ -180,8 +180,8 @@ class TestSpec:
         specId = uuid.uuid1().hex
         productId = product
         spec = SpecificationDefinition(
-            productId=productId,
-            specId=specId,
+            product_id=productId,
+            spec_id=specId,
             type=SpecificationType.FUNCTIONAL,
         )
         response = client.create_specs(CreateSpecificationsRequest(specs=[spec]))
@@ -202,8 +202,8 @@ class TestSpec:
         self, client: SpecClient, create_specs, product
     ):
         spec = SpecificationDefinition(
-            productId=product,
-            specId="spec1",
+            product_id=product,
+            spec_id="spec1",
             type=SpecificationType.FUNCTIONAL,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
@@ -238,7 +238,7 @@ class TestSpec:
     def test__query_product__all_returned(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
-        request = QuerySpecificationsRequest(productIds=[product])
+        request = QuerySpecificationsRequest(product_ids=[product])
 
         response = client.query_specs(request)
         assert response.specs
