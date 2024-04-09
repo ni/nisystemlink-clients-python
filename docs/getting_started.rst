@@ -120,3 +120,40 @@ Export data from a table
 .. literalinclude:: ../examples/dataframe/export_data.py
    :language: python
    :linenos:
+
+Spec API
+-------
+
+Overview
+~~~~~~~~
+
+
+The :class:`.SpecClient` class is the primary entry point of the Specification Compliance API.
+
+When constructing a :class:`.SpecClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.SpecClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.SpecClient` object, you can: 
+
+* Create and delete specifications under a product.
+
+* Modify any fields of an existing specification
+
+* Query for specifications on any fields using DynamicLinq syntax.
+
+Examples
+~~~~~~~~
+
+Create and Query Specifications
+
+.. literalinclude:: ../examples/spec/query_specs.py
+   :language: python
+   :linenos:
+
+Update and Delete Specifications
+
+.. literalinclude:: ../examples/spec/update_and_delete_specs.py
+   :language: python
+   :linenos:
