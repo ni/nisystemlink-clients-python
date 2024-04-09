@@ -73,7 +73,7 @@ client.create_specs(CreateSpecificationsRequest(specs=spec_requests))
 # You can query specs based on any field using DynamicLinq syntax.
 # These are just some representative examples.
 
-response = client.query_specs(QuerySpecificationsRequest(productIds=[product]))
+response = client.query_specs(QuerySpecificationsRequest(product_ids=[product]))
 all_product_specs = response.specs
 
 # Query based on spec id
