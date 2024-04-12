@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.1 (2024-04-12)
+
+### Fix
+
+* Bump idna from 3.4 to 3.7 ([#56](https://github.com/ni/nisystemlink-clients-python/issues/56)) ([`008f523`](https://github.com/ni/nisystemlink-clients-python/commit/008f523063b1c8afd559cc0d14e2199137814584))
+
 ## v1.2.0 (2024-04-04)
 
 ### Feature
