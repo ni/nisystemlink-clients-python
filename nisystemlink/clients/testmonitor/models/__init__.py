@@ -1,1 +1,1 @@
-from ._api_info import Operation, V2Operations
+from ._api_info import Operation, V2Operations, ApiInfo

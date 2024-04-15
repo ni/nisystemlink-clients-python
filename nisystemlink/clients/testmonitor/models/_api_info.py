@@ -25,3 +25,7 @@ class V2Operations(JsonModel):
     delete_products: Operation
     delete_many_products: Operation
     query_paths: Operation
+
+
+class ApiInfo(JsonModel):
+    operations: V2Operations

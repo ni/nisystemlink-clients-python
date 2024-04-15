@@ -13,10 +13,10 @@ class TestMonitorClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration]):
         if configuration is None:
             configuration = core.JupyterHttpConfiguration()
-        super.__init__(configuration, base_path="/nitestmonitor/v2/")
+        super().__init__(configuration, base_path="/nitestmonitor/v2/")
 
     @get("")
-    def api_info(self) -> models.V2Operations:
+    def api_info(self) -> models.ApiInfo:
         """Get information about the available API operations.
 
         Returns:
