@@ -1,10 +1,10 @@
 """Implementation of TestMonitor Client"""
 
-from typing import List, Optional
+from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get, post
+from nisystemlink.clients.core._uplink._methods import get
 
 from . import models
 
