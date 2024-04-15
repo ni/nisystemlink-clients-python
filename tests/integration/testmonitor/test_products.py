@@ -5,7 +5,7 @@ from nisystemlink.clients.testmonitor import TestMonitorClient
 
 @pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> TestMonitorClient:
-    """Fixture to create a SpecClient instance."""
+    """Fixture to create a TestMonitorClient instance."""
     return TestMonitorClient(enterprise_config)
 
 
