@@ -9,7 +9,7 @@ class V2Operations(JsonModel):
     """The ability to get a list of products."""
 
     query_products: Operation
-    """The ability to query Products based on their properties."""
+    """The ability to query products based on their properties."""
 
     create_products: Operation
     """The ability to create one or more products."""
