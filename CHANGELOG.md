@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.0 (2024-04-19)
+
+### Feature
+
+* Test monitor API information routes client ([#57](https://github.com/ni/nisystemlink-clients-python/issues/57)) ([`4b9cc61`](https://github.com/ni/nisystemlink-clients-python/commit/4b9cc6135c0fa4d99e8c93201f83d3a17a817239))
+
 ## v1.2.1 (2024-04-12)
 
 ### Fix
