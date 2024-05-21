@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.1 (2024-05-21)
+
+### Fix
+
+* Bump requests from 2.31.0 to 2.32.0 ([#60](https://github.com/ni/nisystemlink-clients-python/issues/60)) ([`fe9060b`](https://github.com/ni/nisystemlink-clients-python/commit/fe9060b1783e4022cb493a96bd42bb052526c487))
+
 ## v1.3.0 (2024-04-19)
 
 ### Feature
