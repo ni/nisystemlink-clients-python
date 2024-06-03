@@ -3,8 +3,9 @@
 from typing import Optional
 
 from nisystemlink.clients import core
+from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get, post
+from nisystemlink.clients.core._uplink._methods import get, post, delete
 
 from . import models
 from uplink import Query
@@ -105,4 +106,17 @@ class TestMonitorClient(BaseClient):
                 arguments.
         """
 
+        ...
+
+    @delete("products/{id}")
+    def delete_product(self, id: str) -> Optional[ApiError]:
+        """Deletes a single product by id.
+
+        Args:
+            id (str): Unique ID of a product.
+
+        Raises:
+            ApiException: if unable to communicate with the TestMonitor Service
+                or provided an invalid argument.
+        """
         ...
