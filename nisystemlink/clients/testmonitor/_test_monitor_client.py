@@ -54,6 +54,21 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
+    @get("products/{id}")
+    def get_product(self, id: str) -> models.Product:
+        """Retrieves a single product by id.
+
+        Args:
+            id (str): Unique ID of a products.
+        Returns:
+            The single product matching `id`
+
+        Raises:
+            ApiException: if unable to communicate with the TestMonitor Service
+                or provided an invalid argument.
+        """
+        ...
+
     @post("query-products")
     def query_products(
         self, query: models.QueryProductsRequest
