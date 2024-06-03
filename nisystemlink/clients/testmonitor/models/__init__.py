@@ -6,5 +6,6 @@ from ._create_products_request import (
     CreateProductsRequest,
     CreateProductsPartialSuccess,
 )
+from ._delete_products_partial_success import DeleteProductsPartialSuccess
 
 # flake8: noqa

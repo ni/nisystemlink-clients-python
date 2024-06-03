@@ -1,6 +1,6 @@
 """Implementation of TestMonitor Client"""
 
-from typing import Optional
+from typing import Optional, List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core import ApiError
@@ -8,7 +8,7 @@ from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post, delete
 
 from . import models
-from uplink import Query
+from uplink import Query, Field
 
 
 class TestMonitorClient(BaseClient):
@@ -16,6 +16,18 @@ class TestMonitorClient(BaseClient):
         if configuration is None:
             configuration = core.JupyterHttpConfiguration()
         super().__init__(configuration, base_path="/nitestmonitor/v2/")
+
+    @get("")
+    def api_info(self) -> models.ApiInfo:
+        """Get information about the available API operations.
+
+        Returns:
+            Information about available API operations.
+
+        Raises:
+            ApiException: if unable to communicate with the `ni``/nitestmonitor``` service.
+        """
+        ...
 
     @post("products")
     def create_products(
@@ -30,20 +42,8 @@ class TestMonitorClient(BaseClient):
             failures.
 
         Raises:
-            ApiException: if unable to communicate with the TestMonitor service of provided invalid
+            ApiException: if unable to communicate with the ``/nitestmonitor`` service of provided invalid
                 arguments.
-        """
-        ...
-
-    @get("")
-    def api_info(self) -> models.ApiInfo:
-        """Get information about the available API operations.
-
-        Returns:
-            Information about available API operations.
-
-        Raises:
-            ApiException: if unable to communicate with the `nitestmonitor` service.
         """
         ...
 
@@ -68,7 +68,7 @@ class TestMonitorClient(BaseClient):
             A list of products.
 
         Raises:
-            ApiException: if unable to communicate with the TestMonitor Service
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service
                 or provided an invalid argument.
         """
         ...
@@ -83,7 +83,7 @@ class TestMonitorClient(BaseClient):
             The single product matching `id`
 
         Raises:
-            ApiException: if unable to communicate with the TestMonitor Service
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service
                 or provided an invalid argument.
         """
         ...
@@ -102,7 +102,7 @@ class TestMonitorClient(BaseClient):
             A paged list of products with a continuation token to get the next page.
 
         Raises:
-            ApiException: if unable to communicate with the TestMonitor Service or provided invalid
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service or provided invalid
                 arguments.
         """
 
@@ -116,7 +116,25 @@ class TestMonitorClient(BaseClient):
             id (str): Unique ID of a product.
 
         Raises:
-            ApiException: if unable to communicate with the TestMonitor Service
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service
                 or provided an invalid argument.
         """
         ...
+
+    @post("delete-products", args=[Field("ids")])
+    def delete_products(
+        self, ids: List[str]
+    ) -> Optional[models.DeleteProductsPartialSuccess]:
+        """Deletes multiple products.
+
+        Args:
+            ids (List[str]): List of unique IDs of products.
+
+        Returns:
+            A partial success if any products failed to delete, or None if all
+            products were deleted successfully.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service
+                or provided an invalid argument.
+        """
