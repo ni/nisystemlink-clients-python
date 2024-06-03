@@ -4,7 +4,7 @@ from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get
+from nisystemlink.clients.core._uplink._methods import get, post
 
 from . import models
 from uplink import Path, Query
@@ -52,4 +52,24 @@ class TestMonitorClient(BaseClient):
             ApiException: if unable to communicate with the TestMonitor Service
                 or provided an invalid argument.
         """
+        ...
+
+    @post("query-products")
+    def query_products(
+        self, query: models.QueryProductsRequest
+    ) -> models.PagedProducts:
+        """Queries for products that match the filter.
+
+        Args:
+            query : The query contains a DynamicLINQ query string in addition to other details
+                about how to filter and return the list of products.
+
+        Returns:
+            A paged list of products with a continuation token to get the next page.
+
+        Raises:
+            ApiExecption: if unable to communicate with the TestMonitor Service or provided invalid
+                arguments.
+        """
+
         ...
