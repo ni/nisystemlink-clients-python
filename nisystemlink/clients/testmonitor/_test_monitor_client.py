@@ -6,6 +6,7 @@ from nisystemlink.clients import core
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post, delete
+from nisystemlink.clients.testmonitor.models import Product
 
 from . import models
 from uplink import Query, Field
@@ -29,9 +30,9 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
-    @post("products")
+    @post("products", args=[Field("products")])
     def create_products(
-        self, products: models.CreateProductsRequest
+        self, products: List[Product]
     ) -> models.CreateProductsPartialSuccess:
         """Creates one or more products and returns errors for failed creations.
 

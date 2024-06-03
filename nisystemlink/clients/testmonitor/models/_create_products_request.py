@@ -5,13 +5,6 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.testmonitor.models import Product
 
 
-class CreateProductsRequest(JsonModel):
-    """Creates multiple products."""
-
-    products: List[Product]
-    """The list of products to create."""
-
-
 class CreateProductsPartialSuccess(JsonModel):
     products: List[Product]
     """The list of products that were successfully created."""
