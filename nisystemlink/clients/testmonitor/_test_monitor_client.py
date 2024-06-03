@@ -7,6 +7,7 @@ from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get
 
 from . import models
+from uplink import Path, Query
 
 
 class TestMonitorClient(BaseClient):
@@ -24,5 +25,31 @@ class TestMonitorClient(BaseClient):
 
         Raises:
             ApiException: if unable to communicate with the `nitestmonitor` service.
+        """
+        ...
+
+    @get(
+        "products",
+        args=[Query("continuationToken"), Query("take"), Query("returnCount")],
+    )
+    def get_products(
+        self,
+        continuation_token: Optional[str] = None,
+        take: Optional[int] = None,
+        return_count: Optional[bool] = None,
+    ) -> models.PagedProducts:
+        """Reads a list of products.
+
+        Args:
+            continuation_token: The token used to paginate results.
+            take: The number of products to get in this request.
+            return_count: Whether or not to return the total number of products available.
+
+        Returns:
+            A list of products.
+
+        Raises:
+            ApiException: if unable to communicate with the TestMonitor Service
+                or provided an invalid argument.
         """
         ...
