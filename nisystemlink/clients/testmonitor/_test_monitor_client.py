@@ -138,3 +138,4 @@ class TestMonitorClient(BaseClient):
             ApiException: if unable to communicate with the ``/nitestmonitor`` Service
                 or provided an invalid argument.
         """
+        ...
