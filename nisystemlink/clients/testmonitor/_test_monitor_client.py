@@ -16,6 +16,24 @@ class TestMonitorClient(BaseClient):
             configuration = core.JupyterHttpConfiguration()
         super().__init__(configuration, base_path="/nitestmonitor/v2/")
 
+    @post("products")
+    def create_products(
+        self, products: models.CreateProductsRequest
+    ) -> models.CreateProductsPartialSuccess:
+        """Creates one or more products and returns errors for failed creations.
+
+        Args:
+            products: A list of products to attempt to create.
+
+        Returns: A list of created products, products that failed to create, and errors for
+            failures.
+
+        Raises:
+            ApiException: if unable to communicate with the TestMonitor service of provided invalid
+                arguments.
+        """
+        ...
+
     @get("")
     def api_info(self) -> models.ApiInfo:
         """Get information about the available API operations.
@@ -87,22 +105,4 @@ class TestMonitorClient(BaseClient):
                 arguments.
         """
 
-        ...
-
-    @post("products")
-    def create_products(
-        self, products: models.CreateProductsRequest
-    ) -> models.CreateProductsPartialSuccess:
-        """Creates one or more products and returns errors for failed creations.
-
-        Args:
-            products: A list of products to attempt to create.
-
-        Returns: A list of created products, products that failed to create, and errors for
-            failures.
-
-        Raises:
-            ApiException: if unable to communicate with the TestMonitor service of provided invalid
-                arguments.
-        """
         ...
