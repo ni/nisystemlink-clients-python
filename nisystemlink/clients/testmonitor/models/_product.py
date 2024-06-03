@@ -7,7 +7,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class Product(JsonModel):
     """Contains information about a product."""
 
-    id: str
+    id: Optional[str]
     """The globally unique id of the product."""
 
     part_number: str
@@ -29,7 +29,7 @@ class Product(JsonModel):
     names within it.
     """
 
-    updated_at: datetime
+    updated_at: Optional[datetime]
     """The last time that this product was updated."""
 
     file_ids: Optional[List[str]]

@@ -7,7 +7,7 @@ from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
 
 from . import models
-from uplink import Path, Query
+from uplink import Query
 
 
 class TestMonitorClient(BaseClient):
@@ -68,8 +68,26 @@ class TestMonitorClient(BaseClient):
             A paged list of products with a continuation token to get the next page.
 
         Raises:
-            ApiExecption: if unable to communicate with the TestMonitor Service or provided invalid
+            ApiException: if unable to communicate with the TestMonitor Service or provided invalid
                 arguments.
         """
 
+        ...
+
+    @post("products")
+    def create_products(
+        self, products: models.CreateProductsRequest
+    ) -> models.CreateProductsPartialSuccess:
+        """Creates one or more products and returns errors for failed creations.
+
+        Args:
+            products: A list of products to attempt to create.
+
+        Returns: A list of created products, products that failed to create, and errors for
+            failures.
+
+        Raises:
+            ApiException: if unable to communicate with the TestMonitor service of provided invalid
+                arguments.
+        """
         ...
