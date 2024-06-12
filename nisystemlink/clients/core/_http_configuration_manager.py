@@ -23,6 +23,9 @@ class HttpConfigurationManager:
     HTTP_LOCALHOST_CONFIGURATION_ID = "SYSTEMLINK_LOCALHOST"
     """The default ID of the SystemLink Server's configuration on the SystemLink Server itself."""
 
+    JUPYTER_HUB_CONFIGURATION_ID = "SYSTEMLINK_JUPYTER_HUB"
+    """ID for the http configuration for Jupyter Notebooks run in a SystemLink Enterprise environment."""
+
     _configs = None
 
     @classmethod
@@ -84,6 +87,9 @@ class HttpConfigurationManager:
         localhost_config = cls._configs.get(cls.HTTP_LOCALHOST_CONFIGURATION_ID)
         if localhost_config is not None:
             return localhost_config
+        jupyter_config = cls._configs.get(cls.JUPYTER_HUB_CONFIGURATION_ID)
+        if jupyter_config is not None:
+            return jupyter_config
         return None
 
     @classmethod
@@ -101,6 +107,12 @@ class HttpConfigurationManager:
                 that contains HTTP configurations.
         """
         configurations = {}  # type: Dict[str, core.HttpConfiguration]
+
+        try:
+            configurations[cls.JUPYTER_HUB_CONFIGURATION_ID] = core.JupyterHttpConfiguration()
+        except KeyError:
+            pass
+
         path = cls._http_configurations_directory()
         if not path.exists():
             return configurations
