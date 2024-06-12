@@ -109,7 +109,9 @@ class HttpConfigurationManager:
         configurations = {}  # type: Dict[str, core.HttpConfiguration]
 
         try:
-            configurations[cls.JUPYTER_HUB_CONFIGURATION_ID] = core.JupyterHttpConfiguration()
+            configurations[
+                cls.JUPYTER_HUB_CONFIGURATION_ID
+            ] = core.JupyterHttpConfiguration()
         except KeyError:
             pass
 
