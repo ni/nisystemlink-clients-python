@@ -23,8 +23,11 @@ class HttpConfigurationManager:
     HTTP_LOCALHOST_CONFIGURATION_ID = "SYSTEMLINK_LOCALHOST"
     """The default ID of the SystemLink Server's configuration on the SystemLink Server itself."""
 
+    _HTTP_JUPYTER_CONFIGURATION_ID = "SYSTEMLINK_VIRTUAL_JUPYTER"
+    """Virtual ID of SystemLink Server's configuration for Jupyter Notebook execution on SLE."""
+
     _configs = None
-    _juypter_config = None
+    _virtual_configs = None
 
     @classmethod
     def get_configuration(
@@ -79,13 +82,8 @@ class HttpConfigurationManager:
         """
         if cls._configs is None:
             cls._configs = cls._read_configurations()
-
-        if cls._juypter_config is None:
-            try:
-                cls._juypter_config = core.JupyterHttpConfiguration()
-            except KeyError:
-                # Env variables for Jupyter Hub execution are not available.
-                pass
+        if cls._virtual_configs is None:
+            cls._virtual_configs = cls._read_virtual_configurations()
 
         master_config = cls._configs.get(cls.HTTP_MASTER_CONFIGURATION_ID)
         if master_config is not None:
@@ -93,9 +91,31 @@ class HttpConfigurationManager:
         localhost_config = cls._configs.get(cls.HTTP_LOCALHOST_CONFIGURATION_ID)
         if localhost_config is not None:
             return localhost_config
-        if cls._juypter_config is not None:
-            return cls._juypter_config
+
+        jupyter_config = cls._virtual_configs.get(cls._HTTP_JUPYTER_CONFIGURATION_ID)
+        if jupyter_config is not None:
+            return jupyter_config
+
         return None
+
+    @classmethod
+    def _read_virtual_configurations(cls) -> Dict[str, core.HttpConfiguration]:
+        """Loads the virtual HTTP configurations.
+
+        Returns:
+            A dictionary mapping each loaded configuration ID to its corresponding
+            :class:`HttpConfiguration`.
+        """
+        configurations = {}  # type: Dict[str, core.HttpConfiguration]
+        try:
+            configurations[cls._HTTP_JUPYTER_CONFIGURATION_ID] = (
+                core.JupyterHttpConfiguration()
+            )
+        except KeyError:
+            # Env variables for Jupyter notebook execution are not available.
+            pass
+
+        return configurations
 
     @classmethod
     def _read_configurations(cls) -> Dict[str, core.HttpConfiguration]:
