@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.0 (2024-06-18)
+
+### Feature
+
+* Make DataFrame and Spec clients compatible with SystemLink Client http configuration ([#61](https://github.com/ni/nisystemlink-clients-python/issues/61)) ([`7954e14`](https://github.com/ni/nisystemlink-clients-python/commit/7954e1479a0e421cfe3e44c741e69186e2f0c45f))
+
 ## v1.3.1 (2024-05-21)
 
 ### Fix
