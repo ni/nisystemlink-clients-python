@@ -6,6 +6,7 @@ import json
 import pathlib
 import typing
 from typing import Dict, Optional
+import yaml
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._internal._http_configuration_file import (
@@ -25,6 +26,9 @@ class HttpConfigurationManager:
 
     _HTTP_JUPYTER_CONFIGURATION_ID = "SYSTEMLINK_VIRTUAL_JUPYTER"
     """Virtual ID of SystemLink Server's configuration for Jupyter Notebook execution on SLE."""
+
+    _SALT_GRAINS_WORKSPACE_KEY = "systemlink_workspace"
+    """Key of Workspace ID stored in the salt grains config file."""
 
     _configs = None
     _virtual_configs = None
@@ -146,6 +150,8 @@ class HttpConfigurationManager:
                 "Error while accessing HTTP configurations directory: " + str(e)
             )
 
+        workspace = cls._read_system_workspace()
+
         for json_file in json_files:
             try:
                 config_file = cls._read_configuration_file(json_file)
@@ -167,7 +173,10 @@ class HttpConfigurationManager:
                     if not cert_path.exists():
                         cert_path = None
                 configurations[config_file.id] = core.HttpConfiguration(
-                    config_file.uri, config_file.api_key, cert_path=cert_path
+                    config_file.uri,
+                    config_file.api_key,
+                    cert_path=cert_path,
+                    workspace=workspace,
                 )
             except PermissionError:
                 pass
@@ -215,6 +224,34 @@ class HttpConfigurationManager:
         """Get the platform-specific path to the HTTP Configurations directory.
 
         Returns:
-            The path of the HTTP Configurations directory.
+            pathlib.Path: The path of the HTTP Configurations directory.
         """
         return PathConstants.application_data_directory / "HttpConfigurations"
+
+    @classmethod
+    def _salt_grains_path(cls) -> pathlib.Path:
+        """Get the SALT grains config file path.
+
+        Returns:
+            pathlib.Path: The path of SALT grains config file
+        """
+        return PathConstants.salt_data_directory / "conf" / "grains"
+
+    @classmethod
+    def _read_system_workspace(cls) -> Optional[str]:
+        """Get the workspace of the connected remote system.
+
+        Reads workspace from `grains` file of SystemLink Client.
+
+        Returns:
+            str: Workspace Id of the remote system.
+        """
+
+        salt_grain_file_path = cls._salt_grains_path()
+
+        if salt_grain_file_path.exists():
+            with open(salt_grain_file_path, "r", encoding="utf-8") as fp:
+                grain_data: Dict = yaml.safe_load(fp)
+            return grain_data.get(cls._SALT_GRAINS_WORKSPACE_KEY)
+
+        return None
