@@ -6,8 +6,8 @@ import json
 import pathlib
 import typing
 from typing import Dict, Optional
-import yaml
 
+import yaml
 from nisystemlink.clients import core
 from nisystemlink.clients.core._internal._http_configuration_file import (
     HttpConfigurationFile,
@@ -246,7 +246,6 @@ class HttpConfigurationManager:
         Returns:
             str: Workspace Id of the remote system.
         """
-
         salt_grain_file_path = cls._salt_grains_path()
 
         if salt_grain_file_path.exists():
