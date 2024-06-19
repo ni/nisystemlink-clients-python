@@ -24,15 +24,15 @@ class DataFrameClient(BaseClient):
 
         Args:
             configuration: Defines the web server to connect to and information about
-                how to connect. If not provided, an instance of
-                :class:`JupyterHttpConfiguration <nisystemlink.clients.core.JupyterHttpConfiguration>`
-                is used.
+                how to connect. If not provided, the
+                :class:`HttpConfigurationManager <nisystemlink.clients.core.HttpConfigurationManager>`
+                is used to obtain the configuration.
 
         Raises:
             ApiException: if unable to communicate with the DataFrame Service.
         """
         if configuration is None:
-            configuration = core.JupyterHttpConfiguration()
+            configuration = core.HttpConfigurationManager.get_configuration()
 
         super().__init__(configuration, "/nidataframe/v1/")
 

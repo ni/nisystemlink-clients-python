@@ -2,6 +2,36 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.0 (2024-06-18)
+
+### Feature
+
+* Make DataFrame and Spec clients compatible with SystemLink Client http configuration ([#61](https://github.com/ni/nisystemlink-clients-python/issues/61)) ([`7954e14`](https://github.com/ni/nisystemlink-clients-python/commit/7954e1479a0e421cfe3e44c741e69186e2f0c45f))
+
+## v1.3.1 (2024-05-21)
+
+### Fix
+
+* Bump requests from 2.31.0 to 2.32.0 ([#60](https://github.com/ni/nisystemlink-clients-python/issues/60)) ([`fe9060b`](https://github.com/ni/nisystemlink-clients-python/commit/fe9060b1783e4022cb493a96bd42bb052526c487))
+
+## v1.3.0 (2024-04-19)
+
+### Feature
+
+* Test monitor API information routes client ([#57](https://github.com/ni/nisystemlink-clients-python/issues/57)) ([`4b9cc61`](https://github.com/ni/nisystemlink-clients-python/commit/4b9cc6135c0fa4d99e8c93201f83d3a17a817239))
+
+## v1.2.1 (2024-04-12)
+
+### Fix
+
+* Bump idna from 3.4 to 3.7 ([#56](https://github.com/ni/nisystemlink-clients-python/issues/56)) ([`008f523`](https://github.com/ni/nisystemlink-clients-python/commit/008f523063b1c8afd559cc0d14e2199137814584))
+
+## v1.2.0 (2024-04-04)
+
+### Feature
+
+* Add spec client, examples, and docs ([#53](https://github.com/ni/nisystemlink-clients-python/issues/53)) ([`7c88535`](https://github.com/ni/nisystemlink-clients-python/commit/7c8853587cbe1ae21b5039e59d3f1d125f851288))
+
 ## v1.1.2 (2023-10-03)
 
 ### Fix
