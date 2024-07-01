@@ -324,7 +324,7 @@ class LinqFileQuery(JsonModel):
     - properties: File properties. Example: properties['x'] = 'y'
     - workspace : The workspace of the files. Example: 88974b87-07d4-4f84-b54f-48eec89b11ed
     """
-    order_by: Optional[OrderBy] = Field("UPDATED", alias="orderBy")
+    order_by: Optional[OrderBy] = Field(OrderBy.CREATED, alias="orderBy")
     """
     The file value property to order results by.
     """
