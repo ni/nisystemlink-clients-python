@@ -1,0 +1,16 @@
+.. _api_tag_page:
+
+nisystemlink.clients.file
+======================
+
+.. autoclass:: nisystemlink.clients.file.FileClient
+   :exclude-members: __init__
+
+   .. automethod:: __init__
+   .. automethod:: api_info
+   .. automethod:: get_files
+   .. automethod:: get_files
+
+.. automodule:: nisystemlink.clients.file.models
+   :members:
+   :imported-members:

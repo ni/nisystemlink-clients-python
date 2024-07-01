@@ -12,6 +12,7 @@ API Reference
    api_reference/testmonitor
    api_reference/dataframe
    api_reference/spec
+   api_reference/file
 
 Indices and tables
 ------------------
