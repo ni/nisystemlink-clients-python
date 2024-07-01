@@ -3,7 +3,8 @@ from typing import Dict, List
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
 
-from ._file_models import FileMetadata, Link
+from ._file_metadata import FileMetadata
+from ._link import Link
 
 
 class FileQueryResponse(JsonModel):

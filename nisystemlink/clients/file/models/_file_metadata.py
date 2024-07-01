@@ -4,7 +4,7 @@ from typing import Dict, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
 
-from ._file_models import Link
+from ._link import Link
 
 
 class FileMetadata(JsonModel):
