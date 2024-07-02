@@ -22,6 +22,7 @@ class HttpConfiguration:
         username: Optional[str] = None,
         password: Optional[str] = None,
         cert_path: Optional[pathlib.Path] = None,
+        workspace: Optional[str] = None,
     ) -> None:
         """Initialize a configuration.
 
@@ -38,6 +39,7 @@ class HttpConfiguration:
             username: The name of the user to use when authorization is required.
             password: The user's password to use when authorization is required.
             cert_path: Local path to an SSL certificate file.
+            workspace: ID of workspace to use for client operations.
 
         Raises:
             ValueError: if ``server_uri`` is missing scheme or host information.
@@ -68,6 +70,8 @@ class HttpConfiguration:
         self._user_agent = ""  # type: Optional[str]
 
         self._timeout_ms = self.DEFAULT_TIMEOUT_MILLISECONDS
+
+        self._workspace = workspace
 
     @property
     def timeout_milliseconds(self) -> int:  # noqa: D401
@@ -126,3 +130,8 @@ class HttpConfiguration:
     def cert_path(self) -> Optional[pathlib.Path]:
         """Local path to an SSL certificate file."""
         return self._cert_path
+
+    @property
+    def workspace(self) -> Optional[str]:  # noqa: D401
+        """ID of workspace to use for Client operations."""
+        return self._workspace
