@@ -76,6 +76,8 @@ class PathConstants(metaclass=ClasspropertySupport):
         if os.name != "nt":
             raise RuntimeError("This function is for Windows only")
 
+        programdata_dir = None
+
         try:
             from . import _winpaths
 
@@ -83,10 +85,16 @@ class PathConstants(metaclass=ClasspropertySupport):
                 _winpaths.get_path(_winpaths.FOLDERID.ProgramData)
             )
         except Exception:
-            programdata_dir = pathlib.Path(os.getenv("PROGRAMDATA"))
+            env_programdata_dir = os.getenv("PROGRAMDATA")
 
-            if not programdata_dir.exists():
-                programdata_dir = pathlib.Path("C:/ProgramData")
+            if env_programdata_dir:
+                programdata_dir = pathlib.Path(env_programdata_dir)
+
+        if programdata_dir is not None and programdata_dir.exists():
+            return programdata_dir
+
+        # Last fallback option, assume that it is in C:/
+        programdata_dir = pathlib.Path("C:/ProgramData")
 
         if not programdata_dir.exists():
             raise RuntimeError("Cannot find ProgramData folder")
