@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.1 (2024-07-08)
+
+### Fix
+
+* Bump certifi from 2023.7.22 to 2024.7.4 ([#66](https://github.com/ni/nisystemlink-clients-python/issues/66)) ([`0fc4ff7`](https://github.com/ni/nisystemlink-clients-python/commit/0fc4ff766895a70be4c0e518ba98db0e69beab43))
+
 ## v1.4.0 (2024-06-18)
 
 ### Feature
