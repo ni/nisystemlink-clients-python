@@ -43,7 +43,7 @@ class TestTestMonitor:
     def test__create_single_product__one_product_created_with_right_field_values(
         self, client: TestMonitorClient, create_products
     ):
-        part_number = "Example 123 AA"
+        part_number = "Test Part Number"
         name = "Test Name"
         family = "Example Family"
         keywords = ["testing"]
@@ -65,3 +65,14 @@ class TestTestMonitor:
         assert created_product.family == family
         assert created_product.keywords == keywords
         assert created_product.properties == properties
+
+    def test__create_multiple_products__multiple_creates_succeed(
+        self, client: TestMonitorClient, create_products
+    ):
+        products = [
+            Product(part_number="Test Part Number"),
+            Product(part_number="Test Part Number 2"),
+        ]
+        response: CreateProductsPartialSuccess = create_products(products)
+        assert response is not None
+        assert len(response.products) == 2
