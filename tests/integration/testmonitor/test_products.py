@@ -85,7 +85,7 @@ class TestTestMonitor:
         assert response is not None
         assert len(response.products) == 2
 
-    def test__create_single_product_and_get__at_least_one_product_exists(
+    def test__create_single_product_and_get_products__at_least_one_product_exists(
         self, client: TestMonitorClient, create_products, unique_part_number
     ):
         products = [Product(part_number=unique_part_number)]
@@ -93,3 +93,15 @@ class TestTestMonitor:
         get_response = client.get_products()
         assert get_response is not None
         assert len(get_response.products) >= 1
+
+    def test_create_multiple_products_and_get_products_with_take__only_take_returned(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        products = [
+            Product(part_number=unique_part_number),
+            Product(part_number=unique_part_number),
+        ]
+        create_products(products)
+        get_response = client.get_products(take=1)
+        assert get_response is not None
+        assert len(get_response.products) == 1
