@@ -118,3 +118,15 @@ class TestTestMonitor:
         get_response: models.PagedProducts = client.get_products(return_count=True)
         assert get_response is not None
         assert get_response.total_count >= 2
+
+    def test__get_product_by_id__product_matches_expected(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        part_number = unique_part_number
+        products = [Product(part_number=part_number)]
+        create_response: CreateProductsPartialSuccess = create_products(products)
+        assert create_response is not None
+        id = create_response.products[0].id
+        product = client.get_product(id)
+        assert product is not None
+        assert product.part_number == part_number
