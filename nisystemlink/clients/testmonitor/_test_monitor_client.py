@@ -1,6 +1,7 @@
 """Implementation of TestMonitor Client"""
 
 from typing import Optional, List
+from uplink import returns
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core import ApiError
@@ -106,7 +107,25 @@ class TestMonitorClient(BaseClient):
             ApiException: if unable to communicate with the ``/nitestmonitor`` Service or provided invalid
                 arguments.
         """
+        ...
 
+    @returns.json
+    @post("query-product-values")
+    def query_product_values(
+        self, query: models.QueryProductValuesRequest
+    ) -> List[str]:
+        """Queries for products that match the query and returns a list of the requested field.
+
+        Args:
+            query : The query for the fields you want.
+
+        Returns:
+            A list of the values of the field you requested.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service or provided
+            invalid arguments.
+        """
         ...
 
     @post("update-products", args=[Field("products"), Field("replace")])

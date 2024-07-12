@@ -4,7 +4,7 @@ from typing import List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class OrderBy(Enum):
+class ProductField(Enum):
     """The valid ways to order a product query."""
 
     ID = "ID"
@@ -14,7 +14,7 @@ class OrderBy(Enum):
     UPDATED_AT = "UPDATED_AT"
 
 
-class QueryProductsRequest(JsonModel):
+class QueryProductsBase(JsonModel):
     filter: Optional[str] = None
     """
     The product query filter in Dynamic Linq format.
@@ -46,7 +46,10 @@ class QueryProductsRequest(JsonModel):
     zeroth index of the substitutions list.
     """
 
-    order_by: Optional[OrderBy] = None
+
+class QueryProductsRequest(QueryProductsBase):
+
+    order_by: Optional[ProductField] = None
     """Specifies the fields to use to sort the products. 
     
     By default, products are sorted by `id`
@@ -77,3 +80,11 @@ class QueryProductsRequest(JsonModel):
     By default, this value is `False` and count is not returned. Note that returning the count may 
     incur performance penalties as the service may have to do a complete walk of the database to 
     compute count. """
+
+
+class QueryProductValuesRequest(QueryProductsBase):
+    field: Optional[ProductField] = None
+    """The product field to return for this query."""
+
+    starts_with: Optional[str] = None
+    """Only return string parameters prefixed by this value (case sensitive)."""
