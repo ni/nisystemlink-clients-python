@@ -109,6 +109,29 @@ class TestMonitorClient(BaseClient):
 
         ...
 
+    @post("update-products", args=[Field("products"), Field("replace")])
+    def update_products(
+        self, products: List[Product], replace: bool = False
+    ) -> models.CreateProductsPartialSuccess:
+        """Updates a list of products with optional field replacement.
+
+        Args:
+            `products`: A list of products to update. Products are matched for update by id.
+            `replace`: Replace the existing fields instead of merging them.
+                If this is `True`, then `keywords` and `properties` for the product will be
+                    replaced by what is in the `products` provided in this request.
+                If this is `False`, then the `keywords` and `properties` in this request will
+                    merge with what is already present in the server resource.
+
+        Returns: A list of updates products, products that failed to update, and errors for
+            failures.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service
+                or provided an invalid argument.
+        """
+        ...
+
     @delete("products/{id}")
     def delete_product(self, id: str) -> Optional[ApiError]:
         """Deletes a single product by id.
