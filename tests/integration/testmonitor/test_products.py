@@ -3,6 +3,7 @@ import uuid
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
+from nisystemlink.clients.testmonitor import models
 from nisystemlink.clients.testmonitor.models import (
     CreateProductsPartialSuccess,
     Product,
@@ -94,7 +95,7 @@ class TestTestMonitor:
         assert get_response is not None
         assert len(get_response.products) >= 1
 
-    def test_create_multiple_products_and_get_products_with_take__only_take_returned(
+    def test__create_multiple_products_and_get_products_with_take__only_take_returned(
         self, client: TestMonitorClient, create_products, unique_part_number
     ):
         products = [
@@ -105,3 +106,15 @@ class TestTestMonitor:
         get_response = client.get_products(take=1)
         assert get_response is not None
         assert len(get_response.products) == 1
+
+    def test__create_multiple_products_and_get_products_with_count_at_least_one_count(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        products = [
+            Product(part_number=unique_part_number),
+            Product(part_number=unique_part_number),
+        ]
+        create_products(products)
+        get_response: models.PagedProducts = client.get_products(return_count=True)
+        assert get_response is not None
+        assert get_response.total_count >= 2
