@@ -1,4 +1,5 @@
 from typing import List
+import uuid
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
@@ -12,6 +13,13 @@ from nisystemlink.clients.testmonitor.models import (
 def client(enterprise_config: HttpConfiguration) -> TestMonitorClient:
     """Fixture to create a TestMonitorClient instance."""
     return TestMonitorClient(enterprise_config)
+
+
+@pytest.fixture
+def unique_part_number() -> str:
+    """Unique product id for this test."""
+    product_id = uuid.uuid1().hex
+    return product_id
 
 
 @pytest.fixture
@@ -76,3 +84,12 @@ class TestTestMonitor:
         response: CreateProductsPartialSuccess = create_products(products)
         assert response is not None
         assert len(response.products) == 2
+
+    def test__create_single_product_and_get__at_least_one_product_exists(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        products = [Product(part_number=unique_part_number)]
+        create_products(products)
+        get_response = client.get_products()
+        assert get_response is not None
+        assert len(get_response.products) >= 1
