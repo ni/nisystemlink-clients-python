@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.2 (2024-07-15)
+
+### Fix
+
+* Bump setuptools from 67.6.0 to 70.0.0 ([#67](https://github.com/ni/nisystemlink-clients-python/issues/67)) ([`39b13f0`](https://github.com/ni/nisystemlink-clients-python/commit/39b13f0c4b3ed3377e54dd6c4a3237c7e9304e48))
+
 ## v1.4.1 (2024-07-08)
 
 ### Fix
