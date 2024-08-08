@@ -12,20 +12,20 @@ class Product(JsonModel):
 
     part_number: str
     """The part number is the unique identifier of a product within a single org.
-    
+
     Usually the part number refers to a specific revision or version of a given product."""
 
     name: Optional[str]
     """The name of the product.
-    
-    Usually the name is used to refer to several part numbers that all have the same name but 
-    different revisions or versions. 
+
+    Usually the name is used to refer to several part numbers that all have the same name but
+    different revisions or versions.
     """
 
     family: Optional[str]
     """The family that that this product belongs to.
-    
-    Usually the family is a grouping above product name. A family usually has multiple product 
+
+    Usually the family is a grouping above product name. A family usually has multiple product
     names within it.
     """
 

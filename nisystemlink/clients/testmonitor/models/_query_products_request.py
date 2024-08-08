@@ -32,17 +32,17 @@ class QueryProductsBase(JsonModel):
     See [Dynamic Linq](https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language)
     documentation for more details.
 
-    `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this 
+    `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable.
     """
 
     substitutions: Optional[List[str]] = None
     """String substitutions into the `filter`.
-    
-    Makes substitutions in the query filter expression. Substitutions for the query expression are 
-    indicated by non-negative integers that are prefixed with the "at" symbol. Each substitution in 
-    the given expression will be replaced by the element at the corresponding index (zero-based) in 
-    this list. For example, "@0" in the filter expression will be replaced with the element at the 
+
+    Makes substitutions in the query filter expression. Substitutions for the query expression are
+    indicated by non-negative integers that are prefixed with the "at" symbol. Each substitution in
+    the given expression will be replaced by the element at the corresponding index (zero-based) in
+    this list. For example, "@0" in the filter expression will be replaced with the element at the
     zeroth index of the substitutions list.
     """
 
@@ -50,8 +50,8 @@ class QueryProductsBase(JsonModel):
 class QueryProductsRequest(QueryProductsBase):
 
     order_by: Optional[ProductField] = None
-    """Specifies the fields to use to sort the products. 
-    
+    """Specifies the fields to use to sort the products.
+
     By default, products are sorted by `id`
     """
 
@@ -75,10 +75,10 @@ class QueryProductsRequest(QueryProductsBase):
     """
 
     return_count: Optional[bool] = None
-    """If true, the response will include a count of all products matching the filter. 
-    
-    By default, this value is `False` and count is not returned. Note that returning the count may 
-    incur performance penalties as the service may have to do a complete walk of the database to 
+    """If true, the response will include a count of all products matching the filter.
+
+    By default, this value is `False` and count is not returned. Note that returning the count may
+    incur performance penalties as the service may have to do a complete walk of the database to
     compute count. """
 
 

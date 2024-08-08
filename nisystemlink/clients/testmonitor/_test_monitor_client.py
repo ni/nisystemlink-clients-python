@@ -1,16 +1,15 @@
 """Implementation of TestMonitor Client"""
 
-from typing import Optional, List
-from uplink import returns
+from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get, post, delete
+from nisystemlink.clients.core._uplink._methods import delete, get, post
 from nisystemlink.clients.testmonitor.models import Product
+from uplink import Field, Query, returns
 
 from . import models
-from uplink import Query, Field
 
 
 class TestMonitorClient(BaseClient):
@@ -81,6 +80,7 @@ class TestMonitorClient(BaseClient):
 
         Args:
             id (str): Unique ID of a products.
+
         Returns:
             The single product matching `id`
 

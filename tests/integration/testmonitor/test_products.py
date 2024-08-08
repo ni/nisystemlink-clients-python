@@ -2,9 +2,8 @@ import uuid
 from typing import List
 
 import pytest
-
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.testmonitor import TestMonitorClient, models
+from nisystemlink.clients.testmonitor import models, TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateProductsPartialSuccess,
     Product,

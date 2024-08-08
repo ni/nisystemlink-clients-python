@@ -1,10 +1,10 @@
-from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.core import HttpConfiguration
+from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
-    QueryProductsRequest,
     Product,
-    QueryProductValuesRequest,
     ProductField,
+    QueryProductsRequest,
+    QueryProductValuesRequest,
 )
 
 name = "Example Name"
