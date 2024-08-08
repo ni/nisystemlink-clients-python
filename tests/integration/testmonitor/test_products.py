@@ -1,9 +1,10 @@
-from typing import List
 import uuid
+from typing import List
+
 import pytest
+
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.testmonitor import TestMonitorClient
-from nisystemlink.clients.testmonitor import models
+from nisystemlink.clients.testmonitor import TestMonitorClient, models
 from nisystemlink.clients.testmonitor.models import (
     CreateProductsPartialSuccess,
     Product,
@@ -11,8 +12,8 @@ from nisystemlink.clients.testmonitor.models import (
 from nisystemlink.clients.testmonitor.models._paged_products import PagedProducts
 from nisystemlink.clients.testmonitor.models._query_products_request import (
     ProductField,
-    QueryProductValuesRequest,
     QueryProductsRequest,
+    QueryProductValuesRequest,
 )
 
 
@@ -167,3 +168,39 @@ class TestTestMonitor:
         assert query_response is not None
         assert len(query_response) == 1
         assert query_response[0] == test_name
+
+    def test__update_keywords_with_replace__keywords_replaced(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        original_keyword = "originalKeyword"
+        updated_keyword = "updatedKeyword"
+        create_response: CreateProductsPartialSuccess = create_products(
+            [Product(part_number=unique_part_number, keywords=[original_keyword])]
+        )
+        assert create_response is not None
+        assert len(create_response.products) == 1
+        updated_product = create_response.products[0]
+        updated_product.keywords = [updated_keyword]
+        update_response = client.update_products([updated_product], replace=True)
+        assert update_response is not None
+        assert len(update_response.products) == 1
+        assert updated_keyword in update_response.products[0].keywords
+        assert original_keyword not in update_response.products[0].keywords
+
+    def test__update_keywords_no_replace__keywords_appended(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        original_keyword = "originalKeyword"
+        additional_keyword = "additionalKeyword"
+        create_response: CreateProductsPartialSuccess = create_products(
+            [Product(part_number=unique_part_number, keywords=[original_keyword])]
+        )
+        assert create_response is not None
+        assert len(create_response.products) == 1
+        updated_product = create_response.products[0]
+        updated_product.keywords = [additional_keyword]
+        update_response = client.update_products([updated_product], replace=False)
+        assert update_response is not None
+        assert len(update_response.products) == 1
+        assert original_keyword in update_response.products[0].keywords
+        assert additional_keyword in update_response.products[0].keywords
