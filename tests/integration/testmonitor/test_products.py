@@ -204,3 +204,52 @@ class TestTestMonitor:
         assert len(update_response.products) == 1
         assert original_keyword in update_response.products[0].keywords
         assert additional_keyword in update_response.products[0].keywords
+
+    def test__update_properties_with_replace__properties_replaced(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        new_key = "newKey"
+        original_properties = {"originalKey": "originalValue"}
+        new_properties = {new_key: "newValue"}
+        create_response: CreateProductsPartialSuccess = create_products(
+            [Product(part_number=unique_part_number, properties=original_properties)]
+        )
+        assert create_response is not None
+        assert len(create_response.products) == 1
+        updated_product = create_response.products[0]
+        updated_product.properties = new_properties
+        update_response = client.update_products([updated_product], replace=True)
+        assert update_response is not None
+        assert len(update_response.products) == 1
+        assert len(update_response.products[0].properties) == 1
+        assert new_key in update_response.products[0].properties.keys()
+        assert (
+            update_response.products[0].properties[new_key] == new_properties[new_key]
+        )
+
+    def test__update_properties_append__properties_appended(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        original_key = "originalKey"
+        new_key = "newKey"
+        original_properties = {original_key: "originalValue"}
+        new_properties = {new_key: "newValue"}
+        create_response: CreateProductsPartialSuccess = create_products(
+            [Product(part_number=unique_part_number, properties=original_properties)]
+        )
+        assert create_response is not None
+        assert len(create_response.products) == 1
+        updated_product = create_response.products[0]
+        updated_product.properties = new_properties
+        update_response = client.update_products([updated_product], replace=False)
+        assert update_response is not None
+        assert len(update_response.products) == 1
+        updated_product = update_response.products[0]
+        assert len(updated_product.properties) == 2
+        assert original_key in updated_product.properties.keys()
+        assert new_key in updated_product.properties.keys()
+        assert (
+            updated_product.properties[original_key]
+            == original_properties[original_key]
+        )
+        assert updated_product.properties[new_key] == new_properties[new_key]
