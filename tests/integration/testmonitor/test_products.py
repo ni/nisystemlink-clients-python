@@ -8,6 +8,10 @@ from nisystemlink.clients.testmonitor.models import (
     CreateProductsPartialSuccess,
     Product,
 )
+from nisystemlink.clients.testmonitor.models._paged_products import PagedProducts
+from nisystemlink.clients.testmonitor.models._query_products_request import (
+    QueryProductsRequest,
+)
 
 
 @pytest.fixture(scope="class")
@@ -130,3 +134,18 @@ class TestTestMonitor:
         product = client.get_product(id)
         assert product is not None
         assert product.part_number == part_number
+
+    def test__query_product_by_part_number__matches_expected(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        part_number = unique_part_number
+        products = [Product(part_number=part_number)]
+        create_response: CreateProductsPartialSuccess = create_products(products)
+        assert create_response is not None
+        created_product = create_response.products[0]
+        query_request = QueryProductsRequest(
+            filter=f'partNumber="{part_number}"', return_count=True
+        )
+        query_response: PagedProducts = client.query_products(query_request)
+        assert query_response.total_count == 1
+        assert query_response.products[0].part_number == part_number
