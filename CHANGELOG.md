@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.3 (2024-08-08)
+
+### Fix
+
+* Make SpecClient() work with default values for optional args ([#68](https://github.com/ni/nisystemlink-clients-python/issues/68)) ([`fb60801`](https://github.com/ni/nisystemlink-clients-python/commit/fb60801d4093ef66c92e7b2c6e4e1f5fe45bb2f6))
+
 ## v1.4.2 (2024-07-15)
 
 ### Fix
