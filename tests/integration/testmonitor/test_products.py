@@ -10,6 +10,8 @@ from nisystemlink.clients.testmonitor.models import (
 )
 from nisystemlink.clients.testmonitor.models._paged_products import PagedProducts
 from nisystemlink.clients.testmonitor.models._query_products_request import (
+    ProductField,
+    QueryProductValuesRequest,
     QueryProductsRequest,
 )
 
@@ -142,10 +144,26 @@ class TestTestMonitor:
         products = [Product(part_number=part_number)]
         create_response: CreateProductsPartialSuccess = create_products(products)
         assert create_response is not None
-        created_product = create_response.products[0]
         query_request = QueryProductsRequest(
             filter=f'partNumber="{part_number}"', return_count=True
         )
         query_response: PagedProducts = client.query_products(query_request)
         assert query_response.total_count == 1
         assert query_response.products[0].part_number == part_number
+
+    def test__query_product_values_for_name__name_matches(
+        self, client: TestMonitorClient, create_products, unique_part_number
+    ):
+        part_number = unique_part_number
+        test_name = "query values test"
+        create_response: CreateProductsPartialSuccess = create_products(
+            [Product(part_number=part_number, name=test_name)]
+        )
+        assert create_response is not None
+        query_request = QueryProductValuesRequest(
+            filter=f'partNumber="{part_number}"', field=ProductField.NAME
+        )
+        query_response: List[str] = client.query_product_values(query_request)
+        assert query_response is not None
+        assert len(query_response) == 1
+        assert query_response[0] == test_name
