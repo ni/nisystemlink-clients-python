@@ -7,6 +7,14 @@ nisystemlink.clients.testmonitor
    :exclude-members: __init__
 
    .. automethod:: __init__
+   .. automethod:: api_info
+   .. automethod:: create_products
+   .. automethod:: get_products
+   .. automethod:: query_products
+   .. automethod:: query_product_values
+   .. automethod:: update_products
+   .. automethod:: delete_product
+   .. automethod:: delete_products
 
 .. automodule:: nisystemlink.clients.testmonitor.models
    :members:
