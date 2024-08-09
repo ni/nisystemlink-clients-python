@@ -59,9 +59,9 @@ class TestTestMonitor:
         assert len(response.dict()) != 0
 
     def test__create_single_product__one_product_created_with_right_field_values(
-        self, client: TestMonitorClient, create_products
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
-        part_number = "Test Part Number"
+        part_number = unique_identifier
         name = "Test Name"
         family = "Example Family"
         keywords = ["testing"]
@@ -88,8 +88,8 @@ class TestTestMonitor:
         self, client: TestMonitorClient, create_products
     ):
         products = [
-            Product(part_number="Test Part Number"),
-            Product(part_number="Test Part Number 2"),
+            Product(part_number=uuid.uuid1().hex),
+            Product(part_number=uuid.uuid1().hex),
         ]
         response: CreateProductsPartialSuccess = create_products(products)
         assert response is not None
