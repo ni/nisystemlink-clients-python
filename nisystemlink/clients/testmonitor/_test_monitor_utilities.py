@@ -18,7 +18,7 @@ def get_products_linked_to_file(
         `file_id`: The id of the file to query links for.
 
     Returns:
-        A list of all the products that are linked to the file with `file_id`
+        `List[Product]`: A list of all the products that are linked to the file with `file_id`
     """
     query_request = QueryProductsRequest(
         filter=f'fileIds.Contains("{file_id}")', take=100
