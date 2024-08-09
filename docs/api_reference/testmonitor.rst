@@ -20,10 +20,7 @@ nisystemlink.clients.testmonitor
    :members:
    :imported-members:
 
-File: `_test_monitor_utilities.py`
------------------------------------
-
-.. automodule:: nisystemlink.clients.testmonitor._test_monitor_utilities
+.. automodule:: nisystemlink.clients.testmonitor.utilities
    :members:
    :undoc-members:
    :show-inheritance:

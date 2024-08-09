@@ -4,9 +4,6 @@ from typing import List
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import models, TestMonitorClient
-from nisystemlink.clients.testmonitor._test_monitor_utilities import (
-    get_products_linked_to_file,
-)
 from nisystemlink.clients.testmonitor.models import (
     CreateProductsPartialSuccess,
     Product,
@@ -17,6 +14,7 @@ from nisystemlink.clients.testmonitor.models._query_products_request import (
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
+from nisystemlink.clients.testmonitor.utilities import get_products_linked_to_file
 
 
 @pytest.fixture(scope="class")
