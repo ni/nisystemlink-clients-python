@@ -19,3 +19,6 @@ nisystemlink.clients.testmonitor
 .. automodule:: nisystemlink.clients.testmonitor.models
    :members:
    :imported-members:
+
+.. automodule:: nisystemlink.clients.testmonitor._test_monitor_utilities
+   :members:
