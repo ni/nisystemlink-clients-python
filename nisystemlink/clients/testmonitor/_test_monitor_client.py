@@ -1,6 +1,6 @@
 """Implementation of TestMonitor Client"""
 
-from typing import List, Optional
+from typing import Any, cast, List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core import ApiError
@@ -109,7 +109,7 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
-    @returns.json
+    @returns.json  # type: ignore
     @post("query-product-values")
     def query_product_values(
         self, query: models.QueryProductValuesRequest
