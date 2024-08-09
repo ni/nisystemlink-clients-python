@@ -4,6 +4,9 @@ from typing import List
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import models, TestMonitorClient
+from nisystemlink.clients.testmonitor._test_monitor_utilities import (
+    get_products_linked_to_file,
+)
 from nisystemlink.clients.testmonitor.models import (
     CreateProductsPartialSuccess,
     Product,
@@ -23,7 +26,7 @@ def client(enterprise_config: HttpConfiguration) -> TestMonitorClient:
 
 
 @pytest.fixture
-def unique_part_number() -> str:
+def unique_identifier() -> str:
     """Unique product id for this test."""
     product_id = uuid.uuid1().hex
     return product_id
@@ -93,20 +96,20 @@ class TestTestMonitor:
         assert len(response.products) == 2
 
     def test__create_single_product_and_get_products__at_least_one_product_exists(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
-        products = [Product(part_number=unique_part_number)]
+        products = [Product(part_number=unique_identifier)]
         create_products(products)
         get_response = client.get_products()
         assert get_response is not None
         assert len(get_response.products) >= 1
 
     def test__create_multiple_products_and_get_products_with_take__only_take_returned(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
         products = [
-            Product(part_number=unique_part_number),
-            Product(part_number=unique_part_number),
+            Product(part_number=unique_identifier),
+            Product(part_number=unique_identifier),
         ]
         create_products(products)
         get_response = client.get_products(take=1)
@@ -114,11 +117,11 @@ class TestTestMonitor:
         assert len(get_response.products) == 1
 
     def test__create_multiple_products_and_get_products_with_count_at_least_one_count(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
         products = [
-            Product(part_number=unique_part_number),
-            Product(part_number=unique_part_number),
+            Product(part_number=unique_identifier),
+            Product(part_number=unique_identifier),
         ]
         create_products(products)
         get_response: models.PagedProducts = client.get_products(return_count=True)
@@ -126,9 +129,9 @@ class TestTestMonitor:
         assert get_response.total_count is not None and get_response.total_count >= 2
 
     def test__get_product_by_id__product_matches_expected(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
-        part_number = unique_part_number
+        part_number = unique_identifier
         products = [Product(part_number=part_number)]
         create_response: CreateProductsPartialSuccess = create_products(products)
         assert create_response is not None
@@ -138,9 +141,9 @@ class TestTestMonitor:
         assert product.part_number == part_number
 
     def test__query_product_by_part_number__matches_expected(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
-        part_number = unique_part_number
+        part_number = unique_identifier
         products = [Product(part_number=part_number)]
         create_response: CreateProductsPartialSuccess = create_products(products)
         assert create_response is not None
@@ -152,9 +155,9 @@ class TestTestMonitor:
         assert query_response.products[0].part_number == part_number
 
     def test__query_product_values_for_name__name_matches(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
-        part_number = unique_part_number
+        part_number = unique_identifier
         test_name = "query values test"
         create_response: CreateProductsPartialSuccess = create_products(
             [Product(part_number=part_number, name=test_name)]
@@ -169,12 +172,12 @@ class TestTestMonitor:
         assert query_response[0] == test_name
 
     def test__update_keywords_with_replace__keywords_replaced(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
         original_keyword = "originalKeyword"
         updated_keyword = "updatedKeyword"
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_part_number, keywords=[original_keyword])]
+            [Product(part_number=unique_identifier, keywords=[original_keyword])]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
@@ -190,12 +193,12 @@ class TestTestMonitor:
         assert original_keyword not in update_response.products[0].keywords
 
     def test__update_keywords_no_replace__keywords_appended(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
         original_keyword = "originalKeyword"
         additional_keyword = "additionalKeyword"
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_part_number, keywords=[original_keyword])]
+            [Product(part_number=unique_identifier, keywords=[original_keyword])]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
@@ -214,13 +217,13 @@ class TestTestMonitor:
         )
 
     def test__update_properties_with_replace__properties_replaced(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
         new_key = "newKey"
         original_properties = {"originalKey": "originalValue"}
         new_properties = {new_key: "newValue"}
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_part_number, properties=original_properties)]
+            [Product(part_number=unique_identifier, properties=original_properties)]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
@@ -239,14 +242,14 @@ class TestTestMonitor:
         )
 
     def test__update_properties_append__properties_appended(
-        self, client: TestMonitorClient, create_products, unique_part_number
+        self, client: TestMonitorClient, create_products, unique_identifier
     ):
         original_key = "originalKey"
         new_key = "newKey"
         original_properties = {original_key: "originalValue"}
         new_properties = {new_key: "newValue"}
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_part_number, properties=original_properties)]
+            [Product(part_number=unique_identifier, properties=original_properties)]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
@@ -267,3 +270,24 @@ class TestTestMonitor:
             == original_properties[original_key]
         )
         assert updated_product.properties[new_key] == new_properties[new_key]
+
+    def test__query_products_linked_to_files_correct_products_returned(
+        self, client: TestMonitorClient, create_products
+    ):
+        file_id = uuid.uuid1().hex
+        product_name_with_file = "Has File"
+        products = [
+            Product(
+                part_number=uuid.uuid1().hex,
+                name=product_name_with_file,
+                file_ids=[file_id],
+            ),
+            Product(part_number=uuid.uuid1().hex, name="No File Link"),
+        ]
+        print(products)
+        create_response: CreateProductsPartialSuccess = create_products(products)
+        assert create_response is not None
+        assert len(create_response.products) == 2
+        linked_products = get_products_linked_to_file(client, file_id)
+        names = [product.name for product in linked_products]
+        assert product_name_with_file in names
