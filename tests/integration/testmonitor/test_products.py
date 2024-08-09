@@ -45,7 +45,7 @@ def create_products(client: TestMonitorClient):
     for response in responses:
         if response.products:
             created_products = created_products + response.products
-    client.delete_products(ids=[product.id for product in created_products])
+    client.delete_products(ids=[str(product.id) for product in created_products])
 
 
 @pytest.mark.integration
@@ -123,7 +123,7 @@ class TestTestMonitor:
         create_products(products)
         get_response: models.PagedProducts = client.get_products(return_count=True)
         assert get_response is not None
-        assert get_response.total_count >= 2
+        assert get_response.total_count is not None and get_response.total_count >= 2
 
     def test__get_product_by_id__product_matches_expected(
         self, client: TestMonitorClient, create_products, unique_part_number
@@ -132,7 +132,7 @@ class TestTestMonitor:
         products = [Product(part_number=part_number)]
         create_response: CreateProductsPartialSuccess = create_products(products)
         assert create_response is not None
-        id = create_response.products[0].id
+        id = str(create_response.products[0].id)
         product = client.get_product(id)
         assert product is not None
         assert product.part_number == part_number
@@ -183,7 +183,10 @@ class TestTestMonitor:
         update_response = client.update_products([updated_product], replace=True)
         assert update_response is not None
         assert len(update_response.products) == 1
-        assert updated_keyword in update_response.products[0].keywords
+        assert (
+            update_response.products[0].keywords is not None
+            and updated_keyword in update_response.products[0].keywords
+        )
         assert original_keyword not in update_response.products[0].keywords
 
     def test__update_keywords_no_replace__keywords_appended(
@@ -201,8 +204,14 @@ class TestTestMonitor:
         update_response = client.update_products([updated_product], replace=False)
         assert update_response is not None
         assert len(update_response.products) == 1
-        assert original_keyword in update_response.products[0].keywords
-        assert additional_keyword in update_response.products[0].keywords
+        assert (
+            update_response.products[0].keywords is not None
+            and original_keyword in update_response.products[0].keywords
+        )
+        assert (
+            update_response.products[0].keywords is not None
+            and additional_keyword in update_response.products[0].keywords
+        )
 
     def test__update_properties_with_replace__properties_replaced(
         self, client: TestMonitorClient, create_products, unique_part_number
@@ -220,7 +229,10 @@ class TestTestMonitor:
         update_response = client.update_products([updated_product], replace=True)
         assert update_response is not None
         assert len(update_response.products) == 1
-        assert len(update_response.products[0].properties) == 1
+        assert (
+            update_response.products[0].properties is not None
+            and len(update_response.products[0].properties) == 1
+        )
         assert new_key in update_response.products[0].properties.keys()
         assert (
             update_response.products[0].properties[new_key] == new_properties[new_key]
@@ -244,7 +256,10 @@ class TestTestMonitor:
         assert update_response is not None
         assert len(update_response.products) == 1
         updated_product = update_response.products[0]
-        assert len(updated_product.properties) == 2
+        assert (
+            updated_product.properties is not None
+            and len(updated_product.properties) == 2
+        )
         assert original_key in updated_product.properties.keys()
         assert new_key in updated_product.properties.keys()
         assert (
