@@ -22,6 +22,3 @@ nisystemlink.clients.testmonitor
 
 .. automodule:: nisystemlink.clients.testmonitor.utilities
    :members:
-   :undoc-members:
-   :show-inheritance:
-   :no-index:
