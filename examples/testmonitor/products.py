@@ -66,7 +66,7 @@ response = client.query_products(query_request)
 updated_product = create_response.products[0]
 updated_product.keywords = ["new keyword"]
 updated_product.properties = {"new property key": "new value"}
-response = client.update_products([create_response.products[0]], replace=True)
+update_response = client.update_products([create_response.products[0]], replace=True)
 
 # Query for just the ids of products that match the family
 values_query = QueryProductValuesRequest(
