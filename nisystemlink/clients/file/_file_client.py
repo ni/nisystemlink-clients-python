@@ -75,16 +75,16 @@ class FileClient(BaseClient):
         The orderBy and orderByDescending fields can be used to manage sorting the list by metadata objects.
 
         Args:
-            skip (int, optional): How many files to skip in the result when paging. Defaults to 0.
-            take (int, optional): How many files to return in the result, or 0 to use a default defined by the service.
+            skip: How many files to skip in the result when paging. Defaults to 0.
+            take: How many files to return in the result, or 0 to use a default defined by the service.
               Defaults to 0.
-            order_by (str, optional): The name of the metadata key to sort by. Defaults to None.
-            order_by_descending (str, optional): The elements in the list are sorted ascending if "false"
+            order_by: The name of the metadata key to sort by. Defaults to None.
+            order_by_descending: The elements in the list are sorted ascending if "false"
               and descending if "true". Defaults to "false".
-            file_ids (Optional[str], optional): Comma-separated list of file IDs to search by. Defaults to None.
+            file_ids: Comma-separated list of file IDs to search by. Defaults to None.
 
         Returns:
-            models.FileQueryResponse: File Query Response
+            File Query Response
 
         Raises:
             ApiException: if unable to communicate with the File Service.
@@ -95,8 +95,8 @@ class FileClient(BaseClient):
         """Deletes the file indicated by the `file_id`.
 
         Args:
-            file_id (str): The ID of the file.
-            force (bool, optional): Whether the deletion of a file will be forced. Defaults to False.
+            file_id: The ID of the file.
+            force: Whether the deletion of a file will be forced. Defaults to False.
 
         Raises:
             ApiException: if unable to communicate with the File Service.
@@ -109,8 +109,8 @@ class FileClient(BaseClient):
         """Delete multiple files.
 
         Args:
-            files (models.DeleteMutipleRequest): The description of files to delete.
-            force (bool, optional): Whether the deletion of files will be forced. Defaults to False.
+            files: The description of files to delete.
+            force: Whether the deletion of files will be forced. Defaults to False.
 
         Raises:
             ApiException: if unable to communicate with the File Service.
@@ -124,8 +124,8 @@ class FileClient(BaseClient):
         """Downloads a file from the SystemLink File service.
 
         Args:
-            file_id (str): The ID of the file.
-            inline (bool, optional): Return the file inline. Defaults to True.
+            file_id: The ID of the file.
+            inline: Return the file inline. Defaults to True.
 
         Yields:
             A file-like object for reading the exported data.
