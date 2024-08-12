@@ -60,7 +60,7 @@ class FileClient(BaseClient):
             Query(name="id"),
         ],
     )
-    def get_files(
+    def __get_files(
         self,
         skip: int = 0,
         take: int = 0,
@@ -89,6 +89,47 @@ class FileClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
+
+    def get_files(
+        self,
+        skip: int = 0,
+        take: int = 0,
+        order_by: Optional[
+            Literal["created", "id", "size", "lastUpdatedTimestamp"]
+        ] = None,
+        order_by_descending: Optional[bool] = False,
+        file_ids: Optional[str] = None,
+    ) -> models.FileQueryResponse:
+        """Lists available files on the SystemLink File service.
+        Use the skip and take parameters to return paged responses.
+        The orderBy and orderByDescending fields can be used to manage sorting the list by metadata objects.
+
+        Args:
+            skip: How many files to skip in the result when paging. Defaults to 0.
+            take: How many files to return in the result, or 0 to use a default defined by the service.
+            Defaults to 0.
+            order_by: The name of the metadata key to sort by. Defaults to None.
+            order_by_descending: The elements in the list are sorted ascending if False
+            and descending if True. Defaults to False.
+            file_ids: Comma-separated list of file IDs to search by. Defaults to None.
+
+        Returns:
+            File Query Response
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """
+        # wrapper workaround as the service expects lower case `true` and `false`
+        # uplink serializes bools to `True` and `False`
+        encoded_bool = "true" if order_by_descending else "false"
+
+        return self.__get_files(
+            skip=skip,
+            take=take,
+            order_by=order_by,
+            order_by_descending=encoded_bool,
+            file_ids=file_ids,
+        )
 
     @delete("service-groups/Default/files/{file_id}", args=[Path, Query])
     def delete_file(self, file_id: str, force: bool = False) -> None:
