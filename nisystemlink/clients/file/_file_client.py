@@ -1,6 +1,6 @@
 """Implementation of FileClient."""
 
-from typing import Literal, Optional
+from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -14,7 +14,6 @@ from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
 from uplink import Body, Path, Query
 
-from nisystemlink.clients.file.models._file_query_order_by import FileQueryOrderBy
 
 from . import models
 
@@ -94,7 +93,7 @@ class FileClient(BaseClient):
         self,
         skip: int = 0,
         take: int = 0,
-        order_by: Optional[FileQueryOrderBy] = None,
+        order_by: Optional[models.FileQueryOrderBy] = None,
         order_by_descending: Optional[bool] = False,
         file_ids: Optional[str] = None,
     ) -> models.FileQueryResponse:
