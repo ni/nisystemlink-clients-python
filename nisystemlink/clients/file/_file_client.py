@@ -14,6 +14,8 @@ from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
 from uplink import Body, Path, Query
 
+from nisystemlink.clients.file.models._file_query_order_by import FileQueryOrderBy
+
 from . import models
 
 
@@ -64,10 +66,8 @@ class FileClient(BaseClient):
         self,
         skip: int = 0,
         take: int = 0,
-        order_by: Optional[
-            Literal["created", "id", "size", "lastUpdatedTimestamp"]
-        ] = None,
-        order_by_descending: Optional[Literal["true", "false"]] = "false",
+        order_by: Optional[str] = None,
+        order_by_descending: Optional[str] = "false",
         file_ids: Optional[str] = None,
     ) -> models.FileQueryResponse:
         """Lists available files on the SystemLink File service.
@@ -94,9 +94,7 @@ class FileClient(BaseClient):
         self,
         skip: int = 0,
         take: int = 0,
-        order_by: Optional[
-            Literal["created", "id", "size", "lastUpdatedTimestamp"]
-        ] = None,
+        order_by: Optional[FileQueryOrderBy] = None,
         order_by_descending: Optional[bool] = False,
         file_ids: Optional[str] = None,
     ) -> models.FileQueryResponse:
@@ -119,24 +117,19 @@ class FileClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
-        # wrapper workaround as the service expects lower case `true` and `false`
+        # Uplink does not support enum serializing into str
+        # workaround as the service expects lower case `true` and `false`
         # uplink serializes bools to `True` and `False`
-        if order_by_descending:
-            resp = self.__get_files(
-                skip=skip,
-                take=take,
-                order_by=order_by,
-                order_by_descending="true",
-                file_ids=file_ids,
-            )
-        else:
-            resp = self.__get_files(
-                skip=skip,
-                take=take,
-                order_by=order_by,
-                order_by_descending="false",
-                file_ids=file_ids,
-            )
+        order_by_str = order_by.value if order_by is not None else None
+        order_by_desc_str = "true" if order_by_descending else "false"
+
+        resp = self.__get_files(
+            skip=skip,
+            take=take,
+            order_by=order_by_str,
+            order_by_descending=order_by_desc_str,
+            file_ids=file_ids,
+        )
 
         return resp
 
