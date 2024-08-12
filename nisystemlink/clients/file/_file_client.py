@@ -121,15 +121,24 @@ class FileClient(BaseClient):
         """
         # wrapper workaround as the service expects lower case `true` and `false`
         # uplink serializes bools to `True` and `False`
-        encoded_bool = "true" if order_by_descending else "false"
+        if order_by_descending:
+            resp = self.__get_files(
+                skip=skip,
+                take=take,
+                order_by=order_by,
+                order_by_descending="true",
+                file_ids=file_ids,
+            )
+        else:
+            resp = self.__get_files(
+                skip=skip,
+                take=take,
+                order_by=order_by,
+                order_by_descending="false",
+                file_ids=file_ids,
+            )
 
-        return self.__get_files(
-            skip=skip,
-            take=take,
-            order_by=order_by,
-            order_by_descending=encoded_bool,
-            file_ids=file_ids,
-        )
+        return resp
 
     @delete("service-groups/Default/files/{file_id}", args=[Path, Query])
     def delete_file(self, file_id: str, force: bool = False) -> None:
