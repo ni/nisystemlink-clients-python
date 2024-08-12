@@ -157,3 +157,30 @@ Update and Delete Specifications
 .. literalinclude:: ../examples/spec/update_and_delete_specs.py
    :language: python
    :linenos:
+
+
+File API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.FileClient` class is the primary entry point of the File API.
+
+When constructing a :class:`.FileClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.FileClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.FileClient` object, you can:
+
+* Get the list of files, download and delete files
+
+Examples
+~~~~~~~~
+
+Get the metadata of a File using its Id and download it.
+
+.. literalinclude:: ../examples/file/download_file.py
+   :language: python
+   :linenos:
