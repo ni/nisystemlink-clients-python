@@ -18,6 +18,7 @@ class FileQueryResponse(JsonModel):
     - self: Link to the current service group
     - upload: Link to upload files to the service group using a POST
     """
+    
     available_files: List[FileMetadata] = Field(alias="availableFiles")
     """The list of files returned by the query"""
 
