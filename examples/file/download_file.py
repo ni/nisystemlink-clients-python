@@ -20,7 +20,7 @@ file_name = "Untitled"
 file_properties = files.available_files[0].properties
 
 if file_properties:
-    file_name = file_properties.get("Name", "Untitled")
+    file_name = file_properties["Name"]
 
 # Download the file using FileId with content inline
 content = client.download_file(file_id=file_id)
