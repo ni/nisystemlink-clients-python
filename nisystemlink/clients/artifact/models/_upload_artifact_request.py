@@ -9,6 +9,3 @@ class UploadArtifactResponse(JsonModel):
 
     id: str
     """Information about the uploaded artifact."""
-
-    error: Optional[ApiError] = None
-    """Error information if the upload failed."""

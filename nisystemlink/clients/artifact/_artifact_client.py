@@ -44,8 +44,6 @@ class ArtifactClient(BaseClient):
         Returns:
             The response containing the artifact ID.
 
-        Raises:
-            ArtifactError: if unable to upload the artifact.
         """
         ...
 
@@ -61,7 +59,5 @@ class ArtifactClient(BaseClient):
         Returns:
             The response containing the file content.
 
-        Raises:
-            ArtifactError: if unable to download the artifact.
         """
         ...
