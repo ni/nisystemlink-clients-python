@@ -39,10 +39,11 @@ class ArtifactClient(BaseClient):
         """Uploads an artifact.
 
         Args:
-            request: The request containing the workspace id and artifact content to upload.
+            workspace: The workspace containing the artifact.
+            artifact: The artifact to upload.
 
         Returns:
-            The response containing the artifact ID.
+            UploadArtifactResponse: The response containing the artifact ID.
 
         """
         ...
