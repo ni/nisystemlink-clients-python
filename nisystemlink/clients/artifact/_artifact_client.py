@@ -29,18 +29,6 @@ class ArtifactClient(BaseClient):
             configuration = core.HttpConfigurationManager.get_configuration()
 
         super().__init__(configuration, base_path="/ninbartifact/v1/")
-    
-    @get("")
-    def api_info(self) -> models.V1Operations:
-        """Get information about available API operations.
-
-        Returns:
-            Information about available API operations.
-
-        Raises:
-            ApiException: if unable to communicate with the Notebook execution Service.
-        """
-        ...
 
     @post("artifacts")
     def upload_artifact(
