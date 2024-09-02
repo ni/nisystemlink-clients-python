@@ -1,3 +1,3 @@
-from ._upload_artifact_request import UploadArtifactResponse
+from ._upload_artifact_response import UploadArtifactResponse
 
 # flake8: noqa
