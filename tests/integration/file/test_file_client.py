@@ -141,31 +141,6 @@ class TestFileClient:
         file_content = data.read()
         assert file_content == binary_file_data.read()
 
-    def test__update_metadata__rename_succeeds(self, client: FileClient, test_file):
-        OLD_NAME = "oldname.xyz"
-        NEW_NAME = "newname.abc"
-
-        file_id = test_file(file_name=OLD_NAME)
-
-        # verify the File Name and extension
-        files = client.get_files(file_ids=file_id)
-        assert len(files.available_files) == 1
-        assert files.available_files[0].properties is not None
-        assert files.available_files[0].properties["Name"] == OLD_NAME
-
-        new_metadata = {"Name": NEW_NAME}
-
-        rename_request = UpdateMetadataRequest(
-            replace_existing=False, properties=new_metadata
-        )
-        client.update_metadata(metadata=rename_request, file_id=file_id)
-
-        # verify the File Name and extension
-        files = client.get_files(file_ids=file_id)
-        assert len(files.available_files) == 1
-        assert files.available_files[0].properties is not None
-        assert files.available_files[0].properties["Name"] == NEW_NAME
-
     def test__update_metadata__rename_utility_succeeds(
         self, client: FileClient, test_file
     ):
@@ -188,37 +163,8 @@ class TestFileClient:
         assert files.available_files[0].properties is not None
         assert files.available_files[0].properties["Name"] == NEW_NAME
 
-    def test__update_metadata__append_scceeds(self, client: FileClient, test_file):
-        file_id = test_file()
-
-        # verify the existing properties
-        files = client.get_files(file_ids=file_id)
-        assert len(files.available_files) == 1
-        assert files.available_files[0].properties is not None
-        assert len(files.available_files[0].properties.keys()) == 1  # Name
-
-        new_metadata = {"Prop1": "Value1", "Prop2": "Value2"}
-
-        append_prop_request = UpdateMetadataRequest(
-            replace_existing=False, properties=new_metadata
-        )
-        client.update_metadata(metadata=append_prop_request, file_id=file_id)
-
-        # verify appended properties
-        files = client.get_files(file_ids=file_id)
-        assert len(files.available_files) == 1
-        assert files.available_files[0].properties is not None
-        assert (
-            len(files.available_files[0].properties.keys()) == 3
-        )  # Name + 2 added properties
-
-        file_props = files.available_files[0].properties
-
-        for prop_name, value in new_metadata.items():
-            assert file_props[prop_name] == value
-
-    def test__update_metadata__replace_scceeds(self, client: FileClient, test_file):
-        # File -> Add 2 props -> Replace 2 props with 3 new props
+    def test__update_metadata__append_replace_succeeds(self, client: FileClient, test_file):
+        # Upload File-> Verify-> Add 2 props-> Verify-> Replace 2 props with 3 new props-> Verify
         file_id = test_file()
 
         # verify the existing properties
