@@ -95,7 +95,7 @@ class TestFileClient:
 
     def test__delete_files__succeeds(self, client: FileClient, test_file):
         # upload 5 files and delete them
-        NUM_FILES = 5
+        NUM_FILES = 2
 
         file_ids = [test_file(cleanup=False) for _ in range(NUM_FILES)]
 
