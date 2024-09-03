@@ -163,7 +163,9 @@ class TestFileClient:
         assert files.available_files[0].properties is not None
         assert files.available_files[0].properties["Name"] == NEW_NAME
 
-    def test__update_metadata__append_replace_succeeds(self, client: FileClient, test_file):
+    def test__update_metadata__append_replace_succeeds(
+        self, client: FileClient, test_file
+    ):
         # Upload File-> Verify-> Add 2 props-> Verify-> Replace 2 props with 3 new props-> Verify
         file_id = test_file()
 
