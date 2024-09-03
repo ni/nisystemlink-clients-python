@@ -1,15 +1,19 @@
-# from shutil import copyfileobj
-# from tempfile import TemporaryFile
-# from typing import Optional
+"""Integration tests for FileClient."""
+
+import io
+import string
+from random import choices, randint
+from typing import BinaryIO
 
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
+from nisystemlink.clients.file.models import DeleteMutipleRequest
+from nisystemlink.clients.file.utilities import get_file_id_from_uri
 
-# from nisystemlink.clients.file.models import FileMetadata
-
-INVALID_FILE_ID = "Invalid-File-Id"
 FILE_NOT_FOUND_ERR = "Not Found"
+TEST_FILE_DATA = b"This is a test file binary content."
+TEST_FILE_NAME = "Test File.bin"
 
 
 @pytest.fixture(scope="class")
@@ -18,46 +22,46 @@ def client(enterprise_config) -> FileClient:
     return FileClient(enterprise_config)
 
 
-# @pytest.fixture(scope="class")
-# def binary_file() -> io.BytesIO:
-#     """Fixture to create a binary file as file pointer object."""
-#     fake_file = io.BytesIO(b"123abc")
-#     fake_file.name = "Fake File.bin"
-#     return fake_file
+@pytest.fixture(scope="class")
+def binary_file_data() -> BinaryIO:
+    """Test Binary file content."""
+    return io.BytesIO(TEST_FILE_DATA)
 
 
-# @pytest.fixture(scope="class")
-# def upload_file(client: FileClient):
-#     """Fixture to return a factory that uploads a file."""
-#     file_ids = []
+@pytest.fixture(scope="class")
+def test_file(client: FileClient):
+    """Fixture to return a factory that uploads a file."""
+    file_ids = []
 
-#     def _upload_file(file) -> str:
-#         id = client.upload_file(file=file)
-#         file_ids.append(id)
-#         return id
+    def _test_file(file_name: str = TEST_FILE_NAME, cleanup: bool = True) -> str:
+        test_file = io.BytesIO(TEST_FILE_DATA)
+        test_file.name = file_name
+        file_info = client.upload_file(file=test_file)
+        file_id = get_file_id_from_uri(file_info.uri)
+        if cleanup:
+            file_ids.append(file_id)
+        return file_id
 
-#     yield _upload_file
+    yield _test_file
 
-#     _delete_files = DeleteMutipleRequest(ids=file_ids)
-#     client.delete_files(files=_delete_files, force=True)
-
-
-# @pytest.fixture(scope="class")
-# def test_file(upload_file, binary_file) -> str:
-#     """Fixture to create, upload a test file."""
-#     id = upload_file(binary_file)
-#     return id
+    if file_ids:
+        _delete_files = DeleteMutipleRequest(ids=file_ids)
+        client.delete_files(files=_delete_files, force=True)
 
 
-# @pytest.fixture(scope="class")
-# def test_download_file(client: FileClient) -> FileMetadata:
-#     """Get the MetaData of a File to download."""
-#     files = client.get_files(take=1)
+@pytest.fixture(scope="class")
+def invalid_file_id(client: FileClient) -> str:
+    """Generate a invalid file id."""
+    MAX_RETRIES = 10
+    attempts = 0
 
-#     if files.available_files:
-#         return files.available_files[0]
-#     else:
-#         raise Exception("Require at least 1 File to download.")
+    while attempts < MAX_RETRIES:
+        file_id = f"Invalid-File-Id-{randint(1000,9999)}"
+        files = client.get_files(file_ids=file_id)
+        if files.total_count == 0:
+            return file_id
+
+    raise Exception(f"Failed to generate a invalid-file-id in {MAX_RETRIES} attemps.")
 
 
 @pytest.mark.enterprise
@@ -67,26 +71,72 @@ class TestFileClient:
         api_info = client.api_info()
         assert len(api_info.dict()) != 0
 
-    def test__get_files__succeeds(self, client: FileClient):
-        take_count = 1
-        files = client.get_files(take=take_count)
+    def test__upload_get_delete_files__succeeds(self, client: FileClient, test_file):
+        # upload a file
+        file_id = test_file(cleanup=False)
+        assert file_id != ""
 
-        assert len(files.available_files) == take_count
-        assert files.total_count >= take_count
+        files = client.get_files(file_ids=file_id)
+        assert files.total_count == 1
+        assert len(files.available_files) == 1
+        assert files.available_files[0].id == file_id
 
-    def test__delete_file__invalid_id_raises(self, client: FileClient):
+        client.delete_file(file_id=file_id, force=True)
+
+        # confirm that file was deleted
+        files = client.get_files(file_ids=file_id)
+        assert files.total_count == 0
+
+    def test__delete_file__invalid_id_raises(
+        self, client: FileClient, invalid_file_id: str
+    ):
         with pytest.raises(ApiException, match=FILE_NOT_FOUND_ERR):
-            client.delete_file(file_id=INVALID_FILE_ID, force=True)
+            client.delete_file(file_id=invalid_file_id, force=True)
 
-    # def test__delete_file__succeeds(self, client: FileClient):
-    #     client.delete_file(file_id="7729547d-95af-4beb-a7a8-a913c0a23de4", force=True)
+    def test__delete_files__succeeds(self, client: FileClient, test_file):
+        # upload 5 files and delete them
+        NUM_FILES = 5
 
-    def test__download_file__invalid_id_raises(self, client: FileClient):
+        file_ids = [test_file(cleanup=False) for _ in range(NUM_FILES)]
+
+        file_ids_str = ",".join(file_ids)
+
+        # confirm that files exist
+        files = client.get_files(file_ids=file_ids_str)
+        assert files.total_count == NUM_FILES
+
+        _delete_files = DeleteMutipleRequest(ids=file_ids)
+        client.delete_files(files=_delete_files, force=True)
+
+        # confirm that files were deleted
+        files = client.get_files(file_ids=file_ids_str)
+        assert files.total_count == 0
+
+    def test__download_file__invalid_id_raises(
+        self, client: FileClient, invalid_file_id: str
+    ):
         with pytest.raises(ApiException, match=FILE_NOT_FOUND_ERR):
-            client.download_file(file_id=INVALID_FILE_ID)
+            client.download_file(file_id=invalid_file_id)
 
-    # def test__download_file__succeeds(self, client: FileClient, test_download_file: FileMetadata):
-    #     file_id = test_download_file.id
-    #     data = client.download_file(file_id=file_id)
-    #     with open(f"downloaded_file", "wb") as f:
-    #         copyfileobj(data, f)
+    def test__download_file__succeeds(
+        self, client: FileClient, test_file, binary_file_data
+    ):
+        # generate a random file name and extension
+        rand_file_name = "".join(choices(string.ascii_letters + string.digits, k=10))
+        rand_file_extn = "".join(choices(string.ascii_letters, k=3))
+
+        full_file_name = f"{rand_file_name}.{rand_file_extn}"
+
+        # Upload the test file with random name
+        file_id = test_file(file_name=full_file_name)
+
+        # verify the File Name and extension
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert files.available_files[0].properties["Name"] == full_file_name
+
+        # verify the file content
+        data = client.download_file(file_id=file_id)
+        file_content = data.read()
+        assert file_content == binary_file_data.read()
