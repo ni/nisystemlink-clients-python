@@ -236,3 +236,17 @@ class FileClient(BaseClient):
         )
 
         return resp
+
+    @post("service-groups/Default/files/{file_id}/update-metadata", args=[Body, Path])
+    def update_metadata(
+        self, metadata: models.UpdateMetadataRequest, file_id: str
+    ) -> None:
+        """Updates an existing file's metadata with the specified metadata properties.
+
+        Args:
+            metadata: File's metadata and options for updating it.
+            file_id: ID of the file to update Metadata.
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """

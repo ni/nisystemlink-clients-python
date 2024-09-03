@@ -12,7 +12,8 @@ nisystemlink.clients.file
    .. automethod:: delete_file
    .. automethod:: delete_files
    .. automethod:: upload_file
-   .. automethod:: download_file   
+   .. automethod:: download_file
+   .. automethod:: update_metadata
 
 .. automodule:: nisystemlink.clients.file.models
    :members:

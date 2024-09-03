@@ -8,8 +8,8 @@ from typing import BinaryIO
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
-from nisystemlink.clients.file.models import DeleteMutipleRequest
-from nisystemlink.clients.file.utilities import get_file_id_from_uri
+from nisystemlink.clients.file.models import DeleteMutipleRequest, UpdateMetadataRequest
+from nisystemlink.clients.file.utilities import get_file_id_from_uri, rename_file
 
 FILE_NOT_FOUND_ERR = "Not Found"
 TEST_FILE_DATA = b"This is a test file binary content."
@@ -94,7 +94,7 @@ class TestFileClient:
             client.delete_file(file_id=invalid_file_id, force=True)
 
     def test__delete_files__succeeds(self, client: FileClient, test_file):
-        # upload 5 files and delete them
+        # upload 2 files and delete them
         NUM_FILES = 2
 
         file_ids = [test_file(cleanup=False) for _ in range(NUM_FILES)]
@@ -140,3 +140,124 @@ class TestFileClient:
         data = client.download_file(file_id=file_id)
         file_content = data.read()
         assert file_content == binary_file_data.read()
+
+    def test__update_metadata__rename_succeeds(self, client: FileClient, test_file):
+        OLD_NAME = "oldname.xyz"
+        NEW_NAME = "newname.abc"
+
+        file_id = test_file(file_name=OLD_NAME)
+
+        # verify the File Name and extension
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert files.available_files[0].properties["Name"] == OLD_NAME
+
+        new_metadata = {"Name": NEW_NAME}
+
+        rename_request = UpdateMetadataRequest(
+            replace_existing=False, properties=new_metadata
+        )
+        client.update_metadata(metadata=rename_request, file_id=file_id)
+
+        # verify the File Name and extension
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert files.available_files[0].properties["Name"] == NEW_NAME
+
+    def test__update_metadata__rename_utility_succeeds(
+        self, client: FileClient, test_file
+    ):
+        OLD_NAME = "oldname.xyz"
+        NEW_NAME = "newname.abc"
+
+        file_id = test_file(file_name=OLD_NAME)
+
+        # verify the File Name and extension
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert files.available_files[0].properties["Name"] == OLD_NAME
+
+        rename_file(client=client, file_id=file_id, name=NEW_NAME)
+
+        # verify the File Name and extension
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert files.available_files[0].properties["Name"] == NEW_NAME
+
+    def test__update_metadata__append_scceeds(self, client: FileClient, test_file):
+        file_id = test_file()
+
+        # verify the existing properties
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert len(files.available_files[0].properties.keys()) == 1  # Name
+
+        new_metadata = {"Prop1": "Value1", "Prop2": "Value2"}
+
+        append_prop_request = UpdateMetadataRequest(
+            replace_existing=False, properties=new_metadata
+        )
+        client.update_metadata(metadata=append_prop_request, file_id=file_id)
+
+        # verify appended properties
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert (
+            len(files.available_files[0].properties.keys()) == 3
+        )  # Name + 2 added properties
+
+        file_props = files.available_files[0].properties
+
+        for prop_name, value in new_metadata.items():
+            assert file_props[prop_name] == value
+
+    def test__update_metadata__replace_scceeds(self, client: FileClient, test_file):
+        # File -> Add 2 props -> Replace 2 props with 3 new props
+        file_id = test_file()
+
+        # verify the existing properties
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert len(files.available_files[0].properties.keys()) == 1  # Name
+
+        new_metadata = {"Prop1": "Value1", "Prop2": "Value2"}
+
+        append_prop_request = UpdateMetadataRequest(
+            replace_existing=False, properties=new_metadata
+        )
+        client.update_metadata(metadata=append_prop_request, file_id=file_id)
+
+        # verify appended properties
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert (
+            len(files.available_files[0].properties.keys()) == len(new_metadata) + 1
+        )  # Name + 2 added properties
+
+        file_props = files.available_files[0].properties
+
+        for prop_name, value in new_metadata.items():
+            assert file_props[prop_name] == value
+
+        # replace the properties by a new one
+        replace_metadata = {"Prop3": "Value3", "Prop4": "Value4", "Prop5": "Value5"}
+
+        append_prop_request = UpdateMetadataRequest(
+            replace_existing=True, properties=replace_metadata
+        )
+        client.update_metadata(metadata=append_prop_request, file_id=file_id)
+        # verify replaced properties
+        files = client.get_files(file_ids=file_id)
+        assert len(files.available_files) == 1
+        assert files.available_files[0].properties is not None
+        assert (
+            len(files.available_files[0].properties.keys()) == len(replace_metadata) + 1
+        )  # Name + 3 replaced properties
