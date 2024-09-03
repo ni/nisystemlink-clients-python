@@ -1,6 +1,7 @@
 """Implementation of FileClient."""
 
-from typing import Optional
+import json
+from typing import BinaryIO, Dict, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -12,7 +13,7 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
-from uplink import Body, Path, Query
+from uplink import Body, Part, Path, Query
 
 
 from . import models
@@ -175,3 +176,62 @@ class FileClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
+
+    @post("service-groups/Default/upload-files")
+    def __upload_file(
+        self,
+        file: Part,
+        metadata: Part = None,
+        id: Part = None,
+        workspace: Query = None,
+    ) -> models.UploadedFileInfo:
+        """Uploads a file using multipart/form-data headers to send the file payload in the HTTP body.
+
+        Args:
+            file: The file to upload.
+            metadata: JSON Dictionary with key/value pairs
+            id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.
+                Defaults to None.
+            workspace: The id of the workspace the file belongs to. Defaults to None.
+
+        Returns:
+            Uploaded file information
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """
+
+    def upload_file(
+        self,
+        file: BinaryIO,
+        metadata: Optional[Dict[str, str]] = None,
+        file_id: Optional[str] = None,
+        workspace: Optional[str] = None,
+    ) -> models.UploadedFileInfo:
+        """Uploads a file to the File Service.
+
+        Args:
+            file: The file to upload.
+            metadata: File Metadata as dictionary.
+            file_id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.. Defaults to None.
+            workspace: The id of the workspace the file belongs to. Defaults to None.
+
+        Returns:
+            Uploaded file information
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """
+        if metadata:
+            metadata_str = json.dumps(metadata)
+        else:
+            metadata_str = None
+
+        resp = self.__upload_file(
+            file=file,
+            metadata=metadata_str,
+            id=file_id,
+            workspace=workspace,
+        )
+
+        return resp
