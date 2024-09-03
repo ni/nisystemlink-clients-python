@@ -9,7 +9,10 @@ nisystemlink.clients.file
    .. automethod:: __init__
    .. automethod:: api_info
    .. automethod:: get_files
-   .. automethod:: get_files
+   .. automethod:: delete_file
+   .. automethod:: delete_files
+   .. automethod:: upload_file
+   .. automethod:: download_file   
 
 .. automodule:: nisystemlink.clients.file.models
    :members:
