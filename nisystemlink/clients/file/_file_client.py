@@ -213,7 +213,8 @@ class FileClient(BaseClient):
         Args:
             file: The file to upload.
             metadata: File Metadata as dictionary.
-            file_id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.. Defaults to None.
+            file_id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.
+                Defaults to None.
             workspace: The id of the workspace the file belongs to. Defaults to None.
 
         Returns:
