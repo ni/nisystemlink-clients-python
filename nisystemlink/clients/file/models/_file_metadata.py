@@ -16,7 +16,7 @@ class FileMetadata(JsonModel):
     - self: Link to the file's metadata
     - updateMetadata: Link to update the file's metadata using a POST request
     """
-    
+
     created: Optional[datetime] = Field(None, example="2018-05-15T18:54:27.519Z")
     """
     The date and time the file was created in the file service

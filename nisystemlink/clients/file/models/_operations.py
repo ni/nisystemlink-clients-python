@@ -9,7 +9,7 @@ class Operation5(JsonModel):
     """
     Whether the operation is available to the caller
     """
-    
+
     version: Optional[int] = None
     """
     The version of the available operation
