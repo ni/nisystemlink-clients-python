@@ -3,7 +3,6 @@
 from typing import Optional
 
 from httpcore import Response
-
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
@@ -32,9 +31,7 @@ class ArtifactClient(BaseClient):
 
     @post("artifacts")
     def upload_artifact(
-        self,
-        workspace: Part,
-        artifact: Part
+        self, workspace: Part, artifact: Part
     ) -> models.UploadArtifactResponse:
         """Uploads an artifact.
 
@@ -48,14 +45,12 @@ class ArtifactClient(BaseClient):
         """
         ...
 
-    @get("artifacts/{artifact_id}")
-    def download_artifact(
-        self, artifact_id: Path
-    ) -> Response:
+    @get("artifacts/{id}")
+    def download_artifact(self, id: Path) -> Response:
         """Downloads an artifact.
 
         Args:
-            artifact_id: The ID of the artifact to download.
+            id: The ID of the artifact to download.
 
         Returns:
             The response containing the file content.

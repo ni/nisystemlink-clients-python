@@ -1,6 +1,3 @@
-from typing import Optional
-
-from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 

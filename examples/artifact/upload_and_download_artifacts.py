@@ -1,6 +1,8 @@
-from nisystemlink.clients.core import HttpConfiguration
-from nisystemlink.clients.artifact import ArtifactClient
 import os
+
+from nisystemlink.clients.artifact import ArtifactClient
+from nisystemlink.clients.core import HttpConfiguration
+
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
 server_configuration = HttpConfiguration(
@@ -10,7 +12,7 @@ server_configuration = HttpConfiguration(
 client = ArtifactClient(configuration=server_configuration)
 
 # Define the workspace and artifact content
-workspace = os.getenv("SYSTEMLINK_WORKSPACE_ID")
+workspace = "your workspace ID"
 artifact_content = b"test content"
 
 # Upload the artifact
@@ -23,4 +25,4 @@ artifact_id = upload_response.id
 download_response = client.download_artifact(artifact_id)
 if download_response:
     downloaded_content = download_response.content
-    print(f"Downloaded artifact content: {downloaded_content}")
+    print(f"Downloaded artifact content: {downloaded_content.decode('utf-8')}")
