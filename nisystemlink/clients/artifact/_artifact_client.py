@@ -6,7 +6,8 @@ from httpcore import Response
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
-from uplink import Part, Path
+from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
+from uplink import Part, Path, response_handler
 
 from . import models
 
@@ -45,15 +46,19 @@ class ArtifactClient(BaseClient):
         """
         ...
 
+    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
+        return IteratorFileLike(response.iter_content(chunk_size=4096))
+
+    @response_handler(_iter_content_filelike_wrapper)
     @get("artifacts/{id}")
-    def download_artifact(self, id: Path) -> Response:
+    def download_artifact(self, id: Path) -> IteratorFileLike:
         """Downloads an artifact.
 
         Args:
             id: The ID of the artifact to download.
 
         Returns:
-            The response containing the file content.
+            A file-like object for reading the artifact content.
 
         """
         ...

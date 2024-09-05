@@ -37,4 +37,4 @@ class TestArtifact:
         download_response = client.download_artifact(artifact_id)
 
         assert download_response is not None
-        assert download_response.content == artifact_content
+        assert download_response.read() == artifact_content

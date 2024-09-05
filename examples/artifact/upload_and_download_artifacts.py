@@ -24,5 +24,5 @@ if upload_response and upload_response.id:
 artifact_id = upload_response.id
 download_response = client.download_artifact(artifact_id)
 if download_response:
-    downloaded_content = download_response.content
+    downloaded_content = download_response.read()
     print(f"Downloaded artifact content: {downloaded_content.decode('utf-8')}")
