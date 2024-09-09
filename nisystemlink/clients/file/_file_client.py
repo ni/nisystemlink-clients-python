@@ -1,7 +1,7 @@
 """Implementation of FileClient."""
 
 import json
-from typing import BinaryIO, Dict, Optional
+from typing import BinaryIO, Dict, List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -96,7 +96,7 @@ class FileClient(BaseClient):
         take: int = 0,
         order_by: Optional[models.FileQueryOrderBy] = None,
         order_by_descending: Optional[bool] = False,
-        ids: Optional[str] = None,
+        ids: Optional[List[str]] = None,
     ) -> models.FileQueryResponse:
         """Lists available files on the SystemLink File service.
         Use the skip and take parameters to return paged responses.
@@ -109,7 +109,7 @@ class FileClient(BaseClient):
             order_by: The name of the metadata key to sort by. Defaults to None.
             order_by_descending: The elements in the list are sorted ascending if False
             and descending if True. Defaults to False.
-            ids: Comma-separated list of file IDs to search by. Defaults to None.
+            ids: List of file IDs to search by. Defaults to None.
 
         Returns:
             File Query Response
@@ -123,12 +123,17 @@ class FileClient(BaseClient):
         order_by_str = order_by.value if order_by is not None else None
         order_by_desc_str = "true" if order_by_descending else "false"
 
+        if ids:
+            ids_str = ",".join(ids)
+        else:
+            ids_str = ""
+
         resp = self.__get_files(
             skip=skip,
             take=take,
             order_by=order_by_str,
             order_by_descending=order_by_desc_str,
-            ids=ids,
+            ids=ids_str,
         )
 
         return resp
@@ -238,9 +243,7 @@ class FileClient(BaseClient):
         return resp
 
     @post("service-groups/Default/files/{id}/update-metadata", args=[Body, Path])
-    def update_metadata(
-        self, metadata: models.UpdateMetadataRequest, id: str
-    ) -> None:
+    def update_metadata(self, metadata: models.UpdateMetadataRequest, id: str) -> None:
         """Updates an existing file's metadata with the specified metadata properties.
 
         Args:

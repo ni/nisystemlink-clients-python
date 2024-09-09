@@ -6,10 +6,10 @@ from nisystemlink.clients.file import FileClient
 
 client = FileClient()
 
-file_id = "<Id of file to download>"
+file_id = "a55adc7f-5068-4202-9d70-70ca6a06bee9"
 
 # Fetch the file metadata to get the name
-files = client.get_files(ids=file_id)
+files = client.get_files(ids=[file_id])
 
 if not files.available_files:
     raise Exception(f"File ID {file_id} not found.")
