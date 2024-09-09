@@ -68,7 +68,7 @@ class FileClient(BaseClient):
         take: int = 0,
         order_by: Optional[str] = None,
         order_by_descending: Optional[str] = "false",
-        file_ids: Optional[str] = None,
+        ids: Optional[str] = None,
     ) -> models.FileQueryResponse:
         """Lists available files on the SystemLink File service.
         Use the skip and take parameters to return paged responses.
@@ -81,7 +81,7 @@ class FileClient(BaseClient):
             order_by: The name of the metadata key to sort by. Defaults to None.
             order_by_descending: The elements in the list are sorted ascending if "false"
               and descending if "true". Defaults to "false".
-            file_ids: Comma-separated list of file IDs to search by. Defaults to None.
+            ids: Comma-separated list of file IDs to search by. Defaults to None.
 
         Returns:
             File Query Response
@@ -96,7 +96,7 @@ class FileClient(BaseClient):
         take: int = 0,
         order_by: Optional[models.FileQueryOrderBy] = None,
         order_by_descending: Optional[bool] = False,
-        file_ids: Optional[str] = None,
+        ids: Optional[str] = None,
     ) -> models.FileQueryResponse:
         """Lists available files on the SystemLink File service.
         Use the skip and take parameters to return paged responses.
@@ -109,7 +109,7 @@ class FileClient(BaseClient):
             order_by: The name of the metadata key to sort by. Defaults to None.
             order_by_descending: The elements in the list are sorted ascending if False
             and descending if True. Defaults to False.
-            file_ids: Comma-separated list of file IDs to search by. Defaults to None.
+            ids: Comma-separated list of file IDs to search by. Defaults to None.
 
         Returns:
             File Query Response
@@ -128,17 +128,17 @@ class FileClient(BaseClient):
             take=take,
             order_by=order_by_str,
             order_by_descending=order_by_desc_str,
-            file_ids=file_ids,
+            ids=ids,
         )
 
         return resp
 
-    @delete("service-groups/Default/files/{file_id}", args=[Path, Query])
-    def delete_file(self, file_id: str, force: bool = False) -> None:
+    @delete("service-groups/Default/files/{id}", args=[Path, Query])
+    def delete_file(self, id: str, force: bool = False) -> None:
         """Deletes the file indicated by the `file_id`.
 
         Args:
-            file_id: The ID of the file.
+            id: The ID of the file.
             force: Whether the deletion of a file will be forced. Defaults to False.
 
         Raises:
@@ -162,12 +162,12 @@ class FileClient(BaseClient):
     # TBD: Error with poe types - Untyped decorator makes function "download_file" untyped
     # @params({"inline": True})
     @response_handler(_iter_content_filelike_wrapper)
-    @get("service-groups/Default/files/{file_id}/data", args=[Path, Query])
-    def download_file(self, file_id: str, inline: bool = True) -> IteratorFileLike:
+    @get("service-groups/Default/files/{id}/data", args=[Path, Query])
+    def download_file(self, id: str, inline: bool = True) -> IteratorFileLike:
         """Downloads a file from the SystemLink File service.
 
         Args:
-            file_id: The ID of the file.
+            id: The ID of the file.
             inline: Return the file inline. Defaults to True.
 
         Yields:
@@ -205,7 +205,7 @@ class FileClient(BaseClient):
         self,
         file: BinaryIO,
         metadata: Optional[Dict[str, str]] = None,
-        file_id: Optional[str] = None,
+        id: Optional[str] = None,
         workspace: Optional[str] = None,
     ) -> models.UploadedFileInfo:
         """Uploads a file to the File Service.
@@ -213,7 +213,7 @@ class FileClient(BaseClient):
         Args:
             file: The file to upload.
             metadata: File Metadata as dictionary.
-            file_id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.
+            id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.
                 Defaults to None.
             workspace: The id of the workspace the file belongs to. Defaults to None.
 
@@ -231,21 +231,21 @@ class FileClient(BaseClient):
         resp = self.__upload_file(
             file=file,
             metadata=metadata_str,
-            id=file_id,
+            id=id,
             workspace=workspace,
         )
 
         return resp
 
-    @post("service-groups/Default/files/{file_id}/update-metadata", args=[Body, Path])
+    @post("service-groups/Default/files/{id}/update-metadata", args=[Body, Path])
     def update_metadata(
-        self, metadata: models.UpdateMetadataRequest, file_id: str
+        self, metadata: models.UpdateMetadataRequest, id: str
     ) -> None:
         """Updates an existing file's metadata with the specified metadata properties.
 
         Args:
             metadata: File's metadata and options for updating it.
-            file_id: ID of the file to update Metadata.
+            id: ID of the file to update Metadata.
 
         Raises:
             ApiException: if unable to communicate with the File Service.

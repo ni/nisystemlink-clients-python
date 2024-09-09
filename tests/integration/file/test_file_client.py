@@ -57,7 +57,7 @@ def invalid_file_id(client: FileClient) -> str:
 
     while attempts < MAX_RETRIES:
         file_id = f"Invalid-File-Id-{randint(1000,9999)}"
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         if files.total_count == 0:
             return file_id
 
@@ -76,22 +76,22 @@ class TestFileClient:
         file_id = test_file(cleanup=False)
         assert file_id != ""
 
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert files.total_count == 1
         assert len(files.available_files) == 1
         assert files.available_files[0].id == file_id
 
-        client.delete_file(file_id=file_id, force=True)
+        client.delete_file(id=file_id, force=True)
 
         # confirm that file was deleted
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert files.total_count == 0
 
     def test__delete_file__invalid_id_raises(
         self, client: FileClient, invalid_file_id: str
     ):
         with pytest.raises(ApiException, match=FILE_NOT_FOUND_ERR):
-            client.delete_file(file_id=invalid_file_id, force=True)
+            client.delete_file(id=invalid_file_id, force=True)
 
     def test__delete_files__succeeds(self, client: FileClient, test_file):
         # upload 2 files and delete them
@@ -102,21 +102,21 @@ class TestFileClient:
         file_ids_str = ",".join(file_ids)
 
         # confirm that files exist
-        files = client.get_files(file_ids=file_ids_str)
+        files = client.get_files(ids=file_ids_str)
         assert files.total_count == NUM_FILES
 
         _delete_files = DeleteMutipleRequest(ids=file_ids)
         client.delete_files(files=_delete_files, force=True)
 
         # confirm that files were deleted
-        files = client.get_files(file_ids=file_ids_str)
+        files = client.get_files(ids=file_ids_str)
         assert files.total_count == 0
 
     def test__download_file__invalid_id_raises(
         self, client: FileClient, invalid_file_id: str
     ):
         with pytest.raises(ApiException, match=FILE_NOT_FOUND_ERR):
-            client.download_file(file_id=invalid_file_id)
+            client.download_file(id=invalid_file_id)
 
     def test__download_file__succeeds(
         self, client: FileClient, test_file, binary_file_data
@@ -131,13 +131,13 @@ class TestFileClient:
         file_id = test_file(file_name=full_file_name)
 
         # verify the File Name and extension
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert len(files.available_files) == 1
         assert files.available_files[0].properties is not None
         assert files.available_files[0].properties["Name"] == full_file_name
 
         # verify the file content
-        data = client.download_file(file_id=file_id)
+        data = client.download_file(id=file_id)
         file_content = data.read()
         assert file_content == binary_file_data.read()
 
@@ -150,7 +150,7 @@ class TestFileClient:
         file_id = test_file(file_name=OLD_NAME)
 
         # verify the File Name and extension
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert len(files.available_files) == 1
         assert files.available_files[0].properties is not None
         assert files.available_files[0].properties["Name"] == OLD_NAME
@@ -158,7 +158,7 @@ class TestFileClient:
         rename_file(client=client, file_id=file_id, name=NEW_NAME)
 
         # verify the File Name and extension
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert len(files.available_files) == 1
         assert files.available_files[0].properties is not None
         assert files.available_files[0].properties["Name"] == NEW_NAME
@@ -170,7 +170,7 @@ class TestFileClient:
         file_id = test_file()
 
         # verify the existing properties
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert len(files.available_files) == 1
         assert files.available_files[0].properties is not None
         assert len(files.available_files[0].properties.keys()) == 1  # Name
@@ -180,10 +180,10 @@ class TestFileClient:
         append_prop_request = UpdateMetadataRequest(
             replace_existing=False, properties=new_metadata
         )
-        client.update_metadata(metadata=append_prop_request, file_id=file_id)
+        client.update_metadata(metadata=append_prop_request, id=file_id)
 
         # verify appended properties
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert len(files.available_files) == 1
         assert files.available_files[0].properties is not None
         assert (
@@ -201,9 +201,9 @@ class TestFileClient:
         append_prop_request = UpdateMetadataRequest(
             replace_existing=True, properties=replace_metadata
         )
-        client.update_metadata(metadata=append_prop_request, file_id=file_id)
+        client.update_metadata(metadata=append_prop_request, id=file_id)
         # verify replaced properties
-        files = client.get_files(file_ids=file_id)
+        files = client.get_files(ids=file_id)
         assert len(files.available_files) == 1
         assert files.available_files[0].properties is not None
         assert (

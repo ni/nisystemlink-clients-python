@@ -32,4 +32,4 @@ def rename_file(client: FileClient, file_id: str, name: str) -> None:
     rename_request = UpdateMetadataRequest(
         replace_existing=False, properties=new_metadata
     )
-    client.update_metadata(metadata=rename_request, file_id=file_id)
+    client.update_metadata(metadata=rename_request, id=file_id)
