@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.5.0 (2024-09-09)
+
+### Feature
+
+* Add client for Artifacts API ([#70](https://github.com/ni/nisystemlink-clients-python/issues/70)) ([`0ada3d7`](https://github.com/ni/nisystemlink-clients-python/commit/0ada3d7c765e1b5d7fabfa4661f15d38c71c7295))
+
 ## v1.4.3 (2024-08-08)
 
 ### Fix
