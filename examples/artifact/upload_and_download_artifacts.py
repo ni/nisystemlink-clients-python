@@ -1,3 +1,5 @@
+import io
+
 from nisystemlink.clients.artifact import ArtifactClient
 from nisystemlink.clients.core import HttpConfiguration
 
@@ -11,10 +13,10 @@ client = ArtifactClient(configuration=server_configuration)
 
 # Define the workspace and artifact content
 workspace = "your workspace ID"
-artifact_content = b"test content"
+artifact_stream = io.BytesIO(b"test content")
 
 # Upload the artifact
-upload_response = client.upload_artifact(workspace=workspace, artifact=artifact_content)
+upload_response = client.upload_artifact(workspace=workspace, artifact=artifact_stream)
 if upload_response and upload_response.id:
     print(f"Uploaded artifact ID: {upload_response.id}")
 

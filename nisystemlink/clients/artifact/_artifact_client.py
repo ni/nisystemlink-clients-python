@@ -1,13 +1,13 @@
 """Implementation of ArtifactClient"""
 
-from typing import Optional
+from typing import BinaryIO, Optional
 
-from httpcore import Response
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get, post
+from nisystemlink.clients.core._uplink._methods import get, post, response_handler
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
-from uplink import Part, Path, response_handler
+from requests.models import Response
+from uplink import Part, Path
 
 from . import models
 
@@ -31,8 +31,22 @@ class ArtifactClient(BaseClient):
         super().__init__(configuration, base_path="/ninbartifact/v1/")
 
     @post("artifacts")
-    def upload_artifact(
+    def __upload_artifact(
         self, workspace: Part, artifact: Part
+    ) -> models.UploadArtifactResponse:
+        """Uploads an artifact  using multipart/form-data headers to send the file payload in the HTTP body.
+
+        Args:
+            workspace: The workspace containing the artifact.
+            artifact: The artifact to upload.
+
+        Returns:
+            UploadArtifactResponse: The response containing the artifact ID.
+
+        """
+
+    def upload_artifact(
+        self, workspace: str, artifact: BinaryIO
     ) -> models.UploadArtifactResponse:
         """Uploads an artifact.
 
@@ -44,7 +58,12 @@ class ArtifactClient(BaseClient):
             UploadArtifactResponse: The response containing the artifact ID.
 
         """
-        ...
+        response = self.__upload_artifact(
+            workspace=workspace,
+            artifact=artifact,
+        )
+
+        return response
 
     def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
         return IteratorFileLike(response.iter_content(chunk_size=4096))
