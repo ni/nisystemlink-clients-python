@@ -1,5 +1,3 @@
-import os
-
 from nisystemlink.clients.artifact import ArtifactClient
 from nisystemlink.clients.core import HttpConfiguration
 
