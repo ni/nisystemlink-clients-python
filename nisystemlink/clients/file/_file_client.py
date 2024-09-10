@@ -13,7 +13,7 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
-from uplink import Body, Part, Path, Query
+from uplink import Body, Part, Path, Query, retry
 
 
 from . import models
@@ -23,6 +23,7 @@ def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
     return IteratorFileLike(response.iter_content(chunk_size=4096))
 
 
+@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class FileClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.

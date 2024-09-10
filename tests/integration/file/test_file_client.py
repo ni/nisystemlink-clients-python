@@ -199,3 +199,9 @@ class TestFileClient:
         assert (
             len(files.available_files[0].properties.keys()) == len(replace_metadata) + 1
         )  # Name + 3 replaced properties
+
+    def test__back_off_retry__works(self, client: FileClient, test_file):
+        file_id = test_file()
+
+        for i in range(20):
+            rename_file(client=client, file_id=file_id, name=f"{i}.abc")
