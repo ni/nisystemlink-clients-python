@@ -15,9 +15,19 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
-from uplink import Body, Field, Part, Path, Query, retry, returns
+from requests.models import Response
+from uplink import Body, Field, Part, Path, Query, retry
 
 from . import models
+
+
+def _file_uri_response_handler(response: Response) -> str:
+    """Response handler for File URI response. Extracts ID from URI."""
+    resp = response.json()
+    uri: str = resp["uri"]
+    # Split the uri by '/' and get the last part
+    parts = uri.split("/")
+    return parts[-1]
 
 
 @retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
@@ -178,7 +188,9 @@ class FileClient(BaseClient):
             ApiException: if unable to communicate with the File Service.
         """
 
-    @returns.json(key="uri")
+    # TODO: Error with poe types - Untyped decorator makes function "__upload_file" untyped
+    # @returns.json("uri")
+    @response_handler(_file_uri_response_handler)
     @post("service-groups/Default/upload-files")
     def __upload_file(
         self,
@@ -197,7 +209,7 @@ class FileClient(BaseClient):
             workspace: The id of the workspace the file belongs to. Defaults to None.
 
         Returns:
-            URI of uploaded file.
+            ID of uploaded file.
 
         Raises:
             ApiException: if unable to communicate with the File Service.
@@ -230,16 +242,14 @@ class FileClient(BaseClient):
         else:
             metadata_str = None
 
-        uri = self.__upload_file(
+        file_id = self.__upload_file(
             file=file,
             metadata=metadata_str,
             id=id,
             workspace=workspace,
         )
 
-        # Split the uri by '/' and get the last part
-        parts = uri.split("/")
-        return parts[-1]
+        return file_id
 
     @post("service-groups/Default/files/{id}/update-metadata", args=[Body, Path])
     def update_metadata(self, metadata: models.UpdateMetadataRequest, id: str) -> None:
