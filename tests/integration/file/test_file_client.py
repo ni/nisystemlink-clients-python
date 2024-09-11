@@ -12,8 +12,9 @@ from nisystemlink.clients.file.models import UpdateMetadataRequest
 from nisystemlink.clients.file.utilities import rename_file
 
 FILE_NOT_FOUND_ERR = "Not Found"
+PREFIX = "File Client Tests-"
 TEST_FILE_DATA = b"This is a test file binary content."
-TEST_FILE_NAME = "Test File.bin"
+TEST_FILE_NAME = f"{PREFIX}Test File.bin"
 
 
 @pytest.fixture(scope="class")
@@ -68,7 +69,7 @@ def random_filename_extn() -> str:
     rand_file_name = "".join(choices(string.ascii_letters + string.digits, k=10))
     rand_file_extn = "".join(choices(string.ascii_letters, k=3))
 
-    return f"{rand_file_name}.{rand_file_extn}"
+    return f"{PREFIX}{rand_file_name}.{rand_file_extn}"
 
 
 @pytest.mark.enterprise
@@ -143,8 +144,8 @@ class TestFileClient:
     def test__update_metadata__rename_utility_succeeds(
         self, client: FileClient, test_file
     ):
-        OLD_NAME = "oldname.xyz"
-        NEW_NAME = "newname.abc"
+        OLD_NAME = f"{PREFIX}oldname.xyz"
+        NEW_NAME = f"{PREFIX}newname.abc"
 
         file_id = test_file(file_name=OLD_NAME)
 
@@ -201,4 +202,4 @@ class TestFileClient:
         file_id = test_file()
 
         for i in range(20):
-            rename_file(client=client, file_id=file_id, name=f"{i}.abc")
+            rename_file(client=client, file_id=file_id, name=f"{PREFIX}{i}.abc")
