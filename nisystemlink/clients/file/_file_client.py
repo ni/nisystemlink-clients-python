@@ -15,7 +15,7 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
-from uplink import Body, Part, Path, Query, retry
+from uplink import Body, Field, Part, Path, Query, retry
 
 from . import models
 
@@ -148,14 +148,12 @@ class FileClient(BaseClient):
             ApiException: if unable to communicate with the File Service.
         """
 
-    @post("service-groups/Default/delete-files", args=[Body, Query])
-    def delete_files(
-        self, files: models.DeleteMutipleRequest, force: bool = False
-    ) -> None:
+    @post("service-groups/Default/delete-files", args=[Field, Query])
+    def delete_files(self, ids: List[str], force: bool = False) -> None:
         """Delete multiple files.
 
         Args:
-            files: The description of files to delete.
+            ids: List of unique IDs of Files.
             force: Whether the deletion of files will be forced. Defaults to False.
 
         Raises:

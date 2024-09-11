@@ -1,4 +1,3 @@
-from ._delete_multiple import DeleteMutipleRequest
 from ._file_metadata import FileMetadata
 from ._file_query_order_by import FileQueryOrderBy
 from ._file_query_response import FileQueryResponse

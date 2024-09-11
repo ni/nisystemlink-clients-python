@@ -45,8 +45,7 @@ def test_file(client: FileClient):
     yield _test_file
 
     if file_ids:
-        _delete_files = DeleteMutipleRequest(ids=file_ids)
-        client.delete_files(files=_delete_files, force=True)
+        client.delete_files(ids=file_ids, force=True)
 
 
 @pytest.fixture(scope="class")
@@ -116,8 +115,7 @@ class TestFileClient:
         files = client.get_files(ids=file_ids)
         assert files.total_count == NUM_FILES
 
-        _delete_files = DeleteMutipleRequest(ids=file_ids)
-        client.delete_files(files=_delete_files, force=True)
+        client.delete_files(ids=file_ids, force=True)
 
         # confirm that files were deleted
         files = client.get_files(ids=file_ids)
