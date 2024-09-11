@@ -8,8 +8,8 @@ from typing import BinaryIO
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
-from nisystemlink.clients.file.models import DeleteMutipleRequest, UpdateMetadataRequest
-from nisystemlink.clients.file.utilities import get_file_id_from_uri, rename_file
+from nisystemlink.clients.file.models import UpdateMetadataRequest
+from nisystemlink.clients.file.utilities import rename_file
 
 FILE_NOT_FOUND_ERR = "Not Found"
 TEST_FILE_DATA = b"This is a test file binary content."
@@ -36,8 +36,7 @@ def test_file(client: FileClient):
     def _test_file(file_name: str = TEST_FILE_NAME, cleanup: bool = True) -> str:
         test_file = io.BytesIO(TEST_FILE_DATA)
         test_file.name = file_name
-        file_info = client.upload_file(file=test_file)
-        file_id = get_file_id_from_uri(file_info.uri)
+        file_id = client.upload_file(file=test_file)
         if cleanup:
             file_ids.append(file_id)
         return file_id

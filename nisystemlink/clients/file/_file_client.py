@@ -15,7 +15,7 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
-from uplink import Body, Field, Part, Path, Query, retry
+from uplink import Body, Field, Part, Path, Query, retry, returns
 
 from . import models
 
@@ -160,7 +160,7 @@ class FileClient(BaseClient):
             ApiException: if unable to communicate with the File Service.
         """
 
-    # TBD: Error with poe types - Untyped decorator makes function "download_file" untyped
+    # TODO: Error with poe types - Untyped decorator makes function "download_file" untyped
     # @params({"inline": True})
     @response_handler(file_like_response_handler)
     @get("service-groups/Default/files/{id}/data", args=[Path, Query])
@@ -178,6 +178,7 @@ class FileClient(BaseClient):
             ApiException: if unable to communicate with the File Service.
         """
 
+    @returns.json(key="uri")
     @post("service-groups/Default/upload-files")
     def __upload_file(
         self,
@@ -185,7 +186,7 @@ class FileClient(BaseClient):
         metadata: Part = None,
         id: Part = None,
         workspace: Query = None,
-    ) -> models.UploadedFileInfo:
+    ) -> str:
         """Uploads a file using multipart/form-data headers to send the file payload in the HTTP body.
 
         Args:
@@ -196,7 +197,7 @@ class FileClient(BaseClient):
             workspace: The id of the workspace the file belongs to. Defaults to None.
 
         Returns:
-            Uploaded file information
+            URI of uploaded file.
 
         Raises:
             ApiException: if unable to communicate with the File Service.
@@ -208,7 +209,7 @@ class FileClient(BaseClient):
         metadata: Optional[Dict[str, str]] = None,
         id: Optional[str] = None,
         workspace: Optional[str] = None,
-    ) -> models.UploadedFileInfo:
+    ) -> str:
         """Uploads a file to the File Service.
 
         Args:
@@ -219,7 +220,7 @@ class FileClient(BaseClient):
             workspace: The id of the workspace the file belongs to. Defaults to None.
 
         Returns:
-            Uploaded file information
+            ID of uploaded file.
 
         Raises:
             ApiException: if unable to communicate with the File Service.
@@ -229,14 +230,16 @@ class FileClient(BaseClient):
         else:
             metadata_str = None
 
-        resp = self.__upload_file(
+        uri = self.__upload_file(
             file=file,
             metadata=metadata_str,
             id=id,
             workspace=workspace,
         )
 
-        return resp
+        # Split the uri by '/' and get the last part
+        parts = uri.split("/")
+        return parts[-1]
 
     @post("service-groups/Default/files/{id}/update-metadata", args=[Body, Path])
     def update_metadata(self, metadata: models.UpdateMetadataRequest, id: str) -> None:
