@@ -5,6 +5,9 @@ from typing import BinaryIO, Dict, List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
+from nisystemlink.clients.core._uplink._file_like_response import (
+    file_like_response_handler,
+)
 from nisystemlink.clients.core._uplink._methods import (
     delete,
     get,
@@ -12,15 +15,9 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
-from requests.models import Response
 from uplink import Body, Part, Path, Query, retry
 
-
 from . import models
-
-
-def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
-    return IteratorFileLike(response.iter_content(chunk_size=4096))
 
 
 @retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
@@ -167,7 +164,7 @@ class FileClient(BaseClient):
 
     # TBD: Error with poe types - Untyped decorator makes function "download_file" untyped
     # @params({"inline": True})
-    @response_handler(_iter_content_filelike_wrapper)
+    @response_handler(file_like_response_handler)
     @get("service-groups/Default/files/{id}/data", args=[Path, Query])
     def download_file(self, id: str, inline: bool = True) -> IteratorFileLike:
         """Downloads a file from the SystemLink File service.
