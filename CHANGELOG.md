@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.6.0 (2024-09-17)
+
+### Feature
+
+* Add Client for File Service ([#65](https://github.com/ni/nisystemlink-clients-python/issues/65)) ([`ebdc4c1`](https://github.com/ni/nisystemlink-clients-python/commit/ebdc4c1adf50f71498d0ce3446402dff55eef6ca))
+
 ## v1.5.0 (2024-09-09)
 
 ### Feature
