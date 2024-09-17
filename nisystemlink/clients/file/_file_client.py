@@ -16,7 +16,7 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
-from uplink import Body, Field, Part, Path, Query, retry
+from uplink import Body, Field, params, Part, Path, Query, retry
 
 from . import models
 
@@ -146,40 +146,38 @@ class FileClient(BaseClient):
 
         return resp
 
-    @delete("service-groups/Default/files/{id}", args=[Path, Query])
-    def delete_file(self, id: str, force: bool = False) -> None:
+    @params({"force": True})  # type: ignore
+    @delete("service-groups/Default/files/{id}", args=[Path])
+    def delete_file(self, id: str) -> None:
         """Deletes the file indicated by the `file_id`.
 
         Args:
             id: The ID of the file.
-            force: Whether the deletion of a file will be forced. Defaults to False.
 
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
 
-    @post("service-groups/Default/delete-files", args=[Field, Query])
-    def delete_files(self, ids: List[str], force: bool = False) -> None:
+    @params({"force": True})  # type: ignore
+    @post("service-groups/Default/delete-files", args=[Field])
+    def delete_files(self, ids: List[str]) -> None:
         """Delete multiple files.
 
         Args:
             ids: List of unique IDs of Files.
-            force: Whether the deletion of files will be forced. Defaults to False.
 
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
 
-    # TODO: Error with poe types - Untyped decorator makes function "download_file" untyped
-    # @params({"inline": True})
+    @params({"inline": True})  # type: ignore
     @response_handler(file_like_response_handler)
-    @get("service-groups/Default/files/{id}/data", args=[Path, Query])
-    def download_file(self, id: str, inline: bool = True) -> IteratorFileLike:
+    @get("service-groups/Default/files/{id}/data", args=[Path])
+    def download_file(self, id: str) -> IteratorFileLike:
         """Downloads a file from the SystemLink File service.
 
         Args:
             id: The ID of the file.
-            inline: Return the file inline. Defaults to True.
 
         Yields:
             A file-like object for reading the exported data.
@@ -188,8 +186,6 @@ class FileClient(BaseClient):
             ApiException: if unable to communicate with the File Service.
         """
 
-    # TODO: Error with poe types - Untyped decorator makes function "__upload_file" untyped
-    # @returns.json("uri")
     @response_handler(_file_uri_response_handler)
     @post("service-groups/Default/upload-files")
     def __upload_file(

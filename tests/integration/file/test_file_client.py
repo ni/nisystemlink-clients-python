@@ -45,7 +45,7 @@ def test_file(client: FileClient):
     yield _test_file
 
     if file_ids:
-        client.delete_files(ids=file_ids, force=True)
+        client.delete_files(ids=file_ids)
 
 
 @pytest.fixture(scope="class")
@@ -93,7 +93,7 @@ class TestFileClient:
         assert files.available_files[0].properties is not None
         assert files.available_files[0].properties["Name"] == random_filename_extn
 
-        client.delete_file(id=file_id, force=True)
+        client.delete_file(id=file_id)
 
         # confirm that file was deleted
         files = client.get_files(ids=[file_id])
@@ -103,7 +103,7 @@ class TestFileClient:
         self, client: FileClient, invalid_file_id: str
     ):
         with pytest.raises(ApiException, match=FILE_NOT_FOUND_ERR):
-            client.delete_file(id=invalid_file_id, force=True)
+            client.delete_file(id=invalid_file_id)
 
     def test__delete_files__succeeds(self, client: FileClient, test_file):
         # upload 2 files and delete them
@@ -115,7 +115,7 @@ class TestFileClient:
         files = client.get_files(ids=file_ids)
         assert files.total_count == NUM_FILES
 
-        client.delete_files(ids=file_ids, force=True)
+        client.delete_files(ids=file_ids)
 
         # confirm that files were deleted
         files = client.get_files(ids=file_ids)
