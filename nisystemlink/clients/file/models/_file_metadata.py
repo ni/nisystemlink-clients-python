@@ -17,58 +17,64 @@ class FileMetadata(JsonModel):
     - updateMetadata: Link to update the file's metadata using a POST request
     """
 
-    created: Optional[datetime] = Field(None, example="2018-05-15T18:54:27.519Z")
+    created: Optional[datetime]
     """
-    The date and time the file was created in the file service
+    The date and time the file was created in the file service.
+
+    example :2018-05-15T18:54:27.519Z
     """
 
-    id: Optional[str] = Field(None, example="5afb2ce3741fe11d88838cc9")
+    id: Optional[str]
     """
-    The file's ID within the service group
+    The file's ID within the service group.
+
+    example: "5afb2ce3741fe11d88838cc9"
     """
 
-    path: Optional[str] = Field(None, example="C:\\temp\\4afb2ce3741fe11d88838cc9.txt")
+    path: Optional[str]
     """
     The path to the file on the server.  This field is returned only if
     the user has associated privileges to view file paths.
+
+    example: C:\temp\4afb2ce3741fe11d88838cc9.txt
     """
 
-    properties: Optional[Dict[str, str]] = Field(None)
+    properties: Optional[Dict[str, str]]
     """
     The file's properties
     Example - {"Name": "myfile.txt", "MyProperty": "Value"}
     """
 
-    meta_data_revision: Optional[int] = Field(None, alias="metaDataRevision", example=1)
+    meta_data_revision: Optional[int]
     """
     The file's properties revision number. When a file is uploaded, the revision number starts at 1.
     Every time metadata is updated, the revision number is incremented by 1.
     """
 
-    service_group: Optional[str] = Field(None, alias="serviceGroup", example="Default")
+    service_group: Optional[str]
     """
     The service group that owns the file
     """
 
-    size: Optional[int] = Field(None, example=7277)
+    size: Optional[int]
     """
     The 32-bit file size in bytes. If the value is larger than a 32-bit integer,
     this value is -1 and the size64 parameter contains the correct value.
     """
 
-    size64: Optional[int] = Field(None, example=7277)
+    size64: Optional[int]
     """
     The 64-bit file size in bytes
     """
 
-    workspace: Optional[str] = Field(None, example="MyWorkspace")
+    workspace: Optional[str]
     """
     The workspace the file belongs to
     """
 
-    last_updated_timestamp: Optional[datetime] = Field(
-        None, alias="lastUpdatedTimestamp", example="2018-05-15T18:54:27.519Z"
-    )
+    last_updated_timestamp: Optional[datetime]
     """
-    The date and time the file was last updated in the file service
+    The date and time the file was last updated in the file service.
+
+    example: 2018-05-15T18:54:27.519Z
     """

@@ -10,7 +10,7 @@ class UpdateMetadataRequest(JsonModel):
     """Determines whether the current list should be entirely replaced by the specified list
         or merged with the existing list."""
 
-    expected_revision: Optional[int] = None
+    expected_revision: Optional[int]
     """When specified, this is an integer that should be set to match the last known revision number of the metadata.
     If it doesn't match at the time of execution, the update request will be rejected.
     This is used to ensure that changes to this file metadata are correctly using the previous state."""
@@ -21,5 +21,5 @@ class UpdateMetadataRequest(JsonModel):
         Predefined:
             Name: This is an optional property for renaming the file. When specified, the file will be renamed."""
 
-    workspace: Optional[str] = None
+    workspace: Optional[str]
     """When specified, the workspace of the metadata will be updated to the new value."""

@@ -21,8 +21,8 @@ class FileQueryResponse(JsonModel):
     - upload: Link to upload files to the service group using a POST
     """
 
-    available_files: List[FileMetadata] = Field(alias="availableFiles")
+    available_files: List[FileMetadata]
     """The list of files returned by the query"""
 
-    total_count: int = Field(alias="totalCount")
+    total_count: int
     """The total number of files that match the query regardless of skip and take values"""
