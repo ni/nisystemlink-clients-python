@@ -76,6 +76,34 @@ Subscribe to tag changes
    :language: python
    :linenos:
 
+
+TestMonitor API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.TestMonitorClient` class is the primary entry point of the TestMonitor API.
+
+When constructing a :class:`.TestMonitorClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.TestMonitorClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.TestMonitorClient` object, you can:
+
+* Create, update, query, and delete Products
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete some products
+
+.. literalinclude:: ../examples/testmonitor/products.py
+   :language: python
+   :linenos:
+
+
 DataFrame API
 -------
 
