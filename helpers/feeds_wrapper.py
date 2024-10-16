@@ -1,7 +1,7 @@
 """Helper functions for using systemlink feeds APIs."""
 
 import os
-from typing import List, Union
+from typing import Dict, List, Union
 
 from nisystemlink.clients.auth import AuthClient
 from nisystemlink.clients.core import ApiException, HttpConfiguration
@@ -61,6 +61,32 @@ def create_feed(
     return create_feed_response
 
 
+def query_existing_feed_info(
+    client: SystemLinkFeedsClient,
+    platform: str,
+    workspace_id: str,
+) -> Dict[str, str]:
+    """Query existing feeds information from systemlink.
+
+    Args:
+        client (SystemLinkFeedsClient): Systemlink feeds Client._
+        platform (str): Name of the platform.
+        workspace_id (str): Workspace ID.
+
+    Returns:
+        Dict[str, str]: Existing feeds information.
+    """
+    query_feeds = client.query_feeds(
+        platform=platform,
+        workspace=workspace_id,
+    )
+    existing_feeds = {}
+    for feed in query_feeds.feeds:
+        existing_feeds[feed.name] = feed.id
+
+    return existing_feeds
+
+
 def upload_single_package(
     package_path: str,
     workspace_name: str,
@@ -93,14 +119,11 @@ def upload_single_package(
             server_url=server_url,
         )
 
-        query_feeds = client.query_feeds(
+        existing_feeds = query_existing_feed_info(
             platform=platform,
-            workspace=workspace_id,
+            client=client, 
+            workspace_id=workspace_id,
         )
-        existing_feeds = {}
-        for feed in query_feeds.feeds:
-            existing_feeds[feed.name] = feed.id
-
         if feed_name not in existing_feeds:
             feed_id = create_feed(
                 feed_name=feed_name,
@@ -120,7 +143,7 @@ def upload_single_package(
 
         return response.file_name
 
-    except (ApiException, Exception) as exp:
+    except ApiException as exp:
         return exp.message
 
 
@@ -157,7 +180,7 @@ def upload_multiple_packages(
                 feed_name=feed_name,
             )
 
-        except (ApiException, Exception) as exp:
+        except ApiException as exp:
             failed_packages.append(exp.message)
 
     return failed_packages
