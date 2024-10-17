@@ -121,7 +121,7 @@ def upload_single_package(
 
         existing_feeds = query_existing_feed_info(
             platform=platform,
-            client=client, 
+            client=client,
             workspace_id=workspace_id,
         )
         if feed_name not in existing_feeds:
@@ -154,7 +154,7 @@ def upload_multiple_packages(
     server_url: str,
     feed_name: str,
     overwrite: bool,
-) -> str:
+) -> List[str]:
     """Upload multiple packages to systemlink feeds.
 
     Args:
@@ -166,7 +166,7 @@ def upload_multiple_packages(
         overwrite (bool): To overwrite the package if exists.
 
     Returns:
-        str: Upload package responses.
+        List[str]: Upload package responses.
     """
     failed_packages = []
     for package_path in package_paths:
