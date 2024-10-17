@@ -168,19 +168,18 @@ def upload_multiple_packages(
     Returns:
         List[str]: Upload package responses.
     """
-    failed_packages = []
+    responses = []
+
     for package_path in package_paths:
-        try:
+        responses.append(
             upload_single_package(
-                package_path=package_path,
-                server_api_key=server_api_key,
-                server_url=server_url,
-                workspace_name=workspace_name,
-                overwrite=overwrite,
-                feed_name=feed_name,
+            package_path=package_path,
+            server_api_key=server_api_key,
+            server_url=server_url,
+            workspace_name=workspace_name,
+            overwrite=overwrite,
+            feed_name=feed_name,
             )
+        )
 
-        except ApiException as exp:
-            failed_packages.append(exp.message)
-
-    return failed_packages
+    return responses
