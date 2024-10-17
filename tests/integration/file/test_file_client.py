@@ -55,7 +55,7 @@ def invalid_file_id(client: FileClient) -> str:
     attempts = 0
 
     while attempts < MAX_RETRIES:
-        file_id = f"Invalid-File-Id-{randint(1000,9999)}"
+        file_id = f"Invalid-File-Id-{randint(1000, 9999)}"
         files = client.get_files(ids=[file_id])
         if files.total_count == 0:
             return file_id
