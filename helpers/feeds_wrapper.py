@@ -5,7 +5,7 @@ from typing import Dict, List, Union
 
 from nisystemlink.clients.auth import AuthClient
 from nisystemlink.clients.core import ApiException, HttpConfiguration
-from nisystemlink.clients.feeds._feeds_client import SystemLinkFeedsClient
+from nisystemlink.clients.feeds._feeds_client import FeedsClient
 from nisystemlink.clients.feeds.models import (
     CreateFeedRequest,
     CreateOrUpdateFeedResponse,
@@ -39,7 +39,7 @@ def create_feed(
     feed_name: str,
     platform: str,
     workspace_id: str,
-    client: SystemLinkFeedsClient
+    client: FeedsClient
 ) -> CreateOrUpdateFeedResponse:
     """Create new feed in systemlink.
 
@@ -47,7 +47,7 @@ def create_feed(
         feed_name (str): Name of the feed.
         platform (str): Name of the platform.
         workspace_id (str): Workspace ID.
-        client (SystemLinkFeedsClient): Systemlink feeds Client.
+        client (FeedsClient): Systemlink feeds Client.
 
     Returns:
         CreateOrUpdateFeedResponse: Create feed response.
@@ -62,14 +62,14 @@ def create_feed(
 
 
 def query_existing_feed_info(
-    client: SystemLinkFeedsClient,
+    client: FeedsClient,
     platform: str,
     workspace_id: str,
 ) -> Dict[str, str]:
     """Query existing feeds information from systemlink.
 
     Args:
-        client (SystemLinkFeedsClient): Systemlink feeds Client._
+        client (FeedsClient): Systemlink feeds Client._
         platform (str): Name of the platform.
         workspace_id (str): Workspace ID.
 
@@ -110,7 +110,7 @@ def upload_single_package(
     """
     try:
         platform = __get_feed_platform(package_path)
-        client = SystemLinkFeedsClient(
+        client = FeedsClient(
             HttpConfiguration(api_key=server_api_key, server_uri=server_url)
         )
         workspace_id = __get_workspace_id(
