@@ -5,7 +5,7 @@ from typing import Dict, List, Union
 
 from nisystemlink.clients.auth import AuthClient
 from nisystemlink.clients.core import ApiException, HttpConfiguration
-from nisystemlink.clients.feeds.feeds_client import SystemLinkFeedsClient
+from nisystemlink.clients.feeds._feeds_client import SystemLinkFeedsClient
 from nisystemlink.clients.feeds.models import (
     CreateFeedRequest,
     CreateOrUpdateFeedResponse,

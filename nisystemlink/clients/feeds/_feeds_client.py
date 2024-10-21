@@ -2,12 +2,12 @@
 
 from typing import Optional
 
-
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
-from nisystemlink.clients.feeds import models
-from uplink import Body, Part, Path, Query, multipart
+from uplink import Body, Part, Path, Query
+
+from . import models
 
 
 class SystemLinkFeedsClient(BaseClient):
@@ -31,7 +31,9 @@ class SystemLinkFeedsClient(BaseClient):
         super().__init__(configuration, base_path="/nifeed/v1/")
 
     @post("feeds")
-    def create_feed(self, feed: models.CreateFeedRequest) -> models.CreateOrUpdateFeedResponse:
+    def create_feed(
+        self, feed: models.CreateFeedRequest
+    ) -> models.CreateOrUpdateFeedResponse:
         """Create a new feed with the provided feed details.
 
         Args:
@@ -59,13 +61,12 @@ class SystemLinkFeedsClient(BaseClient):
         """
         ...
 
-    @multipart
     @post("feeds/{feedId}/packages", args=[Path(name="feedId"), Body])
     def upload_package(
         self,
         feed_id: str,
         package: Part,
-        overwrite: Query(name="shouldOverwrite") = False,
+        overwrite: bool = Query[bool](False, name="shouldOverwrite"),
     ) -> models.UploadPackageResponse:
         """Upload package to feeds.
 
@@ -73,7 +74,7 @@ class SystemLinkFeedsClient(BaseClient):
             feed_id (str): ID of the feed.
             package (Part): Package file as a form data.
                 Example: `package=open(filename, "rb")`
-            overwrite (Query(name="shouldOverwrite")): To overwrite the package if exists. Defaults to false. # noqa: W505
+            overwrite (bool): To overwrite the package if exists. Defaults to false. # noqa: W505
 
         Returns:
             models.UploadPackageResponse: Upload package response.

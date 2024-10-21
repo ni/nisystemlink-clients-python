@@ -93,7 +93,9 @@ class Policy(JsonModel):
     """
     A list of statements defining the actions the user can perform on a resource in a workspace
     """
-    template_id: Optional[str] = Field(None, alias="templateId", example="policy-template-id")
+    template_id: Optional[str] = Field(
+        None, alias="templateId", example="policy-template-id"
+    )
     """
     The id of the policy template. Only set if the policy has been created based on a template and
     does not contain inline statements.
