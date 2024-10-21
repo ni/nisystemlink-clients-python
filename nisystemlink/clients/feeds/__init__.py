@@ -1,3 +1,3 @@
-from ._feeds_client import SystemLinkFeedsClient
+from ._feeds_client import FeedsClient
 
 # flake8: noqa

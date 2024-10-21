@@ -2,7 +2,7 @@
 from typing import Dict, Optional
 
 from nisystemlink.clients.core import ApiException, HttpConfiguration
-from nisystemlink.clients.feeds._feeds_client import SystemLinkFeedsClient
+from nisystemlink.clients.feeds._feeds_client import FeedsClient
 from nisystemlink.clients.feeds.models import Platform
 
 
@@ -18,7 +18,7 @@ server_api_key = ""  # SystemLink API key
 workspace_id = ""  # Systemlink workspace id
 
 # Please provide the valid API key and API URL for client intialization.
-client = SystemLinkFeedsClient(
+client = FeedsClient(
     HttpConfiguration(api_key=server_api_key, server_uri=server_url)
 )
 

@@ -10,7 +10,7 @@ from uplink import Body, Part, Path, Query
 from . import models
 
 
-class SystemLinkFeedsClient(BaseClient):
+class FeedsClient(BaseClient):
     """Class contains a set of methods to access the APIs of SystemLink Feed Client."""
 
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
