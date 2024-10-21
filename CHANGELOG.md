@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.7.0 (2024-10-21)
+
+### Feature
+
+* Add Client for minimal implementation of Auth and Feeds services.
+
 ## v1.6.0 (2024-09-17)
 
 ### Feature
