@@ -18,9 +18,7 @@ server_api_key = ""  # SystemLink API key
 workspace_id = ""  # Systemlink workspace id
 
 # Please provide the valid API key and API URL for client intialization.
-client = FeedsClient(
-    HttpConfiguration(api_key=server_api_key, server_uri=server_url)
-)
+client = FeedsClient(HttpConfiguration(api_key=server_api_key, server_uri=server_url))
 
 # Creating Feeds.
 try:
