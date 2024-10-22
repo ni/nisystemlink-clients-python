@@ -1,5 +1,6 @@
 """Functionality of uploading & querying feeds APIs."""
-from typing import Dict, Optional
+
+from typing import Dict
 
 from nisystemlink.clients.core import ApiException, HttpConfiguration
 from nisystemlink.clients.feeds._feeds_client import FeedsClient
@@ -18,9 +19,7 @@ server_api_key = ""  # SystemLink API key
 workspace_id = ""  # Systemlink workspace id
 
 # Please provide the valid API key and API URL for client intialization.
-client = FeedsClient(
-    HttpConfiguration(api_key=server_api_key, server_uri=server_url)
-)
+client = FeedsClient(HttpConfiguration(api_key=server_api_key, server_uri=server_url))
 
 # To upload a package to feed.
 try:
