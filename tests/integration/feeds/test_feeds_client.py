@@ -31,6 +31,7 @@ def client(enterprise_config) -> FeedsClient:
 @pytest.fixture(scope="class")
 def create_feed(client: FeedsClient):
     """Fixture to return a object that creates feed."""
+
     def _create_feed(feed):
         response = client.create_feed(feed)
         return response
@@ -41,6 +42,7 @@ def create_feed(client: FeedsClient):
 @pytest.fixture(scope="class")
 def create_windows_feed_request():
     """Fixture to create a request body of create feed API for windows platform."""
+
     def _create_feed_request():
         feed_request = CreateFeedRequest(
             name=WINDOWS_FEED_NAME,
@@ -56,6 +58,7 @@ def create_windows_feed_request():
 @pytest.fixture(scope="class")
 def create_linux_feed_request():
     """Fixture to create a request body of create feed API for linux platform."""
+
     def _create_feed_request():
         feed_request = CreateFeedRequest(
             name=LINUX_FEED_NAME,
@@ -119,8 +122,7 @@ class TestFeedsClient:
     def test__query_feeds_windows_platform(self, client: FeedsClient):
         """Test the case for querying available feeds for windows platform."""
         response = client.query_feeds(
-            platform=Platform.WINDOWS.value,
-            workspace=WORKSPACE_ID,
+            platform=Platform.WINDOWS.value, workspace=WORKSPACE_ID
         )
         assert response is not None
 
@@ -136,16 +138,14 @@ class TestFeedsClient:
         with pytest.raises(ApiException, match="UnauthorizedWorkspaceError"):
             client.query_feeds(workspace=INVALID_WORKSPACE_ID)
 
-    def test__upload_package(self, client: FeedsClient, get_feed_id: Callable):
+    def test__upload_package(self, client: FeedsClient, get_feed_id: str):
         """Test the case of upload package to feed."""
         response = client.upload_package(
             package=open(PACKAGE_PATH, "rb"), feed_id=get_feed_id
         )
         assert response is not None
 
-    def test__upload_duplicate_package(
-        self, client: FeedsClient, get_feed_id: Callable
-    ):
+    def test__upload_duplicate_package(self, client: FeedsClient, get_feed_id: str):
         """Test the case of upload package to feed with invalid path."""
         with pytest.raises(ApiException, match="DuplicatePackageError"):
             client.upload_package(package=open(PACKAGE_PATH, "rb"), feed_id=get_feed_id)
