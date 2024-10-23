@@ -2,11 +2,10 @@
 
 from typing import Optional
 
-
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
-from uplink import Body, Part, Path, Query
+from uplink import Part, Path, Query
 
 from . import models
 
@@ -62,12 +61,15 @@ class FeedsClient(BaseClient):
         """
         ...
 
-    @post("feeds/{feedId}/packages", args=[Path(name="feedId"), Body])
+    @post(
+        "feeds/{feedId}/packages",
+        args=[Path(name="feedId"), Query(name="ShouldOverwrite")],
+    )
     def upload_package(
         self,
         feed_id: str,
         package: Part,
-        overwrite: Query(name="shouldOverwrite") = False,
+        overwrite: Query = False,
     ) -> models.UploadPackageResponse:
         """Upload package to feeds.
 
@@ -75,8 +77,7 @@ class FeedsClient(BaseClient):
             feed_id (str): ID of the feed.
             package (Part): Package file as a form data.
                 Example: `package=open(filename, "rb")`
-            overwrite (Query(name="shouldOverwrite")): To overwrite the package if exists.\
-Defaults to false
+            overwrite (Query): To overwrite the package if exists. Defaults to false.
 
         Returns:
             models.UploadPackageResponse: Upload package response.
