@@ -13,6 +13,8 @@ API Reference
    api_reference/dataframe
    api_reference/spec
    api_reference/file
+   api_reference/auth
+   api_reference/feed
 
 Indices and tables
 ------------------
