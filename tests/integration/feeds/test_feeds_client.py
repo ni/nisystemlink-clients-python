@@ -11,7 +11,6 @@ from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
 
 WINDOWS_FEED_NAME = "Sample Feed"
 LINUX_FEED_NAME = "Test Feed"
-WORKSPACE_ID = ""  # Provide valid workspace id.
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 INVALID_WORKSPACE_ID = "12345"
 PACKAGE_PATH = (
@@ -47,7 +46,6 @@ def create_windows_feed_request():
         feed_request = CreateFeedRequest(
             name=WINDOWS_FEED_NAME,
             platform=Platform.WINDOWS.value,
-            workspace=WORKSPACE_ID,
             description=FEED_DESCRIPTION,
         )
         return feed_request
@@ -63,7 +61,6 @@ def create_linux_feed_request():
         feed_request = CreateFeedRequest(
             name=LINUX_FEED_NAME,
             platform=Platform.NI_LINUX_RT.value,
-            workspace=WORKSPACE_ID,
             description=FEED_DESCRIPTION,
         )
         return feed_request
@@ -74,10 +71,7 @@ def create_linux_feed_request():
 @pytest.fixture(scope="class")
 def get_feed_id(client: FeedsClient):
     """Fixture to return the Feed ID of the created new feed."""
-    query_feeds_response = client.query_feeds(
-        workspace=WORKSPACE_ID,
-        platform=Platform.WINDOWS.value,
-    )
+    query_feeds_response = client.query_feeds(platform=Platform.WINDOWS.value)
 
     for feed in query_feeds_response.feeds:
         if feed.name == WINDOWS_FEED_NAME:
@@ -121,16 +115,12 @@ class TestFeedsClient:
 
     def test__query_feeds_windows_platform(self, client: FeedsClient):
         """Test the case for querying available feeds for windows platform."""
-        response = client.query_feeds(
-            platform=Platform.WINDOWS.value, workspace=WORKSPACE_ID
-        )
+        response = client.query_feeds(platform=Platform.WINDOWS.value)
         assert response is not None
 
     def test__query_feeds_linux_platform(self, client: FeedsClient):
         """Test the case for querying available feeds for Linux platform."""
-        response = client.query_feeds(
-            platform=Platform.NI_LINUX_RT.value, workspace=WORKSPACE_ID
-        )
+        response = client.query_feeds(platform=Platform.NI_LINUX_RT.value)
         assert response is not None
 
     def test__query_feeds_invalid_workspace(self, client: FeedsClient):
