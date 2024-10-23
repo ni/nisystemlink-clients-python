@@ -234,12 +234,12 @@ Examples
 
 Create new feed in SystemLink.
 
-.. literalinclude:: ../examples/file/create_feed.py
+.. literalinclude:: ../examples/feeds/create_feed.py
    :language: python
    :linenos:
 
 Upload package to SystemLink feeds
 
-.. literalinclude:: ../examples/file/upload_package.py
+.. literalinclude:: ../examples/feeds/upload_package.py
    :language: python
    :linenos:
