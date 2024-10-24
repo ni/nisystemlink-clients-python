@@ -147,7 +147,7 @@ class TestMonitorClient(BaseClient):
 
         Args:
             `products`: A list of products to update. Products are matched for update by id.
-            `replace`: Replace the existing fields instead of merging them.
+            `replace`: Replace the existing fields instead of merging them. Defaults to `False`.
                 If this is `True`, then `keywords` and `properties` for the product will be
                     replaced by what is in the `products` provided in this request.
                 If this is `False`, then the `keywords` and `properties` in this request will
@@ -163,7 +163,7 @@ class TestMonitorClient(BaseClient):
         ...
 
     @delete("products/{id}")
-    def delete_product(self, id: str) -> Optional[ApiError]:
+    def delete_product(self, id: str) -> None:
         """Deletes a single product by id.
 
         Args:
