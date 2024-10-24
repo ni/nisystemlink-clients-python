@@ -13,6 +13,9 @@ from . import models
 
 
 class TestMonitorClient(BaseClient):
+    # prevent pytest from thinking this is a test class
+    __test__ = False
+
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
 

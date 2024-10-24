@@ -11,9 +11,21 @@ from . import models
 
 
 class SpecClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration]):
+    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+        """Initialize an instance.
+
+        Args:
+            configuration: Defines the web server to connect to and information about
+                how to connect. If not provided, the
+                :class:`HttpConfigurationManager <nisystemlink.clients.core.HttpConfigurationManager>`
+                is used to obtain the configuration.
+
+        Raises:
+            ApiException: if unable to communicate with the Spec Service.
+        """
         if configuration is None:
-            configuration = core.JupyterHttpConfiguration()
+            configuration = core.HttpConfigurationManager.get_configuration()
+
         super().__init__(configuration, base_path="/nispec/v1/")
 
     @get("")
