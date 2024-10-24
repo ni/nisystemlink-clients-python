@@ -141,14 +141,23 @@ class TestFeedsClient:
     def test__upload_package(self, client: FeedsClient, get_windows_feed_id: str):
         """Test the case of upload package to feed."""
         response = client.upload_package(
-            package=open(PACKAGE_PATH, "rb"), feed_id=get_windows_feed_id, overwrite=True
+            package=open(PACKAGE_PATH, "rb"),
+            feed_id=get_windows_feed_id,
+            overwrite=True,
         )
         assert response is not None
 
-    def test__upload_duplicate_package(self, client: FeedsClient, get_windows_feed_id: str):
+    def test__upload_duplicate_package(
+        self,
+        client: FeedsClient,
+        get_windows_feed_id: str,
+    ):
         """Test the case of uploading duplicate package to feed."""
         with pytest.raises(ApiException, match="DuplicatePackageError"):
-            client.upload_package(package=open(PACKAGE_PATH, "rb"), feed_id=get_windows_feed_id)
+            client.upload_package(
+                package=open(PACKAGE_PATH, "rb"),
+                feed_id=get_windows_feed_id,
+            )
 
     def test__delete__windows_feed(self, client: FeedsClient, get_windows_feed_id: str):
         """Test the case of deleting windows feed with its packages."""
