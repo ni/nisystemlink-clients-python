@@ -1,4 +1,4 @@
-"""Functionality of getting authentication information."""
+"""Functionality of getting workspace ID using the workspace name."""
 
 from nisystemlink.clients.auth import AuthClient
 from nisystemlink.clients.core import ApiException, HttpConfiguration
