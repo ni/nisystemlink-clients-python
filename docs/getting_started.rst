@@ -158,7 +158,6 @@ Update and Delete Specifications
    :language: python
    :linenos:
 
-
 File API
 -------
 
@@ -182,5 +181,69 @@ Examples
 Get the metadata of a File using its Id and download it.
 
 .. literalinclude:: ../examples/file/download_file.py
+   :language: python
+   :linenos:
+
+Auth API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.AuthClient` class is the primary entry point of the Auth API.
+
+When constructing a :class:`.AuthClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.AuthClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.AuthClient` object, you can:
+
+* Get the information about the caller.
+
+Examples
+~~~~~~~~
+
+Get the workspace id for the workspace name.
+
+.. literalinclude:: ../examples/auth/get_workspace_id.py
+   :language: python
+   :linenos:
+
+Feeds API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.FeedsClient` class is the primary entry point of the File API.
+
+When constructing a :class:`.FeedsClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.FeedsClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.FeedsClient` object, you can:
+
+* Get the list of feeds, create feed, upload package to feed and delete feed.
+
+Examples
+~~~~~~~~
+
+Create new feed.
+
+.. literalinclude:: ../examples/feeds/create_feed.py
+   :language: python
+   :linenos:
+
+Query feeds and Upload package to feed
+
+.. literalinclude:: ../examples/feeds/query_and_upload_feeds.py
+   :language: python
+   :linenos:
+
+Delete feed with its package
+
+.. literalinclude:: ../examples/feeds/delete_feed.py
    :language: python
    :linenos:
