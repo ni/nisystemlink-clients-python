@@ -29,7 +29,7 @@ try:
     )
     created_feed_name = client.create_feed(feed=feed_request).name
 
-    print("Feeds created Successfully.")
+    print("Feed created Successfully.")
     print(f"Created feed name: {created_feed_name}")
 
 except ApiException as exp:

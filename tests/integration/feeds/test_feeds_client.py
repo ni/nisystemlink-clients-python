@@ -9,8 +9,8 @@ from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
 
 
-WINDOWS_FEED_NAME = "Sample Feed"
-LINUX_FEED_NAME = "Test Feed"
+WINDOWS_FEED_NAME = "Windows Feed"
+LINUX_FEED_NAME = "Linux Feed"
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 INVALID_WORKSPACE_ID = "12345"
 PACKAGE_PATH = (
@@ -69,12 +69,22 @@ def create_linux_feed_request():
 
 
 @pytest.fixture(scope="class")
-def get_feed_id(client: FeedsClient):
-    """Fixture to return the Feed ID of the created new feed."""
+def get_windows_feed_id(client: FeedsClient):
+    """Fixture to return the Feed ID of the created windows feed."""
     query_feeds_response = client.query_feeds(platform=Platform.WINDOWS.value)
 
     for feed in query_feeds_response.feeds:
         if feed.name == WINDOWS_FEED_NAME:
+            return feed.id
+
+
+@pytest.fixture(scope="class")
+def get_linux_feed_id(client: FeedsClient):
+    """Fixture to return the Feed ID of the created Linux feed."""
+    query_feeds_response = client.query_feeds(platform=Platform.NI_LINUX_RT.value)
+
+    for feed in query_feeds_response.feeds:
+        if feed.name == LINUX_FEED_NAME:
             return feed.id
 
 
@@ -119,7 +129,7 @@ class TestFeedsClient:
         assert response is not None
 
     def test__query_feeds_linux_platform(self, client: FeedsClient):
-        """Test the case for querying available feeds for Linux platform."""
+        """Test the case for querying available feeds for linux platform."""
         response = client.query_feeds(platform=Platform.NI_LINUX_RT.value)
         assert response is not None
 
@@ -128,14 +138,24 @@ class TestFeedsClient:
         with pytest.raises(ApiException, match="UnauthorizedWorkspaceError"):
             client.query_feeds(workspace=INVALID_WORKSPACE_ID)
 
-    def test__upload_package(self, client: FeedsClient, get_feed_id: str):
+    def test__upload_package(self, client: FeedsClient, get_windows_feed_id: str):
         """Test the case of upload package to feed."""
         response = client.upload_package(
-            package=open(PACKAGE_PATH, "rb"), feed_id=get_feed_id
+            package=open(PACKAGE_PATH, "rb"), feed_id=get_windows_feed_id, overwrite=True
         )
         assert response is not None
 
-    def test__upload_duplicate_package(self, client: FeedsClient, get_feed_id: str):
+    def test__upload_duplicate_package(self, client: FeedsClient, get_windows_feed_id: str):
         """Test the case of uploading duplicate package to feed."""
         with pytest.raises(ApiException, match="DuplicatePackageError"):
-            client.upload_package(package=open(PACKAGE_PATH, "rb"), feed_id=get_feed_id)
+            client.upload_package(package=open(PACKAGE_PATH, "rb"), feed_id=get_windows_feed_id)
+
+    def test__delete__windows_feed(self, client: FeedsClient, get_windows_feed_id: str):
+        """Test the case of deleting windows feed with its packages."""
+        response = client.delete_feed(feed_id=get_windows_feed_id)
+        assert response is None
+
+    def test__delete__linux_feed(self, client: FeedsClient, get_linux_feed_id: str):
+        """Test the case of deleting linux feed with its packages."""
+        response = client.delete_feed(feed_id=get_linux_feed_id)
+        assert response is None

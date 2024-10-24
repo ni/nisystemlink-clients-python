@@ -4,7 +4,7 @@ from typing import Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get, post
+from nisystemlink.clients.core._uplink._methods import delete, get, post
 from uplink import Part, Path, Query
 
 from . import models
@@ -82,5 +82,20 @@ Defaults to False.
 
         Returns:
             models.UploadPackageResponse: Uploaded package response information.
+        """
+        ...
+
+    @delete(
+        "feeds/{feedId}",
+        args=[Path(name="feedId")],
+    )
+    def delete_feed(self, feed_id: str) -> None:
+        """Delete feed and its packages.
+
+        Args:
+            feed_id (str): ID of the feed to be deleted.
+
+        Returns:
+            None.
         """
         ...
