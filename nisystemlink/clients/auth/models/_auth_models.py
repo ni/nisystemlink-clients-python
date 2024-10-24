@@ -11,6 +11,8 @@ from pydantic import Field
 
 
 class AuthStatement(JsonModel):
+    """Auth Statement information."""
+
     actions: Optional[List[str]] = None
     """
     A list of actions the user is allowed to perform
@@ -26,6 +28,8 @@ class AuthStatement(JsonModel):
 
 
 class AuthPolicy(JsonModel):
+    """Auth Policy information."""
+
     statements: Optional[List[AuthStatement]] = None
     """
     A list of statements defining the actions the user can perform on a resource in a workspace
@@ -33,6 +37,8 @@ class AuthPolicy(JsonModel):
 
 
 class Statement(JsonModel):
+    """Statement information."""
+
     actions: Optional[List[str]] = None
     """
     A list of actions the user is allowed to perform
@@ -52,6 +58,8 @@ class Statement(JsonModel):
 
 
 class Policy(JsonModel):
+    """Policy information."""
+
     id: Optional[str] = Field(None, example="policy-id")
     """
     The unique id
@@ -107,11 +115,15 @@ class Policy(JsonModel):
 
 
 class Status(Enum):
+    """Enumeration to represent different status of user's registration."""
+
     PENDING = "pending"
     ACTIVE = "active"
 
 
 class User(JsonModel):
+    """User information."""
+
     id: Optional[str] = Field(None, example="user-id")
     """
     The unique id
@@ -182,6 +194,8 @@ class User(JsonModel):
 
 
 class Org(JsonModel):
+    """User's Organization information."""
+
     id: Optional[str] = Field(None, example="org-id")
     """
     The unique id
@@ -197,6 +211,8 @@ class Org(JsonModel):
 
 
 class Workspace(JsonModel):
+    """Workspace information."""
+
     id: Optional[str] = Field(None, example="workspace-id")
     """
     The unique id
@@ -220,12 +236,22 @@ class AuthInfo(JsonModel):
     """Information about the authenticated caller."""
 
     user: Optional[User]
-    """Details of authenticated caller"""
+    """
+    Details of authenticated caller
+    """
     org: Optional[Org]
-    """Organization of authenticated caller"""
+    """
+    Organization of authenticated caller
+    """
     workspaces: Optional[List[Workspace]]
-    """List of workspaces the authenticated caller has access"""
+    """
+    List of workspaces the authenticated caller has access
+    """
     policies: Optional[List[AuthPolicy]]
-    """List of policies for the authenticated caller"""
+    """
+    List of policies for the authenticated caller
+    """
     properties: Optional[Dict[str, str]] = Field(None, example={"key1": "value1"})
-    """A map of key value properties"""
+    """
+    A map of key value properties
+    """
