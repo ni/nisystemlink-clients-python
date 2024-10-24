@@ -11,7 +11,7 @@ from . import models
 
 
 class FeedsClient(BaseClient):
-    """Class contains a set of methods to access the APIs of SystemLink Feed Client."""
+    """Class contains a set of methods to access the APIs of SystemLink Feeds Client."""
 
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
@@ -40,7 +40,7 @@ class FeedsClient(BaseClient):
             feeds (models.CreateFeedsRequest): Request model to create the feed.
 
         Returns:
-            models.CreateorUpdateFeedsResponse: Feed details of the newly created feed.
+            models.CreateorUpdateFeedsResponse: Details of the created feed.
         """
         ...
 
@@ -71,15 +71,16 @@ class FeedsClient(BaseClient):
         package: Part,
         overwrite: Query = False,
     ) -> models.UploadPackageResponse:
-        """Upload package to feeds.
+        """Upload package to SystemLink feed.
 
         Args:
             feed_id (str): ID of the feed.
             package (Part): Package file as a form data.
                 Example: `package=open(filename, "rb")`
-            overwrite (Query): To overwrite the package if exists. Defaults to false.
+            overwrite (Query): Set to True to overwrite the package if it already exists.\
+Defaults to False.
 
         Returns:
-            models.UploadPackageResponse: Upload package response.
+            models.UploadPackageResponse: Uploaded package response information.
         """
         ...

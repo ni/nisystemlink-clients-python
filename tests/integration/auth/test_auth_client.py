@@ -13,6 +13,9 @@ def client(enterprise_config) -> AuthClient:
 @pytest.mark.enterprise
 @pytest.mark.integration
 class TestAuthClient:
+    """Class contains a set of test methods to test SystemLink Auth API."""
+
     def test__authenticate(self, client: AuthClient):
+        """Test the case of getting caller information with SystemLink Credentials."""
         response = client.authenticate()
         assert response is not None

@@ -8,7 +8,6 @@ from nisystemlink.clients.feeds.models import (
 )
 
 
-# Constant
 FEED_NAME = "EXAMPLE FEED"
 FEED_DESCRIPTION = "EXAMPLE DESCRIPTION"
 PLATFORM = Platform.WINDOWS.value
@@ -28,10 +27,10 @@ try:
         platform=PLATFORM,
         workspace=workspace_id,
     )
-    example_feed = client.create_feed(feed=feed_request).name
+    created_feed_name = client.create_feed(feed=feed_request).name
 
     print("Feeds created Successfully.")
-    print(f"Created feed name: {example_feed}")
+    print(f"Created feed name: {created_feed_name}")
 
 except ApiException as exp:
     print(exp)
