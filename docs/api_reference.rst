@@ -14,7 +14,7 @@ API Reference
    api_reference/spec
    api_reference/file
    api_reference/auth
-   api_reference/feed
+   api_reference/feeds
 
 Indices and tables
 ------------------
