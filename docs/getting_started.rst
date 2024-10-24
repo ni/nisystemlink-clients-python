@@ -225,19 +225,25 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.FeedsClient` object, you can:
 
-* Get the list of feeds, create feed and upload package to feeds
+* Get the list of feeds, create feed, upload package to feed and delete feed.
 
 Examples
 ~~~~~~~~
 
-Create new feed in SystemLink.
+Create new feed.
 
 .. literalinclude:: ../examples/feeds/create_feed.py
    :language: python
    :linenos:
 
-Upload package to SystemLink feeds
+Query feeds and Upload package to feed
 
-.. literalinclude:: ../examples/feeds/upload_package.py
+.. literalinclude:: ../examples/feeds/query_and_upload_feeds.py
+   :language: python
+   :linenos:
+
+Delete feed with its package
+
+.. literalinclude:: ../examples/feeds/delete_feed.py
    :language: python
    :linenos:

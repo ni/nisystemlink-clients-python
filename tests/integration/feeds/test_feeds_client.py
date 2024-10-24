@@ -9,8 +9,8 @@ from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
 
 
-WINDOWS_FEED_NAME = "Windows Feed"
-LINUX_FEED_NAME = "Linux Feed"
+WINDOWS_FEED_NAME = "Windows feed"
+LINUX_FEED_NAME = "Linux feed"
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 INVALID_WORKSPACE_ID = "12345"
 PACKAGE_PATH = (
