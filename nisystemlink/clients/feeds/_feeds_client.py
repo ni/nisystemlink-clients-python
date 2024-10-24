@@ -19,7 +19,7 @@ class FeedsClient(BaseClient):
         Args:
             configuration: Defines the web server to connect to and information about
                 how to connect. If not provided, the
-                :class:`HttpConfigurationManager <nisystemlink.clients.core.HttpConfigurationManager>` # noqa: W505
+                :class:`HttpConfigurationManager <nisystemlink.clients.core.HttpConfigurationManager>`
                 is used to obtain the configuration.
 
         Raises:

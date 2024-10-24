@@ -1,6 +1,6 @@
 """Integration tests for AuthClient."""
 
-import pytest  # type: ignore
+import pytest
 from nisystemlink.clients.auth import AuthClient
 
 

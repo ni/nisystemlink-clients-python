@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Callable
 
-import pytest  # type: ignore
+import pytest
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
@@ -136,6 +136,6 @@ class TestFeedsClient:
         assert response is not None
 
     def test__upload_duplicate_package(self, client: FeedsClient, get_feed_id: str):
-        """Test the case of upload package to feed with invalid path."""
+        """Test the case of uploading duplicate package to feed."""
         with pytest.raises(ApiException, match="DuplicatePackageError"):
             client.upload_package(package=open(PACKAGE_PATH, "rb"), feed_id=get_feed_id)
