@@ -3,7 +3,6 @@
 from typing import List, Optional
 
 from nisystemlink.clients import core
-from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
 from nisystemlink.clients.testmonitor.models import Product
