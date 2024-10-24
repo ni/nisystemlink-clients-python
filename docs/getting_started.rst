@@ -158,7 +158,6 @@ Update and Delete Specifications
    :language: python
    :linenos:
 
-
 File API
 -------
 
@@ -184,7 +183,6 @@ Get the metadata of a File using its Id and download it.
 .. literalinclude:: ../examples/file/download_file.py
    :language: python
    :linenos:
-
 
 Auth API
 -------
