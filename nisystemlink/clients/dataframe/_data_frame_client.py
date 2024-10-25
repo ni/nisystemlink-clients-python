@@ -1,6 +1,6 @@
 """Implementation of DataFrameClient."""
 
-from typing import List, Optional
+from typing import Generator, List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -14,6 +14,8 @@ from nisystemlink.clients.core._uplink._methods import (
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
 from uplink import Body, Field, Path, Query
+
+from nisystemlink.clients.dataframe.models._table_metadata import TableMetadata
 
 from . import models
 
@@ -118,6 +120,31 @@ class DataFrameClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
+
+    def query_tables_generator(
+        self, query: models.QueryTablesRequest
+    ) -> Generator[models.TableMetadata, None, None]:
+        """Queries available tables on the SystemLink DataFrame service and returns their metadata.
+
+        Args:
+            query: The request to query tables. `continuation_token` is ignored.
+
+        Yields:
+            `models.TableMetadata` Table Metadata
+        """
+        _query = query.copy()
+        _query.continuation_token = None
+        while True:
+            paged_tables = self.query_tables(query=_query)
+            cont_token = paged_tables.continuation_token
+
+            for table in paged_tables.tables:
+                yield table
+
+            if cont_token is None:
+                break
+            else:
+                _query.continuation_token = cont_token
 
     @get("tables/{id}")
     def get_table_metadata(self, id: str) -> models.TableMetadata:
