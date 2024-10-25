@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.7.0 (2024-10-25)
+
+### Feature
+
+* Add workspace field to httpconfiguration ([#64](https://github.com/ni/nisystemlink-clients-python/issues/64)) ([`b81c84a`](https://github.com/ni/nisystemlink-clients-python/commit/b81c84ada616df9cfe72e7d63e41ae17801af474))
+
 ## v1.6.0 (2024-09-17)
 
 ### Feature
