@@ -11,7 +11,7 @@ from . import models
 
 
 class SpecClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration]):
+    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
 
         Args:

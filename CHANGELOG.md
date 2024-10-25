@@ -2,6 +2,36 @@
 
 <!--next-version-placeholder-->
 
+## v1.6.0 (2024-09-17)
+
+### Feature
+
+* Add Client for File Service ([#65](https://github.com/ni/nisystemlink-clients-python/issues/65)) ([`ebdc4c1`](https://github.com/ni/nisystemlink-clients-python/commit/ebdc4c1adf50f71498d0ce3446402dff55eef6ca))
+
+## v1.5.0 (2024-09-09)
+
+### Feature
+
+* Add client for Artifacts API ([#70](https://github.com/ni/nisystemlink-clients-python/issues/70)) ([`0ada3d7`](https://github.com/ni/nisystemlink-clients-python/commit/0ada3d7c765e1b5d7fabfa4661f15d38c71c7295))
+
+## v1.4.3 (2024-08-08)
+
+### Fix
+
+* Make SpecClient() work with default values for optional args ([#68](https://github.com/ni/nisystemlink-clients-python/issues/68)) ([`fb60801`](https://github.com/ni/nisystemlink-clients-python/commit/fb60801d4093ef66c92e7b2c6e4e1f5fe45bb2f6))
+
+## v1.4.2 (2024-07-15)
+
+### Fix
+
+* Bump setuptools from 67.6.0 to 70.0.0 ([#67](https://github.com/ni/nisystemlink-clients-python/issues/67)) ([`39b13f0`](https://github.com/ni/nisystemlink-clients-python/commit/39b13f0c4b3ed3377e54dd6c4a3237c7e9304e48))
+
+## v1.4.1 (2024-07-08)
+
+### Fix
+
+* Bump certifi from 2023.7.22 to 2024.7.4 ([#66](https://github.com/ni/nisystemlink-clients-python/issues/66)) ([`0fc4ff7`](https://github.com/ni/nisystemlink-clients-python/commit/0fc4ff766895a70be4c0e518ba98db0e69beab43))
+
 ## v1.4.0 (2024-06-18)
 
 ### Feature
