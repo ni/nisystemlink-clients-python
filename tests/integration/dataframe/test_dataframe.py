@@ -175,6 +175,25 @@ class TestDataFrame:
         assert len(second_page.tables) == 1
         assert second_page.continuation_token is None
 
+    def test__query_tables_generator__returns(
+        self, client: DataFrameClient, test_tables: List[str]
+    ):
+        query = QueryTablesRequest(
+            filter="""(id == @0 or id == @1 or id == @2)
+                and createdWithin <= RelativeTime.CurrentWeek
+                and supportsAppend == @3 and rowCount < @4""",
+            substitutions=[test_tables[0], test_tables[1], test_tables[2], True, 1],
+            reference_time=datetime.now(tz=timezone.utc),
+            take=2,
+            order_by="NAME",
+            order_by_descending=True,
+        )
+        # Make the generator yield all values
+        tables = list(client.query_tables_generator(query))
+
+        assert len(tables) == 3
+        assert tables[0].id == test_tables[-1]  # Asserts descending order
+
     def test__modify_table__returns(self, client: DataFrameClient, create_table):
         id = create_table(basic_table_model)
 
