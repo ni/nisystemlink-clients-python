@@ -15,7 +15,6 @@ from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
 from uplink import Body, Field, Path, Query
 
-from nisystemlink.clients.dataframe.models._table_metadata import TableMetadata
 
 from . import models
 
