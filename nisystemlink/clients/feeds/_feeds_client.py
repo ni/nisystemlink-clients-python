@@ -11,7 +11,7 @@ from . import models
 
 
 class FeedsClient(BaseClient):
-    """Class contains a set of methods to access the APIs of SystemLink Feeds Client."""
+    """A set of methods to access the APIs of SystemLink Feeds Client."""
 
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
@@ -31,9 +31,7 @@ class FeedsClient(BaseClient):
         super().__init__(configuration, base_path="/nifeed/v1/")
 
     @post("feeds")
-    def create_feed(
-        self, feed: models.CreateFeedRequest
-    ) -> models.CreateOrUpdateFeedResponse:
+    def create_feed(self, feed: models.CreateFeedRequest) -> models.Feed:
         """Create a new feed with the provided feed details.
 
         Args:
@@ -49,7 +47,7 @@ class FeedsClient(BaseClient):
         self,
         platform: Optional[str] = None,
         workspace: Optional[str] = None,
-    ) -> models.FeedsQueryResponse:
+    ) -> models.QueryFeedsResponse:
         """Get a set of feeds based on the provided `platform` and `workspace`.
 
         Args:
@@ -57,7 +55,7 @@ class FeedsClient(BaseClient):
             workspace (Optional[str]): Workspace id. Defaults to None.
 
         Returns:
-            models.FeedsQueryResponse: List of feeds.
+            models.QueryFeedsResponse: List of feeds.
         """
         ...
 
@@ -70,7 +68,7 @@ class FeedsClient(BaseClient):
         feed_id: str,
         package: Part,
         overwrite: Query = False,
-    ) -> models.UploadPackageResponse:
+    ) -> models.Package:
         """Upload package to SystemLink feed.
 
         Args:
@@ -81,7 +79,7 @@ class FeedsClient(BaseClient):
 Defaults to False.
 
         Returns:
-            models.UploadPackageResponse: Uploaded package response information.
+            models.Package: Uploaded package response information.
         """
         ...
 
@@ -89,11 +87,11 @@ Defaults to False.
         "feeds/{feedId}",
         args=[Path(name="feedId")],
     )
-    def delete_feed(self, feed_id: str) -> None:
+    def delete_feed(self, id: str) -> None:
         """Delete feed and its packages.
 
         Args:
-            feed_id (str): ID of the feed to be deleted.
+            id (str): ID of the feed to be deleted.
 
         Returns:
             None.

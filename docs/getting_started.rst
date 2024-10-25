@@ -190,7 +190,7 @@ Feeds API
 Overview
 ~~~~~~~~
 
-The :class:`.FeedsClient` class is the primary entry point of the File API.
+The :class:`.FeedsClient` class is the primary entry point of the Feeds API.
 
 When constructing a :class:`.FeedsClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the
@@ -204,19 +204,19 @@ With a :class:`.FeedsClient` object, you can:
 Examples
 ~~~~~~~~
 
-Create new feed.
+Create a new feed.
 
 .. literalinclude:: ../examples/feeds/create_feed.py
    :language: python
    :linenos:
 
-Query feeds and Upload package to feed
+Query feeds and upload a package to feed.
 
 .. literalinclude:: ../examples/feeds/query_and_upload_feeds.py
    :language: python
    :linenos:
 
-Delete feed with its package
+Delete a feed.
 
 .. literalinclude:: ../examples/feeds/delete_feed.py
    :language: python

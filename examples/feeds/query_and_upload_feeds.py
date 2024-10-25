@@ -1,7 +1,5 @@
 """Functionality of uploading & querying feeds APIs."""
 
-from typing import Dict
-
 from nisystemlink.clients.core import ApiException, HttpConfiguration
 from nisystemlink.clients.feeds._feeds_client import FeedsClient
 from nisystemlink.clients.feeds.models import Platform
@@ -28,7 +26,6 @@ try:
         platform=PLATFORM,
         workspace=workspace_id,
     )
-    existing_feeds: Dict[str, str] = {}
     feed_id = ""
     for feed in query_feeds.feeds:
         if feed.name == FEED_NAME and feed.id:

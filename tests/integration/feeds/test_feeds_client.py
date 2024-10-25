@@ -91,7 +91,7 @@ def get_linux_feed_id(client: FeedsClient):
 @pytest.mark.enterprise
 @pytest.mark.integration
 class TestFeedsClient:
-    """Class contains a set of test methods to test SystemLink Feeds API."""
+    """A set of test methods to test SystemLink Feeds API."""
 
     def test__create_feed_windows_platform(
         self,
@@ -161,10 +161,10 @@ class TestFeedsClient:
 
     def test__delete__windows_feed(self, client: FeedsClient, get_windows_feed_id: str):
         """Test the case of deleting windows feed with its packages."""
-        response = client.delete_feed(feed_id=get_windows_feed_id)
+        response = client.delete_feed(id=get_windows_feed_id)
         assert response is None
 
     def test__delete__linux_feed(self, client: FeedsClient, get_linux_feed_id: str):
         """Test the case of deleting linux feed with its packages."""
-        response = client.delete_feed(feed_id=get_linux_feed_id)
+        response = client.delete_feed(id=get_linux_feed_id)
         assert response is None

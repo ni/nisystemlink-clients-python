@@ -14,7 +14,7 @@ client = FeedsClient(HttpConfiguration(api_key=server_api_key, server_uri=server
 
 # Deleting Feed.
 try:
-    created_feed_name = client.delete_feed(feed_id=FEED_ID)
+    created_feed_name = client.delete_feed(id=FEED_ID)
     print("Feed deleted successfully.")
 
 except ApiException as exp:
