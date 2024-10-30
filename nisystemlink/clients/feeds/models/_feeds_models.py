@@ -60,7 +60,7 @@ class QueryFeedsResponse(JsonModel):
     """Query Feeds response."""
 
     feeds: List[Feed]
-    """A collection of feeds,"""
+    """A collection of feeds"""
 
 
 class PackageMetadata(JsonModel):

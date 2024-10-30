@@ -38,7 +38,7 @@ class FeedsClient(BaseClient):
             feeds (models.CreateFeedsRequest): Request model to create the feed.
 
         Returns:
-            models.CreateorUpdateFeedsResponse: Details of the created feed.
+            models.Feed: Details of the created feed.
         """
         ...
 
@@ -67,9 +67,9 @@ class FeedsClient(BaseClient):
         """Get a set of feeds based on the provided `platform` and `workspace`.
 
         Args:
-            platform (Optional[models.Platform], optional): Information about system platform. \
+            platform (Optional[models.Platform]): Information about system platform. \
 Defaults to None.
-            workspace (Optional[str], optional): Workspace id. Defaults to None.
+            workspace (Optional[str]): Workspace id. Defaults to None.
 
         Returns:
             models.QueryFeedsResponse: List of feeds.
@@ -97,7 +97,7 @@ Defaults to None.
         Args:
             feed_id (str): ID of the feed.
             package (Part): Package file as a form data.
-            overwrite (Query): Set to True to overwrite the package if it already exists.\
+            overwrite (Query): Set to True, to overwrite the package if it already exists.\
 Defaults to False.
 
         Returns:
@@ -116,7 +116,7 @@ Defaults to False.
         Args:
             feed_id (str): ID of the feed.
             package (BinaryIO): Package file to be uploaded.
-            overwrite (bool): Set to True to overwrite the package if it already exists.\
+            overwrite (bool): Set to True, to overwrite the package if it already exists.\
 Defaults to False.
 
         Returns:

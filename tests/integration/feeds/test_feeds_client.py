@@ -43,23 +43,8 @@ def create_feed(client: FeedsClient):
 
 
 @pytest.fixture(scope="class")
-def create_windows_feed_request():
-    """Fixture to create a request body of create feed API for windows platform."""
-
-    def _create_feed_request(feed_name: str, description: str, platform: Platform):
-        feed_request = CreateFeedRequest(
-            name=feed_name,
-            platform=platform,
-            description=description,
-        )
-        return feed_request
-
-    yield _create_feed_request
-
-
-@pytest.fixture(scope="class")
-def create_linux_feed_request():
-    """Fixture to create a request body of create feed API for linux platform."""
+def create_feed_request():
+    """Fixture to create a request body of create feed API."""
 
     def _create_feed_request(feed_name: str, description: str, platform: Platform):
         feed_request = CreateFeedRequest(
@@ -74,7 +59,7 @@ def create_linux_feed_request():
 
 @pytest.fixture(scope="class")
 def binary_pkg_file_data() -> BinaryIO:
-    """Fixture to return Binary package file data."""
+    """Fixture to return package file in binary format."""
     package_data = open(PACKAGE_PATH, "rb")
     return package_data
 
@@ -109,11 +94,11 @@ class TestFeedsClient:
     def test__create_feed_windows_platform__succeeds(
         self,
         create_feed: Callable,
-        create_windows_feed_request: Callable,
+        create_feed_request: Callable,
         get_feed_name: Callable,
     ):
-        """Test the case of a completely successful create feed API for windows platform."""
-        request_body = create_windows_feed_request(
+        """Test the case of a completely successful create feed API for Windows platform."""
+        request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,
             platform=Platform.WINDOWS,
@@ -129,11 +114,11 @@ class TestFeedsClient:
     def test__create_feed_linux_platform__succeeds(
         self,
         create_feed: Callable,
-        create_linux_feed_request: Callable,
+        create_feed_request: Callable,
         get_feed_name: Callable,
     ):
         """Test the case of a completely successful create feed API for Linux platform."""
-        request_body = create_linux_feed_request(
+        request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,
             platform=Platform.NI_LINUX_RT,
@@ -150,11 +135,11 @@ class TestFeedsClient:
         self,
         client: FeedsClient,
         create_feed: Callable,
-        create_windows_feed_request: Callable,
+        create_feed_request: Callable,
         get_feed_name: Callable,
     ):
-        """Test the case for querying available feeds for windows platform."""
-        create_feed_request_body = create_windows_feed_request(
+        """Test the case for querying available feeds for Windows platform."""
+        create_feed_request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,
             platform=Platform.WINDOWS,
@@ -168,11 +153,11 @@ class TestFeedsClient:
         self,
         client: FeedsClient,
         create_feed: Callable,
-        create_linux_feed_request: Callable,
+        create_feed_request: Callable,
         get_feed_name: Callable,
     ):
-        """Test the case for querying available feeds for windows platform."""
-        create_feed_request_body = create_linux_feed_request(
+        """Test the case for querying available feeds for Linux platform."""
+        create_feed_request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,
             platform=Platform.NI_LINUX_RT,
@@ -195,12 +180,12 @@ class TestFeedsClient:
         self,
         client: FeedsClient,
         create_feed: Callable,
-        create_windows_feed_request: Callable,
+        create_feed_request: Callable,
         binary_pkg_file_data: BinaryIO,
         get_feed_name: Callable,
     ):
         """Test the case of upload package to feed."""
-        create_feed_request_body = create_windows_feed_request(
+        create_feed_request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,
             platform=Platform.WINDOWS,
@@ -231,11 +216,11 @@ class TestFeedsClient:
         self,
         client: FeedsClient,
         create_feed: Callable,
-        create_windows_feed_request: Callable,
+        create_feed_request: Callable,
         get_feed_name: Callable,
     ):
-        """Test the case of deleting windows feed with its packages."""
-        create_feed_request_body = create_windows_feed_request(
+        """Test the case of deleting Windows feed."""
+        create_feed_request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,
             platform=Platform.WINDOWS,
@@ -249,11 +234,11 @@ class TestFeedsClient:
         self,
         client: FeedsClient,
         create_feed: Callable,
-        create_windows_feed_request: Callable,
+        create_feed_request: Callable,
         get_feed_name: Callable,
     ):
-        """Test the case of deleting linux feed with its packages."""
-        create_feed_request_body = create_windows_feed_request(
+        """Test the case of deleting Linux feed."""
+        create_feed_request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,
             platform=Platform.NI_LINUX_RT,
