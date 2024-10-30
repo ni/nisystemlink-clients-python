@@ -215,7 +215,6 @@ class TestFeedsClient:
     def test__delete_windows_feed__succeeds(
         self,
         client: FeedsClient,
-        create_feed: Callable,
         create_feed_request: Callable,
         get_feed_name: Callable,
     ):
@@ -225,15 +224,14 @@ class TestFeedsClient:
             description=FEED_DESCRIPTION,
             platform=Platform.WINDOWS,
         )
-        create_feed_resp = create_feed(create_feed_request_body)
-
+        create_feed_resp = client.create_feed(create_feed_request_body)
         delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
+
         assert delete_feed_resp is None
 
     def test__delete__linux_feed__succeeds(
         self,
         client: FeedsClient,
-        create_feed: Callable,
         create_feed_request: Callable,
         get_feed_name: Callable,
     ):
@@ -243,6 +241,7 @@ class TestFeedsClient:
             description=FEED_DESCRIPTION,
             platform=Platform.NI_LINUX_RT,
         )
-        create_feed_resp = create_feed(create_feed_request_body)
+        create_feed_resp = client.create_feed(create_feed_request_body)
         delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
+
         assert delete_feed_resp is None
