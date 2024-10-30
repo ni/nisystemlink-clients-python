@@ -10,7 +10,7 @@ from nisystemlink.clients.feeds.models import (
 
 FEED_NAME = "EXAMPLE FEED"
 FEED_DESCRIPTION = "EXAMPLE DESCRIPTION"
-PLATFORM = Platform.WINDOWS.value
+PLATFORM = Platform.WINDOWS
 
 server_url = ""  # SystemLink API URL
 server_api_key = ""  # SystemLink API key

@@ -1,6 +1,6 @@
 """Implementation of SystemLink Feeds Client."""
 
-from typing import Optional
+from typing import BinaryIO, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -43,7 +43,7 @@ class FeedsClient(BaseClient):
         ...
 
     @get("feeds", args=[Query, Query])
-    def query_feeds(
+    def __query_feeds(
         self,
         platform: Optional[str] = None,
         workspace: Optional[str] = None,
@@ -59,11 +59,34 @@ class FeedsClient(BaseClient):
         """
         ...
 
+    def query_feeds(
+        self,
+        platform: Optional[models.Platform] = None,
+        workspace: Optional[str] = None,
+    ) -> models.QueryFeedsResponse:
+        """Get a set of feeds based on the provided `platform` and `workspace`.
+
+        Args:
+            platform (Optional[models.Platform], optional): Information about system platform. \
+Defaults to None.
+            workspace (Optional[str], optional): Workspace id. Defaults to None.
+
+        Returns:
+            models.QueryFeedsResponse: List of feeds.
+        """
+        platform_by_str = platform.value if platform is not None else None
+        response = self.__query_feeds(
+            platform=platform_by_str,
+            workspace=workspace,
+        )
+
+        return response
+
     @post(
         "feeds/{feedId}/packages",
         args=[Path(name="feedId"), Query(name="ShouldOverwrite")],
     )
-    def upload_package(
+    def __upload_package(
         self,
         feed_id: str,
         package: Part,
@@ -74,7 +97,6 @@ class FeedsClient(BaseClient):
         Args:
             feed_id (str): ID of the feed.
             package (Part): Package file as a form data.
-                Example: `package=open(filename, "rb")`
             overwrite (Query): Set to True to overwrite the package if it already exists.\
 Defaults to False.
 
@@ -82,6 +104,31 @@ Defaults to False.
             models.Package: Uploaded package response information.
         """
         ...
+
+    def upload_package(
+        self,
+        feed_id: str,
+        package: BinaryIO,
+        overwrite: bool = False,
+    ) -> models.Package:
+        """Upload package to SystemLink feed.
+
+        Args:
+            feed_id (str): ID of the feed.
+            package (BinaryIO): Package file to be uploaded.
+            overwrite (bool): Set to True to overwrite the package if it already exists.\
+Defaults to False.
+
+        Returns:
+            models.Package: Uploaded package response information.
+        """
+        response = self.__upload_package(
+            feed_id=feed_id,
+            overwrite=overwrite,
+            package=package,
+        )
+
+        return response
 
     @delete(
         "feeds/{feedId}",
