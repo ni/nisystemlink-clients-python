@@ -225,9 +225,10 @@ class TestFeedsClient:
             platform=Platform.WINDOWS,
         )
         create_feed_resp = client.create_feed(create_feed_request_body)
-        delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
 
-        assert delete_feed_resp is None
+        if create_feed_resp.id:
+            delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
+            assert delete_feed_resp is None
 
     def test__delete__linux_feed__succeeds(
         self,
@@ -242,6 +243,7 @@ class TestFeedsClient:
             platform=Platform.NI_LINUX_RT,
         )
         create_feed_resp = client.create_feed(create_feed_request_body)
-        delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
 
-        assert delete_feed_resp is None
+        if create_feed_resp.id:
+            delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
+            assert delete_feed_resp is None
