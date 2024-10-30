@@ -184,3 +184,29 @@ Get the metadata of a File using its Id and download it.
 .. literalinclude:: ../examples/file/download_file.py
    :language: python
    :linenos:
+
+
+Auth API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.AuthClient` class is the primary entry point of the Auth API.
+
+When constructing a :class:`.AuthClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.AuthClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.AuthClient` object, you can:
+
+* Get the information about the caller.
+
+Examples
+~~~~~~~~
+
+Get the workspace id for the workspace name.
+.. literalinclude:: ../examples/auth/get_workspace_id.py
+   :language: python
+   :linenos:
