@@ -11,12 +11,11 @@ from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
 
 
 FEED_DESCRIPTION = "Sample feed for uploading packages"
-PACKAGE_PATH = (
+PACKAGE_PATH = str(
     Path(__file__).parent.resolve()
     / "test_files"
     / "sample-measurement_0.5.0_windows_x64.nipkg"
 )
-INVALID_PACKAGE_PATH = Path(__file__).parent.resolve()
 
 
 @pytest.fixture(scope="class")
