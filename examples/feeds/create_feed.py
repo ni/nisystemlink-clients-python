@@ -27,10 +27,10 @@ try:
         platform=PLATFORM,
         workspace=workspace_id,
     )
-    created_feed_name = client.create_feed(feed=feed_request).name
+    feed_details = client.create_feed(feed=feed_request)
 
     print("Feed created Successfully.")
-    print(f"Created feed name: {created_feed_name}")
+    print(f"Created feed details: {feed_details}")
 
 except ApiException as exp:
     print(exp)

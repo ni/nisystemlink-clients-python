@@ -181,7 +181,6 @@ class TestFeedsClient:
         client: FeedsClient,
         create_feed: Callable,
         create_feed_request: Callable,
-        binary_pkg_file_data: BinaryIO,
         get_feed_name: Callable,
     ):
         """Test the case of upload package to feed."""
@@ -193,13 +192,36 @@ class TestFeedsClient:
         create_feed_resp = create_feed(create_feed_request_body)
 
         upload_pacakge_rsp = client.upload_package(
+            package_file_path=PACKAGE_PATH,
+            feed_id=create_feed_resp.id,
+            overwrite=True,
+        )
+        assert upload_pacakge_rsp is not None
+
+    def test__upload_package_content__succeeds(
+        self,
+        client: FeedsClient,
+        create_feed: Callable,
+        create_feed_request: Callable,
+        binary_pkg_file_data: BinaryIO,
+        get_feed_name: Callable,
+    ):
+        """Test the case of upload package to feed."""
+        create_feed_request_body = create_feed_request(
+            feed_name=get_feed_name(),
+            description=FEED_DESCRIPTION,
+            platform=Platform.WINDOWS,
+        )
+        create_feed_resp = create_feed(create_feed_request_body)
+
+        upload_pacakge_rsp = client.upload_package_content(
             package=binary_pkg_file_data,
             feed_id=create_feed_resp.id,
             overwrite=True,
         )
         assert upload_pacakge_rsp is not None
 
-    def test__upload_package__invalid_feed_id_raises(
+    def test__upload_package_content__invalid_feed_id_raises(
         self,
         client: FeedsClient,
         binary_pkg_file_data: BinaryIO,
@@ -207,7 +229,7 @@ class TestFeedsClient:
     ):
         """Test the case of uploading package to Invalid feed."""
         with pytest.raises(ApiException, match="FeedNotFoundError"):
-            client.upload_package(
+            client.upload_package_content(
                 package=binary_pkg_file_data,
                 feed_id=invalid_id,
             )

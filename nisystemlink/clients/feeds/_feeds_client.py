@@ -1,6 +1,6 @@
 """Implementation of SystemLink Feeds Client."""
 
-from typing import BinaryIO, Optional
+from typing import BinaryIO, List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -63,7 +63,7 @@ class FeedsClient(BaseClient):
         self,
         platform: Optional[models.Platform] = None,
         workspace: Optional[str] = None,
-    ) -> models.QueryFeedsResponse:
+    ) -> List[models.Feed]:
         """Get a set of feeds based on the provided `platform` and `workspace`.
 
         Args:
@@ -72,13 +72,13 @@ Defaults to None.
             workspace (Optional[str]): Workspace id. Defaults to None.
 
         Returns:
-            models.QueryFeedsResponse: List of feeds.
+            List[models.Feed]: List of feeds.
         """
         platform_by_str = platform.value if platform is not None else None
         response = self.__query_feeds(
             platform=platform_by_str,
             workspace=workspace,
-        )
+        ).feeds
 
         return response
 
@@ -108,6 +108,31 @@ Defaults to False.
     def upload_package(
         self,
         feed_id: str,
+        package_file_path: str,
+        overwrite: bool = False,
+    ) -> models.Package:
+        """Upload package to SystemLink feed.
+
+        Args:
+            feed_id (str): ID of the feed.
+            package_file_path (str): File path of the package to be uploaded.
+            overwrite (bool): Set to True, to overwrite the package if it already exists.\
+Defaults to False.
+
+        Returns:
+            models.Package: Uploaded package information.
+        """
+        response = self.__upload_package(
+            feed_id=feed_id,
+            overwrite=overwrite,
+            package=open(package_file_path, "rb"),
+        )
+
+        return response
+
+    def upload_package_content(
+        self,
+        feed_id: str,
         package: BinaryIO,
         overwrite: bool = False,
     ) -> models.Package:
@@ -120,7 +145,7 @@ Defaults to False.
 Defaults to False.
 
         Returns:
-            models.Package: Uploaded package response information.
+            models.Package: Uploaded package information.
         """
         response = self.__upload_package(
             feed_id=feed_id,
