@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.7.1 (2024-11-04)
+
+### Fix
+
+* Remove SL Cloud from readme and add SLE ([#78](https://github.com/ni/nisystemlink-clients-python/issues/78)) ([`ae12825`](https://github.com/ni/nisystemlink-clients-python/commit/ae12825912ddefa871e81ca7a4e5ee16de216a9b))
+
 ## v1.7.0 (2024-10-25)
 
 ### Feature
