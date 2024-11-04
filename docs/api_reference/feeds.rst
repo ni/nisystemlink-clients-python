@@ -10,6 +10,7 @@ nisystemlink.clients.feeds
    .. automethod:: create_feed
    .. automethod:: query_feeds
    .. automethod:: upload_package
+   .. automethod:: upload_package_content
    .. automethod:: delete_feed
 
 .. automodule:: nisystemlink.clients.feeds.models
