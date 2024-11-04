@@ -205,7 +205,7 @@ class TestFeedsClient:
         binary_pkg_file_data: BinaryIO,
         get_feed_name: Callable,
     ):
-        """Test the case of upload package to feed."""
+        """Test the case of upload package content to feed."""
         create_feed_request_body = create_feed_request(
             feed_name=get_feed_name(),
             description=FEED_DESCRIPTION,

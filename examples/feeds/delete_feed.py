@@ -15,6 +15,7 @@ workspace_id = (
     None  # None uses Default workspace. Replace with Systemlink workspace id.
 )
 
+
 # Please provide the valid API key and API URL for client intialization.
 client = FeedsClient(HttpConfiguration(api_key=server_api_key, server_uri=server_url))
 
@@ -25,7 +26,7 @@ try:
     feed_details = get_feed_by_name(feeds=query_feeds_response, name=FEED_NAME)
 
     if feed_details and feed_details.id:
-        created_feed_name = client.delete_feed(id=feed_details.id)
+        client.delete_feed(id=feed_details.id)
         print("Feed deleted successfully.")
 
 except ApiException as exp:
