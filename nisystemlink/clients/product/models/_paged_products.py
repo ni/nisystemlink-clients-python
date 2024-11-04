@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.testmonitor.models import Product
+from nisystemlink.clients.product.models import Product
 
 
 class PagedProducts(WithPaging):

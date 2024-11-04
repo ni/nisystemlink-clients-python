@@ -1,6 +1,6 @@
 from nisystemlink.clients.core import HttpConfiguration
-from nisystemlink.clients.testmonitor import TestMonitorClient
-from nisystemlink.clients.testmonitor.models import (
+from nisystemlink.clients.product import ProductClient
+from nisystemlink.clients.product.models import (
     Product,
     ProductField,
     QueryProductsRequest,
@@ -38,7 +38,7 @@ server_configuration = HttpConfiguration(
     server_uri="https://yourserver.yourcompany.com",
     api_key="YourAPIKeyGeneratedFromSystemLink",
 )
-client = TestMonitorClient(configuration=server_configuration)
+client = ProductClient(configuration=server_configuration)
 
 # Get all the products using the continuation token in batches of 100 at a time.
 response = client.get_products(take=100, return_count=True)
