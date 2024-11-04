@@ -77,20 +77,20 @@ Subscribe to tag changes
    :linenos:
 
 
-TestMonitor API
+Product API
 -------
 
 Overview
 ~~~~~~~~
 
-The :class:`.TestMonitorClient` class is the primary entry point of the TestMonitor API.
+The :class:`.ProductClient` class is the primary entry point of the Product API.
 
-When constructing a :class:`.TestMonitorClient`, you can pass an
+When constructing a :class:`.ProductClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the
-:class:`.HttpConfigurationManager`), or let :class:`.TestMonitorClient` use the
+:class:`.HttpConfigurationManager`), or let :class:`.ProductClient` use the
 default connection. The default connection depends on your environment.
 
-With a :class:`.TestMonitorClient` object, you can:
+With a :class:`.ProductClient` object, you can:
 
 * Create, update, query, and delete Products
 
@@ -99,7 +99,7 @@ Examples
 
 Create, query, update, and delete some products
 
-.. literalinclude:: ../examples/testmonitor/products.py
+.. literalinclude:: ../examples/product/products.py
    :language: python
    :linenos:
 
