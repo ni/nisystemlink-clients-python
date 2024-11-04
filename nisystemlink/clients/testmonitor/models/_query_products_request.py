@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
 
 
-class ProductField(Enum):
+class ProductField(str, Enum):
     """The valid ways to order a product query."""
 
     ID = "ID"
