@@ -1,4 +1,4 @@
-"""Implementation of TestMonitor Client"""
+"""Implementation of Product Client"""
 
 from typing import List, Optional
 
