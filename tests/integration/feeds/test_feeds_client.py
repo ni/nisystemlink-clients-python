@@ -73,7 +73,7 @@ def invalid_id() -> str:
 @pytest.fixture(scope="class")
 def get_feed_name():
     """Generate a feed name."""
-    name = "Test_Feed_"
+    name = "test_feed_"
     feed_count = 0
 
     def _get_feed_name():
@@ -120,7 +120,7 @@ class TestFeedsClient:
         request_body = create_feed_request(
             feed_name=feed_name,
             description=FEED_DESCRIPTION,
-            platform=Platform.WINDOWS,
+            platform=Platform.NI_LINUX_RT,
         )
         response = create_feed(request_body)
 
