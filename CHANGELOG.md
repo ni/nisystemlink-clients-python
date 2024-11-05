@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.7.2 (2024-11-05)
+
+### Fix
+
+* Some spelling errors file tests ([#79](https://github.com/ni/nisystemlink-clients-python/issues/79)) ([`770545e`](https://github.com/ni/nisystemlink-clients-python/commit/770545e6cbb9d90d48f9633dff979cff5c71dc67))
+
 ## v1.7.1 (2024-11-04)
 
 ### Fix
