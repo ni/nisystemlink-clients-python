@@ -16,7 +16,7 @@ def get_workspace_by_name(
         name (str): Workspace name.
 
     Returns:
-        Optional[Workspace]: Workspace info of the `name`.
+        Optional[Workspace]: Workspace information.
     """
     for workspace in workspaces:
         if workspace.name == name and workspace.id:

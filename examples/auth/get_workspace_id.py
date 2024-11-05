@@ -23,7 +23,7 @@ try:
             workspaces=workspaces,
             name=workspace_name,
         )
-        workspace_id = workspace_info.id if workspace_info else None
+        workspace_id = workspace_info.id
 
     if workspace_id:
         print(f"Workspace ID: {workspace_id}")
