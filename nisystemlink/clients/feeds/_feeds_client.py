@@ -49,7 +49,7 @@ class FeedsClient(BaseClient):
         platform: Optional[str] = None,
         workspace: Optional[str] = None,
     ) -> models.QueryFeedsResponse:
-        """Available feeds for the Platform `platform` under the Workspace `workspace`
+        """Lists available feeds for the Platform `platform` under the Workspace `workspace`.
 
         Args:
             platform (Optional[str]): Information about system platform. Defaults to None.
@@ -103,7 +103,7 @@ Defaults to None.
 
         Args:
             feed_id (str): ID of the feed.
-            package (Part): Package file as a form data.
+            package (Part): Package file to be uploaded.
             overwrite (Query): Set to True, to overwrite the package if it already exists.\
 Defaults to False.
 

@@ -1,4 +1,4 @@
-from ._create_feeds import CreateFeedRequest
+from ._create_feed import CreateFeedRequest
 from ._feed import Feed
 from ._package import Package
 from ._platform import Platform

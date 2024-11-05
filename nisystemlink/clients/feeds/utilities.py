@@ -9,7 +9,7 @@ def get_feed_by_name(
     feeds: List[Feed],
     name: str,
 ) -> Optional[Feed]:
-    """Get feed id from the list of feeds using `name`.
+    """Get feed information from the list of feeds using `name`.
 
     Args:
         feeds (List[Feed]): List of feeds.
