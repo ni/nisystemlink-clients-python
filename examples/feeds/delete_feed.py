@@ -21,12 +21,14 @@ client = FeedsClient(HttpConfiguration(api_key=server_api_key, server_uri=server
 
 # Deleting Feed.
 try:
-    # To query available feeds.
-    query_feeds_response = client.query_feeds(platform=PLATFORM, workspace=workspace_id)
-    feed_details = get_feed_by_name(feeds=query_feeds_response, name=FEED_NAME)
+    # Get ID of the Feed to delete by name
+    feeds = client.query_feeds(platform=PLATFORM, workspace=workspace_id)
+    feed = get_feed_by_name(feeds=feeds, name=FEED_NAME)
+    feed_id = feed.id if feed else None
 
-    if feed_details and feed_details.id:
-        client.delete_feed(id=feed_details.id)
+    # Delete the Feed by ID
+    if feed_id:
+        client.delete_feed(id=feed_id)
         print("Feed deleted successfully.")
 
 except ApiException as exp:

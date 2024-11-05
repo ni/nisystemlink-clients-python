@@ -11,8 +11,6 @@ from . import models
 
 
 class FeedsClient(BaseClient):
-    """A set of methods to access the APIs of SystemLink Feeds Client."""
-
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
 
@@ -26,7 +24,7 @@ class FeedsClient(BaseClient):
             ApiException: if unable to communicate with the Feeds Service.
         """
         if configuration is None:
-            configuration = core.JupyterHttpConfiguration()
+            configuration = core.HttpConfigurationManager.get_configuration()
 
         super().__init__(configuration, base_path="/nifeed/v1/")
 
@@ -35,10 +33,13 @@ class FeedsClient(BaseClient):
         """Create a new feed with the provided feed details.
 
         Args:
-            feeds (models.CreateFeedsRequest): Request model to create the feed.
+            feeds (models.CreateFeedsRequest): Request to create the feed.
 
         Returns:
             models.Feed: Details of the created feed.
+
+        Raises:
+            ApiException: if unable to communicate with the Feeds Service.
         """
         ...
 
@@ -56,6 +57,9 @@ class FeedsClient(BaseClient):
 
         Returns:
             models.QueryFeedsResponse: List of feeds.
+
+        Raises:
+            ApiException: if unable to communicate with the Feeds Service.
         """
         ...
 
@@ -64,7 +68,7 @@ class FeedsClient(BaseClient):
         platform: Optional[models.Platform] = None,
         workspace: Optional[str] = None,
     ) -> List[models.Feed]:
-        """Get a set of feeds based on the provided `platform` and `workspace`.
+        """Lists available feeds for the Platform `platform` under the Workspace `workspace`.
 
         Args:
             platform (Optional[models.Platform]): Information about system platform. \
@@ -73,6 +77,9 @@ Defaults to None.
 
         Returns:
             List[models.Feed]: List of feeds.
+
+        Raises:
+            ApiException: if unable to communicate with the Feeds Service.
         """
         platform_by_str = platform.value if platform is not None else None
         response = self.__query_feeds(
@@ -102,6 +109,9 @@ Defaults to False.
 
         Returns:
             models.Package: Uploaded package response information.
+
+        Raises:
+            ApiException: if unable to communicate with the Feeds Service.
         """
         ...
 
@@ -121,6 +131,9 @@ Defaults to False.
 
         Returns:
             models.Package: Uploaded package information.
+
+        Raises:
+            ApiException: if unable to communicate with the Feeds Service.
         """
         response = self.__upload_package(
             feed_id=feed_id,
@@ -146,6 +159,9 @@ Defaults to False.
 
         Returns:
             models.Package: Uploaded package information.
+
+        Raises:
+            ApiException: if unable to communicate with the Feeds Service.
         """
         response = self.__upload_package(
             feed_id=feed_id,
@@ -167,5 +183,8 @@ Defaults to False.
 
         Returns:
             None.
+
+        Raises:
+            ApiException: if unable to communicate with the Feeds Service.
         """
         ...

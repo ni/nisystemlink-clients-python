@@ -1,9 +1,7 @@
-from ._feeds_models import (
-    CreateFeedRequest,
-    Feed,
-    Package,
-    Platform,
-    QueryFeedsResponse,
-)
+from ._create_feeds import CreateFeedRequest
+from ._feed import Feed
+from ._package import Package
+from ._platform import Platform
+from ._query_feeds import QueryFeedsResponse
 
 # flake8: noqa

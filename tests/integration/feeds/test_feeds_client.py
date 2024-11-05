@@ -88,8 +88,6 @@ def get_feed_name():
 @pytest.mark.enterprise
 @pytest.mark.integration
 class TestFeedsClient:
-    """A set of test methods to test SystemLink Feeds API."""
-
     def test__create_feed_windows_platform__succeeds(
         self,
         create_feed: Callable,
@@ -97,8 +95,9 @@ class TestFeedsClient:
         get_feed_name: Callable,
     ):
         """Test the case of a completely successful create feed API for Windows platform."""
+        feed_name = get_feed_name()
         request_body = create_feed_request(
-            feed_name=get_feed_name(),
+            feed_name=feed_name,
             description=FEED_DESCRIPTION,
             platform=Platform.WINDOWS,
         )
@@ -106,7 +105,7 @@ class TestFeedsClient:
 
         assert response.id is not None
         assert response.workspace is not None
-        assert response.name is not None
+        assert response.name == feed_name
         assert response.platform == Platform.WINDOWS
         assert response.description == FEED_DESCRIPTION
 
@@ -117,16 +116,17 @@ class TestFeedsClient:
         get_feed_name: Callable,
     ):
         """Test the case of a completely successful create feed API for Linux platform."""
+        feed_name = get_feed_name()
         request_body = create_feed_request(
-            feed_name=get_feed_name(),
+            feed_name=feed_name,
             description=FEED_DESCRIPTION,
-            platform=Platform.NI_LINUX_RT,
+            platform=Platform.WINDOWS,
         )
         response = create_feed(request_body)
 
         assert response.id is not None
         assert response.workspace is not None
-        assert response.name is not None
+        assert response.name == feed_name
         assert response.platform == Platform.NI_LINUX_RT
         assert response.description == FEED_DESCRIPTION
 
@@ -143,7 +143,8 @@ class TestFeedsClient:
             description=FEED_DESCRIPTION,
             platform=Platform.WINDOWS,
         )
-        create_feed(create_feed_request_body)
+        create_feed_resp = create_feed(create_feed_request_body)
+        assert create_feed_resp.id is not None
 
         query_feed_resp = client.query_feeds(platform=Platform.WINDOWS)
         assert query_feed_resp is not None
@@ -161,7 +162,8 @@ class TestFeedsClient:
             description=FEED_DESCRIPTION,
             platform=Platform.NI_LINUX_RT,
         )
-        create_feed(create_feed_request_body)
+        create_feed_resp = create_feed(create_feed_request_body)
+        assert create_feed_resp.id is not None
 
         query_feed_resp = client.query_feeds(platform=Platform.NI_LINUX_RT)
         assert query_feed_resp is not None
@@ -189,6 +191,7 @@ class TestFeedsClient:
             platform=Platform.WINDOWS,
         )
         create_feed_resp = create_feed(create_feed_request_body)
+        assert create_feed_resp.id is not None
 
         upload_pacakge_rsp = client.upload_package(
             package_file_path=PACKAGE_PATH,
@@ -212,6 +215,7 @@ class TestFeedsClient:
             platform=Platform.WINDOWS,
         )
         create_feed_resp = create_feed(create_feed_request_body)
+        assert create_feed_resp.id is not None
 
         upload_pacakge_rsp = client.upload_package_content(
             package=binary_pkg_file_data,
@@ -246,10 +250,10 @@ class TestFeedsClient:
             platform=Platform.WINDOWS,
         )
         create_feed_resp = client.create_feed(create_feed_request_body)
+        assert create_feed_resp.id is not None
 
-        if create_feed_resp.id:
-            delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
-            assert delete_feed_resp is None
+        delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
+        assert delete_feed_resp is None
 
     def test__delete__linux_feed__succeeds(
         self,
@@ -264,7 +268,7 @@ class TestFeedsClient:
             platform=Platform.NI_LINUX_RT,
         )
         create_feed_resp = client.create_feed(create_feed_request_body)
+        assert create_feed_resp.id is not None
 
-        if create_feed_resp.id:
-            delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
-            assert delete_feed_resp is None
+        delete_feed_resp = client.delete_feed(id=create_feed_resp.id)
+        assert delete_feed_resp is None
