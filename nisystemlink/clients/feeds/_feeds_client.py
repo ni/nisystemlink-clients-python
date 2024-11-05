@@ -49,7 +49,7 @@ class FeedsClient(BaseClient):
         platform: Optional[str] = None,
         workspace: Optional[str] = None,
     ) -> models.QueryFeedsResponse:
-        """Get a set of feeds based on the provided `platform` and `workspace`.
+        """Available feeds for the Platform `platform` under the Workspace `workspace`
 
         Args:
             platform (Optional[str]): Information about system platform. Defaults to None.
@@ -108,7 +108,7 @@ Defaults to None.
 Defaults to False.
 
         Returns:
-            models.Package: Uploaded package response information.
+            models.Package: Uploaded package information.
 
         Raises:
             ApiException: if unable to communicate with the Feeds Service.
