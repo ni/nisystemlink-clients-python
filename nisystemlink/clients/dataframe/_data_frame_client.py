@@ -13,11 +13,12 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
-from uplink import Body, Field, Path, Query
+from uplink import Body, Field, Path, Query, retry
 
 from . import models
 
 
+@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class DataFrameClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
