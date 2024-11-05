@@ -1,3 +1,4 @@
-from ._auth_models import AuthInfo, Workspace
+from ._auth_info import AuthInfo
+from ._workspace import Workspace
 
 # flake8: noqa

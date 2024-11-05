@@ -10,8 +10,6 @@ from . import models
 
 
 class AuthClient(BaseClient):
-    """A set of methods to access the APIs of SystemLink Auth Client."""
-
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
 
@@ -25,11 +23,11 @@ class AuthClient(BaseClient):
             ApiException: if unable to communicate with the Auth Service.
         """
         if configuration is None:
-            configuration = core.JupyterHttpConfiguration()
+            configuration = core.HttpConfigurationManager.get_configuration()
 
         super().__init__(configuration, base_path="/niauth/v1/")
 
     @get("auth")
-    def authenticate(self) -> models.AuthInfo:
-        """Authenticates the given x-ni-api-key and returns information about the caller."""
+    def get_auth_info(self) -> models.AuthInfo:
+        """Gets information about the authenticated API Key."""
         ...

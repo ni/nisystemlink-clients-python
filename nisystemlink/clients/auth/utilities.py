@@ -1,24 +1,24 @@
 """Utilities for Auth Client."""
 
-from typing import List, Union
+from typing import List, Optional
 
 from nisystemlink.clients.auth.models import Workspace
 
 
-def get_workspace_id(
-    workspaces_info: List[Workspace],
-    workspace_name: str,
-) -> Union[str, None]:
-    """Get workspace id from the list of workspace info using `workspace_name`.
+def get_workspace_by_name(
+    workspaces: List[Workspace],
+    name: str,
+) -> Optional[Workspace]:
+    """Get workspace information from the list of workspace using `name`.
 
     Args:
-        workspaces_info (List[workspace_info]): List of workspace info.
-        workspace_name (str): Workspace name.
+        workspaces (List[Workspace]): List of workspace.
+        name (str): Workspace name.
 
     Returns:
-        Union[str, None]: Workspace ID of the `workspace_name`.
+        Optional[Workspace]: Workspace info of the `name`.
     """
-    for workspace_info in workspaces_info:
-        if workspace_info.name == workspace_name and workspace_info.id:
-            return workspace_info.id
+    for workspace in workspaces:
+        if workspace.name == name and workspace.id:
+            return workspace
     return None

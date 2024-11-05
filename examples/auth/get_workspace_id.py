@@ -1,7 +1,7 @@
 """Example of getting workspace ID."""
 
 from nisystemlink.clients.auth import AuthClient
-from nisystemlink.clients.auth.utilities import get_workspace_id
+from nisystemlink.clients.auth.utilities import get_workspace_by_name
 from nisystemlink.clients.core import ApiException, HttpConfiguration
 
 
@@ -14,15 +14,16 @@ auth_client = AuthClient(
 )
 
 try:
-    caller_info = auth_client.authenticate()
-    workspaces_info = caller_info.workspaces
+    caller_info = auth_client.get_auth_info()
+    workspaces = caller_info.workspaces if caller_info.workspaces else None
     workspace_id = None
 
-    if workspaces_info:
-        workspace_id = get_workspace_id(
-            workspaces_info=workspaces_info,
-            workspace_name=workspace_name,
+    if workspaces:
+        workspace_info = get_workspace_by_name(
+            workspaces=workspaces,
+            name=workspace_name,
         )
+        workspace_id = workspace_info.id if workspace_info else None
 
     if workspace_id:
         print(f"Workspace ID: {workspace_id}")
