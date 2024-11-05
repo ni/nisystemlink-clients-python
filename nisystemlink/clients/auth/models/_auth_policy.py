@@ -9,11 +9,20 @@ class AuthStatement(JsonModel):
     """Auth Statement information."""
 
     actions: Optional[List[str]] = None
-    """A list of actions the user is allowed to perform."""
+    """A list of actions the user is allowed to perform.
+
+    example: notebookexecution:Query
+    """
     resource: Optional[List[str]] = None
-    """A list of resources the user is allowed to access."""
+    """A list of resources the user is allowed to access.
+
+    example: Notebook
+    """
     workspace: Optional[str] = None
-    """The workspace the user is allowed to access."""
+    """The workspace the user is allowed to access.
+
+    example: 5afb2ce3741fe11d88838cc9
+    """
 
 
 class Statement(AuthStatement):
