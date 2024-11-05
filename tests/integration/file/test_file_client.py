@@ -60,16 +60,16 @@ def invalid_file_id(client: FileClient) -> str:
         if files.total_count == 0:
             return file_id
 
-    raise Exception(f"Failed to generate a invalid-file-id in {MAX_RETRIES} attemps.")
+    raise Exception(f"Failed to generate a invalid-file-id in {MAX_RETRIES} attempts.")
 
 
 @pytest.fixture(scope="class")
-def random_filename_extn() -> str:
+def random_filename_extension() -> str:
     """Generate a random filename and extension."""
     rand_file_name = "".join(choices(string.ascii_letters + string.digits, k=10))
-    rand_file_extn = "".join(choices(string.ascii_letters, k=3))
+    rand_file_extension = "".join(choices(string.ascii_letters, k=3))
 
-    return f"{PREFIX}{rand_file_name}.{rand_file_extn}"
+    return f"{PREFIX}{rand_file_name}.{rand_file_extension}"
 
 
 @pytest.mark.enterprise
@@ -80,10 +80,10 @@ class TestFileClient:
         assert len(api_info.dict()) != 0
 
     def test__upload_get_delete_files__succeeds(
-        self, client: FileClient, test_file, random_filename_extn
+        self, client: FileClient, test_file, random_filename_extension
     ):
         # upload a file
-        file_id = test_file(file_name=random_filename_extn, cleanup=False)
+        file_id = test_file(file_name=random_filename_extension, cleanup=False)
         assert file_id != ""
 
         files = client.get_files(ids=[file_id])
@@ -91,7 +91,7 @@ class TestFileClient:
         assert len(files.available_files) == 1
         assert files.available_files[0].id == file_id
         assert files.available_files[0].properties is not None
-        assert files.available_files[0].properties["Name"] == random_filename_extn
+        assert files.available_files[0].properties["Name"] == random_filename_extension
 
         client.delete_file(id=file_id)
 
@@ -132,10 +132,10 @@ class TestFileClient:
         client: FileClient,
         test_file,
         binary_file_data: BinaryIO,
-        random_filename_extn: str,
+        random_filename_extension: str,
     ):
         # Upload the test file with random name
-        file_id = test_file(file_name=random_filename_extn)
+        file_id = test_file(file_name=random_filename_extension)
 
         # verify the file content
         downloaded_data = client.download_file(id=file_id)
