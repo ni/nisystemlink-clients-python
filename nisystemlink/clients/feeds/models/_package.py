@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -74,9 +75,9 @@ class Package(JsonModel):
     workspace: Optional[str] = None
     """The ID of the workspace this package belongs to.
     The workspace of a package is the workspace of feed this package is associated with."""
-    updated_at: str
+    updated_at: Optional[datetime]
     """The date of the latest package update."""
-    created_at: str
+    created_at: Optional[datetime]
     """The date when the package was created at."""
     metadata: Optional[PackageMetadata] = None
     """Package meta data."""
