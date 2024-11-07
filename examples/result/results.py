@@ -39,8 +39,8 @@ def create_some_results():
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
 server_configuration = HttpConfiguration(
-    server_uri="https://dev-api.lifecyclesolutions.ni.com",
-    api_key="30IUOX8btHdgziA8hgya502zVH8wp2tWGEDH-yMaF6",
+    server_uri="https://yourserver.yourcompany.com",
+    api_key="YourAPIKeyGeneratedFromSystemLink",
 )
 client = ResultClient(configuration=server_configuration)
 
