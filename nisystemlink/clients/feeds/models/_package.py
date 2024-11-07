@@ -75,9 +75,9 @@ class Package(JsonModel):
     workspace: Optional[str] = None
     """The ID of the workspace this package belongs to.
     The workspace of a package is the workspace of feed this package is associated with."""
-    updated_at: Optional[datetime]
+    updated_at: Optional[datetime] = None
     """The date of the latest package update."""
-    created_at: Optional[datetime]
+    created_at: Optional[datetime] = None
     """The date when the package was created at."""
     metadata: Optional[PackageMetadata] = None
     """Package meta data."""
