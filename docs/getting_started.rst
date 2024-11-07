@@ -184,3 +184,9 @@ Get the metadata of a File using its Id and download it.
 .. literalinclude:: ../examples/file/download_file.py
    :language: python
    :linenos:
+
+Upload a File from disk to SystemLink
+
+.. literalinclude:: ../examples/file/upload_file.py
+   :language: python
+   :linenos:
