@@ -21,10 +21,10 @@ def get_products_linked_to_file(client: ProductClient, file_id: str) -> List[Pro
     query_request = QueryProductsRequest(
         filter=f'fileIds.Contains("{file_id}")', take=100
     )
-    response: PagedProducts = client.query_products(query_request)
+    response: PagedProducts = client.query_products_paged(query_request)
     products = response.products
     while response.continuation_token:
         query_request.continuation_token = response.continuation_token
-        response = client.query_products(query_request)
+        response = client.query_products_paged(query_request)
         products.extend(response.products)
     return products

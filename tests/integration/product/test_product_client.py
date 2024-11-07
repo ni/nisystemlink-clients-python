@@ -145,7 +145,7 @@ class TestProductClient:
         query_request = QueryProductsRequest(
             filter=f'partNumber="{part_number}"', return_count=True
         )
-        query_response: PagedProducts = client.query_products(query_request)
+        query_response: PagedProducts = client.query_products_paged(query_request)
         assert query_response.total_count == 1
         assert query_response.products[0].part_number == part_number
 

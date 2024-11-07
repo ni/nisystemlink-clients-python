@@ -89,7 +89,7 @@ class ProductClient(BaseClient):
         ...
 
     @post("query-products")
-    def query_products(
+    def query_products_paged(
         self, query: models.QueryProductsRequest
     ) -> models.PagedProducts:
         """Queries for products that match the filter.
