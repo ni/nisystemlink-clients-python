@@ -1,9 +1,10 @@
 """Example of getting workspace ID."""
 
 from nisystemlink.clients.auth import AuthClient
-from nisystemlink.clients.auth.utilities import get_workspace_by_name
+from nisystemlink.clients.auth.utilities._get_workspace_info import (
+    get_workspace_by_name,
+)
 from nisystemlink.clients.core import ApiException, HttpConfiguration
-
 
 server_url = ""  # SystemLink API URL
 server_api_key = ""  # SystemLink API key

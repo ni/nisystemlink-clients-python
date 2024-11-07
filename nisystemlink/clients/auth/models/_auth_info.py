@@ -12,13 +12,13 @@ from ._workspace import Workspace
 class AuthInfo(JsonModel):
     """Information about the authenticated caller."""
 
-    user: Optional[User]
+    user: Optional[User] = None
     """Details of authenticated caller."""
-    org: Optional[Org]
+    org: Optional[Org] = None
     """Organization of authenticated caller."""
-    workspaces: Optional[List[Workspace]]
+    workspaces: Optional[List[Workspace]] = None
     """List of workspaces the authenticated caller has access."""
-    policies: Optional[List[AuthPolicy]]
+    policies: Optional[List[AuthPolicy]] = None
     """List of policies for the authenticated caller."""
     properties: Optional[Dict[str, str]] = None
     """A map of key value properties."""

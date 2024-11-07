@@ -29,5 +29,12 @@ class AuthClient(BaseClient):
 
     @get("auth")
     def get_auth_info(self) -> models.AuthInfo:
-        """Gets information about the authenticated API Key."""
+        """Gets information about the authenticated API Key.
+
+        Returns:
+            models.AuthInfo: Information about the caller.
+
+        Raises:
+            ApiException: if unable to communicate with the Auth Service.
+        """
         ...

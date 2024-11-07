@@ -1,4 +1,4 @@
-"""Utilities for Auth Client."""
+"""Get workspace information."""
 
 from typing import List, Optional
 
