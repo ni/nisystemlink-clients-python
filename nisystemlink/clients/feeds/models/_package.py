@@ -39,7 +39,7 @@ class PackageMetadata(JsonModel):
     """The maintainer of the package (name and email address)."""
     predepends: Optional[List[str]] = None
     """Information about other packages this package predepends."""
-    priority: int
+    priority: Optional[int] = None
     """The priority of the package."""
     provides: Optional[List[str]] = None
     """Information about other packages that this package provides."""
