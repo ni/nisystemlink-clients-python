@@ -1,4 +1,4 @@
-"""Utilities for FeedsClient."""
+"""Utilities for getting feed details."""
 
 from typing import List, Optional
 
