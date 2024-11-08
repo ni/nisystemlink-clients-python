@@ -95,7 +95,7 @@ class TestProductClient:
     ):
         products = [Product(part_number=unique_identifier)]
         create_products(products)
-        get_response = client.get_products()
+        get_response = client.get_products_paged()
         assert get_response is not None
         assert len(get_response.products) >= 1
 
@@ -107,7 +107,7 @@ class TestProductClient:
             Product(part_number=unique_identifier),
         ]
         create_products(products)
-        get_response = client.get_products(take=1)
+        get_response = client.get_products_paged(take=1)
         assert get_response is not None
         assert len(get_response.products) == 1
 
@@ -119,7 +119,7 @@ class TestProductClient:
             Product(part_number=unique_identifier),
         ]
         create_products(products)
-        get_response: PagedProducts = client.get_products(return_count=True)
+        get_response: PagedProducts = client.get_products_paged(return_count=True)
         assert get_response is not None
         assert get_response.total_count is not None and get_response.total_count >= 2
 

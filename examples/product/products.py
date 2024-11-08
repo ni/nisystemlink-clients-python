@@ -41,10 +41,10 @@ server_configuration = HttpConfiguration(
 client = ProductClient(configuration=server_configuration)
 
 # Get all the products using the continuation token in batches of 100 at a time.
-response = client.get_products(take=100, return_count=True)
+response = client.get_products_paged(take=100, return_count=True)
 all_products = response.products
 while response.continuation_token:
-    response = client.get_products(
+    response = client.get_products_paged(
         take=100, continuation_token=response.continuation_token, return_count=True
     )
     all_products.extend(response.products)

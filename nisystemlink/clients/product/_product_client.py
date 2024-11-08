@@ -50,7 +50,7 @@ class ProductClient(BaseClient):
         "products",
         args=[Query("continuationToken"), Query("take"), Query("returnCount")],
     )
-    def get_products(
+    def get_products_paged(
         self,
         continuation_token: Optional[str] = None,
         take: Optional[int] = None,
