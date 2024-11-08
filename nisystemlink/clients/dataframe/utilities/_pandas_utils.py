@@ -2,20 +2,15 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from ._pandas_exception import (
-    InvalidIndexError,
-    InvalidColumnTypeError,
-)
-from nisystemlink.clients.dataframe.models import (
-    Column,
-    ColumnType,
-    DataType,
-)
+from nisystemlink.clients.dataframe import DataFrameClient
+from nisystemlink.clients.dataframe.models import Column, ColumnType, DataType
+
+from ._pandas_exception import InvalidColumnTypeError, InvalidIndexError
 
 UNSUPPORTED_INT_TYPES = ["int8", "int16"]
 UNSUPPORTED_FLOAT_TYPES = ["float16"]
 SUPPORTED_INDEX_TYPE = [DataType.Int32, DataType.Int64, DataType.Timestamp]
-PANDAS_TO_DATATYPE_MAPPING = {
+SUPPORTED_DATATYPE_MAPPING = {
     "bool": DataType.Bool,
     "int32": DataType.Int32,
     "int64": DataType.Int64,
@@ -35,8 +30,8 @@ def _pandas_dtype_to_data_type(dtype: str) -> Optional[DataType]:
     Returns:
         Optional[DataType]: `DataType`or `None` if match not found.
     """
-    if dtype in PANDAS_TO_DATATYPE_MAPPING:
-        return PANDAS_TO_DATATYPE_MAPPING[dtype]
+    if dtype in SUPPORTED_DATATYPE_MAPPING:
+        return SUPPORTED_DATATYPE_MAPPING[dtype]
     return None
 
 
@@ -71,7 +66,7 @@ def _infer_index_column(self, df: pd.DataFrame) -> Column:
         df (pd.DataFrame): Pandas Dataframe.
 
     Raises:
-        InvalidIndexError: If index column is invalid.
+        InvalidIndexError: If multiple index present or index is of unsupported type.
 
     Returns:
         Column: Valid `Column` to the table.
@@ -80,12 +75,14 @@ def _infer_index_column(self, df: pd.DataFrame) -> Column:
 
     if not index:
         raise InvalidIndexError(index_name=index)
+    pd_dtype = df.index.dtype
     if (
         pd.api.types.is_any_real_numeric_dtype(df.index)
-        and pd_dtype not in PANDAS_TO_DATATYPE_MAPPING
+        and pd_dtype not in SUPPORTED_DATATYPE_MAPPING
     ):
         df.index = _type_cast_column_datatype(df.index)
         pd_dtype = df.index.dtype
+        
     data_type = _pandas_dtype_to_data_type(pd_dtype)
     if data_type not in SUPPORTED_INDEX_TYPE:
         raise InvalidIndexError(index_name=index)
@@ -102,7 +99,7 @@ def _infer_dataframe_columns(
         nullable_columns (bool): Make the columns nullable.
 
     Raises:
-        InvalidColumnTypeError: If a column's type is invalid.
+        InvalidColumnTypeError: If the column type is unsupported.
 
     Returns:
         List[Column]: Columns to the table.
@@ -115,7 +112,7 @@ def _infer_dataframe_columns(
         pd_dtype = df[column_name].dtype
         if (
             pd.api.types.is_any_real_numeric_dtype(pd_dtype)
-            and pd_dtype not in PANDAS_TO_DATATYPE_MAPPING
+            and pd_dtype not in SUPPORTED_DATATYPE_MAPPING
         ):
             df[column_name] = _type_cast_column_datatype(df[column_name])
             pd_dtype = df[column_name].dtype
@@ -126,3 +123,20 @@ def _infer_dataframe_columns(
             Column(name=column_name, data_type=data_type, column_type=column_type)
         )
     return columns
+
+
+def _get_table_index_name(client: DataFrameClient, table_id: str) -> str:
+    """Get the index name from the table columns.
+
+    Args:
+        client (DataFrameClient): Instance of the `DataFrameclient`.
+        table_id (str): ID of the table.
+
+    Returns:
+        str: Name of the index column
+    """
+    columns = client.get_table_metadata(table_id).columns
+    for column in columns:
+        if column.column_type == ColumnType.Index:
+            return column.name
+    return None

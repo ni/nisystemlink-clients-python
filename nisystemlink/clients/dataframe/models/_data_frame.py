@@ -58,13 +58,25 @@ class DataFrame(JsonModel):
     """The data for each row with the order specified in the columns property.
     Must contain a value for each column in the columns property."""
 
-    def from_pandas(self, df: pd.DataFrame):
-      self.columns = df.columns.tolist()
-      self.data = df.values.tolist()
-        
+    def from_pandas(self, df: pd.DataFrame) -> None:
+        """Convert pandas dataframe to `DataFrame`.
 
-    def to_pandas(self, index: Optional[str]) -> pd.DataFrame:
-      df = pd.DataFrame(data=self.data, columns=self.columns)
-      if index:
-          df = df.set_index(index)
-      return df
+        Args:
+            df (pd.DataFrame): Pandas dataframe.
+        """
+        self.columns = df.columns.tolist()
+        self.data = df.values.tolist()
+
+    def to_pandas(self, index: Optional[str] = None) -> pd.DataFrame:
+        """Convert `DataFrame` to pandas dataframe.
+
+        Args:
+            index (Optional[str]): Column to set as index.
+
+        Returns:
+            pd.DataFrame: Converted pandas dataframe.
+        """
+        df = pd.DataFrame(data=self.data, columns=self.columns)
+        if index:
+            df.set_index(index, inplace=True)
+        return df
