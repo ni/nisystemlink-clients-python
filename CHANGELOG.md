@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.8.0 (2024-11-08)
+
+### Feature
+
+* Add client for SystemLink products API ([#69](https://github.com/ni/nisystemlink-clients-python/issues/69)) ([`d53a9f4`](https://github.com/ni/nisystemlink-clients-python/commit/d53a9f43aee5abbf1e9db084b091390b148478a5))
+
 ## v1.7.2 (2024-11-05)
 
 ### Fix
