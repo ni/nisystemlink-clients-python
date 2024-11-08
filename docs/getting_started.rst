@@ -76,6 +76,34 @@ Subscribe to tag changes
    :language: python
    :linenos:
 
+
+Product API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.ProductClient` class is the primary entry point of the Product API.
+
+When constructing a :class:`.ProductClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.ProductClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.ProductClient` object, you can:
+
+* Create, update, query, and delete Products
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete some products
+
+.. literalinclude:: ../examples/product/products.py
+   :language: python
+   :linenos:
+
+
 DataFrame API
 -------
 

@@ -9,6 +9,7 @@ API Reference
 
    api_reference/core
    api_reference/tag
+   api_reference/product
    api_reference/testmonitor
    api_reference/dataframe
    api_reference/spec
