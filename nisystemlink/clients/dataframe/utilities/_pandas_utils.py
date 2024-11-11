@@ -113,7 +113,7 @@ def _infer_dataframe_columns(
         nullable_columns (bool): Make the columns nullable.
 
     Raises:
-        InvalidColumnTypeError: If the column type is unsupported.
+        InvalidColumnTypeError: If data type of the column is unsupported.
 
     Returns:
         List[Column]: Columns to the table.
