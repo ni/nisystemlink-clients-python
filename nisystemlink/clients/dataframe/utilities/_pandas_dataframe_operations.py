@@ -105,6 +105,7 @@ def query_table_data_as_pandas_df(
     continuation_token = None
     all_rows = []
     index_name: str = None
+
     if index:
         index_name = _get_table_index_name(client=client, table_id=table_id)
         if query and (index_name not in query.columns):
@@ -112,10 +113,9 @@ def query_table_data_as_pandas_df(
 
     while True:
         response = client.query_table_data(table_id, query)
-
         all_rows.append(response.frame.to_pandas(index_name))
-        
         continuation_token = response.continuation_token
+        
         if continuation_token:
             query.continuation_token=continuation_token
         else:

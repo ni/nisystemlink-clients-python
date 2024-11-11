@@ -4,13 +4,20 @@ import pandas as pd
 
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import Column, ColumnType, DataType
-
 from ._pandas_exception import InvalidColumnTypeError, InvalidIndexError
 
-UNSUPPORTED_INT_TYPES = ["int8", "int16"]
-UNSUPPORTED_FLOAT_TYPES = ["float16"]
-SUPPORTED_INDEX_TYPE = [DataType.Int32, DataType.Int64, DataType.Timestamp]
-SUPPORTED_DATATYPE_MAPPING = {
+UNSUPPORTED_PANDAS_INT_TYPES = ["int8", "int16"]
+"""List of unsupported pandas integer types for conversion to `DataType`."""
+
+UNSUPPORTED_PANDAS_FLOAT_TYPES = ["float16"]
+"""List of unsupported pandas float types for conversion to `DataType`."""
+
+SUPPORTED_INDEX_DATA_TYPE = [DataType.Int32, DataType.Int64, DataType.Timestamp]
+"""List of supported index data types for table creation.
+
+Only these `DataType` values are allowed for the index column of the table.
+"""
+SUPPORTED_PANDAS_DATATYPE_MAPPING = {
     "bool": DataType.Bool,
     "int32": DataType.Int32,
     "int64": DataType.Int64,
@@ -19,6 +26,10 @@ SUPPORTED_DATATYPE_MAPPING = {
     "object": DataType.String,
     "datetime64[ns]": DataType.Timestamp,
 }
+"""Mapping of pandas data types to `DataType`.
+
+This dictionary maps commonly used pandas data types to the corresponding `DataType` used in table creation.
+"""
 
 
 def _pandas_dtype_to_data_type(dtype: str) -> Optional[DataType]:
@@ -30,8 +41,8 @@ def _pandas_dtype_to_data_type(dtype: str) -> Optional[DataType]:
     Returns:
         Optional[DataType]: `DataType`or `None` if match not found.
     """
-    if dtype in SUPPORTED_DATATYPE_MAPPING:
-        return SUPPORTED_DATATYPE_MAPPING[dtype]
+    if dtype in SUPPORTED_PANDAS_DATATYPE_MAPPING:
+        return SUPPORTED_PANDAS_DATATYPE_MAPPING[dtype]
     return None
 
 
@@ -50,10 +61,10 @@ def _type_cast_column_datatype(
         data = pd.to_numeric(data, downcast="integer")
         pd_dtype = data.dtype
 
-    if pd_dtype in UNSUPPORTED_INT_TYPES:
+    if pd_dtype in UNSUPPORTED_PANDAS_INT_TYPES:
         data = data.astype("int32")
 
-    elif pd_dtype in UNSUPPORTED_FLOAT_TYPES:
+    elif pd_dtype in UNSUPPORTED_PANDAS_FLOAT_TYPES:
         data = data.astype("float32")
 
     return data
@@ -75,17 +86,20 @@ def _infer_index_column(self, df: pd.DataFrame) -> Column:
 
     if not index:
         raise InvalidIndexError(index_name=index)
+    
     pd_dtype = df.index.dtype
     if (
         pd.api.types.is_any_real_numeric_dtype(df.index)
-        and pd_dtype not in SUPPORTED_DATATYPE_MAPPING
+        and pd_dtype not in SUPPORTED_PANDAS_DATATYPE_MAPPING
     ):
         df.index = _type_cast_column_datatype(df.index)
         pd_dtype = df.index.dtype
         
     data_type = _pandas_dtype_to_data_type(pd_dtype)
-    if data_type not in SUPPORTED_INDEX_TYPE:
+
+    if data_type not in SUPPORTED_INDEX_DATA_TYPE:
         raise InvalidIndexError(index_name=index)
+    
     return Column(name=index, data_type=data_type, column_type=ColumnType.Index)
 
 
@@ -112,13 +126,15 @@ def _infer_dataframe_columns(
         pd_dtype = df[column_name].dtype
         if (
             pd.api.types.is_any_real_numeric_dtype(pd_dtype)
-            and pd_dtype not in SUPPORTED_DATATYPE_MAPPING
+            and pd_dtype not in SUPPORTED_PANDAS_DATATYPE_MAPPING
         ):
             df[column_name] = _type_cast_column_datatype(df[column_name])
             pd_dtype = df[column_name].dtype
+
         data_type = _pandas_dtype_to_data_type(pd_dtype)
         if data_type is None:
             raise InvalidColumnTypeError(column_name, pd_dtype)
+        
         columns.append(
             Column(name=column_name, data_type=data_type, column_type=column_type)
         )
