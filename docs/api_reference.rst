@@ -11,6 +11,7 @@ API Reference
    api_reference/tag
    api_reference/product
    api_reference/testmonitor
+   api_reference/result
    api_reference/dataframe
    api_reference/spec
    api_reference/file
