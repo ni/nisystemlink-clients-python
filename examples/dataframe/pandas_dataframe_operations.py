@@ -1,5 +1,6 @@
 import pandas as pd
 from nisystemlink.clients.dataframe import DataFrameClient
+from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.dataframe.models import (
     DecimationMethod,
     DecimationOptions,
@@ -45,7 +46,7 @@ queried_decimated_df = query_decimated_table_data_as_pandas_df(
     client, table_id, query=request, index=True
 )
 print("Queried decimated data as pandas dataframe:")
-print(queried_decimated_df)
+print(queried_decimated_df.columns)
 
 query = QueryTableDataRequest()
 queried_df = query_table_data_as_pandas_df(
@@ -53,3 +54,5 @@ queried_df = query_table_data_as_pandas_df(
 )
 print("Queried table data as pandas dataframe:")
 print(queried_df)
+
+client.delete_table(table_id)
