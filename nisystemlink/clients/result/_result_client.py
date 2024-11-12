@@ -52,7 +52,7 @@ class ResultClient(BaseClient):
         "results",
         args=[Query("continuationToken"), Query("take"), Query("returnCount")],
     )
-    def get_results(
+    def get_results_paged(
         self,
         continuation_token: Optional[str] = None,
         take: Optional[int] = None,
@@ -91,7 +91,7 @@ class ResultClient(BaseClient):
         ...
 
     @post("query-results")
-    def query_results(self, query: models.QueryResultsRequest) -> models.PagedResults:
+    def query_results_paged(self, query: models.QueryResultsRequest) -> models.PagedResults:
         """Queries for results that match the filter.
 
         Args:
@@ -113,10 +113,10 @@ class ResultClient(BaseClient):
         """Queries for results that match the query and returns a list of the requested field.
 
         Args:
-            query : The query for the fields you want.
+            query : The query for the fields.
 
         Returns:
-            A list of the values of the field you requested.
+            A list of the values of the queried field.
 
         Raises:
             ApiException: if unable to communicate with the ``/nitestmonitor`` Service or provided
