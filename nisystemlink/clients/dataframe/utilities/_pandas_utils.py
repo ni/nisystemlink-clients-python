@@ -1,9 +1,9 @@
 from typing import List, Optional, Union
 
 import pandas as pd
-
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import Column, ColumnType, DataType
+
 from ._pandas_exception import InvalidColumnTypeError, InvalidIndexError
 
 UNSUPPORTED_PANDAS_INT_TYPES = ["int8", "int16"]
@@ -57,6 +57,7 @@ def _type_cast_column_datatype(
     Returns:
         Union[pd.Index, pd.Series]: Processed data.
     """
+    pd_dtype = data.dtype
     if pd.api.types.is_unsigned_integer_dtype(data):
         data = pd.to_numeric(data, downcast="integer")
         pd_dtype = data.dtype
@@ -70,7 +71,7 @@ def _type_cast_column_datatype(
     return data
 
 
-def _infer_index_column(self, df: pd.DataFrame) -> Column:
+def _infer_index_column(df: pd.DataFrame) -> Column:
     """Infer the index column for table creation.
 
     Args:
@@ -87,13 +88,13 @@ def _infer_index_column(self, df: pd.DataFrame) -> Column:
     if not index:
         raise InvalidIndexError(index_name=index)
 
-    pd_dtype = df.index.dtype
+    pd_dtype = str(df.index.dtype)
     if (
         pd.api.types.is_any_real_numeric_dtype(df.index)
         and pd_dtype not in SUPPORTED_PANDAS_DATATYPE_MAPPING
     ):
         df.index = _type_cast_column_datatype(df.index)
-        pd_dtype = df.index.dtype
+        pd_dtype = str(df.index.dtype)
 
     data_type = _pandas_dtype_to_data_type(pd_dtype)
 
@@ -103,9 +104,7 @@ def _infer_index_column(self, df: pd.DataFrame) -> Column:
     return Column(name=index, data_type=data_type, column_type=ColumnType.Index)
 
 
-def _infer_dataframe_columns(
-    self, df: pd.DataFrame, nullable_columns: bool
-) -> List[Column]:
+def _infer_dataframe_columns(df: pd.DataFrame, nullable_columns: bool) -> List[Column]:
     """Infer the columns for table creation.
 
     Args:
@@ -123,13 +122,13 @@ def _infer_dataframe_columns(
     column_type = ColumnType.Nullable if nullable_columns else ColumnType.Normal
 
     for column_name in df.columns:
-        pd_dtype = df[column_name].dtype
+        pd_dtype = str(df[column_name].dtype)
         if (
             pd.api.types.is_any_real_numeric_dtype(pd_dtype)
             and pd_dtype not in SUPPORTED_PANDAS_DATATYPE_MAPPING
         ):
             df[column_name] = _type_cast_column_datatype(df[column_name])
-            pd_dtype = df[column_name].dtype
+            pd_dtype = str(df[column_name].dtype)
 
         data_type = _pandas_dtype_to_data_type(pd_dtype)
         if data_type is None:

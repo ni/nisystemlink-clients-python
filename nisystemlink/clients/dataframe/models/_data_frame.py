@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 import pandas as pd
-
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
@@ -64,8 +63,10 @@ class DataFrame(JsonModel):
         Args:
             df (pd.DataFrame): Pandas dataframe.
         """
-        self.columns = df.columns.tolist()
-        self.data = df.values.tolist()
+        self.columns = [df.index.name] + df.columns.astype(str).tolist()
+        self.data = [
+            [str(index)] + row.astype(str).tolist() for index, row in df.iterrows()
+        ]
 
     def to_pandas(self, index: Optional[str] = None) -> pd.DataFrame:
         """Convert `DataFrame` to pandas dataframe.

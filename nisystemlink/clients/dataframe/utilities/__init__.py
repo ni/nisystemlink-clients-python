@@ -5,3 +5,5 @@ from ._pandas_dataframe_operations import (
     query_decimated_table_data_as_pandas_df,
     query_table_data_as_pandas_df,
 )
+
+# flake8: noqa

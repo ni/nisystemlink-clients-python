@@ -1,17 +1,17 @@
 import pandas as pd
-
-from ._pandas_utils import (
-    _infer_index_column,
-    _infer_dataframe_columns,
-    _get_table_index_name,
-)
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import (
     AppendTableDataRequest,
     CreateTableRequest,
     DataFrame,
-    QueryTableDataRequest,
     QueryDecimatedDataRequest,
+    QueryTableDataRequest,
+)
+
+from ._pandas_utils import (
+    _get_table_index_name,
+    _infer_dataframe_columns,
+    _infer_index_column,
 )
 
 
@@ -57,7 +57,7 @@ def append_pandas_df_to_table(
     frame = DataFrame()
     frame.from_pandas(df)
     client.append_table_data(
-        table_id, data=AppendTableDataRequest(frame=frame, endOfData=True)
+        id=table_id, data=AppendTableDataRequest(frame=frame, end_of_data=False)
     )
 
 
@@ -81,8 +81,9 @@ def query_decimated_table_data_as_pandas_df(
     index_name: str = None
     if index:
         index_name = _get_table_index_name(client=client, table_id=table_id)
-        if query and (index_name not in query.columns):
-            query.columns.append(index_name)
+        if query.columns:
+            if index_name not in query.columns:
+                query.columns.append(index_name)
     response = client.query_decimated_data(table_id, query)
     return response.frame.to_pandas(index_name)
 
@@ -110,8 +111,9 @@ def query_table_data_as_pandas_df(
 
     if index:
         index_name = _get_table_index_name(client=client, table_id=table_id)
-        if query and (index_name not in query.columns):
-            query.columns.append(index_name)
+        if query.columns:
+            if index_name not in query.columns:
+                query.columns.append(index_name)
 
     while True:
         response = client.query_table_data(table_id, query)

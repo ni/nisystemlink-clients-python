@@ -11,7 +11,9 @@ class InvalidIndexError(DataFrameError):
         self.index_name = index_name
         self.message = "Data frame must contain one index."
         if index_name:
-            self.message = f"Column '{self.index_name}' must be of type INT32, INT64, or TIMESTAMP to be an index column."
+            self.message = (
+                f"Column '{self.index_name}' must be of type INT32, INT64, or TIMESTAMP to be an index column."
+            )
         super().__init__(self.message)
 
 
@@ -21,7 +23,5 @@ class InvalidColumnTypeError(DataFrameError):
     def __init__(self, column_name: str, column_type: str) -> None:
         self.column_name = column_name
         self.column_type = column_type
-        self.message = (
-            f"Column '{column_name}' has an unsupported datatype: {column_type}"
-        )
+        self.message = f"Column '{column_name}' has an unsupported datatype: {column_type}"
         super().__init__(self.message)
