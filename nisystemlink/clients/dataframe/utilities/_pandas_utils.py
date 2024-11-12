@@ -86,7 +86,7 @@ def _infer_index_column(self, df: pd.DataFrame) -> Column:
 
     if not index:
         raise InvalidIndexError(index_name=index)
-    
+
     pd_dtype = df.index.dtype
     if (
         pd.api.types.is_any_real_numeric_dtype(df.index)
@@ -94,12 +94,12 @@ def _infer_index_column(self, df: pd.DataFrame) -> Column:
     ):
         df.index = _type_cast_column_datatype(df.index)
         pd_dtype = df.index.dtype
-        
+
     data_type = _pandas_dtype_to_data_type(pd_dtype)
 
     if data_type not in SUPPORTED_INDEX_DATA_TYPE:
         raise InvalidIndexError(index_name=index)
-    
+
     return Column(name=index, data_type=data_type, column_type=ColumnType.Index)
 
 
@@ -134,7 +134,7 @@ def _infer_dataframe_columns(
         data_type = _pandas_dtype_to_data_type(pd_dtype)
         if data_type is None:
             raise InvalidColumnTypeError(column_name, pd_dtype)
-        
+
         columns.append(
             Column(name=column_name, data_type=data_type, column_type=column_type)
         )

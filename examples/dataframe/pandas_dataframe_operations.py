@@ -1,13 +1,20 @@
 import pandas as pd
 
 from nisystemlink.clients.dataframe import DataFrameClient
-from nisystemlink.clients.dataframe.models import (DecimationMethod,
-                                                   DecimationOptions,
-                                                   QueryDecimatedDataRequest,
-                                                   QueryTableDataRequest)
+from nisystemlink.clients.dataframe.models import (
+    DecimationMethod,
+    DecimationOptions,
+    QueryDecimatedDataRequest,
+    QueryTableDataRequest,
+)
 from nisystemlink.clients.dataframe.utilities import (
-    InvalidColumnTypeError, InvalidIndexError, append_pandas_df_to_table,
-    create_table_from_pandas_df, query_decimated_table_data_as_pandas_df, query_table_data_as_pandas_df)
+    InvalidColumnTypeError,
+    InvalidIndexError,
+    append_pandas_df_to_table,
+    create_table_from_pandas_df,
+    query_decimated_table_data_as_pandas_df,
+    query_table_data_as_pandas_df,
+)
 
 client = DataFrameClient()
 
@@ -42,9 +49,9 @@ queried_decimated_df = query_decimated_table_data_as_pandas_df(
 print("Queried decimated data as pandas dataframe:")
 print(queried_decimated_df)
 
-query=QueryTableDataRequest(filters=["b","c"], take=3)
-queried_df = query_table_data_as_pandas_df(client=client, table_id=table_id, query=query)
+query = QueryTableDataRequest(filters=["b", "c"], take=3)
+queried_df = query_table_data_as_pandas_df(
+    client=client, table_id=table_id, query=query
+)
 print("Queried table data as pandas dataframe:")
 print(queried_df)
-
-

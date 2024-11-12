@@ -41,7 +41,9 @@ def create_table_from_pandas_df(
     return table_id
 
 
-def append_pandas_df_to_table(client: DataFrameClient, table_id: str, df: pd.DataFrame) -> None:
+def append_pandas_df_to_table(
+    client: DataFrameClient, table_id: str, df: pd.DataFrame
+) -> None:
     """Append `df` to table.
 
     Args:
@@ -115,10 +117,10 @@ def query_table_data_as_pandas_df(
         response = client.query_table_data(table_id, query)
         all_rows.append(response.frame.to_pandas(index_name))
         continuation_token = response.continuation_token
-        
+
         if continuation_token:
-            query.continuation_token=continuation_token
+            query.continuation_token = continuation_token
         else:
             break
-    
-    return pd.concat(all_rows, ignore_index=not(index))
+
+    return pd.concat(all_rows, ignore_index=not (index))
