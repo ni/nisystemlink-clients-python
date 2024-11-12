@@ -91,7 +91,9 @@ class ResultClient(BaseClient):
         ...
 
     @post("query-results")
-    def query_results_paged(self, query: models.QueryResultsRequest) -> models.PagedResults:
+    def query_results_paged(
+        self, query: models.QueryResultsRequest
+    ) -> models.PagedResults:
         """Queries for results that match the filter.
 
         Args:
