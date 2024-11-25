@@ -1,6 +1,5 @@
 import pandas as pd
 from nisystemlink.clients.dataframe import DataFrameClient
-from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.dataframe.models import (
     DecimationMethod,
     DecimationOptions,
@@ -21,7 +20,10 @@ df: pd.DataFrame = pd.DataFrame(
     data=[[1, 2, 3], [4, 5, 6], [7, 8, 9]], columns=["a", "b", "c"]
 )
 df.set_index("a", inplace=True)
+print(df)
 
+print(client.list_tables())
+client.list_tables()
 try:
     table_id = create_table_from_pandas_df(
         client, df, "Example Table", nullable_columns=False

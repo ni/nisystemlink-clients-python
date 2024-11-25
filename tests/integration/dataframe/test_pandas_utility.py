@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
@@ -62,7 +63,7 @@ def create_table(client: DataFrameClient):
 @pytest.mark.enterprise
 @pytest.mark.integration
 class TestPandasUtility:
-    def test_create_table_from_pandas_df(
+    def test__create_table_from_pandas_df__succeeds(
         self, client: DataFrameClient, sample_dataframe: pd.DataFrame, create_table
     ):
         table_name = "TestTable1"
@@ -87,7 +88,7 @@ class TestPandasUtility:
         assert index == "index"
         assert table_data.row_count == 0
 
-    def test__create_table_with_missing_index__raises(
+    def test__create_table_from_pandas_df__missing_index_raises(
         self, client: DataFrameClient, create_table
     ):
 
@@ -101,7 +102,7 @@ class TestPandasUtility:
         ):
             create_table(df=frame, table_name="TestTable2", nullable_columns=True)
 
-    def test__append_data__works(
+    def test__append_pandas_df_to_table__succeeds(
         self, client: DataFrameClient, sample_dataframe, create_table
     ):
 
@@ -116,16 +117,16 @@ class TestPandasUtility:
         assert response.total_row_count == 3
 
     def test__append_pandas_df_to_table__raises(
-        client: DataFrameClient, sample_dataframe, create_table
+        self, client: DataFrameClient, sample_dataframe, create_table
     ):
         id = create_table(
             df=sample_dataframe, table_name="TestTable3", nullable_columns=True
         )
 
         with pytest.raises(ApiException, match="400 Bad Request"):
-            append_pandas_df_to_table(client, table_id=id, df=sample_dataframe)
+            append_pandas_df_to_table(client=client, table_id=id, df=sample_dataframe)
 
-    def test__query_table_data__sorts(
+    def test__query_table_data_as_pandas_df__sorted_query_succeeds(
         self, client: DataFrameClient, sample_dataframe, create_table
     ):
         table_name = "TestTable4"
@@ -160,7 +161,9 @@ class TestPandasUtility:
 
         assert response == expected_df
 
-    def test__query_decimated_data__works(self, client: DataFrameClient, create_table):
+    def test__query_decimated_table_data_as_pandas_df__succeeds(
+        self, client: DataFrameClient, create_table
+    ):
         table_name = "TestTable5"
         nullable_columns = True
 
@@ -187,7 +190,9 @@ class TestPandasUtility:
             ),
             index=True,
         )
-        expected_df = pd.DataFrame(data=[['1','2','3'],['7','8','9']], columns=["a","b","c"])
+        expected_df = pd.DataFrame(
+            data=[["1", "2", "3"], ["7", "8", "9"]], columns=["a", "b", "c"]
+        )
         expected_df.set_index("a", inplace=True)
 
         assert response.values == expected_df.values

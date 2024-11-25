@@ -103,15 +103,15 @@ With a :class:`.DataFrameClient` object, you can:
 Pandas Utility
 ~~~~~~~~~~~~~~
 
-Utility functions for managing Pandas DataFrames and interacting with the DataFrame API include:
+Utility functions to interact with :class:`.DataFrameClient` using [pandas.DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
 
-* Create a table from a pandas dataframe.
+* Create a table from a `pandas.DataFrame`.
 
-* Append pandas dataframe to an existing table.
+* Append `pandas.DataFrame` to an existing table.
 
-* Query decimated data from a table as pandas dataframe.
+* Query decimated data from a table as `pandas.DataFrame`.
 
-* Query data from a table as pandas dataframe.
+* Query data from a table as `pandas.DataFrame`.
 
 Examples
 ~~~~~~~~
@@ -134,7 +134,7 @@ Export data from a table
    :language: python
    :linenos:
 
-Table operations using pandas dataframe
+Table operations using [pandas.DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
 
 .. literalinclude:: ../examples/dataframe/pandas_dataframe_operations.py
    :language: python

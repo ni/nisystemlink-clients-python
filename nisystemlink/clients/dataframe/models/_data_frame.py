@@ -53,7 +53,7 @@ class DataFrame(JsonModel):
     columns: Optional[List[str]] = None
     """The names and order of the columns included in the data frame."""
 
-    data: List[List[Optional[str]]] = None
+    data: Optional[List[List[Optional[str]]]] = None
     """The data for each row with the order specified in the columns property.
     Must contain a value for each column in the columns property."""
 

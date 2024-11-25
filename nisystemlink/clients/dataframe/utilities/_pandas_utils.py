@@ -6,11 +6,12 @@ from nisystemlink.clients.dataframe.models import Column, ColumnType, DataType
 
 from ._pandas_exception import InvalidColumnTypeError, InvalidIndexError
 
-UNSUPPORTED_PANDAS_INT_TYPES = ["int8", "int16"]
-"""List of unsupported pandas integer types for conversion to `DataType`."""
-
-UNSUPPORTED_PANDAS_FLOAT_TYPES = ["float16"]
-"""List of unsupported pandas float types for conversion to `DataType`."""
+UNSUPPORTED_PANDAS_DATA_TYPE_CONVERSION = {
+    "int8": "int32",
+    "int16": "int32",
+    "float16": "float32",
+}
+"""Mapping of unsupported pandas types to supported data types for `DataType`."""
 
 SUPPORTED_INDEX_DATA_TYPE = [DataType.Int32, DataType.Int64, DataType.Timestamp]
 """List of supported index data types for table creation.
@@ -62,11 +63,8 @@ def _type_cast_column_datatype(
         data = pd.to_numeric(data, downcast="integer")
         pd_dtype = data.dtype
 
-    if pd_dtype in UNSUPPORTED_PANDAS_INT_TYPES:
-        data = data.astype("int32")
-
-    elif pd_dtype in UNSUPPORTED_PANDAS_FLOAT_TYPES:
-        data = data.astype("float32")
+    if pd_dtype in UNSUPPORTED_PANDAS_DATA_TYPE_CONVERSION:
+        data = data.astype(UNSUPPORTED_PANDAS_DATA_TYPE_CONVERSION[pd_dtype])
 
     return data
 
@@ -81,7 +79,7 @@ def _infer_index_column(df: pd.DataFrame) -> Column:
         InvalidIndexError: If multiple index present or index is of unsupported type.
 
     Returns:
-        Column: Valid `Column` to the table.
+        Column: Valid Index `Column` for the table.
     """
     index = df.index.name
 
@@ -140,7 +138,7 @@ def _infer_dataframe_columns(df: pd.DataFrame, nullable_columns: bool) -> List[C
     return columns
 
 
-def _get_table_index_name(client: DataFrameClient, table_id: str) -> str:
+def _get_table_index_name(client: DataFrameClient, table_id: str) -> Optional[str]:
     """Get the index name from the table columns.
 
     Args:
