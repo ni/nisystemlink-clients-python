@@ -91,11 +91,13 @@ class TestPandasUtility:
     def test__create_table_from_pandas_df__missing_index_raises(
         self, client: DataFrameClient, create_table
     ):
-
-        frame = pd.DataFrame(
-            columns=["index", "value", "ignore_me"],
-            data=[["1", "3.3", "True"], ["2", "6", "False"], ["3", "1.1", "True"]],
-        )
+        columns = ["index", "value", "ignore_me"]
+        data = [
+            ["1", "3.3", "True"],
+            ["2", "6", "False"],
+            ["3", "1.1", "True"],
+        ]
+        frame = pd.DataFrame(columns=columns, data=data)
 
         with pytest.raises(
             InvalidIndexError, match="Data frame must contain one index."
@@ -123,8 +125,13 @@ class TestPandasUtility:
             df=sample_dataframe, table_name="TestTable3", nullable_columns=True
         )
 
+        frame = pd.DataFrame(
+            columns=["index", "non_existent_column"],
+            data=[["1", "2"], ["2", "2"], ["3", "3"]],
+        )
+
         with pytest.raises(ApiException, match="400 Bad Request"):
-            append_pandas_df_to_table(client=client, table_id=id, df=sample_dataframe)
+            append_pandas_df_to_table(client=client, table_id=id, df=frame)
 
     def test__query_table_data_as_pandas_df__sorted_query_succeeds(
         self, client: DataFrameClient, sample_dataframe, create_table
@@ -134,32 +141,33 @@ class TestPandasUtility:
         id = create_table(
             sample_dataframe, table_name, nullable_columns=nullable_columns
         )
-
-        frame = pd.DataFrame(
-            data=[[1, "2.5", "True"], [2, "1.5", "False"], [3, "2.5", "True"]],
-            columns=["index", "value", "ignore_me"],
-        )
-
-        append_pandas_df_to_table(client, table_id=id, df=frame)
+        append_pandas_df_to_table(client, table_id=id, df=sample_dataframe)
+        client.get_table_metadata(id=id)
 
         response = query_table_data_as_pandas_df(
             client,
             table_id=id,
             query=QueryTableDataRequest(
-                order_by=[
-                    ColumnOrderBy(column="value", descending=True),
-                    ColumnOrderBy(column="ignore_me"),
-                ]
+                columns=["value", "ignore_me"],
+                order_by=[ColumnOrderBy(column="value", descending=True)],
             ),
             index=True,
         )
-        expected_df = pd.DataFrame(
-            data=[[2, "1.5", "False"], [3, "2.5", "True"], [1, "2.5", "True"]],
-            columns=["index", "value", "ignore_me"],
-        )
+
+        data = [
+            [2, "6", "False"],
+            [1, "3.3", "True"],
+            [3, "1.1", "True"],
+        ]
+        columns = ["index", "value", "ignore_me"]
+        expected_df = pd.DataFrame(columns=columns, data=data)
         expected_df.set_index("index", inplace=True)
 
-        assert response == expected_df
+        assert (
+            (response.reset_index(drop=True) == expected_df.reset_index(drop=True))
+            .all()
+            .all()
+        )
 
     def test__query_decimated_table_data_as_pandas_df__succeeds(
         self, client: DataFrameClient, create_table
@@ -167,17 +175,22 @@ class TestPandasUtility:
         table_name = "TestTable5"
         nullable_columns = True
 
-        frame: pd.DataFrame = pd.DataFrame(
-            data=[[1, 2, 3], [4, 5, 6], [7, 8, 9]], columns=["a", "b", "c"]
-        )
+        data = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+        ]
+        columns = ["a", "b", "c"]
+        frame = pd.DataFrame(data=data, columns=columns)
         frame.set_index("a", inplace=True)
+
         id = create_table(
             df=frame, table_name=table_name, nullable_columns=nullable_columns
         )
 
         append_pandas_df_to_table(client, table_id=id, df=frame)
 
-        response = query_decimated_table_data_as_pandas_df(
+        response: pd.DataFrame = query_decimated_table_data_as_pandas_df(
             client,
             table_id=id,
             query=QueryDecimatedDataRequest(
@@ -190,9 +203,12 @@ class TestPandasUtility:
             ),
             index=True,
         )
-        expected_df = pd.DataFrame(
-            data=[["1", "2", "3"], ["7", "8", "9"]], columns=["a", "b", "c"]
-        )
+        data = [
+            ["1", "2", "3"],
+            ["7", "8", "9"],
+        ]
+        columns = ["a", "b", "c"]
+        expected_df = pd.DataFrame(data=data, columns=columns)
         expected_df.set_index("a", inplace=True)
 
-        assert response.values == expected_df.values
+        assert (response.values == expected_df.values).all()

@@ -47,7 +47,7 @@ def append_pandas_df_to_table(
     client: DataFrameClient,
     table_id: str,
     df: pd.DataFrame,
-    end_of_data: Optional[bool] = None,
+    end_of_data: Optional[bool] = False,
 ) -> None:
     """Append `df` to table.
 
@@ -70,34 +70,28 @@ def create_table_with_data_from_pandas_df(
     client: DataFrameClient,
     df: pd.DataFrame,
     table_name: str,
-    nullable_columns: bool,
     batch_size: int = 1000,
-    end_of_data: Optional[bool] = None,
 ) -> str:
-    """Create a table and upload data from a pandas DataFrame.
-
-    This function creates the table, uploads the data (with batching for large data),
-    and closes the upload process in one seamless call.
+    """Create a table and upload data from a pandas DataFrame with batching.
 
     Args:
         client (DataFrameClient): Instance of DataFrameClient.
         df (pd.DataFrame): Pandas DataFrame with data to upload.
         table_name (str): Name of the table to create.
-        nullable_columns (bool): Make the columns nullable. Nullable columns can contain `null` values.
         batch_size (Optional[int]): Number of rows to batch in each upload. Default is 1000.
 
     Returns:
         str: ID of the created table.
     """
     table_id = create_table_from_pandas_df(
-        client=client, df=df, table_name=table_name, nullable_columns=nullable_columns
+        client=client, df=df, table_name=table_name, nullable_columns=False
     )
 
-    num_rows = len(df)
+    num_rows = df.shape[0]
     for start_row in range(0, num_rows, batch_size):
         end_row = min(start_row + batch_size, num_rows)
         batch_df = df.iloc[start_row:end_row]
-        append_pandas_df_to_table(client, table_id, batch_df, end_of_data)
+        append_pandas_df_to_table(client, table_id, batch_df, end_of_data=(end_row == num_rows))
 
     return table_id
 
