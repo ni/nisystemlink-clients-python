@@ -91,7 +91,9 @@ def create_table_with_data_from_pandas_df(
     for start_row in range(0, num_rows, batch_size):
         end_row = min(start_row + batch_size, num_rows)
         batch_df = df.iloc[start_row:end_row]
-        append_pandas_df_to_table(client, table_id, batch_df, end_of_data=(end_row == num_rows))
+        append_pandas_df_to_table(
+            client, table_id, batch_df, end_of_data=(end_row == num_rows)
+        )
 
     return table_id
 

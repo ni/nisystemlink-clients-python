@@ -203,12 +203,14 @@ class TestPandasUtility:
             ),
             index=True,
         )
-        data = [
-            ["1", "2", "3"],
-            ["7", "8", "9"],
-        ]
-        columns = ["a", "b", "c"]
-        expected_df = pd.DataFrame(data=data, columns=columns)
+
+        expected_df = pd.DataFrame(
+            data=[
+                ["1", "2", "3"],
+                ["7", "8", "9"],
+            ],
+            columns=["a", "b", "c"],
+        )
         expected_df.set_index("a", inplace=True)
 
         assert (response.values == expected_df.values).all()
