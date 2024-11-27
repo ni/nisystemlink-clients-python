@@ -68,3 +68,19 @@ class SystemsClient(BaseClient):
         """
         ...
 
+    @post("jobs")
+    def create_job(self, job: models.CreateJobRequest) -> models.CreateJobResponse:
+        """Create a job.
+
+        Args:
+            job: The request to create the job.
+
+        Returns:
+            The job that was created.
+
+        Raises:
+            ApiException: if unable to communicate with the Systems Service
+                or provided an invalid argument.
+        """
+        ...
+
