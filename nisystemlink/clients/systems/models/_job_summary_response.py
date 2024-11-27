@@ -6,7 +6,7 @@ from ._http_error import HttpError
 
 
 class JobSummaryResponse(JsonModel):
-    """An instance of a NationalInstruments.SystemsManagementService.Model.API.JobsSummaryResponse."""
+    """Model for request of jobs summary response."""
 
     error: Optional[HttpError] = None
     """Represents the standard error structure."""

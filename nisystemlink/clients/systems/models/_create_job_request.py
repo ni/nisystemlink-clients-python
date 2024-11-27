@@ -4,7 +4,7 @@ from ._job_config import JobConfig
 
 
 class CreateJobRequest(JobConfig):
-    """An instance of NationalInstruments.SystemsManagementService.Model.API.CreateJobRequest."""
+    """Model for create job request."""
 
     metadata: Optional[Dict[str, Any]] = None
     """The metadata associated with the job."""

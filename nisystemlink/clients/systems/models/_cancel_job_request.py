@@ -4,7 +4,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class CancelJobRequest(JsonModel):
-    """Cancel job modal."""
+    """Model for cancel job request."""
 
     jid: Optional[str] = None
     """The ID of the job to cancel."""

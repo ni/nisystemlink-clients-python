@@ -3,7 +3,7 @@ from typing import Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 class QueryJobsRequest(JsonModel):
-    """An instance of NationalInstruments.SystemsManagementService.Model.API.QueryJobsRequest."""
+    """Model for query job request."""
 
     skip: Optional[int] = None
     """The number of jobs to skip."""

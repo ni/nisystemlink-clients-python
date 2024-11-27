@@ -25,7 +25,7 @@ class JobResult(JsonModel):
 
 
 class Job(JsonModel):
-    """Job information."""
+    """Job Model."""
 
     jid: Optional[str] = None
     """The job ID."""

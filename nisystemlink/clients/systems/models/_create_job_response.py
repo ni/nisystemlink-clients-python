@@ -5,7 +5,7 @@ from ._http_error import HttpError
 
 
 class CreateJobResponse(CreateJobRequest):
-    """The job that was created."""
+    """Model for response of create job request."""
 
     error: Optional[HttpError] = None
     """Represents the standard error structure."""

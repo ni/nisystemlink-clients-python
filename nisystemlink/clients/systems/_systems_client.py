@@ -89,7 +89,7 @@ class SystemsClient(BaseClient):
         """Get a summary of the jobs.
 
         Returns:
-            An instance of a NationalInstruments.SystemsManagementService.Model.API.JobsSummaryResponse.
+            An instance of a JobsSummaryResponse.
 
         Raises:
             ApiException: if unable to communicate with the Systems Service
@@ -105,7 +105,7 @@ class SystemsClient(BaseClient):
             query: The request to query the jobs.
 
         Returns:
-            The response to the query.
+            An instance of QueryJobsRequest.
 
         Raises:
             ApiException: if unable to communicate with the Systems Service

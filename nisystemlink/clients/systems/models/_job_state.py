@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class JobState(Enum):
-    """The state of the jobs."""
+    """The state of the job."""
 
     SUCCEEDED = "SUCCEEDED"
     OUTOFQUEUE = "OUTOFQUEUE"
