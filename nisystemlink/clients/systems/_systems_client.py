@@ -97,3 +97,19 @@ class SystemsClient(BaseClient):
         """
         ...
 
+    @post("query-jobs")
+    def query_jobs(self, query: models.QueryJobsRequest) -> models.QueryJobsResponse:
+        """Query the jobs.
+
+        Args:
+            query: The request to query the jobs.
+
+        Returns:
+            The response to the query.
+
+        Raises:
+            ApiException: if unable to communicate with the Systems Service
+                or provided an invalid argument.
+        """
+        ...
+
