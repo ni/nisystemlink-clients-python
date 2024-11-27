@@ -113,3 +113,20 @@ class SystemsClient(BaseClient):
         """
         ...
 
+    @post("cancel-jobs")
+    def cancel_jobs(
+        self, job_ids: List[models.CancelJobRequest]
+    ) -> models.CancelJobResponse:
+        """Cancel the jobs.
+
+        Args:
+            job_ids: List of CancelJobRequest.
+
+        Returns:
+            The errors that appear while attempting the operation.
+
+        Raises:
+            ApiException: if unable to communicate with the Systems Service
+                or provided an invalid argument.
+        """
+        ...
