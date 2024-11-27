@@ -84,3 +84,16 @@ class SystemsClient(BaseClient):
         """
         ...
 
+    @get("get-jobs-summary")
+    def get_job_summary(self) -> models.JobSummaryResponse:
+        """Get a summary of the jobs.
+
+        Returns:
+            An instance of a NationalInstruments.SystemsManagementService.Model.API.JobsSummaryResponse.
+
+        Raises:
+            ApiException: if unable to communicate with the Systems Service
+                or provided an invalid argument.
+        """
+        ...
+
