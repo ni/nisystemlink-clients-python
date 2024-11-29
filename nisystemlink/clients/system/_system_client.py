@@ -11,7 +11,7 @@ from nisystemlink.clients.core._uplink._methods import (
 from . import models
 
 
-class SystemsClient(BaseClient):
+class SystemClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
 
@@ -22,7 +22,7 @@ class SystemsClient(BaseClient):
                 is used to obtain the configuration.
 
         Raises:
-            ApiException: if unable to communicate with the Systems Service.
+            ApiException: if unable to communicate with the System Service.
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
@@ -63,7 +63,7 @@ class SystemsClient(BaseClient):
             The list of jobs that matched the criteria.
 
         Raises:
-            ApiException: if unable to communicate with the Systems Service
+            ApiException: if unable to communicate with the System Service
                 or provided an invalid argument.
         """
         ...
@@ -79,7 +79,7 @@ class SystemsClient(BaseClient):
             The job that was created.
 
         Raises:
-            ApiException: if unable to communicate with the Systems Service
+            ApiException: if unable to communicate with the System Service
                 or provided an invalid argument.
         """
         ...
@@ -92,7 +92,7 @@ class SystemsClient(BaseClient):
             An instance of a JobsSummaryResponse.
 
         Raises:
-            ApiException: if unable to communicate with the Systems Service
+            ApiException: if unable to communicate with the System Service
                 or provided an invalid argument.
         """
         ...
@@ -108,7 +108,7 @@ class SystemsClient(BaseClient):
             An instance of QueryJobsRequest.
 
         Raises:
-            ApiException: if unable to communicate with the Systems Service
+            ApiException: if unable to communicate with the System Service
                 or provided an invalid argument.
         """
         ...
@@ -126,7 +126,7 @@ class SystemsClient(BaseClient):
             The errors that appear while attempting the operation.
 
         Raises:
-            ApiException: if unable to communicate with the Systems Service
+            ApiException: if unable to communicate with the System Service
                 or provided an invalid argument.
         """
         ...
