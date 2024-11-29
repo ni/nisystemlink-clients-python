@@ -11,11 +11,11 @@ class JobSummaryResponse(JsonModel):
     error: Optional[HttpError] = None
     """Represents the standard error structure."""
 
-    activeCount: Optional[int] = None
+    active_count: Optional[int] = None
     """The number of active jobs."""
 
-    failedCount: Optional[int] = None
+    failed_count: Optional[int] = None
     """The number of failed jobs."""
 
-    succeededCount: Optional[int] = None
+    succeeded_count: Optional[int] = None
     """The number of succeeded jobs."""
