@@ -1,10 +1,10 @@
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.system import SystemClient
 from nisystemlink.clients.system.models import (
-    JobState,
-    CreateJobRequest,
-    QueryJobsRequest,
     CancelJobRequest,
+    CreateJobRequest,
+    JobState,
+    QueryJobsRequest,
 )
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise

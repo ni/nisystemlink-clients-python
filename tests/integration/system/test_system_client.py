@@ -1,14 +1,14 @@
-import pytest
-from typing import List, Generator, Callable
+from typing import List
 
+import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.system import SystemClient
 from nisystemlink.clients.system.models import (
-    CreateJobResponse,
+    CancelJobRequest,
     CreateJobRequest,
+    CreateJobResponse,
     JobSummaryResponse,
     QueryJobsRequest,
-    CancelJobRequest,
 )
 
 

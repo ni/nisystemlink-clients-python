@@ -1,10 +1,10 @@
-from typing import Dict, List, Optional
 from datetime import datetime
+from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._job_state import JobState
 from ._job_config import JobConfig
+from ._job_state import JobState
 
 
 class JobResult(JsonModel):

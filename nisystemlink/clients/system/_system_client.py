@@ -1,5 +1,4 @@
-from typing import Optional, List
-from uplink import Query
+from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -7,6 +6,7 @@ from nisystemlink.clients.core._uplink._methods import (
     get,
     post,
 )
+from uplink import Query
 
 from . import models
 
