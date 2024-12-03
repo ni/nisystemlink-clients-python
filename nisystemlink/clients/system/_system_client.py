@@ -22,7 +22,7 @@ class SystemClient(BaseClient):
                 is used to obtain the configuration.
 
         Raises:
-            ApiException: if unable to communicate with the System Service.
+            ApiException: if unable to communicate with the ``/nisysmgmt`` Service.
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
@@ -63,7 +63,7 @@ class SystemClient(BaseClient):
             The list of jobs that matched the criteria.
 
         Raises:
-            ApiException: if unable to communicate with the System Service
+            ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
         ...
@@ -79,7 +79,7 @@ class SystemClient(BaseClient):
             The job that was created.
 
         Raises:
-            ApiException: if unable to communicate with the System Service
+            ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
         ...
@@ -92,7 +92,7 @@ class SystemClient(BaseClient):
             An instance of a JobsSummaryResponse.
 
         Raises:
-            ApiException: if unable to communicate with the System Service
+            ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
         ...
@@ -108,7 +108,7 @@ class SystemClient(BaseClient):
             An instance of QueryJobsRequest.
 
         Raises:
-            ApiException: if unable to communicate with the System Service
+            ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
         ...
@@ -126,7 +126,7 @@ class SystemClient(BaseClient):
             The errors that appear while attempting the operation.
 
         Raises:
-            ApiException: if unable to communicate with the System Service
+            ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
         ...

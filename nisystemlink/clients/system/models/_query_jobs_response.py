@@ -1,17 +1,18 @@
 from typing import List, Optional
 
+from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._http_error import HttpError
+from ._job import Job
 
 
 class QueryJobsResponse(JsonModel):
     """Model for response of a query request."""
 
-    error: Optional[HttpError] = None
+    error: Optional[ApiError] = None
     """Represents the standard error structure."""
 
-    data: Optional[List[str]] = None
+    data: Optional[List[Job]] = []
     """The data returned by the query."""
 
     count: Optional[int] = None

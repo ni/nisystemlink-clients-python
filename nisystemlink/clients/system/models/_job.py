@@ -1,10 +1,36 @@
 from datetime import datetime
+from enum import Enum
 from typing import Dict, List, Optional
+
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._job_config import JobConfig
-from ._job_state import JobState
+
+class JobState(Enum):
+    """The state of the job."""
+
+    SUCCEEDED = "SUCCEEDED"
+    OUTOFQUEUE = "OUTOFQUEUE"
+    INQUEUE = "INQUEUE"
+    INPROGRESS = "INPROGRESS"
+    CANCELED = "CANCELED"
+    FAILED = "FAILED"
+
+
+class JobConfig(JsonModel):
+    """The configuration of the job."""
+
+    user: Optional[str] = None
+    """The user who created the job."""
+
+    tgt: Optional[List[str]] = None
+    """The target systems for the job."""
+
+    fun: Optional[List[str]] = None
+    """Salt functions related to the job."""
+
+    arg: Optional[List[List[str]]] = None
+    """Arguments of the salt functions."""
 
 
 class JobResult(JsonModel):

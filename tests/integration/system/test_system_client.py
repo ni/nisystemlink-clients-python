@@ -1,6 +1,7 @@
 from typing import List
 
 import pytest
+from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.system import SystemClient
 from nisystemlink.clients.system.models import (
@@ -153,11 +154,11 @@ class TestSystemClient:
         assert len(response) == 1
 
     def test__list_jobs__Invalid_system_id__fails(self, client: SystemClient):
-        with pytest.raises(Exception):
+        with pytest.raises(ApiException):
             client.list_jobs(system_id="Invalid_system_id")
 
     def test__list_jobs__Invalid_jid__fails(self, client: SystemClient):
-        with pytest.raises(Exception):
+        with pytest.raises(ApiException):
             client.list_jobs(jid="Invalid_jid")
 
     def test__get_job_summary__succeeds(self, client: SystemClient):
