@@ -8,7 +8,6 @@ from nisystemlink.clients.system.models import (
     CancelJobRequest,
     CreateJobRequest,
     CreateJobResponse,
-    JobSummaryResponse,
     QueryJobsRequest,
 )
 
@@ -96,7 +95,7 @@ class TestSystemClient:
         response = create_job(job)
 
         assert response is not None
-        assert response.jid is not ""
+        assert response.jid != ""
         assert response.arg == arg
         assert response.tgt == tgt
         assert response.metadata == metadata
@@ -184,6 +183,7 @@ class TestSystemClient:
 
         assert response is not None
         assert response.data is not None
+        assert response.count is not None
         assert len(response.data) == response.count > 0
 
     def test__query_jobs__filter_config_fun_fails(self, client: SystemClient):
