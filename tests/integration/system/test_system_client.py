@@ -33,8 +33,6 @@ def create_job(
 
     yield _create_job
 
-    from nisystemlink.clients.system.models import CancelJobRequest
-
     job_requests = [
         CancelJobRequest(jid=response.jid, tgt=response.tgt[0])
         for response in responses
@@ -78,7 +76,7 @@ def create_multiple_jobs(
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestSystemClient:
-    def test__create_job__succeeds(
+    def test__create_job__one_job_created_with_right_field_values(
         self,
         create_job,
     ):
@@ -98,13 +96,16 @@ class TestSystemClient:
         response = create_job(job)
 
         assert response is not None
-        assert response.jid is not None
+        assert response.jid is not ""
         assert response.arg == arg
         assert response.tgt == tgt
         assert response.metadata == metadata
         assert response.fun == fun
+        assert response.error is None
 
-    def test__list_jobs__single_job__succeeds(self, create_job, client: SystemClient):
+    def test__list_jobs__list_single_job_succeeds(
+        self, create_job, client: SystemClient
+    ):
         arg = [["A description"]]
         tgt = [
             "HVM_domU--SN-ec200972-eeca-062e-5bf5-017a25451b39--MAC-0A-E1-20-D6-96-2B"
@@ -132,76 +133,82 @@ class TestSystemClient:
         assert response_job.metadata == metadata
         assert response_job.config.fun == fun
 
-    def test__list_jobs__multiple_jobs__succeeds(
+    def test__list_jobs__list_multiple_jobs_succeeds(
         self, create_multiple_jobs, client: SystemClient
     ):
         response = client.list_jobs(system_id=create_multiple_jobs[0].tgt[0])
-        assert response is not None
         assert len(response) == 2
 
-    def test__list_jobs__multiple_jobs_take_one__succeeds(
+    def test__list_jobs__list_multiple_jobs_take_one_succeeds(
         self, create_multiple_jobs, client: SystemClient
     ):
         response = client.list_jobs(system_id=create_multiple_jobs[0].tgt[0], take=1)
-        assert response is not None
         assert len(response) == 1
 
-    def test__list_jobs__multiple_jobs_skip_one__succeeds(
+    def test__list_jobs__list_multiple_jobs_skip_one_succeeds(
         self, create_multiple_jobs, client: SystemClient
     ):
         response = client.list_jobs(system_id=create_multiple_jobs[0].tgt[0], skip=1)
-        assert response is not None
         assert len(response) == 1
 
-    def test__list_jobs__Invalid_system_id__fails(self, client: SystemClient):
-        with pytest.raises(ApiException):
-            client.list_jobs(system_id="Invalid_system_id")
+    def test__list_jobs__invalid_system_id(self, client: SystemClient):
+        response = client.list_jobs(system_id="Invalid_system_id")
+        assert response == []
 
-    def test__list_jobs__Invalid_jid__fails(self, client: SystemClient):
-        with pytest.raises(ApiException):
-            client.list_jobs(jid="Invalid_jid")
+    def test__list_jobs__invalid_jid(self, client: SystemClient):
+        response = client.list_jobs(jid="Invalid_jid")
+        assert response == []
 
-    def test__get_job_summary__succeeds(self, client: SystemClient):
+    def test__get_job_summary__returns_job_summary(self, client: SystemClient):
         response = client.get_job_summary()
 
         assert response is not None
-        assert isinstance(response, JobSummaryResponse)
+        assert response.active_count is not None
+        assert response.failed_count is not None
+        assert response.succeeded_count is not None
+        assert response.error is None
 
-    def test__query_jobs__take_filter__succeeds(self, client: SystemClient):
+    def test__query_jobs__take_one_job_succeeds(self, client: SystemClient):
         query = QueryJobsRequest(take=1)
         response = client.query_jobs(query=query)
 
         assert response is not None
-        assert response.count is not None
         assert response.data is not None
-        assert isinstance(response.data, list)
-        assert response.count == 1
+        assert len(response.data) == response.count == 1
 
-    def test__query_jobs__config_fun_filter__succeeds(self, client: SystemClient):
+    def test__query_jobs__filter_config_fun_succeeds(self, client: SystemClient):
         query = QueryJobsRequest(
             filter='config.fun.Contains("system.set_computer_desc")'
         )
         response = client.query_jobs(query=query)
 
         assert response is not None
-        assert response.count is not None
         assert response.data is not None
-        assert isinstance(response.data, list)
-        assert response.count > 0
+        assert len(response.data) == response.count > 0
 
-    def test__query_jobs__config_jid_filter__succeeds(
+    def test__query_jobs__filter_config_fun_fails(self, client: SystemClient):
+        query = QueryJobsRequest(
+            filter='config.fun.Contains("system.set_computer_desc")'
+        )
+        with pytest.raises(ApiException):
+            client.query_jobs(query=query)
+
+    def test__query_jobs__filter_config_jid_succeeds(
         self, create_multiple_jobs, client: SystemClient
     ):
         query = QueryJobsRequest(filter=f"jid={create_multiple_jobs[0].jid}")
         response = client.query_jobs(query=query)
 
         assert response is not None
-        assert response.count is not None
         assert response.data is not None
-        assert isinstance(response.data, list)
-        assert response.count == 1
+        assert len(response.data) == response.count == 1
 
-    def test__cancel_jobs__single_job__succeeds(self, client: SystemClient):
+    def test__query_jobs__filter_config_jid_fails(self, client: SystemClient):
+        query = QueryJobsRequest(filter="jid=Invalid_jid")
+        with pytest.raises(ApiException):
+            client.query_jobs(query=query)
+
+    def test__cancel_jobs__cancel_single_job_succeeds(self, client: SystemClient):
         arg = [["A description"]]
         tgt = [
             "HVM_domU--SN-ec200972-eeca-062e-5bf5-017a25451b39--MAC-0A-E1-20-D6-96-2B"
@@ -221,7 +228,7 @@ class TestSystemClient:
 
         assert cancel_response.error is None
 
-    def test__cancel_jobs__multiple_job__succeeds(self, client: SystemClient):
+    def test__cancel_jobs__cancel_multiple_job_succeeds(self, client: SystemClient):
         arg_1 = [["A description"]]
         arg_2 = [["Another description"]]
         tgt = [
@@ -252,7 +259,7 @@ class TestSystemClient:
 
         assert cancel_response.error is None
 
-    def test__cancel_jobs__Invalid_jid__fails(self, client: SystemClient):
+    def test__cancel_jobs__cancel_with_invalid_jid_fails(self, client: SystemClient):
         cancel_job_request = CancelJobRequest(jid="Invalid_jid", tgt="Invalid_tgt")
         cancel_response = client.cancel_jobs([cancel_job_request])
 
