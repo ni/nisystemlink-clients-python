@@ -1,0 +1,1 @@
+from nisystemlink.clients.assetManagement._asset_management_client import AssetManagementClient
