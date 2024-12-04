@@ -7,13 +7,13 @@ class CreateJobRequest(JsonModel):
     """Model for create job request."""
 
     arg: Optional[List[List[str]]] = None
-    """Arguments of the salt functions."""
+    """List of arguments to the functions specified in the "fun" property."""
 
     tgt: Optional[List[str]] = None
-    """The target systems for the job."""
+    """List of system IDs on which to run the job."""
 
     fun: Optional[List[str]] = None
-    """Salt functions related to the job."""
+    """Functions contained in the job."""
 
     metadata: Optional[Dict[str, Any]] = None
-    """The metadata associated with the job."""
+    """Additional information of the job."""

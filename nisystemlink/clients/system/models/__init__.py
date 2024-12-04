@@ -1,4 +1,4 @@
-from ._job import Job, JobState
+from ._job import Job, JobState, JobConfig, JobResult
 from ._create_job_request import CreateJobRequest
 from ._create_job_response import CreateJobResponse
 from ._job_summary_response import JobSummaryResponse

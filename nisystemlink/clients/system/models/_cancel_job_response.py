@@ -7,5 +7,5 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class CancelJobResponse(JsonModel):
     """Model for response of a cancel job request."""
 
-    error: Optional[ApiError] = None
+    error: ApiError
     """Represents the standard error structure."""

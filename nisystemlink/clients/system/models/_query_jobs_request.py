@@ -6,7 +6,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class QueryJobsRequest(JsonModel):
     """Model for query job request."""
 
-    skip: Optional[int] = None
+    skip: int
     """The number of jobs to skip."""
 
     take: Optional[int] = None

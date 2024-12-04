@@ -152,11 +152,11 @@ class TestSystemClient:
 
     def test__list_jobs__invalid_system_id(self, client: SystemClient):
         response = client.list_jobs(system_id="Invalid_system_id")
-        assert response == []
+        assert len(response) == 0
 
     def test__list_jobs__invalid_jid(self, client: SystemClient):
         response = client.list_jobs(jid="Invalid_jid")
-        assert response == []
+        assert len(response) == 0
 
     def test__get_job_summary__returns_job_summary(self, client: SystemClient):
         response = client.get_job_summary()

@@ -7,14 +7,14 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class JobSummaryResponse(JsonModel):
     """Model for request of jobs summary response."""
 
-    error: Optional[ApiError] = None
+    error: ApiError
     """Represents the standard error structure."""
 
-    active_count: Optional[int] = None
+    active_count: int
     """The number of active jobs."""
 
-    failed_count: Optional[int] = None
+    failed_count: int
     """The number of failed jobs."""
 
-    succeeded_count: Optional[int] = None
+    succeeded_count: int
     """The number of succeeded jobs."""

@@ -9,11 +9,11 @@ from ._job import Job
 class QueryJobsResponse(JsonModel):
     """Model for response of a query request."""
 
-    error: Optional[ApiError] = None
+    error: ApiError
     """Represents the standard error structure."""
 
-    data: Optional[List[Job]] = []
+    data: Optional[List[Job]] = None
     """The data returned by the query."""
 
-    count: Optional[int] = None
+    count: int
     """The total number of resources that matched the query."""

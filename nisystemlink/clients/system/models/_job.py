@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -59,23 +59,23 @@ class Job(JsonModel):
     id: Optional[str] = None
     """The ID of the system that the job targets."""
 
-    created_timestamp: Optional[datetime] = None
+    created_timestamp: datetime
     """The timestamp representing when the job was created."""
 
-    last_updated_timestamp: Optional[datetime] = None
+    last_updated_timestamp: datetime
     """The timestamp representing when the job was last updated."""
 
     dispatched_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was dispatched."""
 
-    state: Optional[JobState] = None
+    state: JobState
     """The state of the job."""
 
-    metadata: Optional[Dict[str, str]] = None
+    metadata: Optional[Dict[str, Any]] = None
     """The metadata associated with the job."""
 
-    config: Optional[JobConfig] = None
+    config: JobConfig
     """The configuration of the job."""
 
-    result: Optional[JobResult] = None
+    result: JobResult
     """The result of the job."""
