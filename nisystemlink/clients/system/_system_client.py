@@ -116,7 +116,7 @@ class SystemClient(BaseClient):
     @post("cancel-jobs")
     def cancel_jobs(
         self, job_ids: List[models.CancelJobRequest]
-    ) -> models.CancelJobResponse:
+    ) -> models.CancelJobResponse | None:
         """Cancel the jobs.
 
         Args:

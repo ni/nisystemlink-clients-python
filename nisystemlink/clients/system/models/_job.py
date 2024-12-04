@@ -59,23 +59,26 @@ class Job(JsonModel):
     id: Optional[str] = None
     """The ID of the system that the job targets."""
 
-    created_timestamp: datetime
+    created_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was created."""
 
-    last_updated_timestamp: datetime
+    last_updated_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was last updated."""
 
     dispatched_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was dispatched."""
 
-    state: JobState
+    state: Optional[JobState] = None
     """The state of the job."""
 
     metadata: Optional[Dict[str, Any]] = None
     """The metadata associated with the job."""
 
-    config: JobConfig
+    config: Optional[JobConfig] = None
     """The configuration of the job."""
 
-    result: JobResult
+    result: Optional[JobResult] = None
     """The result of the job."""
+
+    class Config:
+        orm_mode = True
