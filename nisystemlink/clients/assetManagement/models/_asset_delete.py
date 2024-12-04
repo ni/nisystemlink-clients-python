@@ -1,7 +1,6 @@
 from typing import List, Optional
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-
-from ._error import Error
 
 class DeleteAssetsRequest(JsonModel):
     """Model for request body containing IDs of the assets to delete all information for."""
@@ -12,7 +11,7 @@ class DeleteAssetsRequest(JsonModel):
 class DeleteAssetsResponse(JsonModel):
     """Model for delete Assets Response containing the ids of the assets which were deleted, the ids of the assets which failed to be deleted and any errors encountered."""
 
-    error: Error
+    error: Optional[ApiError] = None
 
     ids: Optional[List[str]] = None
     "Gets or sets array of asset identifiers which were deleted."

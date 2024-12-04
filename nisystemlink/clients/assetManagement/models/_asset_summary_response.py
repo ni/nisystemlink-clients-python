@@ -1,13 +1,11 @@
 from typing import Optional
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-
-from ._error import Error
-
 
 class AssetSummaryResponse(JsonModel):
     """Model for asset summary response containing the total number of assets, the number of assets which are active, i.e. present in a connected system, and the number of assets which are not active."""
 
-    error: Optional[Error] = None
+    error: Optional[ApiError] = None
 
     active: int
     """Gets or sets number of assets which are active, i.e. present in a connected system."""

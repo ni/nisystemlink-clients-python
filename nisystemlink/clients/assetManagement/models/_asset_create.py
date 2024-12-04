@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._error import Error
+from nisystemlink.clients.core._api_error import ApiError
 from ._asset import Asset, AssetBusType, AssetDiscoveryType, AssetLocation, AssetType, ExternalCalibration, SelfCalibration, TemperatureSensor
 
 class AssetCreate(JsonModel):
@@ -54,7 +54,7 @@ class AssetCreate(JsonModel):
 
     self_calibration: SelfCalibration
 
-    is_ni_asset: Optional[bool] = None
+    is_n_i_asset: Optional[bool] = None
     """Gets or sets whether this asset is an NI asset (true) or a third-party asset (false)."""
 
     workspace: Optional[str] = None
@@ -95,7 +95,7 @@ class CreateAssetsRequest(JsonModel):
 class AssetsCreatePartialSuccessResponse(JsonModel):
     """Model for create Assets Partial Success Response."""
 
-    error: Optional[Error] = None
+    error: Optional[ApiError] = None
 
     assets: Optional[List[Asset]] = None
     """Gets or sets array of created assets."""

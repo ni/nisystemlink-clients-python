@@ -173,7 +173,7 @@ class ExternalCalibration(JsonModel):
     next_custom_due_date: Optional[str] = None
     """Gets or sets ISO-8601 formatted timestamp specifying the date for the next external calibration."""
 
-    resolved_due_date: str
+    resolved_due_date: Optional[str] = None
     """Gets ISO-8601 formatted timestamp specifying the resolved due date for external calibration. This takes into account NextCustomDueDate, Asset.CustomCalibrationInterval and NextRecommendedDate."""
 
     comments: Optional[str] = None
