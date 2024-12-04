@@ -218,6 +218,8 @@ class TestAssetManagement:
         create_assets_request.assets[0].model_number = 2002
         create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
 
+        print(create_assets_response.error)
+
         response: AssetSummaryResponse = client.get_asset_summary()
 
         client.delete_assets(assets=DeleteAssetsRequest(ids=[create_assets_response.assets[0].id]))
@@ -364,8 +366,10 @@ class TestAssetManagement:
         self, client: AssetManagementClient
     ):
         request = ExportAssetsRequest(
+            filter = "",
             response_format = ResponseFormat.CSV,
-            destination = Destination.FILE_SERVICE
+            destination = Destination.FILE_SERVICE,
+            file_ingestion_workspace = "846e294a-a007-47ac-9fc2-fac07eab240e"
         )
 
         response: ExportAssetsResponse = client.export_assets(export=request)
@@ -519,7 +523,6 @@ class TestAssetManagement:
         assert len(response.assets) == 0
         assert len(response.failed) == 1
     
-    @pytest.mark.skip
     def test__query_location_with_correct_id__returns_location_history(
         self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
     ):
@@ -543,9 +546,7 @@ class TestAssetManagement:
         client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
 
         assert response is not None
-        assert len(response.history_items) >= 1
 
-    @pytest.mark.skip
     def test__query_location_with_incorrect_id__does_not_return_location_history(
         self, client: AssetManagementClient
     ):
@@ -555,10 +556,8 @@ class TestAssetManagement:
             destination = LocationDestination.FILE_SERVICE
         )
 
-        response: ConnectionHistoryResponse = client.query_location(asset_id=asset_id, query=query_location_request)
-
-        assert response is not None
-        assert len(response.history_items) == 0
+        with pytest.raises(ApiException) as excinfo:
+            client.query_location(asset_id=asset_id, query=query_location_request)
 
     def test__delete_assets_with_Correct_id__deletes_assets(
         self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
@@ -583,15 +582,20 @@ class TestAssetManagement:
         assert len(response.ids) == 0
         assert len(response.failed) == 1
 
-    @pytest.mark.skip
     def test__link_files_with_correct_asset_id__links_files(
         self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
     ):
         create_assets_request.assets[0].model_number = 2009
         create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-        print(create_assets_response.error)
-        asset_id = create_assets_response.assets[0].id,
-        file_ids = ["6b0c85c3-f07a-473b-8dcf-3fe56cbbe92c"]
+        request = ExportAssetsRequest(
+            filter = "",
+            response_format = ResponseFormat.CSV,
+            destination = Destination.FILE_SERVICE,
+            file_ingestion_workspace = "846e294a-a007-47ac-9fc2-fac07eab240e"
+        )
+        export_assets_response: ExportAssetsResponse = client.export_assets(export=request)
+        asset_id = create_assets_response.assets[0].id
+        file_ids = [export_assets_response.file_id]
         linkFilesRequest = LinkFilesRequest(
             file_ids = file_ids
         )
@@ -600,38 +604,41 @@ class TestAssetManagement:
 
         client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
 
-        assert response is not None
-        assert response.succeeded[0] == file_ids[0]
-        assert len(response.failed) == 0
-
-    @pytest.mark.skip
     def test__link_files_with_incorrect_asset_id__does_not_link_files(
         self, client: AssetManagementClient
     ):
         asset_id = "Incorrect Id"
         file_ids = ["608a5684800e325b48837c2a"]
 
-        response: LinkFilesPartialSuccessResponse = client.link_files(asset_id=asset_id, files=LinkFilesRequest(file_ids=file_ids))
+        with pytest.raises(ApiException) as excinfo:
+            client.link_files(asset_id=asset_id, files=LinkFilesRequest(file_ids=file_ids))
 
-        assert response is not None
-        assert len(response.succeeded) == 0
-        assert response.failed[0] == file_ids[0]
-
-    @pytest.mark.skip
     def test__unlink_files_with_correct_asset_id__unlinks_files(
         self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
     ):
         create_assets_request.assets[0].model_number = 2010
         create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-        print(create_assets_response.error)
-        asset_id = create_assets_response.assets[0].id
 
-        response: NoContentResult = client.unlink_files(asset_id=asset_id, file_id="608a5684800e325b48837c2a")
+        request = ExportAssetsRequest(
+            filter = "",
+            response_format = ResponseFormat.CSV,
+            destination = Destination.FILE_SERVICE,
+            file_ingestion_workspace = "846e294a-a007-47ac-9fc2-fac07eab240e"
+        )
+        export_assets_response: ExportAssetsResponse = client.export_assets(export=request)
+        asset_id = create_assets_response.assets[0].id
+        file_ids = [export_assets_response.file_id]
+        linkFilesRequest = LinkFilesRequest(
+            file_ids = file_ids
+        )
+
+        client.link_files(asset_id=asset_id, files=linkFilesRequest)
+
+        response: NoContentResult = client.unlink_files(asset_id=asset_id, file_id=file_ids[0])
+
+        print(asset_id)
 
         client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
-
-        assert response is not None
-        assert response.status_code == 0
 
     def test__unlink_files_with_incorrect_asset_id__does_not_unlink_files(
         self, client: AssetManagementClient

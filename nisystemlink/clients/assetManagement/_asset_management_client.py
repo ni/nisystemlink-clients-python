@@ -177,18 +177,11 @@ class AssetManagementClient(BaseClient):
         """
         ...
 
-    @post("assets/{asset_id}/history/query-location",
-        args = [
-            Path("asset_id"),
-            Body("query"),
-            Header("x-ni-api-key"),
-        ]
-    )
+    @post("assets/{asset_id}/history/query-location")
     def query_location(
         self,
-        asset_id: str,
         query: models.QueryLocationHistoryRequest,
-        x_ni_api_key: Optional[str] = None,
+        asset_id: str
     ) -> models.ConnectionHistoryResponse:
         """Query Asset Location History.
 
@@ -225,17 +218,12 @@ class AssetManagementClient(BaseClient):
         """
         ...
 
-    @post("assets/{asset_id}/file",
-        args = [
-            Path("asset_id"),
-            Body("files")
-        ]      
-    )
+    @post("assets/{asset_id}/file")
     def link_files(
         self,
-        asset_id: str,
-        files: models.LinkFilesRequest
-    ) -> models.LinkFilesPartialSuccessResponse:
+        files: models.LinkFilesRequest,
+        asset_id: str
+    ) -> Optional[models.LinkFilesPartialSuccessResponse]:
         """Link files to Asset.
 
         Args:
@@ -256,7 +244,7 @@ class AssetManagementClient(BaseClient):
         self,
         asset_id: str,
         file_id: str
-    ) -> models.NoContentResult:
+    ) -> Optional[models.NoContentResult]:
         """Unlink files from Asset.
 
         Args:
