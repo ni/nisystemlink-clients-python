@@ -1,3 +1,4 @@
+import json
 from typing import BinaryIO, Optional
 
 from nisystemlink.clients import core
@@ -13,7 +14,7 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
-from uplink import Part, Path
+from uplink import Field, Part, Path, multipart, Body
 
 from . import models
 
@@ -87,11 +88,11 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @post("notebook", args=[Part("metadata"), Part("content")])
+    @post("notebook", args=[Field("metadata"), Field("content")])
     def create_notebook(
         self,
         metadata: models.NotebookMetadata,
-        content: BinaryIO,
+        content: str,
     ) -> models.NotebookMetadata:
         """Creates a new notebook.
 
@@ -108,7 +109,7 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @post("notebook/{id}/query")
+    @post("notebook/query")
     def query_notebook(
         self, query: models.QueryNotebookRequest
     ) -> models.QueryNotebookResponse:
