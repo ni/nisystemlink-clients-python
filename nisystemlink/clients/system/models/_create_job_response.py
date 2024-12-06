@@ -1,3 +1,4 @@
+from pydantic import Field
 from typing import Optional
 
 from nisystemlink.clients.core import ApiError
@@ -11,5 +12,5 @@ class CreateJobResponse(CreateJobRequest):
     error: Optional[ApiError] = None
     """Represents the standard error structure."""
 
-    jid: Optional[str] = None
+    id: Optional[str] = Field(None, alias="jid")
     """The job ID."""

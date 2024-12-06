@@ -1,3 +1,4 @@
+from pydantic import Field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
@@ -23,27 +24,27 @@ class JobConfig(JsonModel):
     user: Optional[str] = None
     """The user who created the job."""
 
-    tgt: Optional[List[str]] = None
+    target_systems: Optional[List[str]] = Field(None, alias="tgt")
     """The target systems for the job."""
 
-    fun: Optional[List[str]] = None
+    functions: Optional[List[str]] = Field(None, alias="fun")
     """Salt functions related to the job."""
 
-    arg: Optional[List[List[str]]] = None
+    arguments: Optional[List[List[Any]]] = Field(None, alias="args")
     """Arguments of the salt functions."""
 
 
 class JobResult(JsonModel):
-    jid: Optional[str] = None
+    id: Optional[str] = Field(None, alias="jid")
     """The job ID."""
 
-    id: Optional[str] = None
+    system_id: Optional[str] = Field(None, alias="id")
     """The ID of the system that the job targets."""
 
-    retcode: Optional[List[int]] = None
+    return_code: Optional[List[int]] = None
     """Return code of the job."""
 
-    return_: Optional[List[str]] = None
+    return_: Optional[List[Any]] = None
     """Return value of the job."""
 
     success: Optional[bool] = None
@@ -53,10 +54,10 @@ class JobResult(JsonModel):
 class Job(JsonModel):
     """Job Model."""
 
-    jid: Optional[str] = None
+    id: Optional[str] = Field(None, alias="jid")
     """The job ID."""
 
-    id: Optional[str] = None
+    system_id: Optional[str] = Field(None, alias="id")
     """The ID of the system that the job targets."""
 
     created_timestamp: Optional[datetime] = None

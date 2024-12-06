@@ -30,9 +30,9 @@ tgt = ["HVM_domU--SN-ec200972-eeca-062e-5bf5-017a25451b39--MAC-0A-E1-20-D6-96-2B
 fun = ["system.set_computer_desc"]
 metadata = {"queued": True, "refresh_minion_cache": {"grains": True}}
 job = CreateJobRequest(
-    arg=arg,
-    tgt=tgt,
-    fun=fun,
+    arguments=arg,
+    target_systems=tgt,
+    functions=fun,
     metadata=metadata,
 )
 
@@ -53,5 +53,5 @@ query_jobs_response = client.query_jobs(query_job)
 
 
 # Cancel a job
-cancel_job_request = CancelJobRequest(jid=create_job_response.jid, tgt=tgt[0])
+cancel_job_request = CancelJobRequest(id=create_job_response.id, tgt=tgt[0])
 cancel_job_response = client.cancel_jobs([cancel_job_request])

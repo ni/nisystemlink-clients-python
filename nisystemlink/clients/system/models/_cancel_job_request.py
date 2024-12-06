@@ -1,3 +1,4 @@
+from pydantic import Field
 from typing import Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -6,7 +7,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class CancelJobRequest(JsonModel):
     """Model for cancel job request."""
 
-    jid: Optional[str] = None
+    id: Optional[str] = Field(None, alias="jid")
     """The ID of the job to cancel."""
 
     system_id: Optional[str] = None

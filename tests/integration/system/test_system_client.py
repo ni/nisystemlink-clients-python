@@ -12,7 +12,8 @@ from nisystemlink.clients.system.models import (
 )
 
 TARGET_SYSTEM = (
-    "HVM_domU--SN-ec200972-eeca-062e-5bf5-33g3g3g3d73b2--MAC-0A-E1-20-D6-96-2B"
+    # "HVM_domU--SN-ec200972-eeca-062e-5bf5-33g3g3g3d73b2--MAC-0A-E1-20-D6-96-2B"
+    "20UAS1L61D--SN-PF2K5S1M--MAC-8C-8C-AA-82-6A-F8"
 )
 METADATA = {"queued": True, "refresh_minion_cache": {"grains": True}}
 SAMPLE_FUN_1 = "system.sample_function_one"
@@ -40,9 +41,9 @@ def create_job(
     yield _create_job
 
     job_requests = [
-        CancelJobRequest(jid=response.jid, system_id=TARGET_SYSTEM)
+        CancelJobRequest(id=response.id, system_id=TARGET_SYSTEM)
         for response in responses
-        if response.jid != ""
+        if response.id != ""
     ]
 
     if len(job_requests):
@@ -64,25 +65,25 @@ def create_multiple_jobs(
     metadata = METADATA
 
     job_1 = CreateJobRequest(
-        arg=arg_1,
-        tgt=tgt,
-        fun=fun_1,
+        arguments=arg_1,
+        target_systems=tgt,
+        functions=fun_1,
         metadata=metadata,
     )
     responses.append(create_job(job_1))
 
     job_2 = CreateJobRequest(
-        arg=arg_2,
-        tgt=tgt,
-        fun=fun_2,
+        arguments=arg_2,
+        target_systems=tgt,
+        functions=fun_2,
         metadata=metadata,
     )
     responses.append(create_job(job_2))
 
     job_3 = CreateJobRequest(
-        arg=arg_1,
-        tgt=tgt,
-        fun=fun_2,
+        arguments=arg_1,
+        target_systems=tgt,
+        functions=fun_2,
         metadata=metadata,
     )
     responses.append(create_job(job_3))
@@ -102,17 +103,17 @@ class TestSystemClient:
         fun = ["system.set_computer_desc_sample_function"]
 
         job = CreateJobRequest(
-            arg=arg,
-            tgt=tgt,
-            fun=fun,
+            arguments=arg,
+            target_systems=tgt,
+            functions=fun,
             metadata=METADATA,
         )
 
         response = create_job(job)
 
         assert response is not None
-        assert response.jid != ""
-        assert response.tgt == tgt
+        assert response.id != ""
+        assert response.target_systems == tgt
         assert response.error is None
 
     def test__get_job_using_target_and_job_id__returns_job_matches_target_and_job_id(
@@ -124,9 +125,9 @@ class TestSystemClient:
         assert len(response) == 1
         [response_job] = response
         print(response)
-        assert response_job.jid == first_job.jid
+        assert response_job.id == first_job.jid
         assert response_job.config is not None
-        assert response_job.config.tgt == first_job.tgt
+        assert response_job.config.target_systems == first_job.tgt
 
     def test__get_jobs_using_target_and_function__return_jobs_match_target_and_function(
         self, create_multiple_jobs, client: SystemClient
@@ -137,13 +138,13 @@ class TestSystemClient:
 
         [response_second_job, response_third_job] = response
 
-        assert response_second_job.jid == second_job.jid
+        assert response_second_job.id == second_job.jid
         assert response_second_job.config is not None
-        assert response_second_job.config.tgt == second_job.tgt
+        assert response_second_job.config.target_systems == second_job.tgt
 
-        assert response_third_job.jid == third_job.jid
+        assert response_third_job.id == third_job.jid
         assert response_third_job.config is not None
-        assert response_third_job.config.tgt == third_job.tgt
+        assert response_third_job.config.target_systems == third_job.tgt
 
     def test__get_job_by_taking_one__return_only_one_job(
         self, create_multiple_jobs, client: SystemClient
@@ -222,14 +223,14 @@ class TestSystemClient:
         tgt = [TARGET_SYSTEM]
         fun = [SAMPLE_FUN_1]
         job = CreateJobRequest(
-            arg=arg,
-            tgt=tgt,
-            fun=fun,
+            arguments=arg,
+            target_systems=tgt,
+            functions=fun,
             metadata=METADATA,
         )
         response = client.create_job(job)
 
-        cancel_job_request = CancelJobRequest(jid=response.jid, tgt=TARGET_SYSTEM)
+        cancel_job_request = CancelJobRequest(id=response.id, tgt=TARGET_SYSTEM)
         cancel_response = client.cancel_jobs([cancel_job_request])
 
         assert cancel_response is None
@@ -243,22 +244,22 @@ class TestSystemClient:
         fun = [SAMPLE_FUN_2]
 
         job_1 = CreateJobRequest(
-            arg=arg_1,
-            tgt=tgt,
-            fun=fun,
+            arguments=arg_1,
+            target_systems=tgt,
+            functions=fun,
             metadata=METADATA,
         )
         response_1 = client.create_job(job_1)
         job_2 = CreateJobRequest(
-            arg=arg_2,
-            tgt=tgt,
-            fun=fun,
+            arguments=arg_2,
+            target_systems=tgt,
+            functions=fun,
             metadata=METADATA,
         )
         response_2 = client.create_job(job_2)
 
-        cancel_job_request_1 = CancelJobRequest(jid=response_1.jid, tgt=TARGET_SYSTEM)
-        cancel_job_request_2 = CancelJobRequest(jid=response_2.jid, tgt=TARGET_SYSTEM)
+        cancel_job_request_1 = CancelJobRequest(id=response_1.id, tgt=TARGET_SYSTEM)
+        cancel_job_request_2 = CancelJobRequest(id=response_2.id, tgt=TARGET_SYSTEM)
         cancel_response = client.cancel_jobs(
             [cancel_job_request_1, cancel_job_request_2]
         )
@@ -268,7 +269,7 @@ class TestSystemClient:
     def test__cancel_with_invalid_jid__cancel_job_returns_error(
         self, client: SystemClient
     ):
-        cancel_job_request = CancelJobRequest(jid="Invalid_jid", tgt="Invalid_tgt")
+        cancel_job_request = CancelJobRequest(id="Invalid_jid", tgt="Invalid_tgt")
         cancel_response = client.cancel_jobs([cancel_job_request])
 
         assert cancel_response is not None
