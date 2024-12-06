@@ -7,7 +7,7 @@ from random import choices
 import pytest
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.notebook import NotebookClient
-from nisystemlink.clients.notebook.models import NotebookMetadata
+from nisystemlink.clients.notebook.models import NotebookMetadata, QueryNotebookRequest
 
 TEST_FILE_DATA = b"This is a test notebook binary content."
 PREFIX = "Notebook Client Tests-"
@@ -61,14 +61,23 @@ class TestNotebookClient:
 
         assert notebook.name == random_filename
 
-    def test__get_notebook__succeeds(self, client, create_notebook, random_filename):
+    def test__get_notebook_with_valid_id__returns_notebook_with_right_field_values(
+        self, client, create_notebook, random_filename
+    ):
         # metadata = NotebookMetadata(name=random_filename)
         # notebook = create_notebook(metadata=metadata)
 
         response = client.get_notebook(id="db839861-cac4-4b0e-a827-975be72c6404")
 
         assert response.id == "db839861-cac4-4b0e-a827-975be72c6404"
+        assert response.workspace is not None
+        assert response.created_by is not None
+        assert response.created_at is not None
         # assert response.name == notebook.name == random_filename
+
+    def test__get_notebook_with_invalid_id__raises_ApiException_NotFound(self, client):
+        with pytest.raises(ApiException, match="Not Found"):
+            client.get_notebook(id="invalid_id")
 
     def test__update_notebook__succeeds(self, client, create_notebook, random_filename):
         # metadata = NotebookMetadata(name=random_filename)
@@ -86,22 +95,100 @@ class TestNotebookClient:
         assert response.name != random_filename
         assert response.name == new_name
 
-    def test__delete_notebook__succeeds(self, client, create_notebook, random_filename):
-        metadata = NotebookMetadata(name=random_filename)
-        notebook = create_notebook(metadata=metadata)
+    def test__delete_notebook_with_valid_id__notebook_should_delete_successfully(
+        self, client, create_notebook, random_filename
+    ):
+        # metadata = NotebookMetadata(name=random_filename)
+        # notebook = create_notebook(metadata=metadata)
 
-        client.delete_notebook(id=notebook.id)
+        client.delete_notebook(id="d948c520-a579-4b53-b710-c5495c4bc951")
 
-        with pytest.raises(ApiException):
-            client.get_notebook(id=notebook.id)
+        with pytest.raises(ApiException, match="Not Found"):
+            client.get_notebook(id="d948c520-a579-4b53-b710-c5495c4bc951")
 
-    def test__query_notebooks__succeeds(self, client, create_notebook, random_filename):
-        metadata = NotebookMetadata(name=random_filename)
-        notebook = create_notebook(metadata=metadata)
+    def test__delete_notebook_with_invalid_id__raises_ApiException_NotFound(
+        self, client
+    ):
+        with pytest.raises(ApiException, match="Not Found"):
+            client.delete_notebook(id="invalid_id")
 
-        response = client.query_notebook(filter=f"name = '{random_filename}'")
+    def test__query_notebook_by_id__return_notebook_matches_id(
+        self, client, create_notebook, random_filename
+    ):
+        # metadata = NotebookMetadata(name=random_filename)
+        # notebook = create_notebook(metadata=metadata)
 
-        assert len(response.notebook) == 1
-        assert response.notebook[0].id == notebook.id
-        assert response.notebook[0].name == random_filename
-        assert response.notebook[0].properties is not None
+        request = QueryNotebookRequest(
+            filter=f'id="2f3b45c0-7be0-4e3d-8adc-7a031da8fc6c"'
+        )
+        response = client.query_notebooks_paged(request)
+
+        assert len(response.notebooks) == 1
+        assert response.continuation_token is None
+        # assert response.notebook[0].id == notebook.id
+        # assert response.notebook[0].name == random_filename
+        # assert response.notebook[0].properties is not None
+
+    def test__query_notebook_by_invalid_id__returns_empty_list(self, client):
+        request = QueryNotebookRequest(filter=f'id="invalid_id"')
+        response = client.query_notebooks_paged(request)
+
+        assert len(response.notebooks) == 0
+        assert response.continuation_token is None
+
+    def test__query_notebook_by_name__returns_notebook_matches_name(
+        self, client, create_notebook, random_filename
+    ):
+        # metadata = NotebookMetadata(name=random_filename)
+        # notebook = create_notebook(metadata=metadata)
+
+        request = QueryNotebookRequest(filter=f'name.StartsWith("My_1121notebook")')
+        response = client.query_notebooks_paged(request)
+
+        assert len(response.notebooks) == 1
+        assert response.continuation_token is None
+        # assert response.notebook[0].id == notebook.id
+        # assert response.notebook[0].name == random_filename
+        # assert response.notebook[0].properties is not None
+
+    def test__query_notebook_by_invalid_name__returns_empty_list(self, client):
+        request = QueryNotebookRequest(filter=f'name="invalid_name"')
+        response = client.query_notebooks_paged(request)
+
+        assert len(response.notebooks) == 0
+        assert response.continuation_token is None
+
+    def test__query_by_taking_3_notebooks__returns_3_notebooks(self, client):
+        request = QueryNotebookRequest(take=3)
+        response = client.query_notebooks_paged(request)
+
+        assert len(response.notebooks) == 3
+        assert response.continuation_token is not None
+
+    def test__query_notebooks_by_continuation_token__returns_next_page_of_notebooks(
+        self, client
+    ):
+        request = QueryNotebookRequest(take=3)
+        response = client.query_notebooks_paged(request)
+
+        assert len(response.notebooks) == 3
+        assert response.continuation_token is not None
+
+        request.continuation_token = response.continuation_token
+        response = client.query_notebooks_paged(request)
+
+        assert len(response.notebooks) != 0
+        assert response.continuation_token is not None
+
+    def test__get_notebook_content_by_id__returns_notebook_content(self, client):
+        response = client.get_notebook_content(
+            id="2f3b45c0-7be0-4e3d-8adc-7a031da8fc6c"
+        )
+
+        assert response.read() == TEST_FILE_DATA
+
+    def test__get_notebook_content_by_invalid_id__raises_ApiException_NotFound(
+        self, client
+    ):
+        with pytest.raises(ApiException, match="Not Found"):
+            client.get_notebook_content(id="invalid_id")

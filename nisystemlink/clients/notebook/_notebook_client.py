@@ -57,7 +57,7 @@ class NotebookClient(BaseClient):
         self,
         id: str,
         metadata: Optional[models.NotebookMetadata] = None,
-        content: Optional[BinaryIO] = None,
+        content: Optional[str] = None,
     ) -> models.NotebookMetadata:
         """Updates a notebook metadata by ID.
 
@@ -110,7 +110,7 @@ class NotebookClient(BaseClient):
         ...
 
     @post("notebook/query")
-    def query_notebook(
+    def query_notebooks_paged(
         self, query: models.QueryNotebookRequest
     ) -> models.QueryNotebookResponse:
         """Queries notebooks.

@@ -8,5 +8,5 @@ from ._notebook_metadata import NotebookMetadata
 class QueryNotebookResponse(WithPaging):
     """Model for a query notebooks response."""
 
-    notebook: Optional[List[NotebookMetadata]] = None
+    notebooks: Optional[List[NotebookMetadata]] = None
     """The list of notebooks."""
