@@ -212,3 +212,30 @@ Get the metadata of a File using its Id and download it.
 .. literalinclude:: ../examples/file/download_file.py
    :language: python
    :linenos:
+
+
+Notebook API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.NotebookClient` class is the primary entry point of the Notebook API.
+
+When constructing a :class:`.NotebookClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.NotebookClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.NotebookClient` object, you can:
+
+* Create, update, query, and delete Notebooks
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete some notebooks.
+
+.. literalinclude:: ../examples/notebook/notebooks.py
+   :language: python
+   :linenos:
