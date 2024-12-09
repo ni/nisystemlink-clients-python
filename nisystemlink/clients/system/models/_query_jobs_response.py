@@ -9,7 +9,7 @@ from ._job import Job
 class QueryJobsResponse(JsonModel):
     """Model for response of a query request."""
 
-    error: ApiError
+    error: Optional[ApiError] = None
     """Represents the standard error structure."""
 
     data: Optional[List[Job]] = None

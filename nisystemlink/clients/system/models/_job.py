@@ -21,13 +21,13 @@ class JobState(Enum):
 class JobConfig(JsonModel):
     """The configuration of the job."""
 
-    user: Optional[str] = None
+    user: str
     """The user who created the job."""
 
-    target_systems: Optional[List[str]] = Field(None, alias="tgt")
+    target_systems: List[str] = Field(alias="tgt")
     """The target systems for the job."""
 
-    functions: Optional[List[str]] = Field(None, alias="fun")
+    functions: List[str] = Field(alias="fun")
     """Salt functions related to the job."""
 
     arguments: Optional[List[List[Any]]] = Field(None, alias="args")
@@ -54,28 +54,28 @@ class JobResult(JsonModel):
 class Job(JsonModel):
     """Job Model."""
 
-    id: Optional[str] = Field(None, alias="jid")
+    id: str = Field(alias="jid")
     """The job ID."""
 
-    system_id: Optional[str] = Field(None, alias="id")
+    system_id: str = Field(alias="id")
     """The ID of the system that the job targets."""
 
-    created_timestamp: Optional[datetime] = None
+    created_timestamp: datetime
     """The timestamp representing when the job was created."""
 
-    last_updated_timestamp: Optional[datetime] = None
+    last_updated_timestamp: datetime
     """The timestamp representing when the job was last updated."""
 
     dispatched_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was dispatched."""
 
-    state: Optional[JobState] = None
+    state: JobState
     """The state of the job."""
 
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Dict[str, Any]
     """The metadata associated with the job."""
 
-    config: Optional[JobConfig] = None
+    config: JobConfig
     """The configuration of the job."""
 
     result: Optional[JobResult] = None

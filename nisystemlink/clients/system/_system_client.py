@@ -1,14 +1,23 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from nisystemlink.clients import core
+from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import (
-    get,
-    post,
-)
+from nisystemlink.clients.core._uplink._methods import get, post, response_handler
 from uplink import Query
+from requests.models import Response
 
 from . import models
+
+
+def _cancel_job_response_handler(response: Response) -> Union[ApiError, None]:
+    """Response handler for Cancel Job response."""
+    if response is None:
+        return None
+
+    cancel_response = response.json()
+
+    return cancel_response.get("error")
 
 
 class SystemClient(BaseClient):
@@ -113,10 +122,11 @@ class SystemClient(BaseClient):
         """
         ...
 
+    @response_handler(_cancel_job_response_handler)
     @post("cancel-jobs")
     def cancel_jobs(
         self, job_ids: List[models.CancelJobRequest]
-    ) -> models.CancelJobResponse | None:
+    ) -> Union[ApiError, None]:
         """Cancel the jobs.
 
         Args:

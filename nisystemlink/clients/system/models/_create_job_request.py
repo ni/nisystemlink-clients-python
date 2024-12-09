@@ -10,10 +10,10 @@ class CreateJobRequest(JsonModel):
     arguments: Optional[List[List[Any]]] = Field(None, alias="args")
     """List of arguments to the functions specified in the "fun" property."""
 
-    target_systems: Optional[List[str]] = Field(None, alias="tgt")
+    target_systems: List[str] = Field(alias="tgt")
     """List of system IDs on which to run the job."""
 
-    functions: Optional[List[str]] = Field(None, alias="fun")
+    functions: List[str] = Field(alias="fun")
     """Functions contained in the job."""
 
     metadata: Optional[Dict[str, Any]] = None

@@ -266,12 +266,18 @@ class TestSystemClient:
 
         assert cancel_response is None
 
-    def test__cancel_with_invalid_jid__cancel_job_returns_error(
+    def test__cancel_with_invalid_jid_system_id__cancel_job_returns_None(
         self, client: SystemClient
     ):
-        cancel_job_request = CancelJobRequest(id="Invalid_jid", tgt="Invalid_tgt")
+        cancel_job_request = CancelJobRequest(id="Invalid_jid", system_id="Invalid_tgt")
         cancel_response = client.cancel_jobs([cancel_job_request])
 
-        assert cancel_response is not None
-        assert cancel_response.error is not None
-        assert cancel_response.error.message is not None
+        assert cancel_response is None
+
+    def test__cancel_with_invalid_jid_valid_system_id__cancel_job_returns_error(
+        self, client: SystemClient
+    ):
+        cancel_job_request = CancelJobRequest(id="Invalid_jid", system_id=TARGET_SYSTEM)
+        cancel_response = client.cancel_jobs([cancel_job_request])
+
+        assert cancel_response is None

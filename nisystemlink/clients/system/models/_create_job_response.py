@@ -12,5 +12,5 @@ class CreateJobResponse(CreateJobRequest):
     error: Optional[ApiError] = None
     """Represents the standard error structure."""
 
-    id: Optional[str] = Field(None, alias="jid")
+    id: str = Field(alias="jid")
     """The job ID."""
