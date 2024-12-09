@@ -1,8 +1,6 @@
 """Implementation of AssetManagementClient."""
 
-from typing import Optional
-
-from uplink import Body, Header, Path, Query
+from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
@@ -12,8 +10,10 @@ from nisystemlink.clients.core._uplink._methods import (
     get,
     post,
 )
+from uplink import Field, Header, Query
 
 from . import models
+
 
 class AssetManagementClient(BaseClient):
     def __init__(self, configuration: Optional[HttpConfiguration] = None):
@@ -28,33 +28,33 @@ class AssetManagementClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the AssetManagement Service.
         """
-
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
-        
+
         super().__init__(configuration, base_path="/niapm/v1/")
 
-    @get("assets", 
-         args=[
+    @get(
+        "assets",
+        args=[
             Query("skip"),
             Query("take"),
             Query("calibratableOnly"),
             Query("fileIngestionWorkspace"),
-            Header("x-ni-api-key")
-         ],
+            Header("x-ni-api-key"),
+        ],
     )
     def get_assets(
         self,
         skip: Optional[int] = None,
         take: Optional[int] = None,
         calibratableOnly: Optional[bool] = None,
-        x_ni_api_key: Optional[str] = None
+        x_ni_api_key: Optional[str] = None,
     ) -> models.AssetsResponse:
         """Gets Assets.
 
         Args:
-            skip: number of resources to skip in the result when paging. For example, a list of 100 resources with a skip value of 50 will return entries 51 through 100.
-            take: how many resources to return in the result, or -1 to use a default defined by the service. The maximum value for Take is 1000. For example, a list of 100 resources with a take value of 25 will return entries 1 through 25.
+            skip: number of resources to skip in the result when paging.
+            take: how many resources to return in the result, or -1 to use a default defined by the service.
             calibratableOnly: whether to generate a report with calibrated asset specific columns.
             x_ni_api_key: api key genreated by ni services.
 
@@ -68,9 +68,7 @@ class AssetManagementClient(BaseClient):
         ...
 
     @get("asset-summary")
-    def get_asset_summary(
-        self
-    ) -> models.AssetSummaryResponse:
+    def get_asset_summary(self) -> models.AssetSummaryResponse:
         """Gets Assets Summary.
 
         Returns:
@@ -83,10 +81,7 @@ class AssetManagementClient(BaseClient):
         ...
 
     @get("assets/{asset_id}")
-    def get_asset_by_id(
-        self,
-        asset_id: str
-    ) -> models.Asset:
+    def get_asset_by_id(self, asset_id: str) -> models.Asset:
         """Gets an Asset with the given Id.
 
         Args:
@@ -101,10 +96,9 @@ class AssetManagementClient(BaseClient):
         """
         ...
 
-    @post("assets")
+    @post("assets", args=[Field("assets")])
     def create_assets(
-        self,
-        assets: models.CreateAssetsRequest
+        self, assets: List[models.AssetCreate]
     ) -> models.AssetsCreatePartialSuccessResponse:
         """Create Assets.
 
@@ -121,10 +115,7 @@ class AssetManagementClient(BaseClient):
         ...
 
     @post("query-assets")
-    def query_assets(
-        self,
-        query: models.QueryAssetRequest
-    ) -> models.AssetsResponse:
+    def query_assets(self, query: models.QueryAssetRequest) -> models.AssetsResponse:
         """Query Assets.
 
         Args:
@@ -141,16 +132,15 @@ class AssetManagementClient(BaseClient):
 
     @post("export-assets")
     def export_assets(
-        self,
-        export: models.ExportAssetsRequest
+        self, export: models.ExportAssetsRequest
     ) -> models.ExportAssetsResponse:
         """Export Assets Report.
 
         Args:
-            export: an export request containing information about filters, response format, destination and file ingestion wokspace.
+            export: an export request containing information about export options.
 
         Returns:
-            An object containing an array of file identifiers from the file ingestion service. 
+            An object containing an array of file identifiers from the file ingestion service.
 
         Raises:
             ApiException: if unable to communicate with the `nispec` service or if there are invalid
@@ -158,10 +148,9 @@ class AssetManagementClient(BaseClient):
         """
         ...
 
-    @post("update-assets")
+    @post("update-assets", args=[Field("assets")])
     def update_assets(
-        self,
-        assets: models.UpdateAssetsRequest
+        self, assets: List[models.AssetUpdate]
     ) -> models.UpdateAssetsPartialSuccessResponse:
         """Update Assets.
 
@@ -179,9 +168,7 @@ class AssetManagementClient(BaseClient):
 
     @post("assets/{asset_id}/history/query-location")
     def query_location(
-        self,
-        query: models.QueryLocationHistoryRequest,
-        asset_id: str
+        self, query: models.QueryLocationHistoryRequest, asset_id: str
     ) -> models.ConnectionHistoryResponse:
         """Query Asset Location History.
 
@@ -199,18 +186,15 @@ class AssetManagementClient(BaseClient):
         """
         ...
 
-    @post("delete-assets")
-    def delete_assets(
-        self,
-        assets: models.DeleteAssetsRequest
-    ) -> models.DeleteAssetsResponse:
+    @post("delete-assets", args=[Field("ids")])
+    def delete_assets(self, ids: List[str]) -> models.DeleteAssetsResponse:
         """Delete Assets.
 
         Args:
             assets: an arry of IDs of the assets to delete all information for.
 
         Returns:
-            Response object containing the ids of the assets which were deleted, the ids of the assets which failed to be deleted and any errors encountered.
+            Response object containing the ids of the assets which were deleted.
 
         Raises:
             ApiException: if unable to communicate with the `nispec` service or if there are invalid
@@ -218,11 +202,9 @@ class AssetManagementClient(BaseClient):
         """
         ...
 
-    @post("assets/{asset_id}/file")
+    @post("assets/{asset_id}/file", args=[Field("fileIds")])
     def link_files(
-        self,
-        files: models.LinkFilesRequest,
-        asset_id: str
+        self, fileIds: List[str], asset_id: str
     ) -> Optional[models.LinkFilesPartialSuccessResponse]:
         """Link files to Asset.
 
@@ -240,11 +222,7 @@ class AssetManagementClient(BaseClient):
         ...
 
     @delete("assets/{asset_id}/files/{file_id}")
-    def unlink_files(
-        self,
-        asset_id: str,
-        file_id: str
-    ) -> Optional[models.NoContentResult]:
+    def unlink_files(self, asset_id: str, file_id: str) -> Optional[int]:
         """Unlink files from Asset.
 
         Args:

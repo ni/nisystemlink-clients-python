@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import Dict, List, Optional
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 
 class AssetBusType(Enum):
     """All supported bus types for an asset."""
@@ -24,7 +26,7 @@ class AssetBusType(Enum):
     SCXI = "SCXI"
 
     CDAQ = "CDAQ"
-    
+
     SWITCH_BLOCK = "SWITCH_BLOCK"
 
     SCC = "SCC"
@@ -37,18 +39,20 @@ class AssetBusType(Enum):
 
     SWITCH_BLOCK_DEVICE = "SWITCH_BLOCK_DEVICE"
 
-    SLSC  = "SLSC"
+    SLSC = "SLSC"
+
 
 class AssetType(Enum):
     """All supported asset types."""
 
-    GENERIC =  "GENERIC"
+    GENERIC = "GENERIC"
 
     DEVICE_UNDER_TEST = "DEVICE_UNDER_TEST"
 
     FIXTURE = "FIXTURE"
 
-    SYSTEM  = "SYSTEM"
+    SYSTEM = "SYSTEM"
+
 
 class AssetDiscoveryType(Enum):
     """All discovery types."""
@@ -56,6 +60,7 @@ class AssetDiscoveryType(Enum):
     MANUAL = "MANUAL"
 
     AUTOMATIC = "AUTOMATIC"
+
 
 class TemperatureSensor(JsonModel):
     """Temperature sensor information."""
@@ -66,6 +71,7 @@ class TemperatureSensor(JsonModel):
     reading: float
     """Gets or sets sensor reading."""
 
+
 class AssetPresence(Enum):
     """Status of an asset's presence in a system."""
 
@@ -75,7 +81,8 @@ class AssetPresence(Enum):
 
     INITIALIZING = "INITIALIZING"
 
-    UNKNOWN  = "UNKNOWN"
+    UNKNOWN = "UNKNOWN"
+
 
 class SystemConnection(Enum):
     """Whether or not the minion is connected to the server and has updated the server with its data."""
@@ -96,6 +103,7 @@ class SystemConnection(Enum):
 
     CONNECTED_UPDATE_SUCCESSFUL = "CONNECTED_UPDATE_SUCCESSFUL"
 
+
 class AssetPresenceWithSystemConnection(JsonModel):
     """Model for the presence of an asset and the connection of the system in which it resides."""
 
@@ -105,14 +113,15 @@ class AssetPresenceWithSystemConnection(JsonModel):
     system_connection: Optional[SystemConnection] = None
     """Gets or sets whether or not the minion is connected to the server and has updated the server with its data."""
 
+
 class AssetLocation(JsonModel):
-    """Model for information about the asset location, presence and the connection status of the system in which it resides."""
+    """Model for information about the asset location, presence and the connection status of the system."""
 
     minion_id: Optional[str] = None
     """Gets or sets identifier of the minion where the asset is located."""
 
     physical_location: Optional[str] = None
-    """Gets or sets the physical location of the asset. An asset can be either in a system, in which case it has a MinionID, or be in a physical location."""
+    """Gets or sets the physical location of the asset."""
 
     parent: Optional[str] = None
     """Gets or sets the parent of the asset."""
@@ -126,15 +135,17 @@ class AssetLocation(JsonModel):
     state: AssetPresenceWithSystemConnection
     """Presence of an asset and the connection of the system in which it resides."""
 
+
 class SelfCalibration(JsonModel):
     temperature_sensors: Optional[List[TemperatureSensor]] = None
-    """Gets or sets an array of temperature sensor information. The maximum number of temperature sensors allowed per self calibration is 1000."""
+    """Gets or sets an array of temperature sensor information."""
 
     is_limited: Optional[bool] = None
     """Gets or sets whether the last self-calibration of the asset was a limited calibration."""
 
     date: str
     """Gets or sets ISO-8601 formatted timestamp specifying the last date the asset was self-calibrated."""
+
 
 class CalibrationStatus(Enum):
     """Calibration category the asset belongs to based on the next due calibration date."""
@@ -147,12 +158,14 @@ class CalibrationStatus(Enum):
 
     OUT_FOR_CALIBRATION = "OUT_FOR_CALIBRATION"
 
+
 class CalibrationEntryType(Enum):
     """Whether SystemLink automatically discovered the calibration data for an asset or if it was manually entered."""
 
     AUTOMATIC = "AUTOMATIC"
 
     MANUAL = "MANUAL"
+
 
 class ExternalCalibration(JsonModel):
     temperature_sensors: Optional[List[TemperatureSensor]] = None
@@ -174,13 +187,14 @@ class ExternalCalibration(JsonModel):
     """Gets or sets ISO-8601 formatted timestamp specifying the date for the next external calibration."""
 
     resolved_due_date: Optional[str] = None
-    """Gets ISO-8601 formatted timestamp specifying the resolved due date for external calibration. This takes into account NextCustomDueDate, Asset.CustomCalibrationInterval and NextRecommendedDate."""
+    """Gets ISO-8601 formatted timestamp specifying the resolved due date for external calibration."""
 
     comments: Optional[str] = None
     """Gets or sets calibration comments provided by an operator."""
 
     entry_type: Optional[CalibrationEntryType] = None
-    """Gets or sets whether SystemLink automatically discovered the calibration data for an asset or if it was manually entered."""
+    """Gets or sets whether automatically discovered the calibration data for an asset or manually entered."""
+
 
 class Asset(JsonModel):
     """Model for an object describing an asset with all of its properties."""
@@ -196,7 +210,7 @@ class Asset(JsonModel):
 
     vendor_name: Optional[str] = None
     """Gets or sets vendor name of the asset."""
-    
+
     vendor_number: int
     """Gets or sets vendor number of the asset."""
 
@@ -231,7 +245,7 @@ class Asset(JsonModel):
     """Gets or sets whether the asset supports external calibration."""
 
     custom_calibration_interval: Optional[int] = None
-    """Gets or sets the interval represented in months used for computing calibration due date. If not set, the recommended calibration interval from the calibration model is used."""
+    """Gets or sets the interval represented in months used for computing calibration due date."""
 
     self_calibration: Optional[SelfCalibration] = None
 
@@ -242,7 +256,7 @@ class Asset(JsonModel):
     """Gets or sets unique identifier of the asset."""
 
     location: AssetLocation
-    """Model for information about the asset location, presence and the connection status of the system in which it resides."""
+    """Model for information about the asset location, presence and the connection status of the system"""
 
     calibration_status: Optional[CalibrationStatus] = None
     """Gets or sets the calibration category the asset belongs to based on the next due calibration date."""

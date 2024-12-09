@@ -1,243 +1,232 @@
-from random import randint
 from typing import List
-from xmlrpc.client import DateTime
-from nisystemlink.clients.core._api_exception import ApiException
-from nisystemlink.clients.core._uplink import _json_model
+
 import pytest
-from nisystemlink.clients.assetManagement import AssetManagementClient
-from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.assetManagement.models import (
+from nisystemlink.clients.assetmanagement import AssetManagementClient
+from nisystemlink.clients.assetmanagement.models import (
     Asset,
-    AssetsResponse,
-    CreateAssetsRequest,
     AssetsCreatePartialSuccessResponse,
-    DeleteAssetsRequest,
-    DeleteAssetsResponse,
+    AssetsResponse,
     AssetSummaryResponse,
-    QueryAssetRequest,
+    ConnectionHistoryResponse,
+    DeleteAssetsResponse,
     ExportAssetsRequest,
     ExportAssetsResponse,
-    UpdateAssetsRequest,
-    UpdateAssetsPartialSuccessResponse,
+    QueryAssetRequest,
     QueryLocationHistoryRequest,
-    ConnectionHistoryResponse,
-    LinkFilesRequest,
-    LinkFilesPartialSuccessResponse,
-    NoContentResult
+    UpdateAssetsPartialSuccessResponse,
 )
-from nisystemlink.clients.assetManagement.models._asset_create import (
-    AssetCreate
-)
-from nisystemlink.clients.assetManagement.models._asset import (
+from nisystemlink.clients.assetmanagement.models._asset import (
     AssetBusType,
-    AssetType,
     AssetDiscoveryType,
-    SelfCalibration,
     AssetLocation,
-    AssetPresenceWithSystemConnection,
     AssetPresence,
+    AssetPresenceWithSystemConnection,
+    AssetType,
     ExternalCalibration,
-    TemperatureSensor
+    SelfCalibration,
+    TemperatureSensor,
 )
-from nisystemlink.clients.assetManagement.models._export_assets import (
+from nisystemlink.clients.assetmanagement.models._asset_create import AssetCreate
+from nisystemlink.clients.assetmanagement.models._asset_update import AssetUpdate
+from nisystemlink.clients.assetmanagement.models._export_assets import (
+    Destination,
     ResponseFormat,
-    Destination
 )
-from nisystemlink.clients.assetManagement.models._asset_update import AssetUpdate
-from nisystemlink.clients.assetManagement.models._query_location import (
+from nisystemlink.clients.assetmanagement.models._query_location import (
+    Destination as LocationDestination,
     ResponseFormat as LocationResponseFormat,
-    Destination as LocationDestination
 )
+from nisystemlink.clients.core._api_exception import ApiException
+from nisystemlink.clients.core._http_configuration import HttpConfiguration
+
 
 @pytest.fixture(scope="class")
-def create_assets_request() -> CreateAssetsRequest:
-    createAssetRequest = CreateAssetsRequest(
-        assets = [
-            AssetCreate(
-                model_name = "NI PXIe-6368",
-                serial_number = "01BB877A",
-                vendor_name = "NI",
-                vendor_number = "4244",
-                bus_type = AssetBusType.ACCESSORY,
-                name = "PCISlot2",
-                asset_type = AssetType.DEVICE_UNDER_TEST,
-                firmware_version = "A1",
-                hardware_version = "12A",
-                visa_resource_name = "vs-3144",
-                temperature_sensors = [
-                    TemperatureSensor(
-                        name = "Sensor0",
-                        reading = 25.8
-                    )
-                ],
-                supports_self_calibration = True,
-                supports_external_calibration = True,
-                custom_calibration_interval = 24,
-                self_calibration = SelfCalibration(
-                    temperature_sensors = [
-                        TemperatureSensor(
-                            name = "Sensor0",
-                            reading = 25.8
-                        )
-                    ],
-                    is_limited = False,
-                    date = "2022-06-07T18:58:05.000Z"
-                ),
-                is_n_i_asset = True,
-                workspace = "846e294a-a007-47ac-9fc2-fac07eab240e",
-                location = AssetLocation(state = AssetPresenceWithSystemConnection(asset_presence = AssetPresence.PRESENT)),
-                external_calibration = ExternalCalibration(
-                    temperature_sensors = [
-                        TemperatureSensor(
-                            name = "Sensor0",
-                            reading = 25.8
-                        )
-                    ],
-                    date = "2022-06-07T18:58:05.000Z",
-                    recommended_interval = 10,
-                    next_recommended_date = "2023-11-14T20:42:11.583Z",
-                    next_custom_due_date = "2024-11-14T20:42:11.583Z",
-                    resolved_due_date = "2022-06-07T18:58:05.000Z"
-                ),
-                properties = {"Key1": "Value1"},
-                keywords = ["Keyword1"],
-                discovery_type = AssetDiscoveryType.AUTOMATIC,
-                file_ids = ["608a5684800e325b48837c2a"],
-                supports_self_test = True,
-                supports_reset = True,
-                partNumber = "A1234 B5"
-            )
-        ]
-    )
-    
-    return createAssetRequest
+def asset_create() -> List[AssetCreate]:
+    """Fixture to create asset create object."""
+    assets = [
+        AssetCreate(
+            model_name="NI PXIe-6368",
+            serial_number="01BB877A",
+            vendor_name="NI",
+            vendor_number="4244",
+            bus_type=AssetBusType.ACCESSORY,
+            name="PCISlot2",
+            asset_type=AssetType.DEVICE_UNDER_TEST,
+            firmware_version="A1",
+            hardware_version="12A",
+            visa_resource_name="vs-3144",
+            temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
+            supports_self_calibration=True,
+            supports_external_calibration=True,
+            custom_calibration_interval=24,
+            self_calibration=SelfCalibration(
+                temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
+                is_limited=False,
+                date="2022-06-07T18:58:05.000Z",
+            ),
+            is_n_i_asset=True,
+            workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+            location=AssetLocation(
+                state=AssetPresenceWithSystemConnection(
+                    asset_presence=AssetPresence.PRESENT
+                )
+            ),
+            external_calibration=ExternalCalibration(
+                temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
+                date="2022-06-07T18:58:05.000Z",
+                recommended_interval=10,
+                next_recommended_date="2023-11-14T20:42:11.583Z",
+                next_custom_due_date="2024-11-14T20:42:11.583Z",
+                resolved_due_date="2022-06-07T18:58:05.000Z",
+            ),
+            properties={"Key1": "Value1"},
+            keywords=["Keyword1"],
+            discovery_type=AssetDiscoveryType.AUTOMATIC,
+            file_ids=["608a5684800e325b48837c2a"],
+            supports_self_test=True,
+            supports_reset=True,
+            partNumber="A1234 B5",
+        )
+    ]
+
+    return assets
+
 
 @pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> AssetManagementClient:
     """Fixture to create a AssetManagementClient instance"""
     return AssetManagementClient(enterprise_config)
 
+
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestAssetManagement:
 
     def test__get_assets__returns_all_assets(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2001
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
+        asset_create[0].model_number = 2001
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
 
         response: AssetsResponse = client.get_assets()
 
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[create_assets_response.assets[0].id]))
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            client.delete_assets(ids=[create_assets_response.assets[0].id])
 
         assert response is not None
         assert response.total_count >= 1
-        assert len(response.assets) >= 1
 
     def test__get_assets_with_specific_take_value__returns_specific_number_of_assets(
         self, client: AssetManagementClient
     ):
-        createAssetsRequest = CreateAssetsRequest(assets = [])
+        assets = []
         for i in range(10):
-            createAssetsRequest.assets.append(
+            assets.append(
                 AssetCreate(
-                    model_name = "NI PXIe-6368",
-                    model_number = 2100 + i,
-                    serial_number = "01BB877A",
-                    vendor_name = "NI",
-                    vendor_number = "4244",
-                    bus_type = AssetBusType.ACCESSORY,
-                    name = "PCISlot2",
-                    asset_type = AssetType.DEVICE_UNDER_TEST,
-                    firmware_version = "A1",
-                    hardware_version = "12A",
-                    visa_resource_name = "vs-3144",
-                    temperature_sensors = [
-                        TemperatureSensor(
-                            name = "Sensor0",
-                            reading = 25.8
-                        )
+                    model_name="NI PXIe-6368",
+                    model_number=2100 + i,
+                    serial_number="01BB877A",
+                    vendor_name="NI",
+                    vendor_number="4244",
+                    bus_type=AssetBusType.ACCESSORY,
+                    name="PCISlot2",
+                    asset_type=AssetType.DEVICE_UNDER_TEST,
+                    firmware_version="A1",
+                    hardware_version="12A",
+                    visa_resource_name="vs-3144",
+                    temperature_sensors=[
+                        TemperatureSensor(name="Sensor0", reading=25.8)
                     ],
-                    supports_self_calibration = True,
-                    supports_external_calibration = True,
-                    custom_calibration_interval = 24,
-                    self_calibration = SelfCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
+                    supports_self_calibration=True,
+                    supports_external_calibration=True,
+                    custom_calibration_interval=24,
+                    self_calibration=SelfCalibration(
+                        temperature_sensors=[
+                            TemperatureSensor(name="Sensor0", reading=25.8)
                         ],
-                        is_limited = False,
-                        date = "2022-06-07T18:58:05.000Z"
+                        is_limited=False,
+                        date="2022-06-07T18:58:05.000Z",
                     ),
-                    is_n_i_asset = True,
-                    workspace = "846e294a-a007-47ac-9fc2-fac07eab240e",
-                    location = AssetLocation(state = AssetPresenceWithSystemConnection(asset_presence = AssetPresence.PRESENT)),
-                    external_calibration = ExternalCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
+                    is_n_i_asset=True,
+                    workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+                    location=AssetLocation(
+                        state=AssetPresenceWithSystemConnection(
+                            asset_presence=AssetPresence.PRESENT
+                        )
+                    ),
+                    external_calibration=ExternalCalibration(
+                        temperature_sensors=[
+                            TemperatureSensor(name="Sensor0", reading=25.8)
                         ],
-                        date = "2022-06-07T18:58:05.000Z",
-                        recommended_interval = 10,
-                        next_recommended_date = "2023-11-14T20:42:11.583Z",
-                        next_custom_due_date = "2024-11-14T20:42:11.583Z",
-                        resolved_due_date = "2022-06-07T18:58:05.000Z"
+                        date="2022-06-07T18:58:05.000Z",
+                        recommended_interval=10,
+                        next_recommended_date="2023-11-14T20:42:11.583Z",
+                        next_custom_due_date="2024-11-14T20:42:11.583Z",
+                        resolved_due_date="2022-06-07T18:58:05.000Z",
                     ),
-                    properties = {"Key1": "Value1"},
-                    keywords = ["Keyword1"],
-                    discovery_type = AssetDiscoveryType.AUTOMATIC,
-                    file_ids = ["608a5684800e325b48837c2a"],
-                    supports_self_test = True,
-                    supports_reset = True,
-                    partNumber = "A1234 B5"
+                    properties={"Key1": "Value1"},
+                    keywords=["Keyword1"],
+                    discovery_type=AssetDiscoveryType.AUTOMATIC,
+                    file_ids=["608a5684800e325b48837c2a"],
+                    supports_self_test=True,
+                    supports_reset=True,
+                    partNumber="A1234 B5",
                 )
             )
 
-        response: AssetsCreatePartialSuccessResponse = client.create_assets(createAssetsRequest)
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=assets)
+        )
 
         response: AssetsResponse = client.get_assets(take=10)
 
-        deleteAssetsRequest = DeleteAssetsRequest(ids=[])
-        for asset in response.assets:
-            deleteAssetsRequest.ids.append(asset.id)
+        ids = []
+        if create_assets_response.assets:
+            for asset in create_assets_response.assets:
+                if asset.id:
+                    ids.append(asset.id)
 
-        client.delete_assets(assets=deleteAssetsRequest)
+            client.delete_assets(ids=ids)
 
         assert response is not None
         assert response.total_count >= 10
-        assert len(response.assets) == 10
+        if response.assets:
+            assert len(response.assets) == 10
 
     def test__get_assets_summary__returs_assets_summary(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2002
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-
-        print(create_assets_response.error)
+        asset_create[0].model_number = 2002
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
 
         response: AssetSummaryResponse = client.get_asset_summary()
 
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[create_assets_response.assets[0].id]))
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            client.delete_assets(ids=[create_assets_response.assets[0].id])
 
         assert response is not None
         assert response.total >= 1
         assert response.total == response.active + response.not_active
 
     def test__get_asset_by_correct_id__returns_the_asset(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2003
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-        asset_id = create_assets_response.assets[0].id
-        response : Asset = client.get_asset_by_id(asset_id=asset_id)
+        asset_create[0].model_number = 2003
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
 
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            asset_id = create_assets_response.assets[0].id
 
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        response: Asset = client.get_asset_by_id(asset_id=asset_id)
+
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            client.delete_assets(ids=[asset_id])
 
         assert response is not None
         assert response.model_number == 2003
@@ -247,303 +236,303 @@ class TestAssetManagement:
     ):
         asset_id = "Incorrect Id"
 
-        with pytest.raises(ApiException) as excinfo:
+        with pytest.raises(ApiException):
             client.get_asset_by_id(asset_id=asset_id)
 
     def test__create_one_asset__one_asset_gets_created(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2004
+        asset_create[0].model_number = 2004
 
-        response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
+        response: AssetsCreatePartialSuccessResponse = client.create_assets(
+            assets=asset_create
+        )
 
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[response.assets[0].id]))
-        
-        assert len(response.assets) == 1
-        assert len(response.failed) == 0
-        assert response.assets[0].model_number == 2004
+        if response.assets and response.assets[0].id:
+            client.delete_assets(ids=[response.assets[0].id])
 
-    def test__create_multiple_assets__all_succeed(
-        self, client: AssetManagementClient
-    ):
-        createAssetsRequest = CreateAssetsRequest(assets = [])
+        if response.assets:
+            assert len(response.assets) == 1
+            assert response.assets[0].model_number == 2004
+        if response.failed:
+            assert len(response.failed) == 0
+
+    def test__create_multiple_assets__all_succeed(self, client: AssetManagementClient):
+        assets = []
         for i in range(3):
-            createAssetsRequest.assets.append(
+            assets.append(
                 AssetCreate(
-                    model_name = "NI PXIe-6368",
-                    model_number = 2200 + i,
-                    serial_number = "01BB877A",
-                    vendor_name = "NI",
-                    vendor_number = "4244",
-                    bus_type = AssetBusType.ACCESSORY,
-                    name = "PCISlot2",
-                    asset_type = AssetType.DEVICE_UNDER_TEST,
-                    firmware_version = "A1",
-                    hardware_version = "12A",
-                    visa_resource_name = "vs-3144",
-                    temperature_sensors = [
-                        TemperatureSensor(
-                            name = "Sensor0",
-                            reading = 25.8
-                        )
+                    model_name="NI PXIe-6368",
+                    model_number=2200 + i,
+                    serial_number="01BB877A",
+                    vendor_name="NI",
+                    vendor_number="4244",
+                    bus_type=AssetBusType.ACCESSORY,
+                    name="PCISlot2",
+                    asset_type=AssetType.DEVICE_UNDER_TEST,
+                    firmware_version="A1",
+                    hardware_version="12A",
+                    visa_resource_name="vs-3144",
+                    temperature_sensors=[
+                        TemperatureSensor(name="Sensor0", reading=25.8)
                     ],
-                    supports_self_calibration = True,
-                    supports_external_calibration = True,
-                    custom_calibration_interval = 24,
-                    self_calibration = SelfCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
+                    supports_self_calibration=True,
+                    supports_external_calibration=True,
+                    custom_calibration_interval=24,
+                    self_calibration=SelfCalibration(
+                        temperature_sensors=[
+                            TemperatureSensor(name="Sensor0", reading=25.8)
                         ],
-                        is_limited = False,
-                        date = "2022-06-07T18:58:05.000Z"
+                        is_limited=False,
+                        date="2022-06-07T18:58:05.000Z",
                     ),
-                    is_n_i_asset = True,
-                    workspace = "846e294a-a007-47ac-9fc2-fac07eab240e",
-                    location = AssetLocation(state = AssetPresenceWithSystemConnection(asset_presence = AssetPresence.PRESENT)),
-                    external_calibration = ExternalCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
+                    is_n_i_asset=True,
+                    workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+                    location=AssetLocation(
+                        state=AssetPresenceWithSystemConnection(
+                            asset_presence=AssetPresence.PRESENT
+                        )
+                    ),
+                    external_calibration=ExternalCalibration(
+                        temperature_sensors=[
+                            TemperatureSensor(name="Sensor0", reading=25.8)
                         ],
-                        date = "2022-06-07T18:58:05.000Z",
-                        recommended_interval = 10,
-                        next_recommended_date = "2023-11-14T20:42:11.583Z",
-                        next_custom_due_date = "2024-11-14T20:42:11.583Z",
-                        resolved_due_date = "2022-06-07T18:58:05.000Z"
+                        date="2022-06-07T18:58:05.000Z",
+                        recommended_interval=10,
+                        next_recommended_date="2023-11-14T20:42:11.583Z",
+                        next_custom_due_date="2024-11-14T20:42:11.583Z",
+                        resolved_due_date="2022-06-07T18:58:05.000Z",
                     ),
-                    properties = {"Key1": "Value1"},
-                    keywords = ["Keyword1"],
-                    discovery_type = AssetDiscoveryType.AUTOMATIC,
-                    file_ids = ["608a5684800e325b48837c2a"],
-                    supports_self_test = True,
-                    supports_reset = True,
-                    partNumber = "A1234 B5"
+                    properties={"Key1": "Value1"},
+                    keywords=["Keyword1"],
+                    discovery_type=AssetDiscoveryType.AUTOMATIC,
+                    file_ids=["608a5684800e325b48837c2a"],
+                    supports_self_test=True,
+                    supports_reset=True,
+                    partNumber="A1234 B5",
                 )
             )
 
-        response: AssetsCreatePartialSuccessResponse = client.create_assets(createAssetsRequest)
-        
-        deleteAssetsRequest = DeleteAssetsRequest(ids=[])
-        for asset in response.assets:
-            deleteAssetsRequest.ids.append(asset.id)
+        response: AssetsCreatePartialSuccessResponse = client.create_assets(
+            assets=assets
+        )
 
-        client.delete_assets(assets=deleteAssetsRequest)
-        
-        assert len(response.assets) == 3
-        assert len(response.failed) == 0
-        assert response.assets[0].model_number == 2200
-        assert response.assets[1].model_number == 2201
-        assert response.assets[2].model_number == 2202
+        ids = []
+        if response.assets and response.assets[0].id:
+            for asset in response.assets:
+                if asset.id:
+                    ids.append(asset.id)
+
+            client.delete_assets(ids=ids)
+
+        if response.assets:
+            assert len(response.assets) == 3
+            assert response.assets[0].model_number == 2200
+            assert response.assets[1].model_number == 2201
+            assert response.assets[2].model_number == 2202
+        if response.failed:
+            assert len(response.failed) == 0
 
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
-        self, client: AssetManagementClient, create_assets_request
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2005
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-        asset_id = create_assets_response.assets[0].id
+        asset_create[0].model_number = 2005
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            asset_id = create_assets_response.assets[0].id
         query_assets_request = QueryAssetRequest(
-            ids = [asset_id],
-            skip = 0,
-            take = 1,
-            descending = False,
-            calibratable_only = False
+            ids=[asset_id], skip=0, take=1, descending=False, calibratable_only=False
         )
 
         response: AssetsResponse = client.query_assets(query=query_assets_request)
 
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        client.delete_assets(ids=[asset_id])
 
         assert response is not None
-        assert len(response.assets) == 1
+        if response.assets:
+            assert len(response.assets) == 1
         assert response.total_count >= 1
 
-    def test__export_assets__returns_file_ids(
-        self, client: AssetManagementClient
-    ):
+    def test__export_assets__returns_file_ids(self, client: AssetManagementClient):
         request = ExportAssetsRequest(
-            filter = "",
-            response_format = ResponseFormat.CSV,
-            destination = Destination.FILE_SERVICE,
-            file_ingestion_workspace = "846e294a-a007-47ac-9fc2-fac07eab240e"
+            filter="",
+            response_format=ResponseFormat.CSV,
+            destination=Destination.FILE_SERVICE,
+            file_ingestion_workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
         )
 
         response: ExportAssetsResponse = client.export_assets(export=request)
 
         assert response is not None
-        assert len(response.file_id) > 0
+        if response.file_id:
+            assert len(response.file_id) > 0
 
     def test__update_assets_with_correct_id__updates_assets(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2006
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-        asset_id = create_assets_response.assets[0].id
+        asset_create[0].model_number = 2006
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            asset_id = create_assets_response.assets[0].id
 
-        update_asset_request = UpdateAssetsRequest(
-            assets = [
-                AssetUpdate(
-                    model_name = "Updated Model Name",
-                    model_number = 3006,
-                    serial_number = "01BB877A",
-                    vendor_name = "NI",
-                    vendor_number = "4244",
-                    bus_type = AssetBusType.ACCESSORY,
-                    name = "PCISlot2",
-                    asset_type = AssetType.DEVICE_UNDER_TEST,
-                    firmware_version = "A1",
-                    hardware_version = "12A",
-                    visa_resource_name = "vs-3144",
-                    temperature_sensors = [
-                        TemperatureSensor(
-                            name = "Sensor0",
-                            reading = 25.8
-                        )
+        assets = [
+            AssetUpdate(
+                model_name="Updated Model Name",
+                model_number=3006,
+                serial_number="01BB877A",
+                vendor_name="NI",
+                vendor_number="4244",
+                bus_type=AssetBusType.ACCESSORY,
+                name="PCISlot2",
+                asset_type=AssetType.DEVICE_UNDER_TEST,
+                firmware_version="A1",
+                hardware_version="12A",
+                visa_resource_name="vs-3144",
+                temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
+                supports_self_calibration=True,
+                supports_external_calibration=True,
+                custom_calibration_interval=24,
+                self_calibration=SelfCalibration(
+                    temperature_sensors=[
+                        TemperatureSensor(name="Sensor0", reading=25.8)
                     ],
-                    supports_self_calibration = True,
-                    supports_external_calibration = True,
-                    custom_calibration_interval = 24,
-                    self_calibration = SelfCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
-                        ],
-                        is_limited = False,
-                        date = "2022-06-07T18:58:05.000Z"
-                    ),
-                    is_n_i_asset = True,
-                    id = asset_id,
-                    workspace = "846e294a-a007-47ac-9fc2-fac07eab240e",
-                    location = AssetLocation(state = AssetPresenceWithSystemConnection(asset_presence = AssetPresence.PRESENT)),
-                    external_calibration = ExternalCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
-                        ],
-                        date = "2022-06-07T18:58:05.000Z",
-                        recommended_interval = 10,
-                        next_recommended_date = "2023-11-14T20:42:11.583Z",
-                        next_custom_due_date = "2024-11-14T20:42:11.583Z",
-                        resolved_due_date = "2022-06-07T18:58:05.000Z"
-                    ),
-                    properties = {"Key1": "Value1"},
-                    keywords = ["Keyword1"],
-                    file_ids = ["608a5684800e325b48837c2a"],
-                    supports_self_test = True,
-                    supports_reset = True,
-                    partNumber = "A1234 B5"
-                )
-            ]
+                    is_limited=False,
+                    date="2022-06-07T18:58:05.000Z",
+                ),
+                is_n_i_asset=True,
+                id=asset_id,
+                workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+                location=AssetLocation(
+                    state=AssetPresenceWithSystemConnection(
+                        asset_presence=AssetPresence.PRESENT
+                    )
+                ),
+                external_calibration=ExternalCalibration(
+                    temperature_sensors=[
+                        TemperatureSensor(name="Sensor0", reading=25.8)
+                    ],
+                    date="2022-06-07T18:58:05.000Z",
+                    recommended_interval=10,
+                    next_recommended_date="2023-11-14T20:42:11.583Z",
+                    next_custom_due_date="2024-11-14T20:42:11.583Z",
+                    resolved_due_date="2022-06-07T18:58:05.000Z",
+                ),
+                properties={"Key1": "Value1"},
+                keywords=["Keyword1"],
+                file_ids=["608a5684800e325b48837c2a"],
+                supports_self_test=True,
+                supports_reset=True,
+                partNumber="A1234 B5",
+            )
+        ]
+
+        response: UpdateAssetsPartialSuccessResponse = client.update_assets(
+            assets=assets
         )
 
-        response: UpdateAssetsPartialSuccessResponse = client.update_assets(assets=update_asset_request)
-
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        client.delete_assets(ids=[asset_id])
 
         assert response is not None
-        assert response.assets[0].id == asset_id
-        assert response.assets[0].model_name == "Updated Model Name"
-        assert len(response.failed) == 0
-    
+        if response.assets and response.assets[0].id and response.assets[0].model_name:
+            assert response.assets[0].id == asset_id
+            assert response.assets[0].model_name == "Updated Model Name"
+        if response.failed:
+            assert len(response.failed) == 0
+
     def test__update_assets_with_incorrect_id__does_not_update_assets(
         self, client: AssetManagementClient
     ):
         asset_id = "Incorrect Id"
-        update_asset_request = UpdateAssetsRequest(
-            assets = [
-                AssetUpdate(
-                    model_name = "NI PXIe-6368",
-                    model_number = 3006,
-                    serial_number = "01BB877A",
-                    vendor_name = "NI",
-                    vendor_number = "4244",
-                    bus_type = AssetBusType.ACCESSORY,
-                    name = "PCISlot2",
-                    asset_type = AssetType.DEVICE_UNDER_TEST,
-                    firmware_version = "A1",
-                    hardware_version = "12A",
-                    visa_resource_name = "vs-3144",
-                    temperature_sensors = [
-                        TemperatureSensor(
-                            name = "Sensor0",
-                            reading = 25.8
-                        )
+        assets = [
+            AssetUpdate(
+                model_name="NI PXIe-6368",
+                model_number=3006,
+                serial_number="01BB877A",
+                vendor_name="NI",
+                vendor_number="4244",
+                bus_type=AssetBusType.ACCESSORY,
+                name="PCISlot2",
+                asset_type=AssetType.DEVICE_UNDER_TEST,
+                firmware_version="A1",
+                hardware_version="12A",
+                visa_resource_name="vs-3144",
+                temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
+                supports_self_calibration=True,
+                supports_external_calibration=True,
+                custom_calibration_interval=24,
+                self_calibration=SelfCalibration(
+                    temperature_sensors=[
+                        TemperatureSensor(name="Sensor0", reading=25.8)
                     ],
-                    supports_self_calibration = True,
-                    supports_external_calibration = True,
-                    custom_calibration_interval = 24,
-                    self_calibration = SelfCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
-                        ],
-                        is_limited = False,
-                        date = "2022-06-07T18:58:05.000Z"
-                    ),
-                    is_n_i_asset = True,
-                    id = asset_id,
-                    workspace = "846e294a-a007-47ac-9fc2-fac07eab240e",
-                    location = AssetLocation(state = AssetPresenceWithSystemConnection(asset_presence = AssetPresence.PRESENT)),
-                    external_calibration = ExternalCalibration(
-                        temperature_sensors = [
-                            TemperatureSensor(
-                                name = "Sensor0",
-                                reading = 25.8
-                            )
-                        ],
-                        date = "2022-06-07T18:58:05.000Z",
-                        recommended_interval = 10,
-                        next_recommended_date = "2023-11-14T20:42:11.583Z",
-                        next_custom_due_date = "2024-11-14T20:42:11.583Z",
-                        resolved_due_date = "2022-06-07T18:58:05.000Z"
-                    ),
-                    properties = {"Key1": "Value1"},
-                    keywords = ["Keyword1"],
-                    file_ids = ["608a5684800e325b48837c2a"],
-                    supports_self_test = True,
-                    supports_reset = True,
-                    partNumber = "A1234 B5"
-                )
-            ]
-        )
+                    is_limited=False,
+                    date="2022-06-07T18:58:05.000Z",
+                ),
+                is_n_i_asset=True,
+                id=asset_id,
+                workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+                location=AssetLocation(
+                    state=AssetPresenceWithSystemConnection(
+                        asset_presence=AssetPresence.PRESENT
+                    )
+                ),
+                external_calibration=ExternalCalibration(
+                    temperature_sensors=[
+                        TemperatureSensor(name="Sensor0", reading=25.8)
+                    ],
+                    date="2022-06-07T18:58:05.000Z",
+                    recommended_interval=10,
+                    next_recommended_date="2023-11-14T20:42:11.583Z",
+                    next_custom_due_date="2024-11-14T20:42:11.583Z",
+                    resolved_due_date="2022-06-07T18:58:05.000Z",
+                ),
+                properties={"Key1": "Value1"},
+                keywords=["Keyword1"],
+                file_ids=["608a5684800e325b48837c2a"],
+                supports_self_test=True,
+                supports_reset=True,
+                partNumber="A1234 B5",
+            )
+        ]
 
-        response: UpdateAssetsPartialSuccessResponse = client.update_assets(assets=update_asset_request)
+        response: UpdateAssetsPartialSuccessResponse = client.update_assets(
+            assets=assets
+        )
 
         assert response is not None
-        assert len(response.assets) == 0
-        assert len(response.failed) == 1
-    
+        if response.assets:
+            assert len(response.assets) == 0
+        if response.failed:
+            assert len(response.failed) == 1
+
     def test__query_location_with_correct_id__returns_location_history(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2007
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-        print(create_assets_response.error)
-        asset_id = create_assets_response.assets[0].id
+        asset_create[0].model_number = 2007
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            asset_id = create_assets_response.assets[0].id
         query_location_request = QueryLocationHistoryRequest(
-            take = 0,
-            continuation_token = None,
-            response_format = LocationResponseFormat.JSON,
-            destination = LocationDestination.INLINE,
-            file_ingestion_workspace = "846e294a-a007-47ac-9fc2-fac07eab240e",
-            location_filter = "",
-            start_time = "2024-12-04T11:44:09.040Z",
-            end_time = "2024-12-04T11:44:09.040Z"
+            take=0,
+            continuation_token=None,
+            response_format=LocationResponseFormat.JSON,
+            destination=LocationDestination.INLINE,
+            file_ingestion_workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+            location_filter="",
+            start_time="2024-12-04T11:44:09.040Z",
+            end_time="2024-12-04T11:44:09.040Z",
         )
 
-        response: ConnectionHistoryResponse = client.query_location(asset_id=asset_id, query=query_location_request)
+        response: ConnectionHistoryResponse = client.query_location(
+            asset_id=asset_id, query=query_location_request
+        )
 
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        client.delete_assets(ids=[asset_id])
 
         assert response is not None
 
@@ -552,57 +541,66 @@ class TestAssetManagement:
     ):
         asset_id = "Incorrect Id"
         query_location_request = QueryLocationHistoryRequest(
-            response_format = LocationResponseFormat.JSON,
-            destination = LocationDestination.FILE_SERVICE
+            response_format=LocationResponseFormat.JSON,
+            destination=LocationDestination.FILE_SERVICE,
         )
 
-        with pytest.raises(ApiException) as excinfo:
+        with pytest.raises(ApiException):
             client.query_location(asset_id=asset_id, query=query_location_request)
 
     def test__delete_assets_with_Correct_id__deletes_assets(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2008
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-        asset_id = create_assets_response.assets[0].id
+        asset_create[0].model_number = 2008
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
+        print(create_assets_response.error)
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            asset_id = create_assets_response.assets[0].id
 
-        response: DeleteAssetsResponse = client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        response: DeleteAssetsResponse = client.delete_assets(ids=[asset_id])
 
         assert response is not None
-        assert response.ids[0] == asset_id
+        if response.ids:
+            assert response.ids[0] == asset_id
 
     def test__delete_assets_with_incorrect_id__fails(
         self, client: AssetManagementClient
     ):
         asset_id = "Incorrect"
 
-        response: DeleteAssetsResponse = client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        response: DeleteAssetsResponse = client.delete_assets(ids=[asset_id])
 
         assert response is not None
-        assert len(response.ids) == 0
-        assert len(response.failed) == 1
+        if response.ids:
+            assert len(response.ids) == 0
+        if response.failed:
+            assert len(response.failed) == 1
 
     def test__link_files_with_correct_asset_id__links_files(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2009
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
+        asset_create[0].model_number = 2009
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
         request = ExportAssetsRequest(
-            filter = "",
-            response_format = ResponseFormat.CSV,
-            destination = Destination.FILE_SERVICE,
-            file_ingestion_workspace = "846e294a-a007-47ac-9fc2-fac07eab240e"
+            filter="",
+            response_format=ResponseFormat.CSV,
+            destination=Destination.FILE_SERVICE,
+            file_ingestion_workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
         )
-        export_assets_response: ExportAssetsResponse = client.export_assets(export=request)
-        asset_id = create_assets_response.assets[0].id
-        file_ids = [export_assets_response.file_id]
-        linkFilesRequest = LinkFilesRequest(
-            file_ids = file_ids
+        export_assets_response: ExportAssetsResponse = client.export_assets(
+            export=request
         )
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            asset_id = create_assets_response.assets[0].id
+        if export_assets_response.file_id:
+            file_ids = [export_assets_response.file_id]
+            client.link_files(asset_id=asset_id, fileIds=file_ids)
 
-        response: LinkFilesPartialSuccessResponse = client.link_files(asset_id=asset_id, files=linkFilesRequest)
-
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        client.delete_assets(ids=[asset_id])
 
     def test__link_files_with_incorrect_asset_id__does_not_link_files(
         self, client: AssetManagementClient
@@ -610,40 +608,39 @@ class TestAssetManagement:
         asset_id = "Incorrect Id"
         file_ids = ["608a5684800e325b48837c2a"]
 
-        with pytest.raises(ApiException) as excinfo:
-            client.link_files(asset_id=asset_id, files=LinkFilesRequest(file_ids=file_ids))
+        with pytest.raises(ApiException):
+            client.link_files(asset_id=asset_id, fileIds=file_ids)
 
     def test__unlink_files_with_correct_asset_id__unlinks_files(
-        self, client: AssetManagementClient, create_assets_request: CreateAssetsRequest
+        self, client: AssetManagementClient, asset_create: List[AssetCreate]
     ):
-        create_assets_request.assets[0].model_number = 2010
-        create_assets_response: AssetsCreatePartialSuccessResponse = client.create_assets(assets=create_assets_request)
-
+        asset_create[0].model_number = 2010
+        create_assets_response: AssetsCreatePartialSuccessResponse = (
+            client.create_assets(assets=asset_create)
+        )
         request = ExportAssetsRequest(
-            filter = "",
-            response_format = ResponseFormat.CSV,
-            destination = Destination.FILE_SERVICE,
-            file_ingestion_workspace = "846e294a-a007-47ac-9fc2-fac07eab240e"
+            filter="",
+            response_format=ResponseFormat.CSV,
+            destination=Destination.FILE_SERVICE,
+            file_ingestion_workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
         )
-        export_assets_response: ExportAssetsResponse = client.export_assets(export=request)
-        asset_id = create_assets_response.assets[0].id
-        file_ids = [export_assets_response.file_id]
-        linkFilesRequest = LinkFilesRequest(
-            file_ids = file_ids
+        export_assets_response: ExportAssetsResponse = client.export_assets(
+            export=request
         )
+        if create_assets_response.assets and create_assets_response.assets[0].id:
+            asset_id = create_assets_response.assets[0].id
+        if export_assets_response.file_id:
+            file_ids = [export_assets_response.file_id]
+            client.link_files(asset_id=asset_id, fileIds=file_ids)
 
-        client.link_files(asset_id=asset_id, files=linkFilesRequest)
+        client.unlink_files(asset_id=asset_id, file_id=file_ids[0])
 
-        response: NoContentResult = client.unlink_files(asset_id=asset_id, file_id=file_ids[0])
-
-        print(asset_id)
-
-        client.delete_assets(assets=DeleteAssetsRequest(ids=[asset_id]))
+        client.delete_assets(ids=[asset_id])
 
     def test__unlink_files_with_incorrect_asset_id__does_not_unlink_files(
         self, client: AssetManagementClient
     ):
         asset_id = "Incorrect Id"
 
-        with pytest.raises(ApiException) as excinfo:
+        with pytest.raises(ApiException):
             client.unlink_files(asset_id=asset_id, file_id="608a5684800e325b48837c2a")

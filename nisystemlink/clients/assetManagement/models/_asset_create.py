@@ -1,11 +1,22 @@
 from typing import Dict, List, Optional
-from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from nisystemlink.clients.core._api_error import ApiError
-from ._asset import Asset, AssetBusType, AssetDiscoveryType, AssetLocation, AssetType, ExternalCalibration, SelfCalibration, TemperatureSensor
+from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+from ._asset import (
+    Asset,
+    AssetBusType,
+    AssetDiscoveryType,
+    AssetLocation,
+    AssetType,
+    ExternalCalibration,
+    SelfCalibration,
+    TemperatureSensor,
+)
+
 
 class AssetCreate(JsonModel):
-    """Model for an object describing the properties for creating an asset. Unique Asset Identification is required to create an asset. See AssetIdentificationModel for details."""
+    """Model for an object describing the properties for creating an asset."""
 
     model_name: Optional[str] = None
     """Gets or sets model name of the asset."""
@@ -18,7 +29,7 @@ class AssetCreate(JsonModel):
 
     vendor_name: Optional[str] = None
     """Gets or sets vendor name of the asset."""
-    
+
     vendor_number: Optional[int] = None
     """Gets or sets vendor number of the asset."""
 
@@ -50,7 +61,7 @@ class AssetCreate(JsonModel):
     """Gets or sets whether the asset supports external calibration."""
 
     custom_calibration_interval: Optional[int] = None
-    """Gets or sets the interval represented in months used for computing calibration due date. If not set, the recommended calibration interval from the calibration model is used."""
+    """Gets or sets the interval represented in months used for computing calibration due date."""
 
     self_calibration: SelfCalibration
 
@@ -61,7 +72,7 @@ class AssetCreate(JsonModel):
     """Gets or sets the ID of the workspace."""
 
     location: AssetLocation
-    """Model for information about the asset location, presence and the connection status of the system in which it resides."""
+    """Model for information about the asset location, presence and the connection status of the system"""
 
     external_calibration: ExternalCalibration
 
@@ -86,11 +97,6 @@ class AssetCreate(JsonModel):
     part_number: Optional[str] = None
     """Gets or sets part number of the asset."""
 
-class CreateAssetsRequest(JsonModel):
-    """Model for request body containing an array of assets that should be created."""
-
-    assets: Optional[List[AssetCreate]] = None
-    """Gets or sets multiple assets that should be created. The maximum number of assets allowed per request is 1000."""
 
 class AssetsCreatePartialSuccessResponse(JsonModel):
     """Model for create Assets Partial Success Response."""

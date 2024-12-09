@@ -1,7 +1,9 @@
 from enum import Enum
 from typing import List, Optional
+
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 
 class ResponseFormat(Enum):
     """Gets or sets the return type. Valid options are "JSON" and "CSV"."""
@@ -10,6 +12,7 @@ class ResponseFormat(Enum):
 
     CSV = "CSV"
 
+
 class Destination(Enum):
     """Gets or sets the destination of the request."""
 
@@ -17,10 +20,11 @@ class Destination(Enum):
     """(default) Returns the list of resources as the body of the response."""
 
     DOWNLOAD = "DOWNLOAD"
-    """Returns the list of resources as the body of the response and indicates to the client that it should be downloaded as a file."""
+    """Returns the list of resources as the body of the response and it should be downloaded as a file."""
 
     FILE_SERVICE = "FILE_SERVICE"
-    """Sends the list of resources to the file ingestion service and returns the ID of the file to the client in a JSON object."""
+    """Sends the list of resources to the file ingestion service and returns the ID of the file in a JSON object."""
+
 
 class SystemConnection(Enum):
     """System connection of the first event"""
@@ -31,7 +35,7 @@ class SystemConnection(Enum):
 
     CONNECTED_UPDATE_PENDING = "CONNECTED_UPDATE_PENDING"
 
-    CONNECTED  = "CONNECTED"
+    CONNECTED = "CONNECTED"
 
     CONNECTED_UPDATE_FAILED = "CONNECTED_UPDATE_FAILED"
 
@@ -40,6 +44,7 @@ class SystemConnection(Enum):
     ACTIVATED = "ACTIVATED"
 
     CONNECTED_UPDATE_SUCCESSFUL = "CONNECTED_UPDATE_SUCCESSFUL"
+
 
 class AssetPresence(Enum):
     """asset presence of the first event."""
@@ -51,6 +56,7 @@ class AssetPresence(Enum):
     INITIALIZING = "INITIALIZING"
 
     UNKNOWN = "UNKNOWN"
+
 
 class ConnectionHistory(JsonModel):
 
@@ -73,7 +79,7 @@ class ConnectionHistory(JsonModel):
     """Gets or sets the number of the slot in which the asset is located."""
 
     start_timestamp: str
-    """Gets or sets a date time value when the start event happened. This parameter has the "ISO 8601" format in order to be considered valid."""
+    """Gets or sets a date time value when the start event happened."""
 
     start_system_connection: SystemConnection
     """Gets or sets the system connection of the first event."""
@@ -82,12 +88,13 @@ class ConnectionHistory(JsonModel):
     """Gets or sets the asset presence of the first event."""
 
     end_timestamp: Optional[str] = None
-    """Gets or sets a date time value when the end event happened. This parameter has the "ISO 8601" format in order to be considered valid."""
+    """Gets or sets a date time value when the end event happened."""
 
     end_system_connection: Optional[SystemConnection] = None
 
     end_asset_presence: Optional[AssetPresence] = None
     """Gets or sets the asset presence of the end event."""
+
 
 class QueryLocationHistoryRequest(JsonModel):
     """Model for object containing options for querying history."""
@@ -95,43 +102,24 @@ class QueryLocationHistoryRequest(JsonModel):
     take: Optional[int] = None
 
     continuation_token: Optional[str] = None
-    """Gets or sets a token which allows the user to resume a query at the next item in the matching asset location history set. When querying for asset location history, a token will be returned if a query may be continued. To obtain the next page of asset location history records, pass the token to the service on a subsequent request."""
+    """Gets or sets a token which allows user to resume query at next item in the matching asset location history."""
 
     response_format: ResponseFormat
     """Gets or sets the return type. Valid options are "JSON" and "CSV"."""
 
     destination: Destination
-    """Gets or sets the destination of the request. "INLINE" (default) returns the list of resources as the body of the response. "DOWNLOAD" returns the list of resources as the body of the response and indicates to the client that it should be downloaded as a file. "FILE_SERVICE" sends the list of resources to the file ingestion service and returns the ID of the file to the client in a JSON object."""
+    """Gets or sets the destination of the request."""
 
     file_ingestion_workspace: Optional[str] = None
     """Gets or sets the ID of the workspace to put the file into, if the destination is "FILE_SERVICE"."""
 
     location_filter: Optional[str] = None
-    """Gets or sets the filter criteria for location. Consists of a string of queries composed using AND/OR operators. String values and date strings need to be enclosed in double quotes. Parenthesis can be used around filters to better define the order of operations. Filter syntax: '[property name][operator][operand] and [property name][operator][operand]'
+    """Gets or sets the filter criteria for location."""
 
-        Operators:
-
-            Equals operator '='. Example: 'x = y'
-            Not equal operator '!='. Example: 'x != y'
-            Greater than operator '>'. Example: 'x > y'
-            Greater than or equal operator '>='. Example: 'x >= y'
-            Less than operator '<'. Example: 'x < y'
-            Less than or equal operator '<='. Example: 'x <= y'
-            Logical AND operator 'and'. Example: 'x and y'
-            Logical OR operator 'or'. Example: 'x or y'
-            Contains operator '.Contains()', used to check whether a string contains another string. Example: 'x.Contains(y)'
-            Does not contain operator '!.Contains()', used to check whether a string does not contain another string. Example: '!x.Contains(y)'
-            
-        Valid location properties that can be used in the filter:
-
-            MinionId: String representing the minion id of the location of an asset.
-            PhysicalLocation: String representing the physical location of the location of an asset.
-            Parent: String representing the parent of the location of an asset.
-            SlotNumber: Integer representing the slot number of the location of an asset."""
-    
     start_time: Optional[str] = None
 
     end_time: Optional[str] = None
+
 
 class ConnectionHistoryResponse(JsonModel):
 
@@ -140,4 +128,4 @@ class ConnectionHistoryResponse(JsonModel):
     history_items: Optional[List[ConnectionHistory]] = None
 
     continuation_token: Optional[str] = None
-    """Gets or sets a token which allows the user to resume a query at the next item in the matching asset location history set. When querying for asset location history, a token will be returned if a query may be continued. To obtain the next page of asset location history records, pass the token to the service on a subsequent request."""
+    """Gets or sets a token which allows user to resume query at next item in the matching asset location history."""
