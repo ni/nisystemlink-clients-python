@@ -1,5 +1,7 @@
 import json
 from typing import BinaryIO, Optional
+from io import BufferedReader
+import io
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -88,11 +90,11 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @post("notebook", args=[Field("metadata"), Field("content")])
-    def create_notebook(
+    @post("notebook")
+    def __create_notebook(
         self,
-        metadata: models.NotebookMetadata,
-        content: str,
+        metadata: Part,
+        content: Part,
     ) -> models.NotebookMetadata:
         """Creates a new notebook.
 
@@ -108,6 +110,33 @@ class NotebookClient(BaseClient):
                 arguments.
         """
         ...
+
+    def create_notebook(
+        self,
+        metadata: models.NotebookMetadata,
+        content: io.BytesIO,
+    ) -> models.NotebookMetadata:
+        """Creates a new notebook.
+
+        Args:
+            metadata: The notebook metadata.
+            content: The notebook binary content.
+
+        Returns:
+            The created notebook metadata.
+
+        Raises:
+            ApiException: if unable to communicate with the Notebook service or provided invalid
+                arguments.
+        """
+
+        metadata_str = metadata.json()
+
+        metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
+        return self.__create_notebook(
+            metadata=metadata_io,
+            content=content,
+        )
 
     @post("notebook/query")
     def query_notebooks_paged(

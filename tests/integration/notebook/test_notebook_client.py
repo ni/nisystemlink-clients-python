@@ -37,10 +37,8 @@ def create_notebook(client: NotebookClient):
     ) -> NotebookMetadata:
 
         # file_bytes = file.read()  # Read file as bytes
-        encoded_file = io.BytesIO(TEST_FILE_DATA).read().decode("utf-8")
-        notebook_response = client.create_notebook(
-            metadata=metadata, content=encoded_file
-        )
+        with open("tests/integration/notebook/test_file.ipynb", "rb") as file:
+            notebook_response = client.create_notebook(metadata=metadata, content=file)
         notebook_ids.append(notebook_response.id)
 
         return notebook_response
