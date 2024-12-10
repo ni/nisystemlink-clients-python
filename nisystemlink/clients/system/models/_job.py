@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class JobState(Enum):
+class JobState(str, Enum):
     """The state of the job."""
 
     SUCCEEDED = "SUCCEEDED"
@@ -54,28 +54,28 @@ class JobResult(JsonModel):
 class Job(JsonModel):
     """Job Model."""
 
-    id: str = Field(alias="jid")
+    id: Optional[str] = Field(None, alias="jid")
     """The job ID."""
 
-    system_id: str = Field(alias="id")
+    system_id: Optional[str] = Field(None, alias="id")
     """The ID of the system that the job targets."""
 
-    created_timestamp: datetime
+    created_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was created."""
 
-    last_updated_timestamp: datetime
+    last_updated_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was last updated."""
 
     dispatched_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was dispatched."""
 
-    state: JobState
+    state: Optional[JobState] = None
     """The state of the job."""
 
-    metadata: Dict[str, Any]
+    metadata: Optional[Dict[str, Any]] = None
     """The metadata associated with the job."""
 
-    config: JobConfig
+    config: Optional[JobConfig] = None
     """The configuration of the job."""
 
     result: Optional[JobResult] = None

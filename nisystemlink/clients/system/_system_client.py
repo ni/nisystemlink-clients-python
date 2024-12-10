@@ -107,7 +107,7 @@ class SystemClient(BaseClient):
         ...
 
     @post("query-jobs")
-    def query_jobs(self, query: models.QueryJobsRequest) -> models.QueryJobsResponse:
+    def _query_jobs(self, query: models._QueryJobsRequest) -> models.QueryJobsResponse:
         """Query the jobs.
 
         Args:
@@ -121,6 +121,35 @@ class SystemClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
+
+    def query_jobs(self, query: models.QueryJobsRequest) -> models.QueryJobsResponse:
+        """Query the jobs.
+
+        Args:
+            query: The request to query the jobs.
+
+        Returns:
+            An instance of QueryJobsRequest.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/nisysmgmt`` Service
+                or provided an invalid argument.
+        """
+        projection = ",".join(query.projection)
+        projection = f"new({projection})" if projection else ""
+
+        order_by = (
+            f"{query.order_by} {'descending' if query.descending else 'ascending'}"
+        )
+        query_request = models._QueryJobsRequest(
+            skip=query.skip,
+            take=query.take,
+            filter=query.filter,
+            projection=projection,
+            order_by=order_by,
+        )
+
+        return self._query_jobs(query_request)
 
     @response_handler(_cancel_job_response_handler)
     @post("cancel-jobs")
