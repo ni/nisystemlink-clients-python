@@ -16,7 +16,7 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
-from uplink import Field, Part, Path, multipart, Body
+from uplink import Field, Part, Path, multipart, Body, Query
 
 from . import models
 
@@ -54,12 +54,12 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @put("notebook/{id}", args=[Path("id"), Part("metadata"), Part("content")])
-    def update_notebook(
+    @put("notebook/{id}")
+    def _update_notebook(
         self,
-        id: str,
-        metadata: Optional[models.NotebookMetadata] = None,
-        content: Optional[str] = None,
+        id: Path,
+        metadata: Part = None,
+        content: Part = None,
     ) -> models.NotebookMetadata:
         """Updates a notebook metadata by ID.
 
@@ -76,6 +76,38 @@ class NotebookClient(BaseClient):
                 arguments.
         """
         ...
+
+    def update_notebook(
+        self,
+        id: str,
+        metadata: Optional[models.NotebookMetadata] = None,
+        content: Optional[io.BufferedReader] = None,
+    ) -> models.NotebookMetadata:
+        """Updates a notebook metadata by ID.
+
+        Args:
+            id: The ID of the notebook to update.
+            metadata: The notebook metadata.
+            content: The notebook binary content.
+
+        Returns:
+            The updated notebook metadata.
+
+        Raises:
+            ApiException: if unable to communicate with the Notebook service or provided invalid
+                arguments.
+        """
+
+        metadata_io = None
+        if metadata is not None:
+            metadata_str = metadata.json()
+            metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
+
+        return self._update_notebook(
+            id=id,
+            metadata=metadata_io,
+            content=content,
+        )
 
     @delete("notebook/{id}")
     def delete_notebook(self, id: str) -> None:
@@ -114,7 +146,7 @@ class NotebookClient(BaseClient):
     def create_notebook(
         self,
         metadata: models.NotebookMetadata,
-        content: io.BytesIO,
+        content: io.BufferedReader,
     ) -> models.NotebookMetadata:
         """Creates a new notebook.
 
