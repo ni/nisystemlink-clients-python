@@ -150,8 +150,7 @@ class SystemClient(BaseClient):
             ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
-        projection = ",".join(query.projection)
-        projection = f"new({projection})" if projection else ""
+        projection = f"new({','.join(query.projection)})" if query.projection else None
 
         order_by = (
             f"{query.order_by.value} {'descending' if query.descending else 'ascending'}"
@@ -160,11 +159,11 @@ class SystemClient(BaseClient):
         )
 
         query_params = {
-            "skip": query.skip if query.skip is not None else None,
-            "take": query.take if query.take is not None else None,
-            "filter": query.filter if query.filter is not None else None,
-            "projection": projection,  # If None, this will be omitted
-            "order_by": order_by,  # If None, this will be omitted
+            "skip": query.skip,
+            "take": query.take,
+            "filter": query.filter,
+            "projection": projection,
+            "order_by": order_by,
         }
 
         # Clean the query_params to remove any keys with None values
