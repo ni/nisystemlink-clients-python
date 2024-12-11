@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -103,7 +103,7 @@ class QueryJobsRequest(JsonModel):
           Example: result.success.Contains(false)
     """
 
-    projection: List[JobField | str] = []
+    projection: List[Union[JobField, str]] = []
     """
     Gets or sets specifies the projection for resources. Use this field to receive specific properties of the model.
 
