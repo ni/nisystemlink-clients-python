@@ -1,5 +1,5 @@
 import json
-from typing import BinaryIO, Optional
+from typing import BinaryIO, Optional, List
 from io import BufferedReader
 import io
 
@@ -36,9 +36,9 @@ class NotebookClient(BaseClient):
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
-        super().__init__(configuration, base_path="/ninotebook/v1/")
+        super().__init__(configuration, base_path="/")
 
-    @get("notebook/{id}")
+    @get("ninotebook/v1/notebook/{id}")
     def get_notebook(self, id: str) -> models.NotebookMetadata:
         """Gets a notebook metadata by ID.
 
@@ -49,12 +49,12 @@ class NotebookClient(BaseClient):
             The notebook metadata.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
         ...
 
-    @put("notebook/{id}")
+    @put("ninotebook/v1/notebook/{id}")
     def _update_notebook(
         self,
         id: Path,
@@ -72,7 +72,7 @@ class NotebookClient(BaseClient):
             The updated notebook metadata.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
         ...
@@ -94,7 +94,7 @@ class NotebookClient(BaseClient):
             The updated notebook metadata.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
 
@@ -109,7 +109,7 @@ class NotebookClient(BaseClient):
             content=content,
         )
 
-    @delete("notebook/{id}")
+    @delete("ninotebook/v1/notebook/{id}")
     def delete_notebook(self, id: str) -> None:
         """Deletes a notebook by ID.
 
@@ -117,12 +117,12 @@ class NotebookClient(BaseClient):
             id: The ID of the notebook to delete.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
         ...
 
-    @post("notebook")
+    @post("ninotebook/v1/notebook")
     def __create_notebook(
         self,
         metadata: Part,
@@ -138,7 +138,7 @@ class NotebookClient(BaseClient):
             The created notebook metadata.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
         ...
@@ -158,7 +158,7 @@ class NotebookClient(BaseClient):
             The created notebook metadata.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
 
@@ -170,7 +170,7 @@ class NotebookClient(BaseClient):
             content=content,
         )
 
-    @post("notebook/query")
+    @post("ninotebook/v1/notebook/query")
     def query_notebooks_paged(
         self, query: models.QueryNotebookRequest
     ) -> models.QueryNotebookResponse:
@@ -183,13 +183,13 @@ class NotebookClient(BaseClient):
             The paged notebooks.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
         ...
 
     @response_handler(file_like_response_handler)
-    @get("notebook/{id}/content")
+    @get("ninotebook/v1/notebook/{id}/content")
     def get_notebook_content(self, id: str) -> IteratorFileLike:
         """Gets a notebook content by ID.
 
@@ -200,7 +200,84 @@ class NotebookClient(BaseClient):
             A file-like object for reading the notebook content.
 
         Raises:
-            ApiException: if unable to communicate with the Notebook service or provided invalid
+            ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
         ...
+
+    @post("ninbexecution/v1/executions")
+    def create_executions(
+        self, executions: List[models.CreateExecution]
+    ) -> models.CreateExecutionsResponse:
+        """Create one or more executions of Jupyter notebooks.
+
+        Args:
+            execution: information about an execution of a Jupyter notebook.
+
+        Returns:
+            A response to a request to create executions.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/ninbexecution`` Service
+                or provided an invalid argument.
+        """
+        ...
+
+    @get("ninbexecution/v1/executions/{id}")
+    def get_execution_by_id(self, id: str) -> models.Execution:
+        """Get information about the specified execution of a Jupyter notebook.
+
+        Args:
+            id: the ID of the execution.
+
+        Returns:
+            Information about the execution of a Jupyter notebook fetched using it's Id.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/ninbexecution`` Service
+                or provided an invalid argument.
+        """
+        ...
+
+    @post("ninbexecution/v1/query-executions")
+    def _query_executions(
+        self, query: models._QueryExecutions
+    ) -> List[models.Execution]:
+        """Query executions of Jupyter notebooks.
+
+        Args:
+            query: query for executions of Jupyter notebooks.
+
+        Returns:
+            A response to a request to query executions.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/ninbexecution`` Service
+                or provided an invalid argument.
+        """
+        ...
+
+    def query_executions(self, query: models.QueryExecutions) -> List[models.Execution]:
+        """Query executions of Jupyter notebooks.
+
+        Args:
+            query: query for executions of Jupyter notebooks.
+
+        Returns:
+            A response to a request to query executions.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/ninbexecution`` Service
+                or provided an invalid argument.
+        """
+        projection = ", ".join(query.projection)
+        projection_str = f"{projection}" if projection else None
+
+        query_request = models._QueryExecutions(
+            filter=query.filter,
+            order_by=query.order_by,
+            descending=query.descending,
+            projection=projection_str,
+        )
+
+        return self._query_executions(query=query_request)
