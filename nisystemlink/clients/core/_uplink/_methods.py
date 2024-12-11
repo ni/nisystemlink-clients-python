@@ -17,6 +17,7 @@ def get(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
     """Annotation for a GET request."""
 
     def decorator(func: F) -> F:
+        print("get decorator", func)
         return commands.get(path, args=args)(func)  # type: ignore
 
     return decorator
