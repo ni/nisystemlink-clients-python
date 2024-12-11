@@ -3,6 +3,7 @@ from nisystemlink.clients.system import SystemClient
 from nisystemlink.clients.system.models import (
     CancelJobRequest,
     CreateJobRequest,
+    JobField,
     JobState,
     QueryJobsRequest,
 )
@@ -25,14 +26,16 @@ jobs = client.list_jobs(
 )
 
 # Create a job
-arg = [["A description"]]
-tgt = ["HVM_domU--SN-ec200972-eeca-062e-5bf5-017a25451b39--MAC-0A-E1-20-D6-96-2B"]
-fun = ["system.set_computer_desc"]
+arguments = [["A description"]]
+target_systems = [
+    "HVM_domU--SN-ec200972-eeca-062e-5bf5-017a25451b39--MAC-0A-E1-20-D6-96-2B"
+]
+functions = ["system.set_computer_desc"]
 metadata = {"queued": True, "refresh_minion_cache": {"grains": True}}
 job = CreateJobRequest(
-    arguments=arg,
-    target_systems=tgt,
-    functions=fun,
+    arguments=arguments,
+    target_systems=target_systems,
+    functions=functions,
     metadata=metadata,
 )
 
@@ -46,12 +49,15 @@ query_job = QueryJobsRequest(
     skip=0,
     take=1000,
     filter="result.success.Contains(false)",
-    projection="new(id,jid,state,lastUpdatedTimestamp,metadata.queued as queued)",
-    orderBy="createdTimestamp descending",
+    projection=[JobField.ID, JobField.SYSTEM_ID, "metadata.queued"],
+    orderBy=JobField.CREATED_TIMESTAMP,
+    descending=True,
 )
 query_jobs_response = client.query_jobs(query_job)
 
 
 # Cancel a job
-cancel_job_request = CancelJobRequest(id=create_job_response.id, tgt=tgt[0])
+cancel_job_request = CancelJobRequest(
+    id=create_job_response.id, system_id=target_systems[0]
+)
 cancel_job_response = client.cancel_jobs([cancel_job_request])

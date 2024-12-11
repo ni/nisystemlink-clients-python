@@ -1,11 +1,11 @@
 from datetime import datetime
-from pydantic import Field
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Field
 
-from ._job import JobState, JobResult
+from ._job import JobResult, JobState
 
 
 class QueryJobConfig(JsonModel):

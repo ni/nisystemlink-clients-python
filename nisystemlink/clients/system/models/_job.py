@@ -1,20 +1,24 @@
-from pydantic import Field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Field
 
 
 class JobState(str, Enum):
     """The state of the job."""
 
     SUCCEEDED = "SUCCEEDED"
+
     OUTOFQUEUE = "OUTOFQUEUE"
+
     INQUEUE = "INQUEUE"
+
     INPROGRESS = "INPROGRESS"
+
     CANCELED = "CANCELED"
+
     FAILED = "FAILED"
 
 

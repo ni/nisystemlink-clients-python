@@ -1,12 +1,12 @@
-from typing import List, Optional, Union, Any
 import json
+from typing import List, Optional, Union
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post, response_handler
-from uplink import Query
 from requests.models import Response
+from uplink import Query
 
 from . import models
 
@@ -150,30 +150,28 @@ class SystemClient(BaseClient):
             ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
-
         projection = ",".join(query.projection)
         projection = f"new({projection})" if projection else ""
 
         order_by = (
-            f"{query.order_by.strip()} {'descending' if query.descending else 'ascending'}"
+            f"{query.order_by.value} {'descending' if query.descending else 'ascending'}"
             if query.order_by
             else None
         )
 
-        query_request = models._QueryJobsRequest(
-            skip=query.skip,
-            take=query.take,
-            filter=query.filter,
-            projection=projection,
-            order_by=order_by,
-        ).dict()
+        query_params = {
+            "skip": query.skip if query.skip is not None else None,
+            "take": query.take if query.take is not None else None,
+            "filter": query.filter if query.filter is not None else None,
+            "projection": projection,  # If None, this will be omitted
+            "order_by": order_by,  # If None, this will be omitted
+        }
 
-        # Remove None values from the dictionary
-        query_params = {k: v for k, v in query_request.items() if v is not None}
+        # Clean the query_params to remove any keys with None values
+        query_params = {k: v for k, v in query_params.items() if v is not None}
 
+        # Create the query request with the cleaned parameters
         query_request = models._QueryJobsRequest(**query_params)
-
-        print(query_request)
 
         return self._query_jobs(query_request)
 

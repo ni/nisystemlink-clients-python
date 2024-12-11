@@ -1,21 +1,14 @@
-from typing import List
-from unittest.mock import MagicMock, patch
-from uuid import uuid4
-import responses.matchers
-from uplink import commands
-import responses
-
 import pytest
-from nisystemlink.clients.core import ApiException
+import responses
+import responses.matchers
+from nisystemlink.clients.core import ApiError, ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.system import SystemClient
 from nisystemlink.clients.system.models import (
     CancelJobRequest,
     CreateJobRequest,
-    CreateJobResponse,
-    QueryJobsRequest,
-    _QueryJobsRequest,
     JobField,
+    QueryJobsRequest,
 )
 
 TARGET_SYSTEM = "dh33jg-43erhqfb-3r3r3r"
@@ -48,7 +41,7 @@ class TestSystemClient:
             functions=fun,
             metadata=METADATA,
         )
-        job_id = str(uuid4())
+        job_id = "sample_job_id"
 
         return_value = {
             "jid": job_id,
@@ -281,6 +274,8 @@ class TestSystemClient:
         assert response.count is not None
         assert len(response.data) == response.count == 1
         assert response.data[0].id == job_id
+        assert response.data[0].config is not None
+        assert response.data[0].config.functions is not None
         assert response.data[0].config.functions == [SAMPLE_FUN_1]
 
     def test__query_jobs_by_filtering_invalid_function__returns_empty_list(
@@ -290,11 +285,12 @@ class TestSystemClient:
         response = client.query_jobs(query=query)
 
         assert response.error is None
+        assert response.data is not None
         assert len(response.data) == 0
         assert response.count == 0
 
     @responses.activate
-    def test__query_jobs_by_filtering_jid__returns_job_matches_jid(
+    def test__query_jobs_by_filtering_job_id__returns_job_matches_job_id(
         self, client: SystemClient
     ):
         job_id = "sample_job_id"
@@ -331,7 +327,7 @@ class TestSystemClient:
         assert len(response.data) == response.count == 1
         assert response.data[0].id == job_id
 
-    def test__query_jobs_by_filtering_invalid_jid__raises_ApiException_BadRequest(
+    def test__query_jobs_by_filtering_invalid_job_id__raises_ApiException_BadRequest(
         self, client: SystemClient
     ):
         query = QueryJobsRequest(filter="jid=Invalid_jid")
@@ -375,7 +371,7 @@ class TestSystemClient:
         with pytest.raises(ApiException, match="Bad Request"):
             client.query_jobs(query=query)
 
-    def test__query_jobs_order_by_created_timestamp_in_ascending_order__returns_jobs_sorted_by_created_timestamp_in_ascending_order(
+    def test__query_jobs_order_by_created_timestamp_in_asc__returns_jobs_sorted_by_created_timestamp_in_asc(
         self, client: SystemClient
     ):
         query = QueryJobsRequest(order_by=JobField.CREATED_TIMESTAMP, take=3)
@@ -385,12 +381,17 @@ class TestSystemClient:
         assert response.data is not None
         assert len(response.data) == response.count == 3
 
-        assert all(
-            response.data[i].created_timestamp <= response.data[i + 1].created_timestamp
-            for i in range(len(response.data) - 1)
+        assert response.data[0].created_timestamp is not None
+        assert response.data[1].created_timestamp is not None
+        assert response.data[2].created_timestamp is not None
+
+        assert (
+            response.data[0].created_timestamp
+            <= response.data[1].created_timestamp
+            <= response.data[2].created_timestamp
         )
 
-    def test__query_jobs_order_by_completing_timestamp_in_descending_order__returns_jobs_sorted_by_completing_timestamp_in_descending_order(
+    def test__query_jobs_order_by_completing_timestamp_in_desc__returns_jobs_sorted_by_completing_timestamp_in_desc(
         self, client: SystemClient
     ):
         query = QueryJobsRequest(
@@ -402,10 +403,14 @@ class TestSystemClient:
         assert response.data is not None
         assert len(response.data) == response.count == 3
 
-        assert all(
-            response.data[i].completing_timestamp
-            >= response.data[i + 1].completing_timestamp
-            for i in range(len(response.data) - 1)
+        assert response.data[0].completing_timestamp is not None
+        assert response.data[1].completing_timestamp is not None
+        assert response.data[2].completing_timestamp is not None
+
+        assert (
+            response.data[0].completing_timestamp
+            >= response.data[1].completing_timestamp
+            >= response.data[2].completing_timestamp
         )
 
     @responses.activate
@@ -448,10 +453,44 @@ class TestSystemClient:
 
         assert cancel_response is None
 
+    @responses.activate
     def test__cancel_with_invalid_jid_valid_system_id__cancel_job_returns_error(
         self, client: SystemClient
     ):
-        cancel_job_request = CancelJobRequest(id="Invalid_jid", system_id=TARGET_SYSTEM)
+        return_value = {
+            "error": {
+                "name": "Skyline.OneOrMoreErrorsOccurred",
+                "code": -251041,
+                "message": "One or more errors occurred. See the contained list for details of each error.",
+                "args": [],
+                "innerErrors": [
+                    {
+                        "name": "SystemsManagement.SaltCancelJobFailed",
+                        "code": -254003,
+                        "message": "The job is not found or you are not authorized to cancel it.",
+                        "resourceType": "Job",
+                        "resourceId": "54afefqf4b95-ea89-48df-b21f-dddrwerf56083476",
+                        "args": [
+                            "54af4b95-ea89-48df-b21f-dddrfrewf56083476",
+                            "ferfgertgw--SN-eger--rf-AC-1A-3D-99-75-3F",
+                        ],
+                        "innerErrors": [],
+                    }
+                ],
+            }
+        }
+
+        responses.add(
+            method=responses.POST,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/cancel-jobs",
+            json=return_value,
+            status=200,
+        )
+
+        cancel_job_request = CancelJobRequest(
+            id="Invalid_jid",
+            system_id="ferfgertgw--SN-eger--rf-AC-1A-3D-99-75-3F",
+        )
         cancel_response = client.cancel_jobs([cancel_job_request])
 
-        assert cancel_response is None
+        assert isinstance(cancel_response, ApiError)

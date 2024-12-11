@@ -1,7 +1,5 @@
-from pydantic import Field
-from typing import Optional
-
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Field
 
 
 class CancelJobRequest(JsonModel):
