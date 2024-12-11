@@ -30,7 +30,7 @@ class JobConfig(JsonModel):
     functions: List[str] = Field(alias="fun")
     """Salt functions related to the job."""
 
-    arguments: Optional[List[List[Any]]] = Field(None, alias="args")
+    arguments: Optional[List[List[Any]]] = Field(None, alias="arg")
     """Arguments of the salt functions."""
 
 
@@ -41,45 +41,42 @@ class JobResult(JsonModel):
     system_id: Optional[str] = Field(None, alias="id")
     """The ID of the system that the job targets."""
 
-    return_code: Optional[List[int]] = None
+    return_code: Optional[List[int]] = Field(None, alias="retcode")
     """Return code of the job."""
 
     return_: Optional[List[Any]] = None
     """Return value of the job."""
 
-    success: Optional[bool] = None
+    success: Optional[List[bool]] = None
     """Whether the job was successful."""
 
 
 class Job(JsonModel):
     """Job Model."""
 
-    id: Optional[str] = Field(None, alias="jid")
+    id: str = Field(alias="jid")
     """The job ID."""
 
-    system_id: Optional[str] = Field(None, alias="id")
+    system_id: str = Field(alias="id")
     """The ID of the system that the job targets."""
 
-    created_timestamp: Optional[datetime] = None
+    created_timestamp: datetime
     """The timestamp representing when the job was created."""
 
-    last_updated_timestamp: Optional[datetime] = None
+    last_updated_timestamp: datetime
     """The timestamp representing when the job was last updated."""
 
     dispatched_timestamp: Optional[datetime] = None
     """The timestamp representing when the job was dispatched."""
 
-    state: Optional[JobState] = None
+    state: JobState
     """The state of the job."""
 
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Dict[str, Any]
     """The metadata associated with the job."""
 
-    config: Optional[JobConfig] = None
+    config: JobConfig
     """The configuration of the job."""
 
     result: Optional[JobResult] = None
     """The result of the job."""
-
-    class Config:
-        orm_mode = True

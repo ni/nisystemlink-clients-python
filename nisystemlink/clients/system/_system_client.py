@@ -1,4 +1,5 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any
+import json
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core import ApiError
@@ -15,9 +16,22 @@ def _cancel_job_response_handler(response: Response) -> Union[ApiError, None]:
     if response is None:
         return None
 
-    cancel_response = response.json()
+    try:
+        cancel_response = response.json()
+    except json.JSONDecodeError:
+        return None
 
     return cancel_response.get("error")
+
+
+def _list_jobs_response_handler(response: Response) -> List[models.Job]:
+    """Response handler for List Jobs response."""
+    if response is None:
+        return []
+
+    jobs = response.json()
+
+    return jobs
 
 
 class SystemClient(BaseClient):
@@ -38,6 +52,7 @@ class SystemClient(BaseClient):
 
         super().__init__(configuration, "/nisysmgmt/v1/")
 
+    @response_handler(_list_jobs_response_handler)
     @get(
         "jobs",
         args=[
@@ -52,7 +67,7 @@ class SystemClient(BaseClient):
     def list_jobs(
         self,
         system_id: Optional[str] = None,
-        jid: Optional[str] = None,
+        job_id: Optional[str] = None,
         state: Optional[models.JobState] = None,
         function: Optional[str] = None,
         skip: Optional[int] = None,
@@ -135,19 +150,30 @@ class SystemClient(BaseClient):
             ApiException: if unable to communicate with the ``/nisysmgmt`` Service
                 or provided an invalid argument.
         """
+
         projection = ",".join(query.projection)
         projection = f"new({projection})" if projection else ""
 
         order_by = (
-            f"{query.order_by} {'descending' if query.descending else 'ascending'}"
+            f"{query.order_by.strip()} {'descending' if query.descending else 'ascending'}"
+            if query.order_by
+            else None
         )
+
         query_request = models._QueryJobsRequest(
             skip=query.skip,
             take=query.take,
             filter=query.filter,
             projection=projection,
             order_by=order_by,
-        )
+        ).dict()
+
+        # Remove None values from the dictionary
+        query_params = {k: v for k, v in query_request.items() if v is not None}
+
+        query_request = models._QueryJobsRequest(**query_params)
+
+        print(query_request)
 
         return self._query_jobs(query_request)
 

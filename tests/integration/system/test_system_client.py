@@ -1,4 +1,9 @@
 from typing import List
+from unittest.mock import MagicMock, patch
+from uuid import uuid4
+import responses.matchers
+from uplink import commands
+import responses
 
 import pytest
 from nisystemlink.clients.core import ApiException
@@ -9,12 +14,11 @@ from nisystemlink.clients.system.models import (
     CreateJobRequest,
     CreateJobResponse,
     QueryJobsRequest,
+    _QueryJobsRequest,
+    JobField,
 )
 
-TARGET_SYSTEM = (
-    # "HVM_domU--SN-ec200972-eeca-062e-5bf5-33g3g3g3d73b2--MAC-0A-E1-20-D6-96-2B"
-    "20UAS1L61D--SN-PF2K5S1M--MAC-8C-8C-AA-82-6A-F8"
-)
+TARGET_SYSTEM = "dh33jg-43erhqfb-3r3r3r"
 METADATA = {"queued": True, "refresh_minion_cache": {"grains": True}}
 SAMPLE_FUN_1 = "system.sample_function_one"
 SAMPLE_FUN_2 = "system.sample_function_two"
@@ -26,77 +30,13 @@ def client(enterprise_config: HttpConfiguration) -> SystemClient:
     return SystemClient(enterprise_config)
 
 
-@pytest.fixture(scope="class")
-def create_job(
-    client: SystemClient,
-):
-    """Fixture to create a job."""
-    responses: List[CreateJobResponse] = []
-
-    def _create_job(job: CreateJobRequest) -> CreateJobResponse:
-        response = client.create_job(job)
-        responses.append(response)
-        return response
-
-    yield _create_job
-
-    job_requests = [
-        CancelJobRequest(id=response.id, system_id=TARGET_SYSTEM)
-        for response in responses
-        if response.id != ""
-    ]
-
-    if len(job_requests):
-        client.cancel_jobs(job_requests)
-
-
-@pytest.fixture(scope="class", autouse=True)
-def create_multiple_jobs(
-    create_job,
-):
-    """Fixture to create multiple jobs."""
-    responses = []
-    arg_1 = [["sample argument one"]]
-    arg_2 = [["sample argument two"]]
-    tgt = [TARGET_SYSTEM]
-    fun_1 = [SAMPLE_FUN_1]
-    fun_2 = [SAMPLE_FUN_2]
-
-    metadata = METADATA
-
-    job_1 = CreateJobRequest(
-        arguments=arg_1,
-        target_systems=tgt,
-        functions=fun_1,
-        metadata=metadata,
-    )
-    responses.append(create_job(job_1))
-
-    job_2 = CreateJobRequest(
-        arguments=arg_2,
-        target_systems=tgt,
-        functions=fun_2,
-        metadata=metadata,
-    )
-    responses.append(create_job(job_2))
-
-    job_3 = CreateJobRequest(
-        arguments=arg_1,
-        target_systems=tgt,
-        functions=fun_2,
-        metadata=metadata,
-    )
-    responses.append(create_job(job_3))
-
-    return responses
-
-
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestSystemClient:
+    @responses.activate
     def test__create_a_job__job_is_created_with_right_field_values(
         self,
-        create_job,
+        client: SystemClient,
     ):
         arg = [["sample argument"]]
         tgt = [TARGET_SYSTEM]
@@ -108,48 +48,169 @@ class TestSystemClient:
             functions=fun,
             metadata=METADATA,
         )
+        job_id = str(uuid4())
 
-        response = create_job(job)
+        return_value = {
+            "jid": job_id,
+            "tgt": job.target_systems,
+            "fun": job.functions,
+            "arg": job.arguments,
+            "metadata": job.metadata,
+            "error": None,
+        }
+
+        responses.add(
+            method=responses.POST,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/jobs",
+            json=return_value,
+            status=201,
+        )
+
+        response = client.create_job(job)
 
         assert response is not None
-        assert response.id != ""
+        assert response.id == job_id
         assert response.target_systems == tgt
         assert response.error is None
 
+    @responses.activate
+    def test__create_job_with_invalid_target_system__return_error_response(
+        self,
+        client: SystemClient,
+    ):
+        arg = [["sample argument"]]
+        tgt = ["Invalid_target_system"]
+        fun = ["system.set_computer_desc_sample_function"]
+
+        job = CreateJobRequest(
+            arguments=arg,
+            target_systems=tgt,
+            functions=fun,
+            metadata=METADATA,
+        )
+
+        return_value = {
+            "jid": "",
+            "tgt": job.target_systems,
+            "fun": job.functions,
+            "arg": job.arguments,
+            "metadata": job.metadata,
+            "error": {
+                "name": "Skyline.OneOrMoreErrorsOccurred",
+                "code": -251041,
+                "message": "One or more errors occurred. See the contained list for details of each error.",
+                "args": [],
+                "innerErrors": [
+                    {
+                        "name": "SystemsManagement.SystemNotFound",
+                        "code": -254010,
+                        "message": "System not found.",
+                        "resourceType": "Minion",
+                        "resourceId": "Invalid_target_system",
+                        "args": ["Invalid_target_system"],
+                        "innerErrors": [],
+                    }
+                ],
+            },
+        }
+
+        responses.add(
+            method=responses.POST,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/jobs",
+            json=return_value,
+            status=201,
+        )
+
+        response = client.create_job(job)
+
+        assert response is not None
+        assert response.id == ""
+        assert response.target_systems == tgt
+        assert response.error is not None
+
+    @responses.activate
     def test__get_job_using_target_and_job_id__returns_job_matches_target_and_job_id(
-        self, create_multiple_jobs, client: SystemClient
+        self,
+        client: SystemClient,
     ):
-        [first_job, *_] = create_multiple_jobs
-        print(first_job.jid)
-        response = client.list_jobs(system_id=TARGET_SYSTEM, jid=first_job.jid)
-        assert len(response) == 1
-        [response_job] = response
-        print(response)
-        assert response_job.id == first_job.jid
-        assert response_job.config is not None
-        assert response_job.config.target_systems == first_job.tgt
+        job_id = "sample_job_id"
+        return_value = [
+            {
+                "jid": job_id,
+                "id": TARGET_SYSTEM,
+                "createdTimestamp": "2024-11-12T06:00:02.212+00:00",
+                "lastUpdatedTimestamp": "2024-11-12T11:05:38.614+00:00",
+                "state": "CANCELED",
+                "config": {
+                    "user": "admin",
+                    "tgt": [TARGET_SYSTEM],
+                    "fun": [SAMPLE_FUN_1],
+                },
+                "metadata": METADATA,
+            },
+        ]
 
+        responses.add(
+            method=responses.GET,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/jobs",
+            json=return_value,
+            status=200,
+        )
+
+        list_response = client.list_jobs(job_id=job_id, system_id=TARGET_SYSTEM)
+        assert len(list_response) == 1
+        assert list_response[0].id == job_id
+        assert list_response[0].system_id == TARGET_SYSTEM
+
+    @responses.activate
     def test__get_jobs_using_target_and_function__return_jobs_match_target_and_function(
-        self, create_multiple_jobs, client: SystemClient
+        self, client: SystemClient
     ):
-        [_, second_job, third_job] = create_multiple_jobs
-        response = client.list_jobs(system_id=TARGET_SYSTEM, function=SAMPLE_FUN_2)
-        assert len(response) == 2
+        job_id_1 = "sample_job_id_1"
+        job_id_2 = "sample_job_id_2"
+        return_value = [
+            {
+                "jid": job_id_1,
+                "id": TARGET_SYSTEM,
+                "createdTimestamp": "2024-11-12T06:00:02.212+00:00",
+                "lastUpdatedTimestamp": "2024-11-12T11:05:38.614+00:00",
+                "state": "CANCELED",
+                "config": {
+                    "user": "admin",
+                    "tgt": [TARGET_SYSTEM],
+                    "fun": [SAMPLE_FUN_1],
+                },
+                "metadata": METADATA,
+            },
+            {
+                "jid": job_id_2,
+                "id": TARGET_SYSTEM,
+                "createdTimestamp": "2024-11-12T06:00:02.212+00:00",
+                "lastUpdatedTimestamp": "2024-11-12T11:05:38.614+00:00",
+                "state": "CANCELED",
+                "config": {
+                    "user": "admin",
+                    "tgt": [TARGET_SYSTEM],
+                    "fun": [SAMPLE_FUN_1],
+                },
+                "metadata": METADATA,
+            },
+        ]
 
-        [response_second_job, response_third_job] = response
+        responses.add(
+            method=responses.GET,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/jobs",
+            json=return_value,
+            status=200,
+        )
 
-        assert response_second_job.id == second_job.jid
-        assert response_second_job.config is not None
-        assert response_second_job.config.target_systems == second_job.tgt
+        list_response = client.list_jobs(system_id=TARGET_SYSTEM, function=SAMPLE_FUN_1)
+        assert len(list_response) == 2
+        assert list_response[0].id == job_id_1
+        assert list_response[1].id == job_id_2
 
-        assert response_third_job.id == third_job.jid
-        assert response_third_job.config is not None
-        assert response_third_job.config.target_systems == third_job.tgt
-
-    def test__get_job_by_taking_one__return_only_one_job(
-        self, create_multiple_jobs, client: SystemClient
-    ):
-        response = client.list_jobs(system_id=TARGET_SYSTEM, skip=1)
+    def test__get_job_by_taking_one__return_only_one_job(self, client: SystemClient):
+        response = client.list_jobs(take=1)
         assert len(response) == 1
 
     def test__get_jobs_using_invalid_system_id__returns_empty_list(
@@ -161,7 +222,7 @@ class TestSystemClient:
     def test__get_jobs_using_invalid_jid__returns_empty_list(
         self, client: SystemClient
     ):
-        response = client.list_jobs(jid="Invalid_jid")
+        response = client.list_jobs(job_id="Invalid_jid")
         assert len(response) == 0
 
     def test__get_job_summary__returns_job_summary(self, client: SystemClient):
@@ -174,92 +235,205 @@ class TestSystemClient:
         assert response.error is None
 
     def test__query_jobs_by_taking_one__returns_one_job(self, client: SystemClient):
-        query = QueryJobsRequest(skip=0, take=1)
+        query = QueryJobsRequest(take=1)
         response = client.query_jobs(query=query)
 
         assert response is not None
         assert response.data is not None
         assert len(response.data) == response.count == 1
 
+    @responses.activate
     def test__query_jobs_by_filtering_config__return_jobs_matches_filter(
         self, client: SystemClient
     ):
-        query = QueryJobsRequest(skip=0, filter=f"config.fun.Contains({SAMPLE_FUN_2})")
+        job_id = "sample_job_id"
+        return_value = {
+            "data": [
+                {
+                    "jid": job_id,
+                    "id": TARGET_SYSTEM,
+                    "createdTimestamp": "2024-11-12T06:00:02.212+00:00",
+                    "lastUpdatedTimestamp": "2024-11-12T11:05:38.614+00:00",
+                    "state": "CANCELED",
+                    "config": {
+                        "user": "admin",
+                        "tgt": [TARGET_SYSTEM],
+                        "fun": [SAMPLE_FUN_1],
+                    },
+                    "metadata": METADATA,
+                },
+            ],
+            "count": 1,
+        }
+
+        responses.add(
+            method=responses.POST,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/query-jobs",
+            json=return_value,
+            status=200,
+        )
+
+        query = QueryJobsRequest(filter=f"config.fun.Contains({SAMPLE_FUN_1})")
         response = client.query_jobs(query=query)
 
         assert response is not None
         assert response.data is not None
         assert response.count is not None
-        assert len(response.data) == response.count > 0
+        assert len(response.data) == response.count == 1
+        assert response.data[0].id == job_id
+        assert response.data[0].config.functions == [SAMPLE_FUN_1]
 
-    def test__query_jobs_by_filtering_invalid_filter__raises_ApiException(
+    def test__query_jobs_by_filtering_invalid_function__returns_empty_list(
         self, client: SystemClient
     ):
-        query = QueryJobsRequest(
-            skip=0, filter='config.fun.Contains("failed_function")'
-        )
-        with pytest.raises(ApiException):
-            client.query_jobs(query=query)
+        query = QueryJobsRequest(filter='config.fun.Contains("failed_function")')
+        response = client.query_jobs(query=query)
 
+        assert response.error is None
+        assert len(response.data) == 0
+        assert response.count == 0
+
+    @responses.activate
     def test__query_jobs_by_filtering_jid__returns_job_matches_jid(
-        self, create_multiple_jobs, client: SystemClient
+        self, client: SystemClient
     ):
-        query = QueryJobsRequest(skip=0, filter=f"jid={create_multiple_jobs[0].jid}")
+        job_id = "sample_job_id"
+        return_value = {
+            "data": [
+                {
+                    "jid": job_id,
+                    "id": TARGET_SYSTEM,
+                    "createdTimestamp": "2024-11-12T06:00:02.212+00:00",
+                    "lastUpdatedTimestamp": "2024-11-12T11:05:38.614+00:00",
+                    "state": "CANCELED",
+                    "config": {
+                        "user": "admin",
+                        "tgt": [TARGET_SYSTEM],
+                        "fun": [SAMPLE_FUN_1],
+                    },
+                    "metadata": METADATA,
+                },
+            ],
+            "count": 1,
+        }
+
+        responses.add(
+            method=responses.POST,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/query-jobs",
+            json=return_value,
+            status=200,
+        )
+        query = QueryJobsRequest(filter=f"jid={job_id}")
         response = client.query_jobs(query=query)
 
         assert response is not None
         assert response.data is not None
         assert len(response.data) == response.count == 1
+        assert response.data[0].id == job_id
 
-    def test__query_jobs_by_filtering_invalid_jid__raises_ApiException(
+    def test__query_jobs_by_filtering_invalid_jid__raises_ApiException_BadRequest(
         self, client: SystemClient
     ):
-        query = QueryJobsRequest(skip=0, filter="jid=Invalid_jid")
-        with pytest.raises(ApiException):
+        query = QueryJobsRequest(filter="jid=Invalid_jid")
+        with pytest.raises(ApiException, match="Bad Request"):
             client.query_jobs(query=query)
 
-    def test__cancel_single_job__cancel_single_job_succeeds(self, client: SystemClient):
-        arg = [["sample argument"]]
-        tgt = [TARGET_SYSTEM]
-        fun = [SAMPLE_FUN_1]
-        job = CreateJobRequest(
-            arguments=arg,
-            target_systems=tgt,
-            functions=fun,
-            metadata=METADATA,
-        )
-        response = client.create_job(job)
+    def test__query_jobs_by_filtering_invalid_system_id__raises_ApiException(
+        self, client: SystemClient
+    ):
+        query = QueryJobsRequest(filter="id=Invalid_system_id")
+        with pytest.raises(ApiException, match="Bad Request"):
+            client.query_jobs(query=query)
 
-        cancel_job_request = CancelJobRequest(id=response.id, tgt=TARGET_SYSTEM)
+    def test__query_jobs_by_projecting_job_id_and_system_id__returns_jobs_with_only_job_id_and_system_id_properties(
+        self,
+        client: SystemClient,
+    ):
+        query = QueryJobsRequest(projection=[JobField.ID, JobField.SYSTEM_ID], take=3)
+        response = client.query_jobs(query=query)
+
+        assert response is not None
+        assert response.data is not None
+        assert len(response.data) == response.count == 3
+
+        assert all(
+            job.id is not None
+            and job.system_id is not None
+            and job.created_timestamp is None
+            and job.last_updated_timestamp is None
+            and job.state is None
+            and job.config is None
+            and job.metadata is None
+            and job.result is None
+            for job in response.data
+        )
+
+    def test__query_jobs_with_invalid_projection__raises_ApiException_BadRequest(
+        self, client: SystemClient
+    ):
+        query = QueryJobsRequest(projection=["Invalid_projection"], take=3)
+        with pytest.raises(ApiException, match="Bad Request"):
+            client.query_jobs(query=query)
+
+    def test__query_jobs_order_by_created_timestamp_in_ascending_order__returns_jobs_sorted_by_created_timestamp_in_ascending_order(
+        self, client: SystemClient
+    ):
+        query = QueryJobsRequest(order_by=JobField.CREATED_TIMESTAMP, take=3)
+        response = client.query_jobs(query=query)
+
+        assert response is not None
+        assert response.data is not None
+        assert len(response.data) == response.count == 3
+
+        assert all(
+            response.data[i].created_timestamp <= response.data[i + 1].created_timestamp
+            for i in range(len(response.data) - 1)
+        )
+
+    def test__query_jobs_order_by_completing_timestamp_in_descending_order__returns_jobs_sorted_by_completing_timestamp_in_descending_order(
+        self, client: SystemClient
+    ):
+        query = QueryJobsRequest(
+            order_by=JobField.COMPLETING_TIMESTAMP, descending=True, take=3
+        )
+        response = client.query_jobs(query=query)
+
+        assert response is not None
+        assert response.data is not None
+        assert len(response.data) == response.count == 3
+
+        assert all(
+            response.data[i].completing_timestamp
+            >= response.data[i + 1].completing_timestamp
+            for i in range(len(response.data) - 1)
+        )
+
+    @responses.activate
+    def test__cancel_single_job__cancel_single_job_succeeds(self, client: SystemClient):
+        responses.add(
+            method=responses.POST,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/cancel-jobs",
+            status=200,
+        )
+
+        cancel_job_request = CancelJobRequest(id="Job.id", system_id=TARGET_SYSTEM)
         cancel_response = client.cancel_jobs([cancel_job_request])
 
         assert cancel_response is None
 
+    @responses.activate
     def test__cancel_multiple_jobs__cancel_multiple_job_succeeds(
         self, client: SystemClient
     ):
-        arg_1 = [["sample argument one"]]
-        arg_2 = [["sample argument two"]]
-        tgt = [TARGET_SYSTEM]
-        fun = [SAMPLE_FUN_2]
 
-        job_1 = CreateJobRequest(
-            arguments=arg_1,
-            target_systems=tgt,
-            functions=fun,
-            metadata=METADATA,
+        responses.add(
+            method=responses.POST,
+            url="https://dev-api.lifecyclesolutions.ni.com/nisysmgmt/v1/cancel-jobs",
+            status=200,
         )
-        response_1 = client.create_job(job_1)
-        job_2 = CreateJobRequest(
-            arguments=arg_2,
-            target_systems=tgt,
-            functions=fun,
-            metadata=METADATA,
-        )
-        response_2 = client.create_job(job_2)
 
-        cancel_job_request_1 = CancelJobRequest(id=response_1.id, tgt=TARGET_SYSTEM)
-        cancel_job_request_2 = CancelJobRequest(id=response_2.id, tgt=TARGET_SYSTEM)
+        cancel_job_request_1 = CancelJobRequest(id="Job_1.id", system_id=TARGET_SYSTEM)
+        cancel_job_request_2 = CancelJobRequest(id="Job_2.id", system_id=TARGET_SYSTEM)
         cancel_response = client.cancel_jobs(
             [cancel_job_request_1, cancel_job_request_2]
         )

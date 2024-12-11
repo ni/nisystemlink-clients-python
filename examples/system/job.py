@@ -17,7 +17,7 @@ client = SystemClient(configuration=server_configuration)
 # Get all jobs that have succeeded
 jobs = client.list_jobs(
     system_id="system_id",
-    jid="jid",
+    job_id="jid",
     state=JobState.SUCCEEDED,
     function="function",
     skip=0,

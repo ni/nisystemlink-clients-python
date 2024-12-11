@@ -8,24 +8,43 @@ class JobField(str, Enum):
     """The fields of the job."""
 
     ID = "jid"
+
     SYSTEM_ID = "id"
+
     CREATED_TIMESTAMP = "createdTimestamp"
+
     LAST_UPDATED_TIMESTAMP = "lastUpdatedTimestamp"
+
     DISPATCHED_TIMESTAMP = "dispatchedTimestamp"
+
     SCHEDULED_TIMESTAMP = "scheduledTimestamp"
-    COMPLETED_TIMESTAMP = "completedTimestamp"
+
+    COMPLETING_TIMESTAMP = "completingTimestamp"
+
     STATE = "state"
+
     METADATA = "metadata"
+
     CONFIG = "config"
+
     CONFIG_USER = "config.user"
+
     CONFIG_TARGET_SYSTEMS = "config.tgt"
+
     CONFIG_FUNCTIONS = "config.fun"
+
     CONFIG_ARGUMENTS = "config.arg"
+
     RESULT = "result"
+
     RESULT_JOB_ID = "result.jid"
+
     RESULT_SYSTEM_ID = "result.id"
+
     RESULT_RETURN = "result.return"
+
     RESULT_RETURN_CODE = "result.retcode"
+
     RESULT_SUCCESS = "result.success"
 
 
