@@ -1,7 +1,10 @@
 from enum import Enum
 from typing import Dict, List, Optional
+from datetime import datetime
+
 from pydantic import Field
 
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
@@ -103,25 +106,25 @@ class ExecutionErrorCode(str, Enum):
     UNKNOWN_ERROR = "UNKNOWN_ERROR"
 
 
-class Execution(JsonModel):
+class CreatedExecutionModel(JsonModel):
     """Information about an execution of a Jupyter notebook that has the cachedResult field added."""
 
-    id: Optional[str] = None
+    id: str = None
     """The ID of the execution."""
 
-    notebook_id: Optional[str] = None
+    notebook_id: str = None
     """The ID of the executed notebook."""
 
-    organization_id: Optional[str] = Field(None, alias="org_id")
+    organization_id: str = Field(None, alias="orgId")
     """The org ID of the user creating the request."""
 
-    user_id: Optional[str] = None
+    user_id: str = None
     """The user ID of the user creating the request."""
 
     parameters: Optional[Dict[str, Optional[str]]] = None
     """The input parameters for this execution of the notebook. The keys are strings and the values can be of any valid JSON type."""
 
-    workspace_id: Optional[str] = None
+    workspace_id: str = None
     """The ID of the workspace this execution belongs to."""
 
     timeout: int
@@ -130,16 +133,16 @@ class Execution(JsonModel):
     status: ExecutionStatus
     """Status of an execution."""
 
-    queued_at: str
+    queued_at: datetime
     """Timestamp of when the notebook execution was queued."""
 
-    started_at: Optional[str] = None
+    started_at: Optional[datetime] = None
     """Timestamp of when the notebook execution was started."""
 
-    completed_at: Optional[str] = None
+    completed_at: Optional[datetime] = None
     """Timestamp of when the notebook execution was completed."""
 
-    last_updated_timestamp: str
+    last_updated_timestamp: datetime
     """Timestamp of when the notebook execution was last updated."""
 
     exception: Optional[str] = None
@@ -164,3 +167,16 @@ class Execution(JsonModel):
     """Execution priority. Can be one of Low, Medium or High."""
 
     resource_profile: ExecutionResourceProfile
+    """Resource profile of the execution."""
+
+    cached_result: bool
+    """Returns true if the execution is returned from cache"""
+
+
+class CreateExecutionsResponse(JsonModel):
+    """Model for response to a request to create an execution."""
+
+    error: Optional[ApiError] = None
+
+    executions: Optional[List[CreatedExecutionModel]] = None
+    """Gets or sets the collection of authorized executions."""

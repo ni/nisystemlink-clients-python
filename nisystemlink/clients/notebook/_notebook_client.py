@@ -2,7 +2,7 @@ import json
 from typing import BinaryIO, Optional, List
 from io import BufferedReader
 import io
-
+from requests.models import Response
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._file_like_response import (
@@ -19,6 +19,15 @@ from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLi
 from uplink import Field, Part, Path, multipart, Body, Query
 
 from . import models
+
+
+def _query_executions_response_handler(response: Response) -> List[models.Execution]:
+    if response is None:
+        return []
+
+    executions = response.json()
+
+    return executions
 
 
 class NotebookClient(BaseClient):
@@ -207,7 +216,7 @@ class NotebookClient(BaseClient):
 
     @post("ninbexecution/v1/executions")
     def create_executions(
-        self, executions: List[models.CreateExecution]
+        self, executions: List[models.CreateExecutionRequest]
     ) -> models.CreateExecutionsResponse:
         """Create one or more executions of Jupyter notebooks.
 
@@ -239,9 +248,10 @@ class NotebookClient(BaseClient):
         """
         ...
 
+    @response_handler(_query_executions_response_handler)
     @post("ninbexecution/v1/query-executions")
     def _query_executions(
-        self, query: models._QueryExecutions
+        self, query: models._QueryExecutionsRequest
     ) -> List[models.Execution]:
         """Query executions of Jupyter notebooks.
 
@@ -257,7 +267,9 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    def query_executions(self, query: models.QueryExecutions) -> List[models.Execution]:
+    def query_executions(
+        self, query: models.QueryExecutionsRequest
+    ) -> List[models.Execution]:
         """Query executions of Jupyter notebooks.
 
         Args:
@@ -273,11 +285,15 @@ class NotebookClient(BaseClient):
         projection = ", ".join(query.projection)
         projection_str = f"{projection}" if projection else None
 
-        query_request = models._QueryExecutions(
-            filter=query.filter,
-            order_by=query.order_by,
-            descending=query.descending,
-            projection=projection_str,
-        )
+        query_params = {
+            "filter": query.filter,
+            "order_by": query.order_by,
+            "descending": query.descending,
+            "projection": projection_str,
+        }
+
+        query_params = {k: v for k, v in query_params.items() if v is not None}
+
+        query_request = models._QueryExecutionsRequest(**query_params)
 
         return self._query_executions(query=query_request)

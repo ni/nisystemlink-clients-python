@@ -65,13 +65,13 @@ class ExecutionField(str, Enum):
     RESOURCE_PROFILE = "resource_profile"
 
 
-class QueryExecutions(JsonModel):
+class QueryExecutionsRequest(JsonModel):
     """Query for executions of Jupyter notebooks."""
 
     filter: Optional[str] = None
     """The query filter in Dynamic LINQ."""
 
-    order_by: ExecutionSortField
+    order_by: Optional[ExecutionSortField] = None
     """Possible fields used to sort executions."""
 
     descending: bool = False
@@ -81,13 +81,13 @@ class QueryExecutions(JsonModel):
     """The projection to be applied for the items in the provider."""
 
 
-class _QueryExecutions(JsonModel):
+class _QueryExecutionsRequest(JsonModel):
     """Query for executions of Jupyter notebooks."""
 
     filter: Optional[str] = None
     """The query filter in Dynamic LINQ."""
 
-    order_by: ExecutionSortField
+    order_by: Optional[ExecutionSortField] = None
     """Possible fields used to sort executions."""
 
     descending: bool = False
