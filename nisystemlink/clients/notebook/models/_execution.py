@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 from pydantic import Field
@@ -7,7 +7,7 @@ from pydantic import Field
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class SourceType(Enum):
+class SourceType(str, Enum):
     """Source type of an execution"""
 
     MANUAL = "MANUAL"
@@ -120,7 +120,7 @@ class Execution(JsonModel):
     user_id: str = None
     """The user ID of the user creating the request."""
 
-    parameters: Optional[Dict[str, Optional[str]]] = None
+    parameters: Optional[Dict[str, Any]] = None
     """The input parameters for this execution of the notebook. The keys are strings and the values can be of any valid JSON type."""
 
     workspace_id: str = None
@@ -167,7 +167,3 @@ class Execution(JsonModel):
 
     resource_profile: ExecutionResourceProfile
     """Resource profile of the execution."""
-
-    
-
-

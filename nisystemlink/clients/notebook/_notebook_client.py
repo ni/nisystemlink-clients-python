@@ -282,8 +282,8 @@ class NotebookClient(BaseClient):
             ApiException: if unable to communicate with the ``/ninbexecution`` Service
                 or provided an invalid argument.
         """
-        projection = ", ".join(query.projection)
-        projection_str = f"{projection}" if projection else None
+        projection = ",".join(query.projection)
+        projection_str = f"new({projection})" if projection else None
 
         query_params = {
             "filter": query.filter,

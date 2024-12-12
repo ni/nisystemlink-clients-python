@@ -3,14 +3,23 @@ import os
 import base64
 import string
 from random import choices
-
+import responses
 import pytest
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.notebook import NotebookClient
-from nisystemlink.clients.notebook.models import NotebookMetadata, QueryNotebookRequest
+from nisystemlink.clients.notebook.models import (
+    NotebookMetadata,
+    QueryNotebookRequest,
+    QueryExecutionsRequest,
+    ExecutionStatus,
+    CreateExecutionRequest,
+    ExecutionField,
+    ExecutionSortField,
+)
 
 TEST_FILE_DATA = b"This is a test notebook binary content."
 PREFIX = "Notebook Client Tests-"
+BASE_URL = "https://dev-api.lifecyclesolutions.ni.com"
 
 
 @pytest.fixture(scope="class")
@@ -276,3 +285,440 @@ class TestNotebookClient:
     ):
         with pytest.raises(ApiException, match="Not Found"):
             client.get_notebook_content(id="invalid_id")
+
+    @responses.activate
+    def test__create_executions_with_valid_notebook_id__returns_executions_with_right_fields(
+        self,
+        client: NotebookClient,
+    ):
+        execution_id_1 = "SomeExecutionId1"
+        execution_id_2 = "SomeExecutionId2"
+
+        notebook_id_1 = "SomeNotebookId1"
+        notebook_id_2 = "SomeNotebookId2"
+
+        workspace_id = "SomeWorkspaceId"
+        return_value = {
+            "executions": [
+                {
+                    "cachedResult": False,
+                    "id": execution_id_1,
+                    "notebookId": notebook_id_1,
+                    "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+                    "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+                    "parameters": {},
+                    "workspaceId": workspace_id,
+                    "timeout": 3600,
+                    "status": "QUEUED",
+                    "queuedAt": "2024-12-12T02:34:44.0967706Z",
+                    "lastUpdatedTimestamp": "2024-12-12T02:34:44.0967706Z",
+                    "errorCode": "NO_ERROR",
+                    "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+                    "source": {"type": "MANUAL"},
+                    "priority": "MEDIUM",
+                    "resourceProfile": "DEFAULT",
+                },
+                {
+                    "cachedResult": False,
+                    "id": execution_id_2,
+                    "notebookId": notebook_id_2,
+                    "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+                    "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+                    "parameters": {},
+                    "workspaceId": workspace_id,
+                    "timeout": 3600,
+                    "status": "QUEUED",
+                    "queuedAt": "2024-12-12T02:36:13.7375558Z",
+                    "lastUpdatedTimestamp": "2024-12-12T02:36:13.7375558Z",
+                    "errorCode": "NO_ERROR",
+                    "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+                    "source": {"type": "MANUAL"},
+                    "priority": "MEDIUM",
+                    "resourceProfile": "DEFAULT",
+                },
+            ]
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninbexecution/v1/executions",
+            json=return_value,
+            status=200,
+        )
+
+        request_1 = CreateExecutionRequest(
+            notebook_id=notebook_id_1, workspace_id=workspace_id
+        )
+        request_2 = CreateExecutionRequest(
+            notebook_id=notebook_id_2, workspace_id=workspace_id
+        )
+
+        response = client.create_executions([request_1, request_2])
+
+        assert response.error is None
+        assert len(response.executions) == 2
+        assert response.executions[0].id == execution_id_1
+        assert response.executions[1].id == execution_id_2
+
+        assert all(
+            execution.workspace_id is not None
+            and execution.notebook_id is not None
+            and execution.organization_id is not None
+            and execution.user_id is not None
+            and execution.status == ExecutionStatus.QUEUED
+            and execution.queued_at is not None
+            and execution.last_updated_timestamp is not None
+            and execution.error_code is not None
+            and execution.report_settings is not None
+            and execution.source is not None
+            and execution.priority is not None
+            and execution.resource_profile is not None
+            for execution in response.executions
+        )
+
+    @responses.activate
+    def test__create_executions_with_valid_notebook_id_invalid_workspace__returns_error_and_valid_executions(
+        self,
+        client: NotebookClient,
+    ):
+        execution_id_1 = "SomeExecutionId1"
+
+        notebook_id_1 = "SomeNotebookId1"
+        notebook_id_2 = "SomeNotebookId2"
+
+        workspace_id = "SomeWorkspaceId"
+        return_value = {
+            "executions": [
+                {
+                    "cachedResult": False,
+                    "id": execution_id_1,
+                    "notebookId": notebook_id_1,
+                    "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+                    "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+                    "parameters": {},
+                    "workspaceId": workspace_id,
+                    "timeout": 3600,
+                    "status": "QUEUED",
+                    "queuedAt": "2024-12-12T02:34:44.0967706Z",
+                    "lastUpdatedTimestamp": "2024-12-12T02:34:44.0967706Z",
+                    "errorCode": "NO_ERROR",
+                    "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+                    "source": {"type": "MANUAL"},
+                    "priority": "MEDIUM",
+                    "resourceProfile": "DEFAULT",
+                },
+            ],
+            "error": {
+                "name": "Skyline.OneOrMoreErrorsOccurred",
+                "code": -251041,
+                "message": "One or more errors occurred. See the contained list for details of each error.",
+                "args": [],
+                "innerErrors": [
+                    {
+                        "name": "SkylineWebServices.Unauthorized",
+                        "code": -252229,
+                        "message": "User is not authorized.",
+                        "resourceId": notebook_id_2,
+                        "args": [],
+                        "innerErrors": [],
+                    }
+                ],
+            },
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninbexecution/v1/executions",
+            json=return_value,
+            status=200,
+        )
+
+        request_1 = CreateExecutionRequest(
+            notebook_id=notebook_id_1, workspace_id=workspace_id
+        )
+        request_2 = CreateExecutionRequest(
+            notebook_id=notebook_id_2, workspace_id="invalid_workspace_id"
+        )
+
+        response = client.create_executions([request_1, request_2])
+
+        assert response.error is not None
+        assert len(response.executions) == 1
+
+    @responses.activate
+    def test__create_executions_with_invalid_notebook_id__returns_execution(
+        self,
+        client: NotebookClient,
+    ):
+        execution_id = "SomeExecutionId1"
+        notebook_id = "InvalidNotebookId"
+        workspace_id = "SomeWorkspaceId"
+
+        return_value = {
+            "executions": [
+                {
+                    "cachedResult": False,
+                    "id": execution_id,
+                    "notebookId": notebook_id,
+                    "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+                    "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+                    "parameters": {},
+                    "workspaceId": workspace_id,
+                    "timeout": 3600,
+                    "status": "QUEUED",
+                    "queuedAt": "2024-12-12T02:34:44.0967706Z",
+                    "lastUpdatedTimestamp": "2024-12-12T02:34:44.0967706Z",
+                    "errorCode": "NO_ERROR",
+                    "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+                    "source": {"type": "MANUAL"},
+                    "priority": "MEDIUM",
+                    "resourceProfile": "DEFAULT",
+                },
+            ]
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninbexecution/v1/executions",
+            json=return_value,
+            status=200,
+        )
+
+        request_1 = CreateExecutionRequest(
+            notebook_id=notebook_id, workspace_id=workspace_id
+        )
+
+        response = client.create_executions([request_1])
+
+        assert response.error is None
+        assert len(response.executions) == 1
+        assert response.executions[0].id == execution_id
+
+    @responses.activate
+    def test__get_execution_by_id__returns_execution_with_right_fields(
+        self,
+        client: NotebookClient,
+    ):
+        execution_id = "SomeExecutionId1"
+        return_value = {
+            "id": execution_id,
+            "notebookId": "fa479189-d26a-4521-a751-173355a811ce",
+            "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+            "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+            "parameters": {},
+            "workspaceId": "846e294a-a007-47ac-9fc2-fac07eab240e",
+            "timeout": 3600,
+            "status": "FAILED",
+            "queuedAt": "2024-12-12T02:46:20.193Z",
+            "startedAt": "2024-12-12T02:46:20.202Z",
+            "completedAt": "2024-12-12T02:46:50.506Z",
+            "lastUpdatedTimestamp": "2024-12-12T02:46:50.506Z",
+            "exception": "An error occurred while executing the notebook.",
+            "errorCode": "NOTEBOOK_ERROR",
+            "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+            "source": {"type": "MANUAL"},
+            "priority": "MEDIUM",
+            "resourceProfile": "DEFAULT",
+        }
+
+        responses.add(
+            responses.GET,
+            f"{BASE_URL}/ninbexecution/v1/executions/SomeExecutionId1",
+            json=return_value,
+            status=200,
+        )
+
+        execution = client.get_execution_by_id(id=execution_id)
+
+        assert execution.id == execution_id
+        assert execution.workspace_id is not None
+        assert execution.notebook_id is not None
+        assert execution.organization_id is not None
+        assert execution.user_id is not None
+        assert execution.status is not None
+        assert execution.queued_at is not None
+        assert execution.last_updated_timestamp is not None
+        assert execution.error_code is not None
+        assert execution.report_settings is not None
+        assert execution.source is not None
+        assert execution.priority is not None
+        assert execution.resource_profile is not None
+
+    def test__get_execution_by_invalid_id__raises_ApiException_NotFound(
+        self,
+        client: NotebookClient,
+    ):
+        with pytest.raises(ApiException, match="Not Found"):
+            client.get_execution_by_id(id="InvalidExecutionId")
+
+    @responses.activate
+    def test__filter_executions_by_status__returns_executions_matches_status(
+        self,
+        client: NotebookClient,
+    ):
+        return_value = {
+            "id": "execution_id",
+            "notebookId": "fa479189-d26a-4521-a751-173355a811ce",
+            "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+            "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+            "parameters": {},
+            "workspaceId": "846e294a-a007-47ac-9fc2-fac07eab240e",
+            "timeout": 3600,
+            "status": "FAILED",
+            "queuedAt": "2024-12-12T02:46:20.193Z",
+            "startedAt": "2024-12-12T02:46:20.202Z",
+            "completedAt": "2024-12-12T02:46:50.506Z",
+            "lastUpdatedTimestamp": "2024-12-12T02:46:50.506Z",
+            "exception": "An error occurred while executing the notebook.",
+            "errorCode": "NOTEBOOK_ERROR",
+            "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+            "source": {"type": "MANUAL"},
+            "priority": "MEDIUM",
+            "resourceProfile": "DEFAULT",
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninbexecution/v1/query-executions",
+            json=return_value,
+            status=200,
+        )
+        query = QueryExecutionsRequest(
+            filter=f"status = {ExecutionStatus.FAILED.value}"
+        )
+        response = client.query_executions(query)
+
+        assert len(response) == 1
+
+        assert response[0].status == ExecutionStatus.FAILED
+
+    def test__query_executions_by_invalid_filter__raises_ApiException_BadRequest(
+        self,
+        client: NotebookClient,
+    ):
+
+        query = QueryExecutionsRequest(filter="status = 'INVALID_STATUS'")
+
+        with pytest.raises(ApiException, match="Bad Request"):
+            response = client.query_executions(query)
+
+    @responses.activate
+    def test__query_executions_by_projection__returns_executions_with_projected_properties(
+        self, client: NotebookClient
+    ):
+        return_value = [
+            {
+                "id": "execution_id_1",
+                "status": "IN_PROGRESS",
+            },
+            {
+                "id": "execution_id_1",
+                "status": "TIMED_OUT",
+            },
+            {
+                "id": "execution_id_1",
+                "status": "FAILED",
+            },
+        ]
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninbexecution/v1/query-executions",
+            json=return_value,
+            status=200,
+        )
+
+        query = QueryExecutionsRequest(
+            projection=[ExecutionField.ID, ExecutionField.STATUS]
+        )
+        response = client.query_executions(query)
+
+        assert all(
+            execution.id is not None
+            and execution.status is not None
+            and execution.workspace_id is None
+            and execution.notebook_id is None
+            and execution.organization_id is None
+            and execution.user_id is None
+            and execution.queued_at is None
+            and execution.last_updated_timestamp is None
+            and execution.error_code is None
+            and execution.report_settings is None
+            and execution.source is None
+            and execution.priority is None
+            and execution.resource_profile is None
+            for execution in response
+        )
+
+    @responses.activate
+    def test__query_executions_by_status_in_ascending__returns_executions_sorted_by_status(
+        self, client: NotebookClient
+    ):
+        return_value = [
+            {
+                "id": "execution_id_1",
+                "status": "IN_PROGRESS",
+            },
+            {
+                "id": "execution_id_2",
+                "status": "TIMED_OUT",
+            },
+            {
+                "id": "execution_id_3",
+                "status": "FAILED",
+            },
+        ]
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninbexecution/v1/query-executions",
+            json=return_value,
+            status=200,
+        )
+
+        query = QueryExecutionsRequest(
+            order_by=ExecutionSortField.STATUS,
+            projection=[ExecutionField.ID, ExecutionField.STATUS],
+        )
+        response = client.query_executions(query)
+
+        assert response[0].status == ExecutionStatus.IN_PROGRESS
+        assert response[1].status == ExecutionStatus.TIMED_OUT
+        assert response[2].status == ExecutionStatus.FAILED
+
+    @responses.activate
+    def test__query_executions_by_status_in_descending__returns_executions_sorted_by_status(
+        self, client: NotebookClient
+    ):
+        return_value = [
+            {
+                "id": "execution_id_1",
+                "status": "FAILED",
+            },
+            {
+                "id": "execution_id_2",
+                "status": "TIMED_OUT",
+            },
+            {
+                "id": "execution_id_3",
+                "status": "IN_PROGRESS",
+            },
+        ]
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninbexecution/v1/query-executions",
+            json=return_value,
+            status=200,
+        )
+
+        query = QueryExecutionsRequest(
+            order_by=ExecutionSortField.STATUS,
+            projection=[ExecutionField.ID, ExecutionField.STATUS],
+            descending=True,
+        )
+        response = client.query_executions(query)
+
+        assert response[0].status == ExecutionStatus.FAILED
+        assert response[1].status == ExecutionStatus.TIMED_OUT
+        assert response[2].status == ExecutionStatus.IN_PROGRESS

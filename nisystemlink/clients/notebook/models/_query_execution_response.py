@@ -1,38 +1,15 @@
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import Field
 
 from ._execution import (
     ExecutionStatus,
     ExecutionErrorCode,
-    ReportType,
     ExecutionPriority,
     ExecutionResourceProfile,
-    SourceType,
+    Source,
+    ReportSettings,
 )
-
-
-class QueryReportSettings(JsonModel):
-    """A class that defines settings of the Report"""
-
-    format: Optional[ReportType] = None
-    """Type for the report that is going to be generated."""
-
-    exclude_code: Optional[bool] = None
-    """Boolean parameter that will define if the source code should be included in the report or not."""
-
-
-class QuerySource(JsonModel):
-    """An object that defines properties set by routine service"""
-
-    type: Optional[SourceType] = None
-    """Source type of an execution"""
-
-    routine_id: Optional[str] = None
-    """ID of the routine that triggered the execution"""
-
-    event_id: Optional[str] = None
-    """Unique identifier of event that triggered the execution"""
 
 
 class QueryExecutionResponse(JsonModel):
@@ -50,7 +27,7 @@ class QueryExecutionResponse(JsonModel):
     user_id: Optional[str] = None
     """The user ID of the user creating the request."""
 
-    parameters: Optional[Dict[str, Optional[str]]] = None
+    parameters: Optional[Dict[str, Any]] = None
     """The input parameters for this execution of the notebook. The keys are strings and the values can be of any valid JSON type."""
 
     workspace_id: Optional[str] = None
@@ -83,13 +60,13 @@ class QueryExecutionResponse(JsonModel):
     report_id: Optional[str] = None
     """The ID of the report this execution generates."""
 
-    report_settings: Optional[QueryReportSettings] = None
+    report_settings: Optional[ReportSettings] = None
     """Settings of the Report"""
 
     result: Optional[Dict[str, Optional[str]]] = None
     """Result of the execution. This is used only when status is SUCCEEDED."""
 
-    source: Optional[QuerySource] = None
+    source: Optional[Source] = None
     """An object that defines properties set by routine service"""
 
     priority: Optional[ExecutionPriority] = None

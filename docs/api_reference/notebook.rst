@@ -13,6 +13,10 @@ nisystemlink.clients.notebook
    .. automethod:: create_notebook
    .. automethod:: query_notebooks_paged
    .. automethod:: get_notebook_content
+   .. automethod:: create_executions
+   .. automethod:: get_execution_by_id
+   .. automethod:: query_executions
+
 
 .. automodule:: nisystemlink.clients.notebook.models
     :members:

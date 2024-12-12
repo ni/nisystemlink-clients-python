@@ -22,39 +22,39 @@ class ExecutionSortField(str, Enum):
 
 
 class ExecutionField(str, Enum):
-    """Possible fields used to sort executions."""
+    """Possible fields in executions."""
 
     ID = "id"
 
-    NOTEBOOK_ID = "notebook_id"
+    NOTEBOOK_ID = "notebookId"
 
-    ORGANIZATION_ID = "org_id"
+    ORGANIZATION_ID = "orgId"
 
-    USER_ID = "user_id"
+    USER_ID = "userId"
 
     PARAMETERS = "parameters"
 
-    WORKSPACE_ID = "workspace_id"
+    WORKSPACE_ID = "workspaceId"
 
     TIMEOUT = "timeout"
 
     STATUS = "status"
 
-    QUEUED_AT = "queued_at"
+    QUEUED_AT = "queuedAt"
 
-    STARTED_AT = "started_at"
+    STARTED_AT = "startedAt"
 
-    COMPLETED_AT = "completed_at"
+    COMPLETED_AT = "completedAt"
 
-    LAST_UPDATED_AT = "last_updated_at"
+    LAST_UPDATED_AT = "lastUpdatedTimestamp"
 
-    EXECUTION = "execution"
+    EXCEPTION = "exception"
 
-    ERROR_CODE = "error_code"
+    ERROR_CODE = "errorCode"
 
-    REPORT_ID = "report_id"
+    REPORT_ID = "reportId"
 
-    REPORT_SETTINGS = "report_settings"
+    REPORT_SETTINGS = "reportSettings"
 
     RESULT = "result"
 
@@ -62,7 +62,7 @@ class ExecutionField(str, Enum):
 
     PRIORITY = "priority"
 
-    RESOURCE_PROFILE = "resource_profile"
+    RESOURCE_PROFILE = "resourceProfile"
 
 
 class QueryExecutionsRequest(JsonModel):
@@ -77,7 +77,7 @@ class QueryExecutionsRequest(JsonModel):
     descending: bool = False
     """Whether to return the executions in descending order."""
 
-    projection: List[Union[ExecutionField, str]] = []
+    projection: List[ExecutionField] = []
     """The projection to be applied for the items in the provider."""
 
 

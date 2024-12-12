@@ -230,6 +230,7 @@ default connection. The default connection depends on your environment.
 With a :class:`.NotebookClient` object, you can:
 
 * Create, update, query, and delete Notebooks
+* Create, get and query Notebook Executions
 
 Examples
 ~~~~~~~~
