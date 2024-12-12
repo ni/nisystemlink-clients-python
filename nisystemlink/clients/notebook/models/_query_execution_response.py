@@ -2,7 +2,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from typing import Dict, List, Optional
 from pydantic import Field
 
-from ._create_execution_response import (
+from ._execution import (
     ExecutionStatus,
     ExecutionErrorCode,
     ReportType,
@@ -35,7 +35,7 @@ class QuerySource(JsonModel):
     """Unique identifier of event that triggered the execution"""
 
 
-class QueryExecutionExecution(JsonModel):
+class QueryExecutionResponse(JsonModel):
     """Information about an execution of a Jupyter notebook that has the cachedResult field added."""
 
     id: Optional[str] = None

@@ -6,8 +6,20 @@ from ._query_execution_request import (
     _QueryExecutionsRequest,
     QueryExecutionsRequest,
 )
+from ._query_execution_response import (
+    QueryExecutionResponse,
+    QueryReportSettings,
+    QuerySource,
+)
 from ._create_execution_request import (
     CreateExecutionRequest,
+)
+from ._create_execution_response import (
+    CreatedExecutionModal,
+    CreateExecutionsResponse,
+)
+from ._execution import (
+    Execution,
     SourceType,
     Source,
     ReportType,
@@ -17,6 +29,5 @@ from ._create_execution_request import (
     ExecutionStatus,
     ExecutionErrorCode,
 )
-from ._create_execution_response import CreatedExecutionModel, CreateExecutionsResponse
 
 # flake8: noqa

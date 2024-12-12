@@ -252,7 +252,7 @@ class NotebookClient(BaseClient):
     @post("ninbexecution/v1/query-executions")
     def _query_executions(
         self, query: models._QueryExecutionsRequest
-    ) -> List[models.Execution]:
+    ) -> List[models.QueryExecutionResponse]:
         """Query executions of Jupyter notebooks.
 
         Args:
@@ -269,7 +269,7 @@ class NotebookClient(BaseClient):
 
     def query_executions(
         self, query: models.QueryExecutionsRequest
-    ) -> List[models.Execution]:
+    ) -> List[models.QueryExecutionResponse]:
         """Query executions of Jupyter notebooks.
 
         Args:

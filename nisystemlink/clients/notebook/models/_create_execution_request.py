@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from pydantic import Field
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._create_execution_response import (
+from ._execution import (
     ExecutionPriority,
     ExecutionResourceProfile,
     ReportSettings,
