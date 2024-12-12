@@ -1,7 +1,8 @@
-from nisystemlink.clients.core._uplink._json_model import JsonModel
 from typing import List, Optional
 
 from nisystemlink.clients.core._api_error import ApiError
+from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 from ._execution import Execution
 
 

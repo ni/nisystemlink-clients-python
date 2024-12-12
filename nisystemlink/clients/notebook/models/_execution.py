@@ -1,10 +1,9 @@
-from enum import Enum
-from typing import Any, Dict, List, Optional
 from datetime import datetime
-
-from pydantic import Field
+from enum import Enum
+from typing import Any, Dict, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Field
 
 
 class SourceType(str, Enum):
@@ -108,26 +107,28 @@ class ExecutionErrorCode(str, Enum):
 class Execution(JsonModel):
     """Information about an execution of a Jupyter notebook that has the cachedResult field added."""
 
-    id: str = None
+    id: str
     """The ID of the execution."""
 
-    notebook_id: str = None
+    notebook_id: str
     """The ID of the executed notebook."""
 
-    organization_id: str = Field(None, alias="orgId")
+    organization_id: str = Field(alias="orgId")
     """The org ID of the user creating the request."""
 
-    user_id: str = None
+    user_id: str
     """The user ID of the user creating the request."""
 
     parameters: Optional[Dict[str, Any]] = None
-    """The input parameters for this execution of the notebook. The keys are strings and the values can be of any valid JSON type."""
+    """The input parameters for this execution of the notebook. The keys are strings and the values can be of any
+    valid JSON type."""
 
-    workspace_id: str = None
+    workspace_id: str
     """The ID of the workspace this execution belongs to."""
 
     timeout: int
-    """The number of seconds the execution runs before it aborts if uncompleted. The timer starts once status is IN_PROGRESS. 0 means infinite."""
+    """The number of seconds the execution runs before it aborts if uncompleted. The timer starts once status is
+    IN_PROGRESS. 0 means infinite."""
 
     status: ExecutionStatus
     """Status of an execution."""

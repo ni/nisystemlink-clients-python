@@ -1,14 +1,15 @@
+from typing import Any, Dict, Optional
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from typing import Any, Dict, List, Optional
 from pydantic import Field
 
 from ._execution import (
-    ExecutionStatus,
     ExecutionErrorCode,
     ExecutionPriority,
     ExecutionResourceProfile,
-    Source,
+    ExecutionStatus,
     ReportSettings,
+    Source,
 )
 
 
@@ -28,13 +29,15 @@ class QueryExecutionResponse(JsonModel):
     """The user ID of the user creating the request."""
 
     parameters: Optional[Dict[str, Any]] = None
-    """The input parameters for this execution of the notebook. The keys are strings and the values can be of any valid JSON type."""
+    """The input parameters for this execution of the notebook. The keys are strings and the values can be of any
+    valid JSON type."""
 
     workspace_id: Optional[str] = None
     """The ID of the workspace this execution belongs to."""
 
     timeout: Optional[int] = None
-    """The number of seconds the execution runs before it aborts if uncompleted. The timer starts once status is IN_PROGRESS. 0 means infinite."""
+    """The number of seconds the execution runs before it aborts if uncompleted. The timer starts once status
+    is IN_PROGRESS. 0 means infinite."""
 
     status: Optional[ExecutionStatus] = None
     """Status of an execution."""

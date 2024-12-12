@@ -17,8 +17,7 @@ metadata = NotebookMetadata(
 )
 
 with open("example.ipynb", "rb") as file:
-    encoded_file = file.read().decode("utf-8")
-notebook_response = client.create_notebook(metadata=metadata, content=encoded_file)
+    notebook_response = client.create_notebook(metadata=metadata, content=file)
 
 # Get the notebook by ID
 notebook = client.get_notebook("your_notebook_id")
@@ -31,12 +30,11 @@ metadata = NotebookMetadata(
 )
 
 with open("example_updated.ipynb", "rb") as file:
-    encoded_file = file.read().decode("utf-8")
-notebook_response = client.update_notebook(
-    id="your_notebook_id",
-    metadata=metadata,
-    content=encoded_file,
-)
+    notebook_response = client.update_notebook(
+        id="your_notebook_id",
+        metadata=metadata,
+        content=file,
+    )
 
 # Get notebook content by ID
 notebook_content = client.get_notebook_content("your_notebook_id")

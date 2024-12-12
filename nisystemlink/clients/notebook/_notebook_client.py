@@ -1,8 +1,6 @@
-import json
-from typing import BinaryIO, Optional, List
-from io import BufferedReader
 import io
-from requests.models import Response
+from typing import List, Optional
+
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._file_like_response import (
@@ -16,7 +14,8 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
-from uplink import Field, Part, Path, multipart, Body, Query
+from requests.models import Response
+from uplink import Part, Path
 
 from . import models
 
@@ -106,7 +105,6 @@ class NotebookClient(BaseClient):
             ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
-
         metadata_io = None
         if metadata is not None:
             metadata_str = metadata.json()
@@ -170,7 +168,6 @@ class NotebookClient(BaseClient):
             ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
-
         metadata_str = metadata.json()
 
         metadata_io = io.BytesIO(metadata_str.encode("utf-8"))

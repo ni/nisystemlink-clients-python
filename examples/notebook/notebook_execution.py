@@ -2,16 +2,16 @@ from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.notebook import NotebookClient
 from nisystemlink.clients.notebook.models import (
     CreateExecutionRequest,
-    Source,
-    SourceType,
-    ReportSettings,
-    ReportType,
+    ExecutionField,
     ExecutionPriority,
     ExecutionResourceProfile,
-    QueryExecutionsRequest,
-    ExecutionStatus,
     ExecutionSortField,
-    ExecutionField,
+    ExecutionStatus,
+    QueryExecutionsRequest,
+    ReportSettings,
+    ReportType,
+    Source,
+    SourceType,
 )
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
@@ -39,25 +39,26 @@ execution_request = CreateExecutionRequest(
         exclude_code=False,
     ),
     client_requests_id="your_client_request_id",
-    priority=ExecutionPriority.NORMAL,
+    priority=ExecutionPriority.HIGH,
     resource_profile=ExecutionResourceProfile.DEFAULT,
 )
 
 # Pass the list of execution requests to the create_executions method
-response = client.create_executions([execution_request])
+create_execution_response = client.create_executions([execution_request])
 
 # Get the execution by ID
 execution = client.get_execution_by_id("your_execution_id")
 
 # Query executions
 query_request = QueryExecutionsRequest(
-    filter=f'(status = {ExecutionStatus.FAILED.value} && DateTime(completedAt) > DateTime.parse(\\"2023-04-10T07:22:40.339Z\\"))',
+    filter=f"(status = {ExecutionStatus.FAILED.value}))",
     order_by=ExecutionSortField.COMPLETED_AT,
     descending=True,
     projection=[
         ExecutionField.ID,
         ExecutionField.NOTEBOOK_ID,
         ExecutionField.STATUS,
-        "reportSettings.format",
     ],
 )
+
+query_executions_response = client.query_executions(query_request)

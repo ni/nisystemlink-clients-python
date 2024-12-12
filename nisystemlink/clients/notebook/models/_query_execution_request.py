@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import Optional, Union, List
+from typing import List, Optional
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 

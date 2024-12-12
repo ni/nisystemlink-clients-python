@@ -1,20 +1,18 @@
-import io
-import os
-import base64
 import string
 from random import choices
-import responses
+
 import pytest
+import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.notebook import NotebookClient
 from nisystemlink.clients.notebook.models import (
-    NotebookMetadata,
-    QueryNotebookRequest,
-    QueryExecutionsRequest,
-    ExecutionStatus,
     CreateExecutionRequest,
     ExecutionField,
     ExecutionSortField,
+    ExecutionStatus,
+    NotebookMetadata,
+    QueryExecutionsRequest,
+    QueryNotebookRequest,
 )
 
 TEST_FILE_DATA = b"This is a test notebook binary content."
@@ -220,7 +218,7 @@ class TestNotebookClient:
         assert response.notebooks[0].name == random_filename
 
     def test__query_notebook_by_invalid_id__returns_empty_list(self, client):
-        request = QueryNotebookRequest(filter=f'id="invalid_id"')
+        request = QueryNotebookRequest(filter='id="invalid_id"')
         response = client.query_notebooks_paged(request)
 
         assert len(response.notebooks) == 0
@@ -241,7 +239,7 @@ class TestNotebookClient:
         assert response.notebooks[0].name == random_filename
 
     def test__query_notebook_by_invalid_name__returns_empty_list(self, client):
-        request = QueryNotebookRequest(filter=f'name="invalid_name"')
+        request = QueryNotebookRequest(filter='name="invalid_name"')
         response = client.query_notebooks_paged(request)
 
         assert len(response.notebooks) == 0
@@ -356,6 +354,7 @@ class TestNotebookClient:
         response = client.create_executions([request_1, request_2])
 
         assert response.error is None
+        assert response.executions is not None
         assert len(response.executions) == 2
         assert response.executions[0].id == execution_id_1
         assert response.executions[1].id == execution_id_2
@@ -443,6 +442,7 @@ class TestNotebookClient:
         response = client.create_executions([request_1, request_2])
 
         assert response.error is not None
+        assert response.executions is not None
         assert len(response.executions) == 1
 
     @responses.activate
@@ -491,6 +491,7 @@ class TestNotebookClient:
         response = client.create_executions([request_1])
 
         assert response.error is None
+        assert response.executions is not None
         assert len(response.executions) == 1
         assert response.executions[0].id == execution_id
 
@@ -600,7 +601,7 @@ class TestNotebookClient:
         query = QueryExecutionsRequest(filter="status = 'INVALID_STATUS'")
 
         with pytest.raises(ApiException, match="Bad Request"):
-            response = client.query_executions(query)
+            client.query_executions(query)
 
     @responses.activate
     def test__query_executions_by_projection__returns_executions_with_projected_properties(
