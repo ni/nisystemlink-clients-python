@@ -212,3 +212,30 @@ Get the metadata of a File using its Id and download it.
 .. literalinclude:: ../examples/file/download_file.py
    :language: python
    :linenos:
+
+
+SystemsStateService API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.SystemsStateClient` class is the primary entry point of the Product API.
+
+When constructing a :class:`.SystemsStateClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.SystemsStateClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.SystemsStateClient` object, you can:
+
+* Create, update, query, and delete states
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete states
+
+.. literalinclude:: ../examples/systemsstate/systemsstate.py
+   :language: python
+   :linenos:
