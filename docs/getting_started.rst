@@ -212,3 +212,16 @@ Get the metadata of a File using its Id and download it.
 .. literalinclude:: ../examples/file/download_file.py
    :language: python
    :linenos:
+
+
+Common
+-------
+
+Examples
+~~~~~~~~
+
+Handle retry for clients for HTTP status/errors.
+
+.. literalinclude:: ../examples/common/retry_handling.py
+   :language: python
+   :linenos:
