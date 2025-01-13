@@ -4,7 +4,7 @@ from nisystemlink.clients.core import retry
 from nisystemlink.clients.file import FileClient
 
 # Retry on Too Many Requests status or any Exception
-WHEN_CLAUSE = retry.when.status(429) | Exception
+WHEN_CLAUSE = retry.when.status(429) | retry.when.raises(Exception)
 # Stop after 3 attempts or after the backoff exceeds 10 seconds.
 STOP_CLAUSE = retry.stop.after_attempt(3) | retry.stop.after_delay(10)
 
