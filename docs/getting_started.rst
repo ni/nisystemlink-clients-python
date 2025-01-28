@@ -128,6 +128,19 @@ With a :class:`.DataFrameClient` object, you can:
 
 * Export table data in a comma-separated values (CSV) format.
 
+Pandas Utility
+~~~~~~~~~~~~~~
+
+Utility functions to interact with :class:`.DataFrameClient` using [pandas.DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
+
+* Create a table from a `pandas.DataFrame`.
+
+* Append `pandas.DataFrame` to an existing table.
+
+* Query decimated data from a table as `pandas.DataFrame`.
+
+* Query data from a table as `pandas.DataFrame`.
+
 Examples
 ~~~~~~~~
 
@@ -146,6 +159,12 @@ Query and read data from a table
 Export data from a table
 
 .. literalinclude:: ../examples/dataframe/export_data.py
+   :language: python
+   :linenos:
+
+Table operations using [pandas.DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
+
+.. literalinclude:: ../examples/dataframe/pandas_dataframe_operations.py
    :language: python
    :linenos:
 

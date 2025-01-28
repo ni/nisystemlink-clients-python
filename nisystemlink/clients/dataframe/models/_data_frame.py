@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+import pandas as pd
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
@@ -52,6 +53,31 @@ class DataFrame(JsonModel):
     columns: Optional[List[str]] = None
     """The names and order of the columns included in the data frame."""
 
-    data: List[List[Optional[str]]]
+    data: Optional[List[List[Optional[str]]]] = None
     """The data for each row with the order specified in the columns property.
     Must contain a value for each column in the columns property."""
+
+    def from_pandas(self, df: pd.DataFrame) -> None:
+        """Convert pandas dataframe to `DataFrame`.
+
+        Args:
+            df (pd.DataFrame): Pandas dataframe.
+        """
+        self.columns = [df.index.name] + df.columns.astype(str).tolist()
+        self.data = [
+            [str(index)] + row.astype(str).tolist() for index, row in df.iterrows()
+        ]
+
+    def to_pandas(self, index: Optional[str] = None) -> pd.DataFrame:
+        """Convert `DataFrame` to pandas dataframe.
+
+        Args:
+            index (Optional[str]): Column to set as index.
+
+        Returns:
+            pd.DataFrame: Converted pandas dataframe.
+        """
+        df = pd.DataFrame(data=self.data, columns=self.columns)
+        if index:
+            df.set_index(index, inplace=True)
+        return df
