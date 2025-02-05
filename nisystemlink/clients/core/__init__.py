@@ -6,5 +6,6 @@ from ._http_configuration import HttpConfiguration
 from ._cloud_http_configuration import CloudHttpConfiguration
 from ._jupyter_http_configuration import JupyterHttpConfiguration
 from ._http_configuration_manager import HttpConfigurationManager
+from uplink import retry
 
 # flake8: noqa
