@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.8.1 (2025-02-05)
+
+### Fix
+
+* Update to the latest httpx version ([#88](https://github.com/ni/nisystemlink-clients-python/issues/88)) ([`09e6e59`](https://github.com/ni/nisystemlink-clients-python/commit/09e6e59e1025d0046da08dd9743d0ac3fc0872f2))
+
 ## v1.8.0 (2024-11-08)
 
 ### Feature
