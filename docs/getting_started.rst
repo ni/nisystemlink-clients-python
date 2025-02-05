@@ -212,3 +212,31 @@ Get the metadata of a File using its Id and download it.
 .. literalinclude:: ../examples/file/download_file.py
    :language: python
    :linenos:
+
+
+System API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.SystemClient` class is the primary entry point of the System API.
+
+When constructing a :class:`.SystemClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.SystemClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.SystemClient` object, you can:
+
+* Create, get, query, and cancel jobs
+* Get the summary of a jobs
+
+Examples
+~~~~~~~~
+
+Create, get, query, and cancel jobs
+
+.. literalinclude:: ../examples/system/system.py
+   :language: python
+   :linenos:
