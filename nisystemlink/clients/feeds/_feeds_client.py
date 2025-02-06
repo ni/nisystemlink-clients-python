@@ -112,7 +112,6 @@ class FeedsClient(BaseClient):
 
         Raises:
             ApiException: if unable to communicate with the Feeds Service.
-            OSError: if the file does not exist or cannot be opened.
         """
         ...
 
