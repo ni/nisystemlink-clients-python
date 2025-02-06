@@ -71,8 +71,8 @@ class FeedsClient(BaseClient):
         """Lists available feeds for the Platform `platform` under the Workspace `workspace`.
 
         Args:
-            platform (Optional[models.Platform]): Information about system platform. \
-Defaults to None.
+            platform (Optional[models.Platform]): Information about system platform.
+                Defaults to None.
             workspace (Optional[str]): Workspace id. Defaults to None.
 
         Returns:
@@ -91,7 +91,7 @@ Defaults to None.
 
     @post(
         "feeds/{feedId}/packages",
-        args=[Path(name="feedId"), Query(name="ShouldOverwrite")],
+        args=[Path(name="feedId"), Part(), Query(name="shouldOverwrite")],
     )
     def __upload_package(
         self,
@@ -104,14 +104,15 @@ Defaults to None.
         Args:
             feed_id (str): ID of the feed.
             package (Part): Package file to be uploaded.
-            overwrite (Query): Set to True, to overwrite the package if it already exists.\
-Defaults to False.
+            overwrite (Query): Set to True, to overwrite the package if it already exists.
+                Defaults to False.
 
         Returns:
             models.Package: Uploaded package information.
 
         Raises:
             ApiException: if unable to communicate with the Feeds Service.
+            OSError: if the file does not exist or cannot be opened.
         """
         ...
 
@@ -126,14 +127,15 @@ Defaults to False.
         Args:
             feed_id (str): ID of the feed.
             package_file_path (str): File path of the package to be uploaded.
-            overwrite (bool): Set to True, to overwrite the package if it already exists.\
-Defaults to False.
+            overwrite (bool): Set to True, to overwrite the package if it already exists.
+                Defaults to False.
 
         Returns:
             models.Package: Uploaded package information.
 
         Raises:
             ApiException: if unable to communicate with the Feeds Service.
+            OSError: if the file does not exist or cannot be opened.
         """
         response = self.__upload_package(
             feed_id=feed_id,
@@ -154,8 +156,8 @@ Defaults to False.
         Args:
             feed_id (str): ID of the feed.
             package (BinaryIO): Package file to be uploaded.
-            overwrite (bool): Set to True, to overwrite the package if it already exists.\
-Defaults to False.
+            overwrite (bool): Set to True, to overwrite the package if it already exists.
+                Defaults to False.
 
         Returns:
             models.Package: Uploaded package information.
