@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.9.0 (2025-02-06)
+
+### Feature
+
+* Add minimal client implementation for Feeds API ([#73](https://github.com/ni/nisystemlink-clients-python/issues/73)) ([`35d32b5`](https://github.com/ni/nisystemlink-clients-python/commit/35d32b580488b1365165f8c6e0a96e8148169b1d))
+
 ## v1.8.1 (2025-02-05)
 
 ### Fix
