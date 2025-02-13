@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v1.9.0 (2025-02-06)
+
+### Feature
+
+* Add minimal client implementation for Feeds API ([#73](https://github.com/ni/nisystemlink-clients-python/issues/73)) ([`35d32b5`](https://github.com/ni/nisystemlink-clients-python/commit/35d32b580488b1365165f8c6e0a96e8148169b1d))
+
+## v1.8.1 (2025-02-05)
+
+### Fix
+
+* Update to the latest httpx version ([#88](https://github.com/ni/nisystemlink-clients-python/issues/88)) ([`09e6e59`](https://github.com/ni/nisystemlink-clients-python/commit/09e6e59e1025d0046da08dd9743d0ac3fc0872f2))
+
+## v1.8.0 (2024-11-08)
+
+### Feature
+
+* Add client for SystemLink products API ([#69](https://github.com/ni/nisystemlink-clients-python/issues/69)) ([`d53a9f4`](https://github.com/ni/nisystemlink-clients-python/commit/d53a9f43aee5abbf1e9db084b091390b148478a5))
+
 ## v1.7.2 (2024-11-05)
 
 ### Fix
