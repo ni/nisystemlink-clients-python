@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.10.0 (2025-02-13)
+
+### Feature
+
+* Example to upload file to SystemLink ([#81](https://github.com/ni/nisystemlink-clients-python/issues/81)) ([`67bfe2d`](https://github.com/ni/nisystemlink-clients-python/commit/67bfe2dc69565f744a36248cbda15026018d7ad6))
+
 ## v1.9.0 (2025-02-06)
 
 ### Feature
