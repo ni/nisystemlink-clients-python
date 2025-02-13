@@ -212,6 +212,10 @@ Get the metadata of a File using its Id and download it.
    :language: python
    :linenos:
 
+Upload a File from disk or memory to SystemLink
+
+.. literalinclude:: ../examples/file/upload_file.py
+
 Feeds API
 -------
 
