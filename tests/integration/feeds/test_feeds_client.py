@@ -11,6 +11,7 @@ import pytest
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
+from uplink import retry
 
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 PACKAGE_PATH = str(
@@ -22,6 +23,7 @@ PREFIX = "Feeds Client Test -"
 
 
 @pytest.fixture(scope="class")
+@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 def client(enterprise_config) -> FeedsClient:
     """Fixture to create a FeedsClient instance."""
     return FeedsClient(enterprise_config)
