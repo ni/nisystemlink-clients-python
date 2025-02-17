@@ -1,5 +1,6 @@
 """Integration tests for FeedsClient."""
 
+import uuid
 from pathlib import Path
 from random import randint
 from typing import BinaryIO, Callable
@@ -73,13 +74,9 @@ def invalid_id() -> str:
 @pytest.fixture(scope="class")
 def get_feed_name():
     """Generate a feed name."""
-    name = "testfeed_"
-    feed_count = 0
 
     def _get_feed_name():
-        nonlocal feed_count
-        feed_count += 1
-        feed_name = name + str(feed_count)
+        feed_name = uuid.uuid1().hex[:255]
         return feed_name
 
     yield _get_feed_name
