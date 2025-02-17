@@ -80,10 +80,8 @@ def get_feed_name():
 
         first_char = random.choice(string.ascii_letters)
         uuid_part = uuid.uuid4().hex
-        allowed_chars = string.ascii_letters + string.digits + " _-"
-        filtered_uuid = "".join(char for char in uuid_part if char in allowed_chars)
+        feed_name = f"{first_char}{uuid_part}"
 
-        feed_name = f"{first_char}{filtered_uuid}"
         return feed_name
 
     yield _get_feed_name
