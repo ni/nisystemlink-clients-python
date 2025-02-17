@@ -1,5 +1,7 @@
 """Integration tests for FeedsClient."""
 
+import random
+import string
 import uuid
 from pathlib import Path
 from random import randint
@@ -9,7 +11,6 @@ import pytest
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
-
 
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 PACKAGE_PATH = str(
@@ -76,7 +77,13 @@ def get_feed_name():
     """Generate a feed name."""
 
     def _get_feed_name():
-        feed_name = uuid.uuid1().hex[:255]
+
+        first_char = random.choice(string.ascii_letters)
+        uuid_part = uuid.uuid4().hex
+        allowed_chars = string.ascii_letters + string.digits + " _-"
+        filtered_uuid = "".join(char for char in uuid_part if char in allowed_chars)
+
+        feed_name = f"{first_char}{filtered_uuid}"
         return feed_name
 
     yield _get_feed_name
