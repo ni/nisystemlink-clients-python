@@ -18,6 +18,7 @@ PACKAGE_PATH = str(
     / "test_files"
     / "sample-measurement_0.5.0_windows_x64.nipkg"
 )
+PREFIX = "Feeds Client Test -"
 
 
 @pytest.fixture(scope="class")
@@ -80,7 +81,7 @@ def get_feed_name():
 
         first_char = random.choice(string.ascii_letters)
         uuid_part = uuid.uuid4().hex
-        feed_name = f"{first_char}{uuid_part}"
+        feed_name = f"{PREFIX}{first_char}{uuid_part}"
 
         return feed_name
 
