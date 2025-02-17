@@ -5,12 +5,11 @@ from typing import BinaryIO, List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from uplink import Part, Path, Query, retry
+from uplink import Part, Path, Query
 
 from . import models
 
 
-@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class FeedsClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
