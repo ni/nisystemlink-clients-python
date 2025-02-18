@@ -19,7 +19,7 @@ PACKAGE_PATH = str(
     / "test_files"
     / "sample-measurement_0.5.0_windows_x64.nipkg"
 )
-PREFIX = "Feeds Client Test -"
+PREFIX = "Feeds Client Test - "
 
 
 @pytest.fixture(scope="class")
