@@ -76,6 +76,34 @@ Subscribe to tag changes
    :language: python
    :linenos:
 
+
+Product API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.ProductClient` class is the primary entry point of the Product API.
+
+When constructing a :class:`.ProductClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.ProductClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.ProductClient` object, you can:
+
+* Create, update, query, and delete Products
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete some products
+
+.. literalinclude:: ../examples/product/products.py
+   :language: python
+   :linenos:
+
+
 DataFrame API
 -------
 
@@ -158,7 +186,6 @@ Update and Delete Specifications
    :language: python
    :linenos:
 
-
 File API
 -------
 
@@ -185,6 +212,47 @@ Get the metadata of a File using its Id and download it.
    :language: python
    :linenos:
 
+Upload a File from disk or memory to SystemLink
+
+.. literalinclude:: ../examples/file/upload_file.py
+
+Feeds API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.FeedsClient` class is the primary entry point of the Feeds API.
+
+When constructing a :class:`.FeedsClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.FeedsClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.FeedsClient` object, you can:
+
+* Get the list of feeds, create feed, upload package to feed and delete feed.
+
+Examples
+~~~~~~~~
+
+Create a new feed.
+
+.. literalinclude:: ../examples/feeds/create_feed.py
+   :language: python
+   :linenos:
+
+Query feeds and upload a package to feed.
+
+.. literalinclude:: ../examples/feeds/query_and_upload_feeds.py
+   :language: python
+   :linenos:
+
+Delete a feed.
+
+.. literalinclude:: ../examples/feeds/delete_feed.py
+   :language: python
+   :linenos:
 
 Result API
 -------

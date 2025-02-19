@@ -13,9 +13,20 @@ class TestMonitorClient(BaseClient):
     # prevent pytest from thinking this is a test class
     __test__ = False
 
-    def __init__(self, configuration: Optional[core.HttpConfiguration]):
+    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+        """Initialize an instance.
+
+        Args:
+            configuration: Defines the web server to connect to and information about
+                how to connect. If not provided, the
+                :class:`HttpConfigurationManager <nisystemlink.clients.core.HttpConfigurationManager>`
+                is used to obtain the configuration.
+
+        Raises:
+            ApiException: if unable to communicate with the Spec Service.
+        """
         if configuration is None:
-            configuration = core.JupyterHttpConfiguration()
+            configuration = core.HttpConfigurationManager.get_configuration()
         super().__init__(configuration, base_path="/nitestmonitor/v2/")
 
     @get("")
@@ -26,6 +37,6 @@ class TestMonitorClient(BaseClient):
             Information about available API operations.
 
         Raises:
-            ApiException: if unable to communicate with the `nitestmonitor` service.
+            ApiException: if unable to communicate with the `ni``/nitestmonitor``` service.
         """
         ...
