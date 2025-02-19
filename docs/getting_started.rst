@@ -253,3 +253,29 @@ Delete a feed.
 .. literalinclude:: ../examples/feeds/delete_feed.py
    :language: python
    :linenos:
+
+Result API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.ResultClient` class is the primary entry point of the Result API.
+
+When constructing a :class:`.ResultClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.ResultClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.ResultClient` object, you can:
+
+* Create, update, query, and delete results
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete some results
+
+.. literalinclude:: ../examples/result/results.py
+   :language: python
+   :linenos:
