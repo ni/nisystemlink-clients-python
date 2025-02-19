@@ -1,7 +1,5 @@
 """Integration tests for FeedsClient."""
 
-import random
-import string
 import uuid
 from pathlib import Path
 from random import randint
@@ -11,7 +9,6 @@ import pytest
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
-from uplink import retry
 
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 PACKAGE_PATH = str(
@@ -23,7 +20,6 @@ PREFIX = "Feeds Client Test - "
 
 
 @pytest.fixture(scope="class")
-@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 def client(enterprise_config) -> FeedsClient:
     """Fixture to create a FeedsClient instance."""
     return FeedsClient(enterprise_config)
@@ -80,10 +76,8 @@ def get_feed_name():
     """Generate a feed name."""
 
     def _get_feed_name():
-
-        first_char = random.choice(string.ascii_letters)
         uuid_part = uuid.uuid4().hex
-        feed_name = f"{PREFIX}{first_char}{uuid_part}"
+        feed_name = f"{PREFIX}{uuid_part}"
 
         return feed_name
 
