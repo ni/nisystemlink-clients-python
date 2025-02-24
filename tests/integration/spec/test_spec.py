@@ -280,15 +280,16 @@ class TestSpec:
     def test__query_spec_projection_columns__columns_returned(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
-        requset = QuerySpecificationsRequest(
+        request = QuerySpecificationsRequest(
             product_ids=[product], projection=["SPEC_ID", "NAME"]
         )
-        response = client.query_specs(requset)
+        response = client.query_specs(request)
         assert response.specs
         assert len(response.specs) == 3
         specs = [vars(spec) for spec in response.specs]
-        spec_columns = list(set(key for spec in specs for key in spec.keys() if spec[key] is not None))
+        spec_columns = list(
+            set(key for spec in specs for key in spec.keys() if spec[key] is not None)
+        )
         assert len(spec_columns) == 2
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
- 
