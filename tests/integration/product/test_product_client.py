@@ -8,7 +8,10 @@ from nisystemlink.clients.product.models import (
     CreateProductsPartialSuccess,
     Product,
 )
-from nisystemlink.clients.product.models._paged_products import PagedProducts
+from nisystemlink.clients.product.models._paged_products import (
+    PagedProducts,
+    PagedQueryProductsResponse,
+)
 from nisystemlink.clients.product.models._query_products_request import (
     ProductField,
     QueryProductsRequest,
@@ -145,7 +148,9 @@ class TestProductClient:
         query_request = QueryProductsRequest(
             filter=f'partNumber="{part_number}"', return_count=True
         )
-        query_response: PagedProducts = client.query_products_paged(query_request)
+        query_response: PagedQueryProductsResponse = client.query_products_paged(
+            query_request
+        )
         assert query_response.total_count == 1
         assert query_response.products[0].part_number == part_number
 
@@ -286,3 +291,40 @@ class TestProductClient:
         linked_products = get_products_linked_to_file(client, file_id)
         names = [product.name for product in linked_products]
         assert product_name_with_file in names
+
+    def test__query_products_with_projection__returns_only_specified_fields(
+        self, client: ProductClient, create_products, unique_identifier
+    ):
+        part_number = unique_identifier
+        name = "Test Name"
+        family = "Example Family"
+        keywords = ["testing"]
+        properties = {"test_property": "yes"}
+        product = Product(
+            part_number=part_number,
+            name=name,
+            family=family,
+            keywords=keywords,
+            properties=properties,
+        )
+
+        response: CreateProductsPartialSuccess = create_products([product])
+        assert response is not None
+
+        query_request = QueryProductsRequest(
+            filter=f'partNumber=="{part_number}"',
+            projection=[ProductField.FAMILY, ProductField.NAME],
+        )
+        query_response: PagedQueryProductsResponse = client.query_products_paged(
+            query_request
+        )
+        queried_product = query_response.products[0]
+
+        # Assert that the projected fields are returned as expected.
+        assert queried_product.family == family
+        assert queried_product.name == name
+
+        # Assert that non-projected fields are not returned.
+        assert queried_product.part_number is None
+        assert queried_product.keywords is None
+        assert queried_product.properties is None

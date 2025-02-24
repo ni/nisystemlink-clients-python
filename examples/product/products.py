@@ -60,7 +60,7 @@ query_request = QueryProductsRequest(
     return_count=True,
     order_by=ProductField.FAMILY,
 )
-response = client.query_products_paged(query_request)
+query_response = client.query_products_paged(query_request)
 
 # Update the first product that you just created and replace the keywords
 updated_product = create_response.products[0]

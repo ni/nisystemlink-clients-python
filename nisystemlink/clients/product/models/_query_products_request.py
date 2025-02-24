@@ -6,13 +6,21 @@ from pydantic import Field
 
 
 class ProductField(str, Enum):
-    """The valid ways to order a product query."""
+    """An enumeration of all fields in a Product.
+
+    These are all the valid ways to order a product query. Also, this can be helpful in the
+    product result projection.
+    """
 
     ID = "ID"
     FAMILY = "FAMILY"
     PART_NUMBER = "PART_NUMBER"
     NAME = "NAME"
     UPDATED_AT = "UPDATED_AT"
+    WORKSPACE = "WORKSPACE"
+    KEYWORDS = "KEYWORDS"
+    PROPERTIES = "PROPERTIES"
+    FILE_IDS = "FILE_IDS"
 
 
 class QueryProductsBase(JsonModel):
@@ -61,11 +69,21 @@ class QueryProductsRequest(QueryProductsBase):
 
     By default, this value is `false` and products are sorted in ascending order.
     """
+
+    projection: Optional[List[ProductField]] = None
+    """Specifies the product fields to project.
+
+    When a field value is given here, the corresponding field will be present in all returned products,
+    and all unspecified fields will be excluded. If no projection is specified, all product fields
+    will be returned.
+    """
+
     take: Optional[int] = None
     """Maximum number of products to return in the current API response.
 
     Uses the default if the specified value is negative. The default value is `1000` products.
     """
+
     continuation_token: Optional[str] = None
     """Allows users to continue the query at the next product that matches the given criteria.
 
