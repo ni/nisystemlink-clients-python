@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.spec.models._specification import SpecificationWithHistory
+from nisystemlink.clients.spec.models._specification import SpecificationType, SpecificationWithHistory
 
 
 class Projection(str, Enum):
@@ -103,10 +103,31 @@ class QuerySpecificationsRequest(JsonModel):
     """
 
 
+class SpecificationWithOnlyOptionalFields(SpecificationWithHistory):
+    """A full specification with update and create history with only optional fields"""
+
+    product_id: Optional[str] = None
+    """Id of the product to which the specification will be associated."""
+
+    spec_id: Optional[str] = None
+
+    type: Optional[SpecificationType] = None
+    """Type of the specification."""
+
+    id : Optional[str] = None
+    """The global Id of the specification."""
+
+    version: Optional[int] = None
+    """
+    Current version of the specification.
+
+    When an update is applied, the version is automatically incremented.
+    """
+
 class QuerySpecifications(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
-    specs: Optional[List[SpecificationWithHistory]] = None
+    specs: Optional[List[SpecificationWithOnlyOptionalFields]] = None
     """List of queried specifications.
 
     An empty list indicates that there are no specifications meeting the criteria provided in the
