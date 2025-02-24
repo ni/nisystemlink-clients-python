@@ -1,9 +1,9 @@
 from typing import Callable, Dict, List, Optional
-import pandas as pd
 
+import pandas as pd
 from nisystemlink.clients.spec._spec_client import SpecClient
 from nisystemlink.clients.spec.models._condition import Condition, NumericConditionValue
-from nisystemlink.clients.spec.models._query_specs import Projection, QuerySpecificationsRequest
+from nisystemlink.clients.spec.models._query_specs import QuerySpecificationsRequest
 
 
 def __serialize_conditions(conditions: List[Condition]) -> Dict:
@@ -19,15 +19,12 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict:
 
     for condition in conditions:
         column_header = (
-            "condition_" + 
-            (
-                condition.name
-                if condition.name
-                else ""
-            ) +
-            (
+            "condition_"
+            + (condition.name if condition.name else "")
+            + (
                 f"({condition.value.unit})"
-                if type(condition.value) == NumericConditionValue and condition.value.unit
+                if type(condition.value) == NumericConditionValue
+                and condition.value.unit
                 else ""
             )
         )
@@ -52,7 +49,12 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict:
     return condition_dict
 
 
-def get_specs_dataframe(client: SpecClient, product_id: str, column_projection: Optional[List[str]] = None, condition_format: Callable[[List[Condition]], Dict] = __serialize_conditions) -> pd.DataFrame:
+def get_specs_dataframe(
+    client: SpecClient,
+    product_id: str,
+    column_projection: Optional[List[str]] = None,
+    condition_format: Callable[[List[Condition]], Dict] = __serialize_conditions,
+) -> pd.DataFrame:
     """Query specs of a specific product.
 
     Args:
@@ -64,9 +66,7 @@ def get_specs_dataframe(client: SpecClient, product_id: str, column_projection: 
     """
     spec_response = client.query_specs(
         QuerySpecificationsRequest(
-            product_ids=[product_id],
-            take=1000,
-            projection=column_projection
+            product_ids=[product_id], take=1000, projection=column_projection
         )
     )
     specs = spec_response.specs if spec_response.specs else []
@@ -78,7 +78,7 @@ def get_specs_dataframe(client: SpecClient, product_id: str, column_projection: 
                 product_ids=[product_id],
                 take=1000,
                 continuation_token=continuation_token,
-                projection=column_projection
+                projection=column_projection,
             )
         )
 
@@ -89,7 +89,7 @@ def get_specs_dataframe(client: SpecClient, product_id: str, column_projection: 
     for spec in specs:
         spec_dict = vars(spec)
 
-        if not column_projection or "conditions" in column_projection:
+        if spec.conditions:
             condition_dict = condition_format(spec.conditions)
 
             spec_dict.pop("conditions")
@@ -98,5 +98,7 @@ def get_specs_dataframe(client: SpecClient, product_id: str, column_projection: 
         specs_dict.append(spec_dict)
 
     specs_df = pd.json_normalize(specs_dict)
-    specs_df = specs_df.loc[:, specs_df.apply(lambda col: any(val is not None for val in col))]
+    specs_df = specs_df.loc[
+        :, specs_df.apply(lambda col: any(val is not None for val in col))
+    ]
     return specs_df

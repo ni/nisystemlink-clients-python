@@ -1,5 +1,5 @@
 import uuid
-from typing import List
+from typing import Dict, List
 
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
@@ -19,6 +19,7 @@ from nisystemlink.clients.spec.models import (
     SpecificationType,
     UpdateSpecificationsRequest,
 )
+from nisystemlink.clients.spec.utilities._dataframe_utility import get_specs_dataframe
 
 
 @pytest.fixture(scope="class")
@@ -287,9 +288,68 @@ class TestSpec:
         assert response.specs
         assert len(response.specs) == 3
         specs = [vars(spec) for spec in response.specs]
-        spec_columns = list(
+        specs_columns = list(
             set(key for spec in specs for key in spec.keys() if spec[key] is not None)
         )
-        assert len(spec_columns) == 2
-        assert "spec_id" in spec_columns
-        assert "name" in spec_columns
+        assert len(specs_columns) == 2
+        assert "spec_id" in specs_columns
+        assert "name" in specs_columns
+
+    def test__get_specs_dataframe_without_column_projection__returns_whole_specs_dataframe(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(product_ids=[product])
+        response = client.query_specs(request)
+        specs_df = get_specs_dataframe(client=client, product_id=product)
+        assert response.specs
+        assert not specs_df.empty
+        assert len(response.specs) == len(specs_df)
+        specs = [vars(spec) for spec in response.specs]
+        specs_columns = list(
+            set(key for spec in specs for key in spec.keys() if spec[key] is not None)
+        )
+        specs_df_columns = specs_df.columns.to_list()
+        assert len(specs_df_columns) >= len(specs_columns)
+
+    def test__get_specs_dataframe_with_column_projection__returns_specs_dataframe_with_projected_columns(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(product_ids=[product])
+        response = client.query_specs(request)
+        specs_df = get_specs_dataframe(
+            client=client, product_id=product, column_projection=["PRODUCT_ID", "TYPE"]
+        )
+        assert response.specs
+        assert not specs_df.empty
+        assert len(response.specs) == len(specs_df)
+        specs_df_columns = specs_df.columns.to_list()
+        assert len(specs_df_columns) == 2
+        assert "product_id" in specs_df_columns
+        assert "type" in specs_df_columns
+
+    def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(product_ids=[product])
+        response = client.query_specs(request)
+
+        def condtion_formatting(conditions: List[Condition]) -> Dict:
+            conditions_dict = {}
+
+            for condition in conditions:
+                conditions_dict[condition.name] = condition.value
+
+            return conditions_dict
+
+        specs_df = get_specs_dataframe(
+            client=client, product_id=product, condition_format=condtion_formatting
+        )
+
+        assert response.specs
+        assert not specs_df.empty
+        assert len(response.specs) == len(specs_df)
+        names = [
+            condition.name for spec in response.specs for condition in spec.conditions or []
+        ]
+        specs_df_columns = specs_df.columns.to_list()
+        assert set(names).issubset(set(specs_df_columns))
