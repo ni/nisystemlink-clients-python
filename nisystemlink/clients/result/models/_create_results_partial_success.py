@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.result.models import Result
 
 
-class CreateResultsPartialSuccess(JsonModel):
+class ResultsPartialSuccess(JsonModel):
     results: List[Result]
     """The list of results that were successfully created."""
 

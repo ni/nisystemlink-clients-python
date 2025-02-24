@@ -31,9 +31,7 @@ class ResultClient(BaseClient):
         super().__init__(configuration, base_path="/nitestmonitor/v2/")
 
     @post("results", args=[Field("results")])
-    def create_results(
-        self, results: List[Result]
-    ) -> models.CreateResultsPartialSuccess:
+    def create_results(self, results: List[Result]) -> models.ResultsPartialSuccess:
         """Creates one or more results and returns errors for failed creations.
 
         Args:
@@ -122,14 +120,14 @@ class ResultClient(BaseClient):
 
         Raises:
             ApiException: if unable to communicate with the ``/nitestmonitor`` Service or provided
-            invalid arguments.
+                invalid arguments.
         """
         ...
 
     @post("update-results", args=[Field("results"), Field("replace")])
     def update_results(
         self, results: List[Result], replace: bool = False
-    ) -> models.CreateResultsPartialSuccess:
+    ) -> models.ResultsPartialSuccess:
         """Updates a list of results with optional field replacement.
 
         Args:

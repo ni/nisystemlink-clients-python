@@ -79,7 +79,7 @@ class Result(JsonModel):
     data_table_ids: Optional[List[str]]
     """A list of data table ids that are attached to this result."""
 
-    status_type_summary: Optional[Dict[str, int]]
+    status_type_summary: Optional[Dict[StatusType, int]]
     """A summary of the status types in the result."""
 
     workspace: Optional[str]

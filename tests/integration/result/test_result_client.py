@@ -5,8 +5,8 @@ import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.result._result_client import ResultClient
 from nisystemlink.clients.result.models import (
-    CreateResultsPartialSuccess,
     Result,
+    ResultsPartialSuccess,
     StatusObject,
     StatusType,
 )
@@ -34,9 +34,9 @@ def unique_identifier() -> str:
 @pytest.fixture
 def create_results(client: ResultClient):
     """Fixture to return a factory that creates results."""
-    responses: List[CreateResultsPartialSuccess] = []
+    responses: List[ResultsPartialSuccess] = []
 
-    def _create_results(results: List[Result]) -> CreateResultsPartialSuccess:
+    def _create_results(results: List[Result]) -> ResultsPartialSuccess:
         response = client.create_results(results)
         responses.append(response)
         return response
@@ -76,7 +76,7 @@ class TestResultClient:
             serial_number=serial_number,
         )
 
-        response: CreateResultsPartialSuccess = create_results([result])
+        response: ResultsPartialSuccess = create_results([result])
 
         assert response is not None
         assert len(response.results) == 1
@@ -104,7 +104,7 @@ class TestResultClient:
             ),
         ]
 
-        response: CreateResultsPartialSuccess = create_results(results)
+        response: ResultsPartialSuccess = create_results(results)
 
         assert response is not None
         assert len(response.results) == 2
@@ -176,7 +176,7 @@ class TestResultClient:
             Result(part_number=part_number, program_name=program_name, status=status)
         ]
 
-        create_response: CreateResultsPartialSuccess = create_results(results)
+        create_response: ResultsPartialSuccess = create_results(results)
 
         assert create_response is not None
         id = str(create_response.results[0].id)
@@ -196,7 +196,7 @@ class TestResultClient:
             Result(part_number=part_number, program_name=program_name, status=status)
         ]
 
-        create_response: CreateResultsPartialSuccess = create_results(results)
+        create_response: ResultsPartialSuccess = create_results(results)
 
         assert create_response is not None
         query_request = QueryResultsRequest(
@@ -213,7 +213,7 @@ class TestResultClient:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
 
-        create_response: CreateResultsPartialSuccess = create_results(
+        create_response: ResultsPartialSuccess = create_results(
             [Result(part_number=part_number, program_name=program_name, status=status)]
         )
         assert create_response is not None
@@ -233,7 +233,7 @@ class TestResultClient:
         updated_keyword = "updatedKeyword"
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
-        create_response: CreateResultsPartialSuccess = create_results(
+        create_response: ResultsPartialSuccess = create_results(
             [
                 Result(
                     part_number=unique_identifier,
@@ -265,7 +265,7 @@ class TestResultClient:
         additional_keyword = "additionalKeyword"
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
-        create_response: CreateResultsPartialSuccess = create_results(
+        create_response: ResultsPartialSuccess = create_results(
             [
                 Result(
                     part_number=unique_identifier,
@@ -301,7 +301,7 @@ class TestResultClient:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         new_properties = {new_key: "newValue"}
-        create_response: CreateResultsPartialSuccess = create_results(
+        create_response: ResultsPartialSuccess = create_results(
             [
                 Result(
                     part_number=unique_identifier,
@@ -336,7 +336,7 @@ class TestResultClient:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         new_properties = {new_key: "newValue"}
-        create_response: CreateResultsPartialSuccess = create_results(
+        create_response: ResultsPartialSuccess = create_results(
             [
                 Result(
                     part_number=unique_identifier,

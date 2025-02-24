@@ -11,6 +11,7 @@ from nisystemlink.clients.result.models import (
 
 program_name = "Example Name"
 host_name = "Example Host"
+status_type = StatusType.PASSED
 
 
 def create_some_results():
@@ -20,7 +21,7 @@ def create_some_results():
             part_number="Example 123 AA",
             program_name=program_name,
             host_name=host_name,
-            status=StatusObject(status_type=StatusType.PASSED, status_name="Passed"),
+            status=StatusObject(status_type=StatusType.PASSED),
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         ),
@@ -28,7 +29,7 @@ def create_some_results():
             part_number="Example 123 AA1",
             program_name=program_name,
             host_name=host_name,
-            status=StatusObject(status_type=StatusType.FAILED, status_name="Failed"),
+            status=StatusObject(status_type=StatusType.CUSTOM, status_name="Custom"),
             keywords=["original keyword"],
             properties={"original property key": "original"},
         ),
@@ -60,9 +61,7 @@ created_result = client.get_result(create_response.results[0].id)
 
 # Query results without continuation
 query_request = QueryResultsRequest(
-    filter=f'programName="{program_name}" && hostName="{host_name}"',
-    return_count=True,
-    order_by=ResultField.HOST_NAME,
+    filter=f'status.statusType="{status_type}"', return_count=True
 )
 response = client.query_results_paged(query_request)
 
