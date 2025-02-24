@@ -98,4 +98,5 @@ def get_specs_dataframe(client: SpecClient, product_id: str, column_projection: 
         specs_dict.append(spec_dict)
 
     specs_df = pd.json_normalize(specs_dict)
+    specs_df = specs_df.loc[:, specs_df.apply(lambda col: any(val is not None for val in col))]
     return specs_df
