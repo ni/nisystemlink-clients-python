@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
+from pydantic import Extra
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -85,5 +86,5 @@ class Result(JsonModel):
     workspace: Optional[str]
     """The id of the workspace that this product belongs to."""
 
-    is_finalized: Optional[bool]
-    """Whether the result is finalized."""
+    class Config:
+        extra = Extra.allow
