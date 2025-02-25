@@ -1,13 +1,49 @@
-from typing import Optional
+from datetime import datetime
+from typing import Dict, List, Optional
 
-from nisystemlink.clients.product.models._product import Product
+from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class QueryProductsResponse(Product):
-    """This model extends the Product model and converts any non-optional fields into optional fields.
+class QueryProductsResponse(JsonModel):
+    """Contains information about a product, where all the fields are optional.
 
     This is because when we are using query products' projection, user can request for any of the available
     fields. So, we are making sure that all the available fields are optional.
     """
 
-    part_number: Optional[str]  # type: ignore[assignment]
+    id: Optional[str]
+    """The globally unique id of the product."""
+
+    part_number: Optional[str]
+    """The part number is the unique identifier of a product within a single org.
+
+    Usually the part number refers to a specific revision or version of a given product."""
+
+    name: Optional[str]
+    """The name of the product.
+
+    Usually the name is used to refer to several part numbers that all have the same name but
+    different revisions or versions.
+    """
+
+    family: Optional[str]
+    """The family that that this product belongs to.
+
+    Usually the family is a grouping above product name. A family usually has multiple product
+    names within it.
+    """
+
+    updated_at: Optional[datetime]
+    """The last time that this product was updated."""
+
+    file_ids: Optional[List[str]]
+    """A list of file ids that are attached to this product."""
+
+    keywords: Optional[List[str]]
+    """A list of keywords that categorize this product."""
+
+    properties: Optional[Dict[str, str]]
+    """A list of custom properties for this product."""
+
+    workspace: Optional[str]
+    """The id of the workspace that this product belongs to."""
