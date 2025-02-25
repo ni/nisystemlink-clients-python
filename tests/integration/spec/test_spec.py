@@ -349,7 +349,9 @@ class TestSpec:
         assert not specs_df.empty
         assert len(response.specs) == len(specs_df)
         names = [
-            condition.name for spec in response.specs for condition in spec.conditions or []
+            condition.name
+            for spec in response.specs
+            for condition in spec.conditions or []
         ]
         specs_df_columns = specs_df.columns.to_list()
         assert set(names).issubset(set(specs_df_columns))

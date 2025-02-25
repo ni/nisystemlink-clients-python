@@ -2,11 +2,26 @@ from typing import Callable, Dict, List, Optional, Union
 
 import pandas as pd
 from nisystemlink.clients.spec._spec_client import SpecClient
-from nisystemlink.clients.spec.models._condition import Condition, NumericConditionValue, StringConditionValue
-from nisystemlink.clients.spec.models._query_specs import QuerySpecificationsRequest, SpecificationWithOptionalFields
+from nisystemlink.clients.spec.models._condition import (
+    Condition,
+    NumericConditionValue,
+    StringConditionValue,
+)
+from nisystemlink.clients.spec.models._query_specs import (
+    QuerySpecificationsRequest,
+    SpecificationWithOptionalFields,
+)
 
 
 def __generate_column_header(condition: Condition) -> str:
+    """Generate column header for a condition.
+
+    Args:
+        condition: Condition object for generating column header.
+
+    Returns:
+        The column header for the given condition.
+    """
     column_header = (
         "condition_"
         + (condition.name if condition.name else "")
@@ -21,21 +36,47 @@ def __generate_column_header(condition: Condition) -> str:
 
 
 def __serialize_numeric_range(value: NumericConditionValue) -> List[str]:
+    """Serialize ranges of a numeric condition value.
+
+    Args:
+        value: A condition's value with NumericConditionValue type.
+
+    Returns:
+        The list of ranges of the given value in a specific format.
+    """
     ranges = []
 
     for range in value.range or []:
         ranges.append(
             f"[{'; '.join([f'{k}: {v}' for k, v in vars(range).items() if v is not None])}]"
         )
-    
+
     return ranges
 
 
-def _serialize_discrete_values(value: Union[NumericConditionValue, StringConditionValue]) -> List[str]:
+def _serialize_discrete_values(
+    value: Union[NumericConditionValue, StringConditionValue]
+) -> List[str]:
+    """Serialize discrete values of a value.
+
+    Args:
+        value: A condition's value with either NumericConditionValue type or StringConditionValue type.
+
+    Returns:
+        The list of discrete values of the given value in a specific format.
+    """
     return [str(discrete) for discrete in value.discrete or []]
 
 
 def __get_condition_values(condition: Condition) -> List[str]:
+    """Get ranges and discrete values of a condition.
+
+    Args:
+        condition: Condition for getting values.
+
+    Returns:
+        The list of values of the given condition in a specific format.
+    """
     values = []
 
     if condition.value:
@@ -61,7 +102,7 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict:
     condition_dict = {}
 
     for condition in conditions:
-        column_header = __generate_column_header(condition=condition)        
+        column_header = __generate_column_header(condition=condition)
         values = __get_condition_values(condition=condition)
         condition_dict[column_header] = ", ".join(values)
 
@@ -113,9 +154,10 @@ def get_specs_dataframe(
     Args:
         client: The Spec Client to use for the request.
         product_ids: ID od the product to query specs.
-        column_projection: List of columns to be included to the spec dataframe. Every column will be included if column_projection is 'None'.
+        column_projection: List of columns to be included to the spec dataframe
+                           Every column will be included if column_projection is 'None'.
         condition_format: Function with which conditions columns and condition values are formatted.
-        
+
     Returns:
         The list of specs of the specified product as a dataframe.
     """
