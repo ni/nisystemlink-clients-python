@@ -126,10 +126,7 @@ class ResultClient(BaseClient):
 
     @post("update-results", args=[Field("results"), Field("replace")])
     def update_results(
-        self,
-        results: List[Result],
-        replace: bool = False,
-        allow_workspace_update: bool = False,
+        self, results: List[Result], replace: bool = False
     ) -> models.ResultsPartialSuccess:
         """Updates a list of results with optional field replacement.
 
@@ -148,10 +145,7 @@ class ResultClient(BaseClient):
             ApiException: if unable to communicate with the ``/nitestmonitor`` Service
                 or provided an invalid argument.
         """
-        if not allow_workspace_update:
-            for result in results:
-                result.workspace = None
-        return self._update_results(results, replace)
+        ...
 
     @delete("results/{id}")
     def delete_result(self, id: str) -> None:
