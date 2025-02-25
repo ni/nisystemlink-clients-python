@@ -14,6 +14,9 @@ class UpdateStepRequestObject(StepRequestObjectBase):
     name: Optional[str] = None
     """Step name."""
 
+    children: Optional[List["UpdateStepRequestObject"]] = None
+    """Nested child steps."""
+
 
 class UpdateStepsRequest(JsonModel):
     steps: List[UpdateStepRequestObject]

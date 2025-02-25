@@ -13,9 +13,6 @@ class StepRequestObjectBase(JsonModel):
     parentId: Optional[str] = None
     """Parent step id."""
 
-    children: Optional[List["CreateStepRequestObject"]] = None
-    """Nested child steps."""
-
     data: Optional[StepDataObject] = None
     """Data returned by the test step."""
 
@@ -56,6 +53,9 @@ class CreateStepRequestObject(StepRequestObjectBase):
 
     name: str
     """Step name."""
+
+    children: Optional[List["CreateStepRequestObject"]] = None
+    """Nested child steps."""
 
 
 class CreateStepsRequest(JsonModel):
