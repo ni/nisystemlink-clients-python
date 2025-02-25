@@ -1,9 +1,9 @@
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
-from pydantic import Extra
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Extra
 
 
 class StatusType(str, Enum):
