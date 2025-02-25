@@ -44,9 +44,9 @@ class StepClient(BaseClient):
         """
         ...
 
-    @post("delete-steps", args=[Field("ids")])
+    @post("delete-steps", args=[Field("steps")])
     def delete_steps(
-        self, steps: models.DeleteStepsRequest
+        self, steps: List[models.StepIdResultIdPair]
     ) -> Optional[models.DeleteStepsPartialSuccess]:
         """Deletes one or more steps by global id.
 
