@@ -127,9 +127,3 @@ class SpecificationUpdated(JsonModel):
 
     updated_by: Optional[str] = None
     """Id of the user who last updated the specification."""
-
-
-class SpecificationWithHistory(
-    Specification, SpecificationCreation, SpecificationUpdated
-):
-    """A full specification with update and create history."""
