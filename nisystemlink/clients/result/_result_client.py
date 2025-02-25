@@ -5,7 +5,10 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from nisystemlink.clients.result.models import Result
+from nisystemlink.clients.result.models import (
+    Result,
+    UpdateResultRequest,
+)
 from uplink import Field, Query, retry, returns
 
 from . import models
@@ -125,8 +128,8 @@ class ResultClient(BaseClient):
         ...
 
     @post("update-results", args=[Field("results"), Field("replace")])
-    def update_results(
-        self, results: List[Result], replace: bool = False
+    def __update_results(
+        self, results: List[UpdateResultRequest], replace: bool = False
     ) -> models.ResultsPartialSuccess:
         """Updates a list of results with optional field replacement.
 
@@ -146,6 +149,37 @@ class ResultClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
+
+    def update_results(
+        self,
+        results: List[UpdateResultRequest],
+        replace: bool = False,
+        allow_workspace_update: bool = False,
+    ) -> models.ResultsPartialSuccess:
+        """Updates a list of results with optional field replacement.
+
+        Args:
+            `results`: A list of results to update. Results are matched for update by id.
+            `replace`: Replace the existing fields instead of merging them. Defaults to `False`.
+                If this is `True`, then `keywords` and `properties` for the result will be
+                    replaced by what is in the `results` provided in this request.
+                If this is `False`, then the `keywords` and `properties` in this request will
+                    merge with what is already present in the server resource.
+            `allow_workspace_update`: If this is set to `False`, the `workspace` field will be set to None
+                before updating.
+
+        Returns: A list of updates results, results that failed to update, and errors for
+            failures.
+
+        Raises:
+            ApiException: if unable to communicate with the ``/nitestmonitor`` Service
+                or provided an invalid argument.
+        """
+        if not allow_workspace_update:
+            for result in results:
+                result.workspace = None
+
+        return self.__update_results(results, replace)
 
     @delete("results/{id}")
     def delete_result(self, id: str) -> None:
