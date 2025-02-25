@@ -1,9 +1,52 @@
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Union
 
 import pandas as pd
 from nisystemlink.clients.spec._spec_client import SpecClient
-from nisystemlink.clients.spec.models._condition import Condition, NumericConditionValue
-from nisystemlink.clients.spec.models._query_specs import QuerySpecificationsRequest
+from nisystemlink.clients.spec.models._condition import Condition, NumericConditionValue, StringConditionValue
+from nisystemlink.clients.spec.models._query_specs import QuerySpecificationsRequest, SpecificationWithOptionalFields
+
+
+def __generate_column_header(condition: Condition) -> str:
+    column_header = (
+        "condition_"
+        + (condition.name if condition.name else "")
+        + (
+            f"({condition.value.unit})"
+            if type(condition.value) == NumericConditionValue and condition.value.unit
+            else ""
+        )
+    )
+
+    return column_header
+
+
+def __serialize_numeric_range(value: NumericConditionValue) -> List[str]:
+    ranges = []
+
+    for range in value.range or []:
+        ranges.append(
+            f"[{'; '.join([f'{k}: {v}' for k, v in vars(range).items() if v is not None])}]"
+        )
+    
+    return ranges
+
+
+def _serialize_discrete_values(value: Union[NumericConditionValue, StringConditionValue]) -> List[str]:
+    return [str(discrete) for discrete in value.discrete or []]
+
+
+def __get_condition_values(condition: Condition) -> List[str]:
+    values = []
+
+    if condition.value:
+        if type(condition.value) == NumericConditionValue:
+            ranges = __serialize_numeric_range(value=condition.value)
+            values.extend(ranges)
+
+        discrete_values = _serialize_discrete_values(value=condition.value)
+        values.extend(discrete_values)
+
+    return values
 
 
 def __serialize_conditions(conditions: List[Condition]) -> Dict:
@@ -18,35 +61,45 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict:
     condition_dict = {}
 
     for condition in conditions:
-        column_header = (
-            "condition_"
-            + (condition.name if condition.name else "")
-            + (
-                f"({condition.value.unit})"
-                if type(condition.value) == NumericConditionValue
-                and condition.value.unit
-                else ""
-            )
-        )
-
-        condition_dict[column_header] = ""
-
-        values = []
-
-        if condition.value:
-            if type(condition.value) == NumericConditionValue:
-                for range in condition.value.range or []:
-                    values.append(
-                        f"[{'; '.join([f'{k}: {v}' for k, v in vars(range).items() if v is not None])}]"
-                    )
-
-            values.extend(
-                [str(discrete) for discrete in condition.value.discrete or []]
-            )
-
+        column_header = __generate_column_header(condition=condition)        
+        values = __get_condition_values(condition=condition)
         condition_dict[column_header] = ", ".join(values)
 
     return condition_dict
+
+
+def __serialize_specs(
+    specs: List[SpecificationWithOptionalFields],
+    condition_format: Callable[[List[Condition]], Dict],
+) -> pd.DataFrame:
+    """Format specs of with respect to the provided condition format.
+
+    Args:
+        specs: List of specs of the specified product.
+        condition_format: Function with which conditions columns and condition values are formatted.
+
+    Returns:
+        The list of specs of the specified product as a dataframe.
+    """
+    specs_dict = []
+
+    for spec in specs:
+        spec_dict = vars(spec)
+
+        if spec.conditions:
+            condition_dict = condition_format(spec.conditions)
+
+            spec_dict.pop("conditions")
+            spec_dict.update(condition_dict)
+
+        specs_dict.append(spec_dict)
+
+    specs_df = pd.json_normalize(specs_dict)
+    specs_df = specs_df.loc[
+        :, specs_df.apply(lambda col: any(val is not None for val in col))
+    ]
+
+    return specs_df
 
 
 def get_specs_dataframe(
@@ -60,9 +113,11 @@ def get_specs_dataframe(
     Args:
         client: The Spec Client to use for the request.
         product_ids: ID od the product to query specs.
-
+        column_projection: List of columns to be included to the spec dataframe. Every column will be included if column_projection is 'None'.
+        condition_format: Function with which conditions columns and condition values are formatted.
+        
     Returns:
-        The list of specs of the specified product.
+        The list of specs of the specified product as a dataframe.
     """
     spec_response = client.query_specs(
         QuerySpecificationsRequest(
@@ -84,21 +139,5 @@ def get_specs_dataframe(
 
         specs.extend(spec_response.specs if spec_response.specs else [])
 
-    specs_dict = []
-
-    for spec in specs:
-        spec_dict = vars(spec)
-
-        if spec.conditions:
-            condition_dict = condition_format(spec.conditions)
-
-            spec_dict.pop("conditions")
-            spec_dict.update(condition_dict)
-
-        specs_dict.append(spec_dict)
-
-    specs_df = pd.json_normalize(specs_dict)
-    specs_df = specs_df.loc[
-        :, specs_df.apply(lambda col: any(val is not None for val in col))
-    ]
+    specs_df = __serialize_specs(specs=specs, condition_format=condition_format)
     return specs_df
