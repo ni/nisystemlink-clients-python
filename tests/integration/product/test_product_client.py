@@ -10,7 +10,6 @@ from nisystemlink.clients.product.models import (
 )
 from nisystemlink.clients.product.models._paged_products import (
     PagedProducts,
-    PagedQueryProductsResponse,
 )
 from nisystemlink.clients.product.models._query_products_request import (
     ProductField,
@@ -148,9 +147,7 @@ class TestProductClient:
         query_request = QueryProductsRequest(
             filter=f'partNumber="{part_number}"', return_count=True
         )
-        query_response: PagedQueryProductsResponse = client.query_products_paged(
-            query_request
-        )
+        query_response: PagedProducts = client.query_products_paged(query_request)
         assert query_response.total_count == 1
         assert query_response.products[0].part_number == part_number
 
@@ -315,9 +312,7 @@ class TestProductClient:
             filter=f'partNumber=="{part_number}"',
             projection=[ProductField.FAMILY, ProductField.NAME],
         )
-        query_response: PagedQueryProductsResponse = client.query_products_paged(
-            query_request
-        )
+        query_response: PagedProducts = client.query_products_paged(query_request)
         queried_product = query_response.products[0]
 
         # Assert that the projected fields are returned as expected.

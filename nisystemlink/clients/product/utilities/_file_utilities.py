@@ -2,19 +2,19 @@ from typing import List
 
 from nisystemlink.clients.product._product_client import ProductClient
 from nisystemlink.clients.product.models._paged_products import (
-    PagedQueryProductsResponse,
+    PagedProducts,
+)
+from nisystemlink.clients.product.models._product_response import (
+    ProductResponse,
 )
 from nisystemlink.clients.product.models._query_products_request import (
     QueryProductsRequest,
-)
-from nisystemlink.clients.product.models._query_products_response import (
-    QueryProductsResponse,
 )
 
 
 def get_products_linked_to_file(
     client: ProductClient, file_id: str
-) -> List[QueryProductsResponse]:
+) -> List[ProductResponse]:
     """Gets a list of all the products that are linked to the file.
 
     Args:
@@ -27,7 +27,7 @@ def get_products_linked_to_file(
     query_request = QueryProductsRequest(
         filter=f'fileIds.Contains("{file_id}")', take=100
     )
-    response: PagedQueryProductsResponse = client.query_products_paged(query_request)
+    response: PagedProducts = client.query_products_paged(query_request)
     products = response.products
     while response.continuation_token:
         query_request.continuation_token = response.continuation_token
