@@ -48,14 +48,14 @@ class StepClient(BaseClient):
     def delete_steps(
         self, steps: List[models.StepIdResultIdPair]
     ) -> Optional[models.DeleteStepsPartialSuccess]:
-        """Deletes one or more steps by global id.
+        """Deletes one or more steps by global ID.
 
         Args:
-            ids: a list of step ids. Note that these are the global ids and not the
-            `stepId` that is local to a product and workspace.
+            steps: A list of step IDs and result IDs. Note that these are the global IDs and not the
+            `step_id` that is local to a product and workspace.
 
         Returns:
-            None if all deletes succeed otherwise a list of which ids failed and which succeeded.
+            None if all deletes succeed otherwise a list of which IDs failed and which succeeded.
 
         Raises:
             ApiException: if unable to communicate with the `/nitestmonitor` service or if there are invalid
@@ -68,7 +68,7 @@ class StepClient(BaseClient):
         """Queries for steps that match the filters.
 
         Args:
-            query: The query contains a product id as well as a filter for steps under that product.
+            query: The query contains a product ID as well as a filter for steps under that product.
 
         Returns:
             A list of steps that match the filter.
@@ -84,7 +84,7 @@ class StepClient(BaseClient):
         Update requires that the version field matches the version being updated from.
 
         Args:
-            steps: a list of steps that are to be updated. Must include the global id and
+            steps: a list of steps that are to be updated. Must include the global ID and
             each step being updated must match the version currently on the server.
 
         Returns

@@ -92,7 +92,7 @@ class QueryStepsRequest(QueryStepsBase):
     """The result query filter in Dynamic Linq format."""
 
     result_substitutions: Optional[List[str]] = None
-    """String substitutions into the `resultFilter`."""
+    """String substitutions into the `result_filter`."""
 
     projection: Optional[List[StepProjectionField]] = None
     """Specifies the step fields to project. When a field value is given here,

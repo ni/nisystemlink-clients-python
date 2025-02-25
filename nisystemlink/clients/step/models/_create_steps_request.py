@@ -10,25 +10,25 @@ from nisystemlink.clients.step.models import (
 
 
 class StepRequestObjectBase(JsonModel):
-    parentId: Optional[str] = None
-    """Parent step id."""
+    parent_id: Optional[str] = None
+    """Parent step ID."""
 
     data: Optional[StepDataObject] = None
     """Data returned by the test step."""
 
-    dataModel: Optional[str] = None
+    data_model: Optional[str] = None
     """Data model for the step."""
 
-    startedAt: Optional[datetime] = None
+    started_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the test result began."""
 
     status: Optional[StatusObject] = None
     """The status of the step."""
 
-    stepType: Optional[str] = None
+    step_type: Optional[str] = None
     """Step type."""
 
-    totalTimeInSeconds: Optional[float] = None
+    total_time_in_seconds: Optional[float] = None
     """Total number of seconds the step took to execute."""
 
     inputs: Optional[List[NamedValueObject]] = None
@@ -45,11 +45,11 @@ class StepRequestObjectBase(JsonModel):
 
 
 class CreateStepRequestObject(StepRequestObjectBase):
-    stepId: str
-    """Step id."""
+    step_id: str
+    """Step ID."""
 
-    resultId: str
-    """Result id."""
+    result_id: str
+    """Result ID."""
 
     name: str
     """Step name."""
@@ -62,5 +62,5 @@ class CreateStepsRequest(JsonModel):
     steps: List[CreateStepRequestObject]
     """Array of test steps to create."""
 
-    updateResultTotalTime: Optional[bool] = None
+    update_result_total_time: Optional[bool] = None
     """Determine test result total time from the test step total times."""

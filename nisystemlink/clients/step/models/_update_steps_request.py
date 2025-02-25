@@ -5,11 +5,11 @@ from nisystemlink.clients.step.models._create_steps_request import StepRequestOb
 
 
 class UpdateStepRequestObject(StepRequestObjectBase):
-    stepId: Optional[str] = None
-    """Step id."""
+    step_id: Optional[str] = None
+    """Step ID."""
 
-    resultId: Optional[str] = None
-    """Result id."""
+    result_id: Optional[str] = None
+    """Result ID."""
 
     name: Optional[str] = None
     """Step name."""
@@ -22,11 +22,11 @@ class UpdateStepsRequest(JsonModel):
     steps: List[UpdateStepRequestObject]
     """Array of test steps to update."""
 
-    updateResultTotalTime: Optional[bool] = None
+    update_result_total_time: Optional[bool] = None
     """Determine test result total time from the test step total times."""
 
-    replaceKeywords: Optional[bool] = None
+    replace_keywords: Optional[bool] = None
     """Replace with existing keywords instead of merging them."""
 
-    replaceProperties: Optional[bool] = None
+    replace_properties: Optional[bool] = None
     """Replace with existing properties instead of merging them."""

@@ -22,10 +22,10 @@ class StatusType(str, Enum):
 
 
 class StatusObject(JsonModel):
-    statusType: StatusType
+    status_type: StatusType
     """The type of status."""
 
-    statusName: Optional[str] = None
+    status_name: Optional[str] = None
     """The name of the status."""
 
 
@@ -49,34 +49,34 @@ class Step(JsonModel):
     name: Optional[str] = None
     """The name of the step."""
 
-    stepType: Optional[str] = None
+    step_type: Optional[str] = None
     """The type of the step."""
 
-    stepId: Optional[str] = None
+    step_id: Optional[str] = None
     """The ID of the step."""
 
-    parentId: Optional[str] = None
+    parent_id: Optional[str] = None
     """The ID of the parent step."""
 
-    resultId: Optional[str] = None
+    result_id: Optional[str] = None
     """The ID of the result associated with the step."""
 
     path: Optional[str] = None
     """The path of the step."""
 
-    pathIds: Optional[List[str]] = None
+    path_ids: Optional[List[str]] = None
     """The IDs of the steps in the path."""
 
     status: Optional[StatusObject] = None
     """The status of the step."""
 
-    totalTimeInSeconds: Optional[int] = None
+    total_time_in_seconds: Optional[int] = None
     """The total time in seconds the step took to execute."""
 
-    startedAt: Optional[datetime] = None
+    started_at: Optional[datetime] = None
     """The ISO-8601 formatted timestamp indicating when the step started."""
 
-    updatedAt: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     """The ISO-8601 formatted timestamp indicating when the step was last updated."""
 
     inputs: Optional[List[NamedValueObject]] = None
@@ -85,13 +85,13 @@ class Step(JsonModel):
     outputs: Optional[List[NamedValueObject]] = None
     """Outputs and their values logged by the test."""
 
-    dataModel: Optional[str] = None
+    data_model: Optional[str] = None
     """Custom string defining the model of the data object."""
 
     data: Optional[StepDataObject] = None
     """Data returned by the test step."""
 
-    hasChildren: Optional[bool] = None
+    has_children: Optional[bool] = None
     """Indicates if the step has child steps."""
 
     workspace: Optional[str] = None
