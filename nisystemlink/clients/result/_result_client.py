@@ -11,7 +11,7 @@ from uplink import Field, Query, retry, returns
 from . import models
 
 
-@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
+@retry(when=retry.when.status([429, 503, 504]), stop=retry.stop.after_attempt(5))
 class ResultClient(BaseClient):
 
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
