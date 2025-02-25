@@ -1,8 +1,8 @@
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.product import ProductClient
 from nisystemlink.clients.product.models import (
-    Product,
     ProductField,
+    ProductRequest,
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
@@ -14,14 +14,14 @@ family = "Example Family"
 def create_some_products():
     """Create two example products on your server."""
     new_products = [
-        Product(
+        ProductRequest(
             part_number="Example 123 AA",
             name=name,
             family=family,
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         ),
-        Product(
+        ProductRequest(
             part_number="Example 123 AA1",
             name=name,
             family=family,

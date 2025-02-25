@@ -5,7 +5,7 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from nisystemlink.clients.product.models import Product
+from nisystemlink.clients.product.models import ProductRequest
 from uplink import Field, Query, returns
 
 from . import models
@@ -30,7 +30,7 @@ class ProductClient(BaseClient):
 
     @post("products", args=[Field("products")])
     def create_products(
-        self, products: List[Product]
+        self, products: List[ProductRequest]
     ) -> models.CreateProductsPartialSuccess:
         """Creates one or more products and returns errors for failed creations.
 
@@ -73,7 +73,7 @@ class ProductClient(BaseClient):
         ...
 
     @get("products/{id}")
-    def get_product(self, id: str) -> models.Product:
+    def get_product(self, id: str) -> models.ProductResponse:
         """Retrieves a single product by id.
 
         Args:
@@ -128,7 +128,7 @@ class ProductClient(BaseClient):
 
     @post("update-products", args=[Field("products"), Field("replace")])
     def update_products(
-        self, products: List[Product], replace: bool = False
+        self, products: List[ProductRequest], replace: bool = False
     ) -> models.CreateProductsPartialSuccess:
         """Updates a list of products with optional field replacement.
 
