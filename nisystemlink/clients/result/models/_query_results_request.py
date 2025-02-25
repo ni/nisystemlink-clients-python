@@ -7,7 +7,7 @@ from pydantic import Field
 
 
 class ResultField(str, Enum):
-    """The valid ways to order a result query."""
+    """The allowed field for which the values can be queried for."""
 
     ID = "ID"
     STARTED_AT = "STARTED_AT"
@@ -18,8 +18,25 @@ class ResultField(str, Enum):
     OPERATOR = "OPERATOR"
     SERIAL_NUMBER = "SERIAL_NUMBER"
     PART_NUMBER = "PART_NUMBER"
-    PROPERTIES = "PROPERTIES"
+    PRODUCT = "PRODUCT"
     TOTAL_TIME_IN_SECONDS = "TOTAL_TIME_IN_SECONDS"
+
+
+class ResultOrderByField(str, Enum):
+    """The fields by which results can be ordered."""
+
+    ID = "ID"
+    STARTED_AT = "STARTED_AT"
+    UPDATED_AT = "UPDATED_AT"
+    PROGRAM_NAME = "PROGRAM_NAME"
+    SYSTEM_ID = "SYSTEM_ID"
+    HOST_NAME = "HOST_NAME"
+    OPERATOR = "OPERATOR"
+    SERIAL_NUMBER = "SERIAL_NUMBER"
+    PART_NUMBER = "PART_NUMBER"
+    PRODUCT = "PRODUCT"
+    TOTAL_TIME_IN_SECONDS = "TOTAL_TIME_IN_SECONDS"
+    PROPERTIES = "PROPERTIES"
 
 
 class ComparisonType(str, Enum):
@@ -28,6 +45,32 @@ class ComparisonType(str, Enum):
     DEFAULT = "DEFAULT"
     NUMERIC = "NUMERIC"
     LEXICOGRAPHIC = "LEXICOGRAPHIC"
+
+
+class Projection(str, Enum):
+    """The allowed projections for query.
+
+    When using projection, only the fields specified by the projection element will be included in
+    the response.
+    """
+
+    ID = "ID"
+    STATUS = "STATUS"
+    STARTED_AT = "STARTED_AT"
+    UPDATED_AT = "UPDATED_AT"
+    PROGRAM_NAME = "PROGRAM_NAME"
+    SYSTEM_ID = "SYSTEM_ID"
+    HOST_NAME = "HOST_NAME"
+    OPERATOR = "OPERATOR"
+    SERIAL_NUMBER = "SERIAL_NUMBER"
+    PART_NUMBER = "PART_NUMBER"
+    TOTAL_TIME_IN_SECONDS = "TOTAL_TIME_IN_SECONDS"
+    KEYWORDS = "KEYWORDS"
+    PROPERTIES = "PROPERTIES"
+    FILE_IDS = "FILE_IDS"
+    DATA_TABLE_IDS = "DATA_TABLE_IDS"
+    STATUS_TYPE_SUMMARY = "STATUS_TYPE_SUMMARY"
+    WORKSPACE = "WORKSPACE"
 
 
 class QueryResultsBase(JsonModel):
@@ -100,7 +143,7 @@ class QueryProductsBase(JsonModel):
 
 class QueryResultsRequest(QueryResultsBase, QueryProductsBase, WithPaging):
 
-    order_by: Optional[ResultField] = Field(None, alias="orderBy")
+    order_by: Optional[ResultOrderByField] = Field(None, alias="orderBy")
     """Specifies the fields to use to sort the results.
     By default, results are sorted by `id`
     """
@@ -117,6 +160,10 @@ class QueryResultsRequest(QueryResultsBase, QueryProductsBase, WithPaging):
     descending: Optional[bool] = None
     """Specifies whether to return the results in descending order.
     By default, this value is `false` and results are sorted in ascending order.
+    """
+    projection: Optional[List[Projection]] = None
+    """Specifies the fields to include in the returned results.
+    Fields you do not specify are excluded. Returns all fields if no value is specified.
     """
     take: Optional[int] = None
     """Maximum number of results to return in the current API response.

@@ -1,5 +1,5 @@
 from ._result import Result, StatusObject, StatusType
-from ._create_results_partial_success import ResultsPartialSuccess
+from ._results_partial_success import ResultsPartialSuccess
 from ._delete_results_partial_success import DeleteResultsPartialSuccess
 from ._paged_results import PagedResults
 from ._query_results_request import (
