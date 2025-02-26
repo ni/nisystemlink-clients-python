@@ -1,9 +1,9 @@
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.product import ProductClient
 from nisystemlink.clients.product.models import (
-    OrderByFields,
-    Product,
-    ProjectionFields,
+    CreateProductRequest,
+    ProductOrderBy,
+    ProductProjection,
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
@@ -15,14 +15,14 @@ family = "Example Family"
 def create_some_products():
     """Create two example products on your server."""
     new_products = [
-        Product(
+        CreateProductRequest(
             part_number="Example 123 AA",
             name=name,
             family=family,
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         ),
-        Product(
+        CreateProductRequest(
             part_number="Example 123 AA1",
             name=name,
             family=family,
@@ -59,7 +59,7 @@ created_product = client.get_product(create_response.products[0].id)
 query_request = QueryProductsRequest(
     filter=f'family="{family}" && name="{name}"',
     return_count=True,
-    order_by=OrderByFields.FAMILY,
+    order_by=ProductOrderBy.FAMILY,
 )
 query_response = client.query_products_paged(query_request)
 
@@ -71,7 +71,7 @@ update_response = client.update_products([create_response.products[0]], replace=
 
 # Query for just the ids of products that match the family
 values_query = QueryProductValuesRequest(
-    filter=f'family="{family}"', field=ProjectionFields.ID
+    filter=f'family="{family}"', field=ProductProjection.ID
 )
 values_response = client.query_product_values(query=values_query)
 

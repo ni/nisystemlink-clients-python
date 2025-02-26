@@ -5,7 +5,6 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from nisystemlink.clients.product.models import Product
 from uplink import Field, Query, returns
 
 from . import models
@@ -30,7 +29,7 @@ class ProductClient(BaseClient):
 
     @post("products", args=[Field("products")])
     def create_products(
-        self, products: List[Product]
+        self, products: List[models.CreateProductRequest]
     ) -> models.CreateProductsPartialSuccess:
         """Creates one or more products and returns errors for failed creations.
 

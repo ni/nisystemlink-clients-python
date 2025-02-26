@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
 
 
-class OrderByFields(str, Enum):
+class ProductOrderBy(str, Enum):
     """The valid ways to order a product query."""
 
     ID = "ID"
@@ -15,7 +15,17 @@ class OrderByFields(str, Enum):
     UPDATED_AT = "UPDATED_AT"
 
 
-class ProjectionFields(str, Enum):
+class ProductField(str, Enum):
+    """An enumeration of product fields for which the values can be queried for."""
+
+    ID = "ID"
+    FAMILY = "FAMILY"
+    PART_NUMBER = "PART_NUMBER"
+    NAME = "NAME"
+    UPDATED_AT = "UPDATED_AT"
+
+
+class ProductProjection(str, Enum):
     """An enumeration of all fields in a Product. These are used to project the required fields
     from the API response.
     """
@@ -66,7 +76,7 @@ class QueryProductsBase(JsonModel):
 
 class QueryProductsRequest(QueryProductsBase):
 
-    order_by: Optional[OrderByFields] = Field(None, alias="orderBy")
+    order_by: Optional[ProductOrderBy] = Field(None, alias="orderBy")
     """Specifies the fields to use to sort the products.
 
     By default, products are sorted by `id`
@@ -78,7 +88,7 @@ class QueryProductsRequest(QueryProductsBase):
     By default, this value is `false` and products are sorted in ascending order.
     """
 
-    projection: Optional[List[ProjectionFields]] = None
+    projection: Optional[List[ProductProjection]] = None
     """Specifies the product fields to project.
 
     When a field value is given here, the corresponding field will be present in all returned products,
@@ -110,7 +120,7 @@ class QueryProductsRequest(QueryProductsBase):
 
 
 class QueryProductValuesRequest(QueryProductsBase):
-    field: Optional[ProjectionFields] = None
+    field: Optional[ProductField] = None
     """The product field to return for this query."""
 
     starts_with: Optional[str] = None
