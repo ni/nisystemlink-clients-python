@@ -10,6 +10,12 @@ from nisystemlink.clients.step.models import (
 
 
 class StepRequestObjectBase(JsonModel):
+    step_id: str
+    """Step ID."""
+
+    result_id: str
+    """Result ID."""
+    
     parent_id: Optional[str] = None
     """Parent step ID."""
 
@@ -45,12 +51,6 @@ class StepRequestObjectBase(JsonModel):
 
 
 class CreateStepRequestObject(StepRequestObjectBase):
-    step_id: str
-    """Step ID."""
-
-    result_id: str
-    """Result ID."""
-
     name: str
     """Step name."""
 

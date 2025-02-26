@@ -5,12 +5,6 @@ from nisystemlink.clients.step.models._create_steps_request import StepRequestOb
 
 
 class UpdateStepRequestObject(StepRequestObjectBase):
-    step_id: Optional[str] = None
-    """Step ID."""
-
-    result_id: Optional[str] = None
-    """Result ID."""
-
     name: Optional[str] = None
     """Step name."""
 
