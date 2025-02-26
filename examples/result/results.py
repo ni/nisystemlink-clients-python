@@ -1,6 +1,6 @@
 from nisystemlink.clients.core import HttpConfiguration
-from nisystemlink.clients.result import ResultClient
-from nisystemlink.clients.result.models import (
+from nisystemlink.clients.testmonitor import TestMonitorClient
+from nisystemlink.clients.testmonitor.models import (
     QueryResultsRequest,
     QueryResultValuesRequest,
     Result,
@@ -43,7 +43,7 @@ server_configuration = HttpConfiguration(
     server_uri="https://yourserver.yourcompany.com",
     api_key="YourAPIKeyGeneratedFromSystemLink",
 )
-client = ResultClient(configuration=server_configuration)
+client = TestMonitorClient(configuration=server_configuration)
 
 create_response = create_some_results()
 

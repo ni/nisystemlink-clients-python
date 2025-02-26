@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.result.models import Result
+from nisystemlink.clients.testmonitor.models import Result
 
 
 class ResultsPartialSuccess(JsonModel):

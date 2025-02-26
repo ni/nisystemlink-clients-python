@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.result.models import Result
+from nisystemlink.clients.testmonitor.models import Result
 
 
 class PagedResults(WithPaging):

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.result.models._result import StatusObject
+from nisystemlink.clients.testmonitor.models._result import StatusObject
 
 
 class UpdateResultRequest(JsonModel):
