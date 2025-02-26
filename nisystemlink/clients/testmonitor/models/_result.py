@@ -35,7 +35,7 @@ class StatusObject(JsonModel):
 class Result(JsonModel):
     """Contains information about a result."""
 
-    status: StatusObject
+    status: Optional[StatusObject]
     """The status of the result."""
 
     started_at: Optional[datetime]
@@ -44,7 +44,7 @@ class Result(JsonModel):
     updated_at: Optional[datetime]
     """The last time that this result was updated."""
 
-    program_name: str
+    program_name: Optional[str]
     """The name of the program that generated this result."""
 
     id: Optional[str]

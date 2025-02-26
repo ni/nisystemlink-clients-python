@@ -48,10 +48,10 @@ client = TestMonitorClient(configuration=server_configuration)
 create_response = create_some_results()
 
 # Get all the results using the continuation token in batches of 100 at a time.
-response = client.get_results_paged(take=100, return_count=True)
+response = client.get_results(take=100, return_count=True)
 all_results = response.results
 while response.continuation_token:
-    response = client.get_results_paged(
+    response = client.get_results(
         take=100, continuation_token=response.continuation_token, return_count=True
     )
     all_results.extend(response.results)
@@ -63,7 +63,7 @@ created_result = client.get_result(create_response.results[0].id)
 query_request = QueryResultsRequest(
     filter=f'status.statusType="{status_type}"', return_count=True
 )
-response = client.query_results_paged(query_request)
+response = client.query_results(query_request)
 
 # Update the first result that you just created and replace the keywords
 updated_result = create_response.results[0]

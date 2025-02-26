@@ -8,16 +8,16 @@ from nisystemlink.clients.testmonitor.models._result import StatusObject
 class UpdateResultRequest(JsonModel):
     """Contains information about a result."""
 
-    status: StatusObject
+    status: Optional[StatusObject]
     """The status of the result."""
 
     started_at: Optional[datetime]
     """The time that the result started."""
 
-    program_name: str
+    program_name: Optional[str]
     """The name of the program that generated this result."""
 
-    id: Optional[str]
+    id: str
     """The globally unique id of the result."""
 
     system_id: Optional[str]

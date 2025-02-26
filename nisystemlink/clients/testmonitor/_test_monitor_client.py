@@ -67,7 +67,7 @@ class TestMonitorClient(BaseClient):
         "results",
         args=[Query("continuationToken"), Query("take"), Query("returnCount")],
     )
-    def get_results_paged(
+    def get_results(
         self,
         continuation_token: Optional[str] = None,
         take: Optional[int] = None,
@@ -106,9 +106,7 @@ class TestMonitorClient(BaseClient):
         ...
 
     @post("query-results")
-    def query_results_paged(
-        self, query: models.QueryResultsRequest
-    ) -> models.PagedResults:
+    def query_results(self, query: models.QueryResultsRequest) -> models.PagedResults:
         """Queries for results that match the filter.
 
         Args:
@@ -142,7 +140,7 @@ class TestMonitorClient(BaseClient):
         ...
 
     @post("update-results", args=[Field("results"), Field("replace")])
-    def __update_results(
+    def update_results(
         self, results: List[UpdateResultRequest], replace: bool = False
     ) -> models.ResultsPartialSuccess:
         """Updates a list of results with optional field replacement.
@@ -163,37 +161,6 @@ class TestMonitorClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
-
-    def update_results(
-        self,
-        results: List[UpdateResultRequest],
-        replace: bool = False,
-        allow_workspace_update: bool = False,
-    ) -> models.ResultsPartialSuccess:
-        """Updates a list of results with optional field replacement.
-
-        Args:
-            `results`: A list of results to update. Results are matched for update by id.
-            `replace`: Replace the existing fields instead of merging them. Defaults to `False`.
-                If this is `True`, then `keywords` and `properties` for the result will be
-                    replaced by what is in the `results` provided in this request.
-                If this is `False`, then the `keywords` and `properties` in this request will
-                    merge with what is already present in the server resource.
-            `allow_workspace_update`: If this is set to `False`, the `workspace` field will be set to None
-                before updating.
-
-        Returns: A list of updates results, results that failed to update, and errors for
-            failures.
-
-        Raises:
-            ApiException: if unable to communicate with the ``/nitestmonitor`` Service
-                or provided an invalid argument.
-        """
-        if not allow_workspace_update:
-            for result in results:
-                result.workspace = None
-
-        return self.__update_results(results, replace)
 
     @delete("results/{id}")
     def delete_result(self, id: str) -> None:

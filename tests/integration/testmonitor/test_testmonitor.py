@@ -125,7 +125,7 @@ class TestTestMonitor:
         ]
         create_results(results)
 
-        get_response = client.get_results_paged()
+        get_response = client.get_results()
 
         assert get_response is not None
         assert len(get_response.results) >= 1
@@ -145,7 +145,7 @@ class TestTestMonitor:
         ]
         create_results(results)
 
-        get_response = client.get_results_paged(take=1)
+        get_response = client.get_results(take=1)
 
         assert get_response is not None
         assert len(get_response.results) == 1
@@ -165,7 +165,7 @@ class TestTestMonitor:
         ]
         create_results(results)
 
-        get_response: PagedResults = client.get_results_paged(return_count=True)
+        get_response: PagedResults = client.get_results(return_count=True)
 
         assert get_response is not None
         assert get_response.total_count is not None and get_response.total_count >= 2
@@ -206,7 +206,7 @@ class TestTestMonitor:
         query_request = QueryResultsRequest(
             filter=f'partNumber="{part_number}"', return_count=True
         )
-        query_response: PagedResults = client.query_results_paged(query_request)
+        query_response: PagedResults = client.query_results(query_request)
         assert query_response.total_count == 1
         assert query_response.results[0].part_number == part_number
 
