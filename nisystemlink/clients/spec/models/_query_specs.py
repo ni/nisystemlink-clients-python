@@ -1,4 +1,3 @@
-from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
@@ -6,8 +5,10 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 from nisystemlink.clients.spec.models._specification import (
     Condition,
+    SpecificationCreation,
     SpecificationLimit,
     SpecificationType,
+    SpecificationUpdated,
 )
 
 
@@ -108,7 +109,7 @@ class QuerySpecificationsRequest(JsonModel):
     """
 
 
-class SpecificationWithOptionalFields(JsonModel):
+class SpecificationWithOptionalFields(SpecificationCreation, SpecificationUpdated):
     """A full specification with update and create history with only optional fields"""
 
     id: Optional[str] = None
@@ -170,18 +171,6 @@ class SpecificationWithOptionalFields(JsonModel):
     """Additional properties associated with the specification."""
 
     """When the spec was created and when."""
-
-    created_at: Optional[datetime] = None
-    """ISO-8601 formatted timestamp indicating when the specification was created."""
-
-    created_by: Optional[str] = None
-    """Id of the user who created the specification."""
-
-    updated_at: Optional[datetime] = None
-    """ISO-8601 formatted timestamp indicating when the specification was last updated."""
-
-    updated_by: Optional[str] = None
-    """Id of the user who last updated the specification."""
 
 
 class QuerySpecifications(WithPaging):
