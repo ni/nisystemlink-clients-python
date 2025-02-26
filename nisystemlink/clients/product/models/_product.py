@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -6,9 +5,6 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 class Product(JsonModel):
     """Contains information about a product."""
-
-    id: Optional[str]
-    """The globally unique id of the product."""
 
     part_number: str
     """The part number is the unique identifier of a product within a single org.
@@ -28,9 +24,6 @@ class Product(JsonModel):
     Usually the family is a grouping above product name. A family usually has multiple product
     names within it.
     """
-
-    updated_at: Optional[datetime]
-    """The last time that this product was updated."""
 
     file_ids: Optional[List[str]]
     """A list of file ids that are attached to this product."""

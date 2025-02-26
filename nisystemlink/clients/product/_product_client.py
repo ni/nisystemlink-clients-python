@@ -128,7 +128,7 @@ class ProductClient(BaseClient):
 
     @post("update-products", args=[Field("products"), Field("replace")])
     def update_products(
-        self, products: List[Product], replace: bool = False
+        self, products: List[models.UpdateProductRequest], replace: bool = False
     ) -> models.CreateProductsPartialSuccess:
         """Updates a list of products with optional field replacement.
 

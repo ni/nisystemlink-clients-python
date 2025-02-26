@@ -8,10 +8,11 @@ from nisystemlink.clients.product.models import (
     CreateProductsPartialSuccess,
     Product,
     ProductResponse,
+    ProjectionFields,
+    UpdateProductRequest,
 )
 from nisystemlink.clients.product.models._paged_products import PagedProducts
 from nisystemlink.clients.product.models._query_products_request import (
-    ProductField,
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
@@ -29,6 +30,22 @@ def unique_identifier() -> str:
     """Unique product id for this test."""
     product_id = uuid.uuid1().hex
     return product_id
+
+
+@pytest.fixture
+def create_update_product_request():
+    """Fixture to create a request object for updating products, from a product response"""
+
+    def _create_update_product_request(
+        product_response: ProductResponse,
+    ) -> UpdateProductRequest:
+        product_data = product_response.dict()
+
+        product_data.pop("updated_at", None)
+
+        return UpdateProductRequest(**product_data)
+
+    return _create_update_product_request
 
 
 @pytest.fixture
@@ -160,7 +177,7 @@ class TestProductClient:
         )
         assert create_response is not None
         query_request = QueryProductValuesRequest(
-            filter=f'partNumber="{part_number}"', field=ProductField.NAME
+            filter=f'partNumber="{part_number}"', field=ProjectionFields.NAME
         )
         query_response: List[str] = client.query_product_values(query_request)
         assert query_response is not None
@@ -168,7 +185,11 @@ class TestProductClient:
         assert query_response[0] == test_name
 
     def test__update_keywords_with_replace__keywords_replaced(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         original_keyword = "originalKeyword"
         updated_keyword = "updatedKeyword"
@@ -180,7 +201,8 @@ class TestProductClient:
         updated_product = create_response.products[0]
         updated_product.keywords = [updated_keyword]
         update_response = client.update_products(
-            [Product(**updated_product.dict())], replace=True
+            [create_update_product_request(product_response=updated_product)],
+            replace=True,
         )
         assert update_response is not None
         assert len(update_response.products) == 1
@@ -191,7 +213,11 @@ class TestProductClient:
         assert original_keyword not in update_response.products[0].keywords
 
     def test__update_keywords_no_replace__keywords_appended(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         original_keyword = "originalKeyword"
         additional_keyword = "additionalKeyword"
@@ -203,7 +229,8 @@ class TestProductClient:
         updated_product = create_response.products[0]
         updated_product.keywords = [additional_keyword]
         update_response = client.update_products(
-            [Product(**updated_product.dict())], replace=False
+            [create_update_product_request(product_response=updated_product)],
+            replace=False,
         )
         assert update_response is not None
         assert len(update_response.products) == 1
@@ -217,7 +244,11 @@ class TestProductClient:
         )
 
     def test__update_properties_with_replace__properties_replaced(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         new_key = "newKey"
         original_properties = {"originalKey": "originalValue"}
@@ -230,7 +261,8 @@ class TestProductClient:
         updated_product = create_response.products[0]
         updated_product.properties = new_properties
         update_response = client.update_products(
-            [Product(**updated_product.dict())], replace=True
+            [create_update_product_request(product_response=updated_product)],
+            replace=True,
         )
         assert update_response is not None
         assert len(update_response.products) == 1
@@ -244,7 +276,11 @@ class TestProductClient:
         )
 
     def test__update_properties_append__properties_appended(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         original_key = "originalKey"
         new_key = "newKey"
@@ -258,7 +294,8 @@ class TestProductClient:
         updated_product = create_response.products[0]
         updated_product.properties = new_properties
         update_response = client.update_products(
-            [Product(**updated_product.dict())], replace=False
+            [create_update_product_request(product_response=updated_product)],
+            replace=False,
         )
         assert update_response is not None
         assert len(update_response.products) == 1
@@ -311,13 +348,12 @@ class TestProductClient:
             keywords=keywords,
             properties=properties,
         )
-
         response: CreateProductsPartialSuccess = create_products([product])
         assert response is not None
 
         query_request = QueryProductsRequest(
             filter=f'partNumber=="{part_number}"',
-            projection=[ProductField.FAMILY, ProductField.NAME],
+            projection=[ProjectionFields.FAMILY, ProjectionFields.NAME],
         )
         query_response: PagedProducts = client.query_products_paged(query_request)
         queried_product = query_response.products[0]
@@ -325,7 +361,6 @@ class TestProductClient:
         # Assert that the projected fields are returned as expected.
         assert queried_product.family == family
         assert queried_product.name == name
-
         # Assert that non-projected fields are not returned.
         assert queried_product.part_number is None
         assert queried_product.keywords is None

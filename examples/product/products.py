@@ -1,8 +1,9 @@
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.product import ProductClient
 from nisystemlink.clients.product.models import (
+    OrderByFields,
     Product,
-    ProductField,
+    ProjectionFields,
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
@@ -58,7 +59,7 @@ created_product = client.get_product(create_response.products[0].id)
 query_request = QueryProductsRequest(
     filter=f'family="{family}" && name="{name}"',
     return_count=True,
-    order_by=ProductField.FAMILY,
+    order_by=OrderByFields.FAMILY,
 )
 query_response = client.query_products_paged(query_request)
 
@@ -70,7 +71,7 @@ update_response = client.update_products([create_response.products[0]], replace=
 
 # Query for just the ids of products that match the family
 values_query = QueryProductValuesRequest(
-    filter=f'family="{family}"', field=ProductField.ID
+    filter=f'family="{family}"', field=ProjectionFields.ID
 )
 values_response = client.query_product_values(query=values_query)
 
