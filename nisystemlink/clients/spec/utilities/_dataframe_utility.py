@@ -59,7 +59,7 @@ def __serialize_discrete_values(
         value: A condition's value with either NumericConditionValue type or StringConditionValue type.
 
     Returns:
-        The list of discrete values of the given value in a specific format.
+        The list of discrete values of the given value in a string format.
     """
     return [str(discrete) for discrete in (value.discrete or [])]
 
@@ -93,7 +93,7 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
         conditions: List of all conditions in a spec.
 
     Returns:
-        Conditions as a dictionary in specific format for the dataframe.
+        Conditions as a dictionary.
     """
     return {
         __generate_column_header(condition): ", ".join(
@@ -111,7 +111,7 @@ def __serialize_specs(
 
     Args:
         specs: List of specs of the specified product.
-        condition_format: Function with which conditions columns and condition values are formatted.
+        condition_format: Function which takes in a list of condition objects and returns a dictionary of conditions.
 
     Returns:
         The list of specs of the specified product as a dataframe.
@@ -141,7 +141,7 @@ def __batch_query_specs(
 
     Args:
         client: The Spec Client to use for the request.
-        product_ids: ID od the product to query specs.
+        product_ids: ID of the product to query specs.
         column_projection: List of columns to be included to the spec dataframe
                            Every column will be included if column_projection is 'None'.
 

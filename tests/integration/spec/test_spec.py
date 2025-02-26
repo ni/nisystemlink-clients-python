@@ -336,12 +336,7 @@ class TestSpec:
         assert "condition_Supply Voltage(mV)" in specs_columns
 
     def condition_formatting(self, conditions: List[Condition]) -> Dict[str, str]:
-        conditions_dict = {}
-
-        for condition in conditions:
-            conditions_dict[str(condition.name)] = str(condition.value)
-
-        return conditions_dict
+        return {str(condition.name): str(condition.value) for condition in conditions}
 
     def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
         self,
