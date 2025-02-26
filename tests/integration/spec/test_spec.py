@@ -303,7 +303,7 @@ class TestSpec:
         specs_df = get_specs_dataframe(client=client, product_id=product)
         assert response.specs
         assert not specs_df.empty
-        assert len(response.specs) == len(specs_df)
+        assert len(specs_df) == 3
         specs = [vars(spec) for spec in response.specs]
         specs_columns = list(
             set(key for spec in specs for key in spec.keys() if spec[key] is not None)
@@ -314,40 +314,53 @@ class TestSpec:
     def test__get_specs_dataframe_with_column_projection__returns_specs_dataframe_with_projected_columns(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
-        request = QuerySpecificationsRequest(product_ids=[product])
-        response = client.query_specs(request)
         specs_df = get_specs_dataframe(
             client=client, product_id=product, column_projection=["PRODUCT_ID", "TYPE"]
         )
-        assert response.specs
         assert not specs_df.empty
-        assert len(response.specs) == len(specs_df)
+        assert len(specs_df) == 3
         specs_df_columns = specs_df.columns.to_list()
         assert len(specs_df_columns) == 2
         assert "product_id" in specs_df_columns
         assert "type" in specs_df_columns
 
-    def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
+    def test__get_specs_dataframe_without_condition_formatting__returns_specs_dataframe_with_default_condition_format(
         self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        specs_df = get_specs_dataframe(client=client, product_id=product)
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        specs_columns = specs_df.columns.to_list()
+        assert "condition_Temperature(C)" in specs_columns, specs_columns[::-1]
+        assert "condition_Supply Voltage(mV)" in specs_columns
+
+    def condition_formatting(self, conditions: List[Condition]) -> Dict[str, str]:
+        conditions_dict = {}
+
+        for condition in conditions:
+            conditions_dict[str(condition.name)] = str(condition.value)
+
+        return conditions_dict
+
+    def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
+        self,
+        client: SpecClient,
+        create_specs,
+        create_specs_for_query,
+        product,
     ):
         request = QuerySpecificationsRequest(product_ids=[product])
         response = client.query_specs(request)
 
-        def condtion_formatting(conditions: List[Condition]) -> Dict:
-            conditions_dict = {}
-
-            for condition in conditions:
-                conditions_dict[condition.name] = condition.value
-
-            return conditions_dict
-
         specs_df = get_specs_dataframe(
-            client=client, product_id=product, condition_format=condtion_formatting
+            client=client,
+            product_id=product,
+            condition_format=self.condition_formatting,
         )
 
         assert response.specs
         assert not specs_df.empty
-        assert len(response.specs) == len(specs_df)
+        assert len(specs_df) == 3
         names = [
             condition.name
             for spec in response.specs

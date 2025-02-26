@@ -22,17 +22,14 @@ def __generate_column_header(condition: Condition) -> str:
     Returns:
         The column header for the given condition.
     """
-    column_header = (
-        "condition_"
-        + (condition.name if condition.name else "")
-        + (
-            f"({condition.value.unit})"
-            if type(condition.value) == NumericConditionValue and condition.value.unit
-            else ""
-        )
+    name = condition.name or ""
+    unit = (
+        f"({condition.value.unit})"
+        if isinstance(condition.value, NumericConditionValue) and condition.value.unit
+        else ""
     )
 
-    return column_header
+    return f"condition_{name}{unit}"
 
 
 def __serialize_numeric_range(value: NumericConditionValue) -> List[str]:
@@ -44,17 +41,16 @@ def __serialize_numeric_range(value: NumericConditionValue) -> List[str]:
     Returns:
         The list of ranges of the given value in a specific format.
     """
-    ranges = []
+    if not value.range:
+        return []
 
-    for range in value.range or []:
-        ranges.append(
-            f"[{'; '.join([f'{k}: {v}' for k, v in vars(range).items() if v is not None])}]"
-        )
-
-    return ranges
+    return [
+        f"[{'; '.join(f'{k}: {v}' for k, v in vars(range).items() if v is not None)}]"
+        for range in value.range
+    ]
 
 
-def _serialize_discrete_values(
+def __serialize_discrete_values(
     value: Union[NumericConditionValue, StringConditionValue]
 ) -> List[str]:
     """Serialize discrete values of a value.
@@ -65,7 +61,7 @@ def _serialize_discrete_values(
     Returns:
         The list of discrete values of the given value in a specific format.
     """
-    return [str(discrete) for discrete in value.discrete or []]
+    return [str(discrete) for discrete in (value.discrete or [])]
 
 
 def __get_condition_values(condition: Condition) -> List[str]:
@@ -77,21 +73,21 @@ def __get_condition_values(condition: Condition) -> List[str]:
     Returns:
         The list of values of the given condition in a specific format.
     """
+    if not condition.value:
+        return []
+
     values = []
 
-    if condition.value:
-        if type(condition.value) == NumericConditionValue:
-            ranges = __serialize_numeric_range(value=condition.value)
-            values.extend(ranges)
+    if isinstance(condition.value, NumericConditionValue):
+        values.extend(__serialize_numeric_range(value=condition.value))
 
-        discrete_values = _serialize_discrete_values(value=condition.value)
-        values.extend(discrete_values)
+    values.extend(__serialize_discrete_values(value=condition.value))
 
     return values
 
 
-def __serialize_conditions(conditions: List[Condition]) -> Dict:
-    """Seriazlize conditions into desired format.
+def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
+    """Serialize conditions into desired format.
 
     Args:
         conditions: List of all conditions in a spec.
@@ -99,14 +95,12 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict:
     Returns:
         Conditions as a dictionary in specific format for the dataframe.
     """
-    condition_dict = {}
-
-    for condition in conditions:
-        column_header = __generate_column_header(condition=condition)
-        values = __get_condition_values(condition=condition)
-        condition_dict[column_header] = ", ".join(values)
-
-    return condition_dict
+    return {
+        __generate_column_header(condition): ", ".join(
+            __get_condition_values(condition)
+        )
+        for condition in conditions
+    }
 
 
 def __serialize_specs(
@@ -122,18 +116,13 @@ def __serialize_specs(
     Returns:
         The list of specs of the specified product as a dataframe.
     """
-    specs_dict = []
-
-    for spec in specs:
-        spec_dict = vars(spec)
-
-        if spec.conditions:
-            condition_dict = condition_format(spec.conditions)
-
-            spec_dict.pop("conditions")
-            spec_dict.update(condition_dict)
-
-        specs_dict.append(spec_dict)
+    specs_dict = [
+        {
+            **{key: value for key, value in vars(spec).items() if key != "conditions"},
+            **(condition_format(spec.conditions) if spec.conditions else {}),
+        }
+        for spec in specs
+    ]
 
     specs_df = pd.json_normalize(specs_dict)
     specs_df = specs_df.loc[
@@ -143,13 +132,50 @@ def __serialize_specs(
     return specs_df
 
 
+def __batch_query_specs(
+    client: SpecClient,
+    product_id: str,
+    column_projection: Optional[List[str]] = None,
+) -> List[SpecificationWithOptionalFields]:
+    """Batch query specs of a specific product.
+
+    Args:
+        client: The Spec Client to use for the request.
+        product_ids: ID od the product to query specs.
+        column_projection: List of columns to be included to the spec dataframe
+                           Every column will be included if column_projection is 'None'.
+
+    Returns:
+        The list of specs of the specified product.
+    """
+    query_request = QuerySpecificationsRequest(
+        product_ids=[product_id], take=1000, projection=column_projection
+    )
+    spec_response = client.query_specs(query_request)
+    specs = []
+
+    if spec_response.specs:
+        specs = spec_response.specs
+
+    while spec_response.continuation_token:
+        query_request.continuation_token = spec_response.continuation_token
+        spec_response = client.query_specs(query_request)
+
+        if spec_response.specs:
+            specs.extend(spec_response.specs)
+
+    return specs
+
+
 def get_specs_dataframe(
     client: SpecClient,
     product_id: str,
     column_projection: Optional[List[str]] = None,
-    condition_format: Callable[[List[Condition]], Dict] = __serialize_conditions,
+    condition_format: Callable[
+        [List[Condition]], Dict[str, str]
+    ] = __serialize_conditions,
 ) -> pd.DataFrame:
-    """Query specs of a specific product.
+    """Get specs of a specific product as a dataframe.
 
     Args:
         client: The Spec Client to use for the request.
@@ -161,25 +187,9 @@ def get_specs_dataframe(
     Returns:
         The list of specs of the specified product as a dataframe.
     """
-    spec_response = client.query_specs(
-        QuerySpecificationsRequest(
-            product_ids=[product_id], take=1000, projection=column_projection
-        )
+    specs = __batch_query_specs(
+        client=client, product_id=product_id, column_projection=column_projection
     )
-    specs = spec_response.specs if spec_response.specs else []
-
-    while spec_response.continuation_token:
-        continuation_token = spec_response.continuation_token
-        spec_response = client.query_specs(
-            QuerySpecificationsRequest(
-                product_ids=[product_id],
-                take=1000,
-                continuation_token=continuation_token,
-                projection=column_projection,
-            )
-        )
-
-        specs.extend(spec_response.specs if spec_response.specs else [])
-
     specs_df = __serialize_specs(specs=specs, condition_format=condition_format)
+
     return specs_df
