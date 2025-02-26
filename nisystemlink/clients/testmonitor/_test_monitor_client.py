@@ -13,6 +13,7 @@ from uplink import Field, Query, retry, returns
 
 from . import models
 
+
 @retry(when=retry.when.status([429, 503, 504]), stop=retry.stop.after_attempt(5))
 class TestMonitorClient(BaseClient):
     # prevent pytest from thinking this is a test class
@@ -46,7 +47,6 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
-    
     @post("results", args=[Field("results")])
     def create_results(self, results: List[Result]) -> models.ResultsPartialSuccess:
         """Creates one or more results and returns errors for failed creations.
@@ -226,4 +226,3 @@ class TestMonitorClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
-

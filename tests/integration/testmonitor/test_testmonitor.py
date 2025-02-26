@@ -9,6 +9,7 @@ from nisystemlink.clients.testmonitor.models import (
     ResultsPartialSuccess,
     StatusObject,
     StatusType,
+    UpdateResultRequest,
 )
 from nisystemlink.clients.testmonitor.models._paged_results import PagedResults
 from nisystemlink.clients.testmonitor.models._query_results_request import (
@@ -16,7 +17,6 @@ from nisystemlink.clients.testmonitor.models._query_results_request import (
     QueryResultValuesRequest,
     ResultField,
 )
-
 
 
 @pytest.fixture(scope="class")
@@ -30,6 +30,7 @@ def unique_identifier() -> str:
     """Unique result id for this test."""
     result_id = uuid.uuid1().hex
     return result_id
+
 
 @pytest.fixture
 def create_results(client: TestMonitorClient):
@@ -249,7 +250,9 @@ class TestTestMonitor:
         assert create_response is not None
         assert len(create_response.results) == 1
 
-        updated_result = create_response.results[0]
+        updated_result = self.__map_result_to_update_result_request(
+            create_response.results[0]
+        )
         updated_result.keywords = [updated_keyword]
         update_response = client.update_results([updated_result], replace=True)
 
@@ -281,7 +284,9 @@ class TestTestMonitor:
         assert create_response is not None
         assert len(create_response.results) == 1
 
-        updated_result = create_response.results[0]
+        updated_result = self.__map_result_to_update_result_request(
+            create_response.results[0]
+        )
         updated_result.keywords = [additional_keyword]
         update_response = client.update_results([updated_result], replace=False)
 
@@ -317,7 +322,9 @@ class TestTestMonitor:
         assert create_response is not None
         assert len(create_response.results) == 1
 
-        updated_result = create_response.results[0]
+        updated_result = self.__map_result_to_update_result_request(
+            create_response.results[0]
+        )
         updated_result.properties = new_properties
         update_response = client.update_results([updated_result], replace=True)
 
@@ -352,13 +359,17 @@ class TestTestMonitor:
         assert create_response is not None
         assert len(create_response.results) == 1
 
-        updated_result = create_response.results[0]
+        updated_result = self.__map_result_to_update_result_request(
+            create_response.results[0]
+        )
         updated_result.properties = new_properties
         update_response = client.update_results([updated_result], replace=False)
 
         assert update_response is not None
         assert len(update_response.results) == 1
-        updated_result = update_response.results[0]
+        updated_result = self.__map_result_to_update_result_request(
+            update_response.results[0]
+        )
         assert (
             updated_result.properties is not None
             and len(updated_result.properties) == 2
@@ -370,3 +381,22 @@ class TestTestMonitor:
         )
         assert updated_result.properties[new_key] == new_properties[new_key]
 
+    def __map_result_to_update_result_request(
+        self, result: Result
+    ) -> UpdateResultRequest:
+        return UpdateResultRequest(
+            id=result.id,
+            status=result.status,
+            started_at=result.started_at,
+            program_name=result.program_name,
+            system_id=result.system_id,
+            host_name=result.host_name,
+            part_number=result.part_number,
+            serial_number=result.serial_number,
+            total_time_in_seconds=result.total_time_in_seconds,
+            keywords=result.keywords,
+            properties=result.properties,
+            operator=result.operator,
+            file_ids=result.file_ids,
+            data_table_ids=result.data_table_ids,
+        )
