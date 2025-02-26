@@ -254,20 +254,20 @@ Delete a feed.
    :language: python
    :linenos:
 
-Result API
+TestMonitor API (Results)
 -------
 
 Overview
 ~~~~~~~~
 
-The :class:`.ResultClient` class is the primary entry point of the Result API.
+The :class:`.TestMonitorClient` class is the primary entry point of the Result API.
 
-When constructing a :class:`.ResultClient`, you can pass an
+When constructing a :class:`.TestMonitorClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the
-:class:`.HttpConfigurationManager`), or let :class:`.ResultClient` use the
+:class:`.HttpConfigurationManager`), or let :class:`.TestMonitorClient` use the
 default connection. The default connection depends on your environment.
 
-With a :class:`.ResultClient` object, you can:
+With a :class:`.TestMonitorClient` object, you can:
 
 * Create, update, query, and delete results
 
