@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class ProductRequest(JsonModel):
+class Product(JsonModel):
     """Contains information about a product."""
 
     id: Optional[str]
