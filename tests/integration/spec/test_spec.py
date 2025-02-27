@@ -335,9 +335,6 @@ class TestSpec:
         assert "condition_Temperature(C)" in specs_columns, specs_columns[::-1]
         assert "condition_Supply Voltage(mV)" in specs_columns
 
-    def condition_formatting(self, conditions: List[Condition]) -> Dict[str, str]:
-        return {str(condition.name): str(condition.value) for condition in conditions}
-
     def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
         self,
         client: SpecClient,
@@ -345,13 +342,18 @@ class TestSpec:
         create_specs_for_query,
         product,
     ):
+        def condition_formatting(conditions: List[Condition]) -> Dict[str, str]:
+            return {
+                str(condition.name): str(condition.value) for condition in conditions
+            }
+
         request = QuerySpecificationsRequest(product_ids=[product])
         response = client.query_specs(request)
 
         specs_df = get_specs_dataframe(
             client=client,
             product_id=product,
-            condition_format=self.condition_formatting,
+            condition_format=condition_formatting,
         )
 
         assert response.specs
