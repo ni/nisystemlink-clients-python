@@ -3,7 +3,7 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from uplink import Field, Query
+from uplink import Field, Path, Query
 
 from . import models
 
@@ -119,7 +119,7 @@ class StepClient(BaseClient):
         """
         ...
 
-    @get("results/{resultId}/steps/{stepId}")
+    @get("results/{resultId}/steps/{stepId}", args=[Path("resultId"), Path("stepId")])
     def get_step(self, result_id: str, step_id: str) -> models.Step:
         """Gets a single step.
 
@@ -136,7 +136,10 @@ class StepClient(BaseClient):
         """
         ...
 
-    @delete("results/{resultId}/steps/{stepId}", args=[Query("updateResultTotalTime")])
+    @delete(
+        "results/{resultId}/steps/{stepId}",
+        args=[Path("resultId"), Path("stepId"), Query("updateResultTotalTime")]
+    )
     def delete_step(
         self,
         result_id: str,
