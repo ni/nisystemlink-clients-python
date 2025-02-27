@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.step.models._step import (
+from nisystemlink.clients.testmonitor.models._step import (
     NamedValueObject,
     StatusObject,
     StepDataObject,
@@ -46,7 +46,7 @@ class StepRequestObjectBase(JsonModel):
     keywords: Optional[List[str]] = None
     """Words or phrases associated with the step."""
 
-    properties: Optional[dict] = None
+    properties: Optional[Dict[str, str]] = None
     """Test step properties."""
 
 

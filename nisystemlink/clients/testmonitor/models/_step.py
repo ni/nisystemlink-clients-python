@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -100,5 +100,5 @@ class Step(JsonModel):
     keywords: Optional[List[str]] = None
     """Words or phrases associated with the test step."""
 
-    properties: Optional[List[NamedValueObject]] = None
+    properties: Optional[Dict[str, str]] = None
     """Test step properties."""

@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.step.models._create_steps_request import StepRequestObjectBase
+from nisystemlink.clients.testmonitor.models._create_steps_request import StepRequestObjectBase
 
 
 class UpdateStepRequestObject(StepRequestObjectBase):
