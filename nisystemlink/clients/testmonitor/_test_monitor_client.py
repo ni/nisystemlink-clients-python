@@ -2,11 +2,10 @@
 
 from typing import List, Optional
 
-from uplink import Field, Path, Query
-
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
+from uplink import Field, Path, Query
 
 from . import models
 
@@ -155,7 +154,7 @@ class TestMonitorClient(BaseClient):
 
     @delete(
         "results/{resultId}/steps/{stepId}",
-        args=[Path("resultId"), Path("stepId"), Query("updateResultTotalTime")]
+        args=[Path("resultId"), Path("stepId"), Query("updateResultTotalTime")],
     )
     def delete_step(
         self,

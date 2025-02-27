@@ -42,7 +42,7 @@ class StepField(str, Enum):
 
 class StepProjection(str, Enum):
     """An enumeration of all fields in a Step.
-    
+
     This enumeration is used to specify the fields to project in a step query.
     """
 
@@ -69,6 +69,7 @@ class StepProjection(str, Enum):
 
 class StepResponseFormat(str, Enum):
     """An enumeration of response formats for step queries."""
+
     JSON = "JSON"
     CSV = "CSV"
 
