@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.step.models import (
+from nisystemlink.clients.step.models._step import (
     NamedValueObject,
     StatusObject,
     StepDataObject,
@@ -15,7 +15,7 @@ class StepRequestObjectBase(JsonModel):
 
     result_id: str
     """Result ID."""
-    
+
     parent_id: Optional[str] = None
     """Parent step ID."""
 

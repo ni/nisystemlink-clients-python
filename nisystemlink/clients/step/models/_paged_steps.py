@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.step.models import Step
+from nisystemlink.clients.step.models._step import Step
 
 
 class PagedSteps(WithPaging):

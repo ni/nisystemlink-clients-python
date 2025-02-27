@@ -2,7 +2,8 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.step.models import Step, UpdateStepRequestObject
+from nisystemlink.clients.step.models._step import Step
+from nisystemlink.clients.step.models._update_steps_request import UpdateStepRequestObject
 
 
 class UpdateStepsPartialSuccess(JsonModel):
