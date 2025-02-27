@@ -4,8 +4,8 @@ from typing import List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class StepFields(str, Enum):
-    """The valid ways to order or query a step.
+class StepOrderBy(str, Enum):
+    """The valid ways to order steps query response.
 
     This contains only limited fields available in a Step.
     """
@@ -22,8 +22,29 @@ class StepFields(str, Enum):
     DATA_MODEL = "DATA_MODEL"
 
 
-class StepProjectionField(str, Enum):
-    """An enumeration of all fields in a Step."""
+class StepField(str, Enum):
+    """The valid field values that can be queried.
+
+    This contains only limited fields available in a Step.
+    """
+
+    NAME = "NAME"
+    STEP_TYPE = "STEP_TYPE"
+    STEP_ID = "STEP_ID"
+    PARENT_ID = "PARENT_ID"
+    RESULT_ID = "RESULT_ID"
+    PATH = "PATH"
+    TOTAL_TIME_IN_SECONDS = "TOTAL_TIME_IN_SECONDS"
+    STARTED_AT = "STARTED_AT"
+    UPDATED_AT = "UPDATED_AT"
+    DATA_MODEL = "DATA_MODEL"
+
+
+class StepProjection(str, Enum):
+    """An enumeration of all fields in a Step.
+    
+    This enumeration is used to specify the fields to project in a step query.
+    """
 
     NAME = "NAME"
     STEP_TYPE = "STEP_TYPE"
@@ -46,6 +67,12 @@ class StepProjectionField(str, Enum):
     PROPERTIES = "PROPERTIES"
 
 
+class StepResponseFormat(str, Enum):
+    """An enumeration of response formats for step queries."""
+    JSON = "JSON"
+    CSV = "CSV"
+
+
 class QueryStepsBase(JsonModel):
     filter: Optional[str] = None
     """The step query filter in Dynamic Linq format."""
@@ -62,7 +89,7 @@ class QueryStepsBase(JsonModel):
 
 
 class QueryStepsRequest(QueryStepsBase):
-    order_by: Optional[StepFields] = None
+    order_by: Optional[StepOrderBy] = None
     """Specifies the fields to use to sort the steps."""
 
     descending: Optional[bool] = None
@@ -94,19 +121,19 @@ class QueryStepsRequest(QueryStepsBase):
     result_substitutions: Optional[List[str]] = None
     """String substitutions into the `result_filter`."""
 
-    projection: Optional[List[StepProjectionField]] = None
+    projection: Optional[List[StepProjection]] = None
     """Specifies the step fields to project. When a field value is given here,
     the corresponding field will be present in all returned steps, and all
     unspecified fields will be excluded. If no projection is specified,
     all step fields will be returned.
     """
 
-    response_format: Optional[str] = None
+    response_format: Optional[StepResponseFormat] = None
     """Enum indicating the expected response format (CSV or JSON)."""
 
 
 class QueryStepValuesRequest(QueryStepsBase):
-    field: Optional[StepFields] = None
+    field: Optional[StepField] = None
     """The step field to return for this query."""
 
     starts_with: Optional[str] = None

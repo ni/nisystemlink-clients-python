@@ -9,8 +9,10 @@ from ._update_steps_request import UpdateStepsRequest, UpdateStepRequestObject
 from ._query_steps_request import (
     QueryStepsRequest,
     QueryStepValuesRequest,
-    StepFields,
-    StepProjectionField,
+    StepOrderBy,
+    StepField,
+    StepProjection,
+    StepResponseFormat,
 )
 
 # flake8: noqa
