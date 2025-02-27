@@ -5,11 +5,12 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from uplink import Field, Path, Query
+from uplink import Field, Path, Query, retry
 
 from . import models
 
 
+@retry(when=retry.when.status([429, 503, 504]), stop=retry.stop.after_attempt(5))
 class TestMonitorClient(BaseClient):
     # prevent pytest from thinking this is a test class
     __test__ = False
@@ -74,8 +75,8 @@ class TestMonitorClient(BaseClient):
             None if all deletes succeed otherwise a list of which IDs failed and which succeeded.
 
         Raises:
-            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are invalid
-            arguments.
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there
+            invalid arguments.
         """
         ...
 
@@ -88,6 +89,10 @@ class TestMonitorClient(BaseClient):
 
         Returns:
             A list of steps that match the filter.
+
+        Raises:
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
+            invalid arguments.
         """
         ...
 
@@ -106,6 +111,10 @@ class TestMonitorClient(BaseClient):
         Returns
             A list of steps that were successfully updated and a list of ones that were not along
             with error messages for updates that failed.
+
+        Raises:
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
+            invalid arguments.
         """
         ...
 
@@ -130,8 +139,8 @@ class TestMonitorClient(BaseClient):
             A list of steps.
 
         Raises:
-            ApiException: if unable to communicate with the `/nitestmonitor` Service
-                or provided an invalid argument.
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
+            invalid arguments..
         """
         ...
 
@@ -147,8 +156,8 @@ class TestMonitorClient(BaseClient):
             The step.
 
         Raises:
-            ApiException: if unable to communicate with the `/nitestmonitor` Service
-                or provided an invalid argument.
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
+            invalid arguments.
         """
         ...
 
@@ -172,6 +181,10 @@ class TestMonitorClient(BaseClient):
 
         Returns:
             None
+
+        Raises:
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
+            invalid arguments.
         """
         ...
 
@@ -184,5 +197,9 @@ class TestMonitorClient(BaseClient):
 
         Returns:
             A list of values for the specified step field.
+
+        Raises:
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
+            invalid arguments.
         """
         ...
