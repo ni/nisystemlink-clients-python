@@ -114,7 +114,7 @@ class TestMonitorClient(BaseClient):
         "steps",
         args=[Query("continuationToken"), Query("take"), Query("returnCount")],
     )
-    def get_steps_paged(
+    def get_steps(
         self,
         continuation_token: Optional[str] = None,
         take: Optional[int] = None,
