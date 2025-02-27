@@ -332,7 +332,7 @@ class TestSpec:
         assert not specs_df.empty
         assert len(specs_df) == 3
         specs_columns = specs_df.columns.to_list()
-        assert "condition_Temperature(C)" in specs_columns, specs_columns[::-1]
+        assert "condition_Temperature(C)" in specs_columns
         assert "condition_Supply Voltage(mV)" in specs_columns
 
     def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
