@@ -12,7 +12,12 @@ from ._create_specs_request import (
     CreateSpecificationsRequest,
 )
 from ._delete_specs_request import DeleteSpecificationsPartialSuccess
-from ._query_specs import QuerySpecificationsRequest, QuerySpecifications
+from ._query_specs import (
+    Projection,
+    QuerySpecificationsRequest,
+    QuerySpecifications,
+    SpecificationWithOptionalFields,
+)
 from ._specification import (
     Specification,
     SpecificationCreation,
@@ -22,7 +27,6 @@ from ._specification import (
     SpecificationType,
     SpecificationUpdated,
     SpecificationUserManaged,
-    SpecificationWithHistory,
 )
 from ._update_specs_request import (
     UpdatedSpecification,
