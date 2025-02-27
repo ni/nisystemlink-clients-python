@@ -6,7 +6,7 @@ from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
 from nisystemlink.clients.testmonitor.models import (
-    Result,
+    CreateResultRequest,
     UpdateResultRequest,
 )
 from uplink import Field, Query, retry, returns
@@ -48,7 +48,9 @@ class TestMonitorClient(BaseClient):
         ...
 
     @post("results", args=[Field("results")])
-    def create_results(self, results: List[Result]) -> models.ResultsPartialSuccess:
+    def create_results(
+        self, results: List[CreateResultRequest]
+    ) -> models.CreateResultsPartialSuccess:
         """Creates one or more results and returns errors for failed creations.
 
         Args:
@@ -142,7 +144,7 @@ class TestMonitorClient(BaseClient):
     @post("update-results", args=[Field("results"), Field("replace")])
     def update_results(
         self, results: List[UpdateResultRequest], replace: bool = False
-    ) -> models.ResultsPartialSuccess:
+    ) -> models.UpdateResultsPartialSuccess:
         """Updates a list of results with optional field replacement.
 
         Args:

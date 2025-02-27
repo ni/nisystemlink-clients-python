@@ -47,7 +47,7 @@ class ComparisonType(str, Enum):
     LEXICOGRAPHIC = "LEXICOGRAPHIC"
 
 
-class Projection(str, Enum):
+class ResultProjection(str, Enum):
     """The allowed projections for query.
 
     When using projection, only the fields specified by the projection element will be included in
@@ -161,7 +161,7 @@ class QueryResultsRequest(QueryResultsBase, QueryProductsBase, WithPaging):
     """Specifies whether to return the results in descending order.
     By default, this value is `false` and results are sorted in ascending order.
     """
-    projection: Optional[List[Projection]] = None
+    projection: Optional[List[ResultProjection]] = None
     """Specifies the fields to include in the returned results.
     Fields you do not specify are excluded. Returns all fields if no value is specified.
     """

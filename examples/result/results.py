@@ -1,9 +1,9 @@
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
+    CreateResultRequest,
     QueryResultsRequest,
     QueryResultValuesRequest,
-    Result,
     ResultField,
     StatusObject,
     StatusType,
@@ -17,7 +17,7 @@ status_type = StatusType.PASSED
 def create_some_results():
     """Create two example results on your server."""
     new_results = [
-        Result(
+        CreateResultRequest(
             part_number="Example 123 AA",
             program_name=program_name,
             host_name=host_name,
@@ -25,7 +25,7 @@ def create_some_results():
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         ),
-        Result(
+        CreateResultRequest(
             part_number="Example 123 AA1",
             program_name=program_name,
             host_name=host_name,

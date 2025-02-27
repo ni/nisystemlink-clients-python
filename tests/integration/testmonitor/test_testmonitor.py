@@ -5,8 +5,9 @@ import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
+    CreateResultRequest,
+    CreateResultsPartialSuccess,
     Result,
-    ResultsPartialSuccess,
     StatusObject,
     StatusType,
     UpdateResultRequest,
@@ -35,9 +36,11 @@ def unique_identifier() -> str:
 @pytest.fixture
 def create_results(client: TestMonitorClient):
     """Fixture to return a factory that creates results."""
-    responses: List[ResultsPartialSuccess] = []
+    responses: List[CreateResultsPartialSuccess] = []
 
-    def _create_results(results: List[Result]) -> ResultsPartialSuccess:
+    def _create_results(
+        results: List[CreateResultRequest],
+    ) -> CreateResultsPartialSuccess:
         response = client.create_results(results)
         responses.append(response)
         return response
@@ -69,7 +72,7 @@ class TestTestMonitor:
         host_name = "Test Host"
         system_id = "Test System"
         serial_number = "Test Serial Number"
-        result = Result(
+        result = CreateResultRequest(
             part_number=part_number,
             keywords=keywords,
             properties=properties,
@@ -80,7 +83,7 @@ class TestTestMonitor:
             serial_number=serial_number,
         )
 
-        response: ResultsPartialSuccess = create_results([result])
+        response: CreateResultsPartialSuccess = create_results([result])
 
         assert response is not None
         assert len(response.results) == 1
@@ -100,15 +103,15 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         results = [
-            Result(
+            CreateResultRequest(
                 part_number=uuid.uuid1().hex, program_name=program_name, status=status
             ),
-            Result(
+            CreateResultRequest(
                 part_number=uuid.uuid1().hex, program_name=program_name, status=status
             ),
         ]
 
-        response: ResultsPartialSuccess = create_results(results)
+        response: CreateResultsPartialSuccess = create_results(results)
 
         assert response is not None
         assert len(response.results) == 2
@@ -119,7 +122,7 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         results = [
-            Result(
+            CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
             )
         ]
@@ -136,10 +139,10 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         results = [
-            Result(
+            CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
             ),
-            Result(
+            CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
             ),
         ]
@@ -156,10 +159,10 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         results = [
-            Result(
+            CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
             ),
-            Result(
+            CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
             ),
         ]
@@ -177,10 +180,12 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         results = [
-            Result(part_number=part_number, program_name=program_name, status=status)
+            CreateResultRequest(
+                part_number=part_number, program_name=program_name, status=status
+            )
         ]
 
-        create_response: ResultsPartialSuccess = create_results(results)
+        create_response: CreateResultsPartialSuccess = create_results(results)
 
         assert create_response is not None
         id = str(create_response.results[0].id)
@@ -197,10 +202,12 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         results = [
-            Result(part_number=part_number, program_name=program_name, status=status)
+            CreateResultRequest(
+                part_number=part_number, program_name=program_name, status=status
+            )
         ]
 
-        create_response: ResultsPartialSuccess = create_results(results)
+        create_response: CreateResultsPartialSuccess = create_results(results)
 
         assert create_response is not None
         query_request = QueryResultsRequest(
@@ -217,8 +224,12 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
 
-        create_response: ResultsPartialSuccess = create_results(
-            [Result(part_number=part_number, program_name=program_name, status=status)]
+        create_response: CreateResultsPartialSuccess = create_results(
+            [
+                CreateResultRequest(
+                    part_number=part_number, program_name=program_name, status=status
+                )
+            ]
         )
         assert create_response is not None
         query_request = QueryResultValuesRequest(
@@ -237,9 +248,9 @@ class TestTestMonitor:
         updated_keyword = "updatedKeyword"
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
-        create_response: ResultsPartialSuccess = create_results(
+        create_response: CreateResultsPartialSuccess = create_results(
             [
-                Result(
+                CreateResultRequest(
                     part_number=unique_identifier,
                     keywords=[original_keyword],
                     program_name=program_name,
@@ -271,9 +282,9 @@ class TestTestMonitor:
         additional_keyword = "additionalKeyword"
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
-        create_response: ResultsPartialSuccess = create_results(
+        create_response: CreateResultsPartialSuccess = create_results(
             [
-                Result(
+                CreateResultRequest(
                     part_number=unique_identifier,
                     keywords=[original_keyword],
                     program_name=program_name,
@@ -309,9 +320,9 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         new_properties = {new_key: "newValue"}
-        create_response: ResultsPartialSuccess = create_results(
+        create_response: CreateResultsPartialSuccess = create_results(
             [
-                Result(
+                CreateResultRequest(
                     part_number=unique_identifier,
                     properties=original_properties,
                     program_name=program_name,
@@ -346,9 +357,9 @@ class TestTestMonitor:
         program_name = "Test Program"
         status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
         new_properties = {new_key: "newValue"}
-        create_response: ResultsPartialSuccess = create_results(
+        create_response: CreateResultsPartialSuccess = create_results(
             [
-                Result(
+                CreateResultRequest(
                     part_number=unique_identifier,
                     properties=original_properties,
                     program_name=program_name,
@@ -384,19 +395,5 @@ class TestTestMonitor:
     def __map_result_to_update_result_request(
         self, result: Result
     ) -> UpdateResultRequest:
-        return UpdateResultRequest(
-            id=result.id,
-            status=result.status,
-            started_at=result.started_at,
-            program_name=result.program_name,
-            system_id=result.system_id,
-            host_name=result.host_name,
-            part_number=result.part_number,
-            serial_number=result.serial_number,
-            total_time_in_seconds=result.total_time_in_seconds,
-            keywords=result.keywords,
-            properties=result.properties,
-            operator=result.operator,
-            file_ids=result.file_ids,
-            data_table_ids=result.data_table_ids,
-        )
+        result_dict = result.dict(exclude={"status_type_summary", "updated_at"})
+        return UpdateResultRequest(**result_dict)
