@@ -13,9 +13,9 @@ from ._create_specs_request import (
 )
 from ._delete_specs_request import DeleteSpecificationsPartialSuccess
 from ._query_specs import (
-    Projection,
     QuerySpecificationsRequest,
     QuerySpecifications,
+    SpecificationProjection,
     SpecificationWithOptionalFields,
 )
 from ._specification import (

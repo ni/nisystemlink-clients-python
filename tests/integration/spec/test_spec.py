@@ -12,11 +12,11 @@ from nisystemlink.clients.spec.models import (
     CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
     NumericConditionValue,
-    Projection,
     QuerySpecificationsRequest,
     Specification,
     SpecificationDefinition,
     SpecificationLimit,
+    SpecificationProjection,
     SpecificationType,
     UpdateSpecificationsRequest,
 )
@@ -282,7 +282,8 @@ class TestSpec:
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         request = QuerySpecificationsRequest(
-            product_ids=[product], projection=[Projection.SPEC_ID, Projection.NAME]
+            product_ids=[product],
+            projection=[SpecificationProjection.SPEC_ID, SpecificationProjection.NAME],
         )
         response = client.query_specs(request)
         assert response.specs
