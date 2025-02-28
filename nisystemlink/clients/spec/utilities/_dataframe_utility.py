@@ -8,8 +8,8 @@ from nisystemlink.clients.spec.models._condition import (
     StringConditionValue,
 )
 from nisystemlink.clients.spec.models._query_specs import (
-    Projection,
     QuerySpecificationsRequest,
+    SpecificationProjection,
     SpecificationWithOptionalFields,
 )
 
@@ -143,7 +143,7 @@ def __serialize_specs(
 def __batch_query_specs(
     client: SpecClient,
     product_id: str,
-    column_projection: Optional[List[Projection]] = None,
+    column_projection: Optional[List[SpecificationProjection]] = None,
 ) -> List[SpecificationWithOptionalFields]:
     """Batch query specs of a specific product.
 
@@ -179,7 +179,7 @@ def __batch_query_specs(
 def get_specs_dataframe(
     client: SpecClient,
     product_id: str,
-    column_projection: Optional[List[Projection]] = None,
+    column_projection: Optional[List[SpecificationProjection]] = None,
     condition_format: Callable[
         [List[Condition]], Dict[str, str]
     ] = __serialize_conditions,

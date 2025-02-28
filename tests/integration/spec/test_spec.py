@@ -330,7 +330,12 @@ class TestSpec:
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         specs_df = get_specs_dataframe(
-            client=client, product_id=product, column_projection=[Projection.PRODUCT_ID, Projection.TYPE]
+            client=client,
+            product_id=product,
+            column_projection=[
+                SpecificationProjection.PRODUCT_ID,
+                SpecificationProjection.TYPE,
+            ],
         )
 
         specs_df_columns = specs_df.columns.to_list()
