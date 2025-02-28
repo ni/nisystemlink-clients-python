@@ -260,7 +260,8 @@ TestMonitor API (Results)
 Overview
 ~~~~~~~~
 
-The :class:`.TestMonitorClient` class is the primary entry point of the Results API.
+The :class:`.TestMonitorClient` class is the primary entry point of the Test Monitor API
+used to interact with test results (Results).
 
 When constructing a :class:`.TestMonitorClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the

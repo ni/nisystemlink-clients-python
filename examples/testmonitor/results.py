@@ -4,8 +4,7 @@ from nisystemlink.clients.testmonitor.models import (
     QueryResultsRequest,
     QueryResultValuesRequest,
     ResultField,
-    ResultStatus,
-    StandardResultStatus,
+    Status,
     StatusType,
 )
 
@@ -21,7 +20,7 @@ def create_some_results():
             part_number="Example 123 AA",
             program_name=program_name,
             host_name=host_name,
-            status=StandardResultStatus.PASSED,
+            status=Status.PASSED(),
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         ),
@@ -29,7 +28,7 @@ def create_some_results():
             part_number="Example 123 AA1",
             program_name=program_name,
             host_name=host_name,
-            status=ResultStatus(status_type=StatusType.CUSTOM, status_name="Custom"),
+            status=Status(status_type=StatusType.CUSTOM, status_name="Custom"),
             keywords=["original keyword"],
             properties={"original property key": "original"},
         ),
@@ -65,7 +64,7 @@ created_result = client.get_result(create_response.results[0].id)
 
 # Query results without continuation
 query_request = QueryResultsRequest(
-    filter=f'status.statusType="{status_type}"', return_count=True
+    filter=f'status.statusType="{status_type.value}"', return_count=True
 )
 response = client.query_results(query_request)
 
