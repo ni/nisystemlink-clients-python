@@ -1,4 +1,3 @@
-from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
@@ -40,7 +39,7 @@ def create_some_results():
 
 
 # Server configuration is not required when used with Systemlink Client or run throught Jupyter on SLE
-server_configuration: HttpConfiguration = None
+server_configuration = None
 
 # # Example of setting up the server configuration to point to your instance of SystemLink Enterprise
 # server_configuration = HttpConfiguration(
