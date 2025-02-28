@@ -8,12 +8,13 @@ from nisystemlink.clients.spec.models._condition import (
     StringConditionValue,
 )
 from nisystemlink.clients.spec.models._query_specs import (
+    Projection,
     QuerySpecificationsRequest,
     SpecificationWithOptionalFields,
 )
 
 
-def __generate_column_header(condition: Condition) -> str:
+def __generate_condition_column_header(condition: Condition) -> str:
     """Generate column header for a condition.
 
     Args:
@@ -32,7 +33,7 @@ def __generate_column_header(condition: Condition) -> str:
     return f"condition_{name}{unit}"
 
 
-def __serialize_numeric_range(value: NumericConditionValue) -> List[str]:
+def __serialize_numeric_condition_range(value: NumericConditionValue) -> List[str]:
     """Serialize ranges of a numeric condition value.
 
     Args:
@@ -50,7 +51,7 @@ def __serialize_numeric_range(value: NumericConditionValue) -> List[str]:
     ]
 
 
-def __serialize_discrete_values(
+def __serialize_condition_discrete_values(
     value: Union[NumericConditionValue, StringConditionValue]
 ) -> List[str]:
     """Serialize discrete values of a value.
@@ -79,9 +80,9 @@ def __get_condition_values(condition: Condition) -> List[str]:
     values = []
 
     if isinstance(condition.value, NumericConditionValue):
-        values.extend(__serialize_numeric_range(value=condition.value))
+        values.extend(__serialize_numeric_condition_range(value=condition.value))
 
-    values.extend(__serialize_discrete_values(value=condition.value))
+    values.extend(__serialize_condition_discrete_values(value=condition.value))
 
     return values
 
@@ -96,7 +97,7 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
         Conditions as a dictionary.
     """
     return {
-        __generate_column_header(condition): ", ".join(
+        __generate_condition_column_header(condition): ", ".join(
             __get_condition_values(condition)
         )
         for condition in conditions
@@ -111,7 +112,16 @@ def __serialize_specs(
 
     Args:
         specs: List of specs of the specified product.
-        condition_format: Function which takes in a list of condition objects and returns a dictionary of conditions.
+        condition_format: Function which takes in a list of condition objects and returns
+                          a dictionary of condition and its values. The dictionary keys
+                          should be the condition name and the values should be the condition
+                          value in any format you need. Keys will be used as the dataframe
+                          column header and values will be used as the row cells for the
+                          respective column header.
+
+                          This is an optional parameter. By default column header will be
+                          "condition_conditionName(conditionUnit)" and column value will be
+                          condition value.
 
     Returns:
         The list of specs of the specified product as a dataframe.
@@ -125,9 +135,7 @@ def __serialize_specs(
     ]
 
     specs_df = pd.json_normalize(specs_dict)
-    specs_df = specs_df.loc[
-        :, specs_df.apply(lambda col: any(val is not None for val in col))
-    ]
+    specs_df.dropna(axis="columns", how="all", inplace=True)
 
     return specs_df
 
@@ -135,7 +143,7 @@ def __serialize_specs(
 def __batch_query_specs(
     client: SpecClient,
     product_id: str,
-    column_projection: Optional[List[str]] = None,
+    column_projection: Optional[List[Projection]] = None,
 ) -> List[SpecificationWithOptionalFields]:
     """Batch query specs of a specific product.
 
@@ -143,7 +151,8 @@ def __batch_query_specs(
         client: The Spec Client to use for the request.
         product_ids: ID of the product to query specs.
         column_projection: List of columns to be included to the spec dataframe
-                           Every column will be included if column_projection is 'None'.
+
+                           This is an optional parameter. By default all the values will be retrieved.
 
     Returns:
         The list of specs of the specified product.
@@ -170,7 +179,7 @@ def __batch_query_specs(
 def get_specs_dataframe(
     client: SpecClient,
     product_id: str,
-    column_projection: Optional[List[str]] = None,
+    column_projection: Optional[List[Projection]] = None,
     condition_format: Callable[
         [List[Condition]], Dict[str, str]
     ] = __serialize_conditions,
@@ -179,13 +188,27 @@ def get_specs_dataframe(
 
     Args:
         client: The Spec Client to use for the request.
-        product_ids: ID od the product to query specs.
+        product_ids: ID of the product to query specs.
         column_projection: List of columns to be included to the spec dataframe
-                           Every column will be included if column_projection is 'None'.
-        condition_format: Function with which conditions columns and condition values are formatted.
+
+                           This is an optional parameter. By default all the values will be retrieved.
+        condition_format: Function which takes in a list of condition objects and returns
+                          a dictionary of condition and its values. The dictionary keys
+                          should be the condition name and the values should be the condition
+                          value in any format you need. Keys will be used as the dataframe
+                          column header and values will be used as the row cells for the
+                          respective column header.
+
+                          This is an optional parameter. By default column header will be
+                          "condition_conditionName(conditionUnit)" and column value will be
+                          condition value.
 
     Returns:
         The list of specs of the specified product as a dataframe.
+
+    Raises:
+        ApiException: if unable to communicate with the `/nispec` service or if there are
+        invalid arguments.
     """
     specs = __batch_query_specs(
         client=client, product_id=product_id, column_projection=column_projection

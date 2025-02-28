@@ -285,13 +285,15 @@ class TestSpec:
         request = QuerySpecificationsRequest(
             product_ids=[product], projection=[Projection.SPEC_ID, Projection.NAME]
         )
+
         response = client.query_specs(request)
-        assert response.specs
-        assert len(response.specs) == 3
-        specs = [vars(spec) for spec in response.specs]
+        specs = [vars(spec) for spec in response.specs or []]
         spec_columns = {
             key for spec in specs for key in spec.keys() if spec[key] is not None
         }
+
+        assert response.specs
+        assert len(response.specs) == 3
         assert len(spec_columns) == 2
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
@@ -300,27 +302,40 @@ class TestSpec:
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         request = QuerySpecificationsRequest(product_ids=[product])
+
         response = client.query_specs(request)
         specs_df = get_specs_dataframe(client=client, product_id=product)
+        specs_df_columns = specs_df.columns.to_list()
+        excluded_columns = ["conditions", "properties"]
+        expected_spec_columns = []
+        for spec in response.specs or []:
+            expected_spec_columns.extend(
+                [
+                    key
+                    for key, value in vars(spec).items()
+                    if key not in expected_spec_columns
+                    and value is not None
+                    and key not in excluded_columns
+                ]
+            )
+
         assert response.specs
         assert not specs_df.empty
         assert len(specs_df) == 3
-        specs = [vars(spec) for spec in response.specs]
-        specs_columns = list(
-            set(key for spec in specs for key in spec.keys() if spec[key] is not None)
-        )
-        specs_df_columns = specs_df.columns.to_list()
-        assert len(specs_df_columns) >= len(specs_columns)
+        assert len(specs_df_columns) >= len(expected_spec_columns)
+        assert set(expected_spec_columns).issubset(set(specs_df_columns))
 
     def test__get_specs_dataframe_with_column_projection__returns_specs_dataframe_with_projected_columns(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         specs_df = get_specs_dataframe(
-            client=client, product_id=product, column_projection=["PRODUCT_ID", "TYPE"]
+            client=client, product_id=product, column_projection=[Projection.PRODUCT_ID, Projection.TYPE]
         )
+
+        specs_df_columns = specs_df.columns.to_list()
+
         assert not specs_df.empty
         assert len(specs_df) == 3
-        specs_df_columns = specs_df.columns.to_list()
         assert len(specs_df_columns) == 2
         assert "product_id" in specs_df_columns
         assert "type" in specs_df_columns
@@ -329,9 +344,11 @@ class TestSpec:
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         specs_df = get_specs_dataframe(client=client, product_id=product)
+
+        specs_columns = specs_df.columns.to_list()
+
         assert not specs_df.empty
         assert len(specs_df) == 3
-        specs_columns = specs_df.columns.to_list()
         assert "condition_Temperature(C)" in specs_columns
         assert "condition_Supply Voltage(mV)" in specs_columns
 
@@ -348,21 +365,29 @@ class TestSpec:
             }
 
         request = QuerySpecificationsRequest(product_ids=[product])
-        response = client.query_specs(request)
 
+        response = client.query_specs(request)
         specs_df = get_specs_dataframe(
             client=client,
             product_id=product,
             condition_format=condition_formatting,
         )
+        names = [
+            condition.name
+            for spec in response.specs or []
+            for condition in spec.conditions or []
+        ]
+        specs_df_columns = specs_df.columns.to_list()
 
         assert response.specs
         assert not specs_df.empty
         assert len(specs_df) == 3
-        names = [
-            condition.name
-            for spec in response.specs
-            for condition in spec.conditions or []
-        ]
-        specs_df_columns = specs_df.columns.to_list()
         assert set(names).issubset(set(specs_df_columns))
+
+    def test__get_specs_dataframe_with_invalid_product_id__returns_empty_dataframe(
+        self,
+        client: SpecClient,
+    ):
+        specs_df = get_specs_dataframe(client=client, product_id="Invalid Product Id")
+
+        assert specs_df.empty
