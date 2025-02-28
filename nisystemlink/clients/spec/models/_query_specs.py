@@ -173,7 +173,7 @@ class SpecificationWithOptionalFields(SpecificationCreation, SpecificationUpdate
     """When the spec was created and when."""
 
 
-class QuerySpecifications(WithPaging):
+class PagedSpecifications(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
     specs: Optional[List[SpecificationWithOptionalFields]] = None
