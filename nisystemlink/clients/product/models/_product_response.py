@@ -4,13 +4,19 @@ from typing import Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class Product(JsonModel):
-    """Contains information about a product."""
+class ProductResponse(JsonModel):
+    """Contains information about a product, where all the fields are optional.
+
+    - This is because when using query products' projection, user can request for any of the available
+    fields. So, we are making sure that all the available fields are optional.
+
+    - Also while creating a product it is not mandatory that the product should be created with all the fields.
+    """
 
     id: Optional[str]
     """The globally unique id of the product."""
 
-    part_number: str
+    part_number: Optional[str]
     """The part number is the unique identifier of a product within a single org.
 
     Usually the part number refers to a specific revision or version of a given product."""
