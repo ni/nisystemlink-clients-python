@@ -8,8 +8,7 @@ from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
     CreateResultsPartialSuccess,
     Result,
-    StatusObject,
-    StatusType,
+    StandardResultStatus,
     UpdateResultRequest,
 )
 from nisystemlink.clients.testmonitor.models._paged_results import PagedResults
@@ -68,7 +67,7 @@ class TestTestMonitor:
         keywords = ["testing"]
         properties = {"test_property": "yes"}
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         host_name = "Test Host"
         system_id = "Test System"
         serial_number = "Test Serial Number"
@@ -101,7 +100,7 @@ class TestTestMonitor:
         self, client: TestMonitorClient, create_results
     ):
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         results = [
             CreateResultRequest(
                 part_number=uuid.uuid1().hex, program_name=program_name, status=status
@@ -120,7 +119,7 @@ class TestTestMonitor:
         self, client: TestMonitorClient, create_results, unique_identifier
     ):
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         results = [
             CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
@@ -137,7 +136,7 @@ class TestTestMonitor:
         self, client: TestMonitorClient, create_results, unique_identifier
     ):
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         results = [
             CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
@@ -157,7 +156,7 @@ class TestTestMonitor:
         self, client: TestMonitorClient, create_results, unique_identifier
     ):
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         results = [
             CreateResultRequest(
                 part_number=unique_identifier, program_name=program_name, status=status
@@ -178,7 +177,7 @@ class TestTestMonitor:
     ):
         part_number = unique_identifier
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         results = [
             CreateResultRequest(
                 part_number=part_number, program_name=program_name, status=status
@@ -200,7 +199,7 @@ class TestTestMonitor:
     ):
         part_number = unique_identifier
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         results = [
             CreateResultRequest(
                 part_number=part_number, program_name=program_name, status=status
@@ -222,7 +221,7 @@ class TestTestMonitor:
     ):
         part_number = unique_identifier
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
 
         create_response: CreateResultsPartialSuccess = create_results(
             [
@@ -247,7 +246,7 @@ class TestTestMonitor:
         original_keyword = "originalKeyword"
         updated_keyword = "updatedKeyword"
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
@@ -281,7 +280,7 @@ class TestTestMonitor:
         original_keyword = "originalKeyword"
         additional_keyword = "additionalKeyword"
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
@@ -318,7 +317,7 @@ class TestTestMonitor:
         new_key = "newKey"
         original_properties = {"originalKey": "originalValue"}
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         new_properties = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [
@@ -355,7 +354,7 @@ class TestTestMonitor:
         new_key = "newKey"
         original_properties = {original_key: "originalValue"}
         program_name = "Test Program"
-        status = StatusObject(status_type=StatusType.PASSED, status_name="Passed")
+        status = StandardResultStatus.PASSED
         new_properties = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [

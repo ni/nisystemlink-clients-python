@@ -1,5 +1,5 @@
 from ._api_info import Operation, V2Operations, ApiInfo
-from ._result import Result, StatusObject, StatusType
+from ._result import Result, ResultStatus, StatusType, StandardResultStatus
 from ._create_results_partial_success import CreateResultsPartialSuccess
 from ._update_results_partial_success import UpdateResultsPartialSuccess
 from ._delete_results_partial_success import DeleteResultsPartialSuccess

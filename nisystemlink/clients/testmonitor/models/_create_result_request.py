@@ -2,13 +2,13 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.testmonitor.models._result import StatusObject
+from nisystemlink.clients.testmonitor.models._result import ResultStatus
 
 
 class CreateResultRequest(JsonModel):
     """Contains information about a result."""
 
-    status: StatusObject
+    status: ResultStatus
     """The status of the result."""
 
     started_at: Optional[datetime]

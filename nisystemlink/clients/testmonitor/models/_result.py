@@ -22,7 +22,7 @@ class StatusType(str, Enum):
     TIMED_OUT = "TIMED_OUT"
 
 
-class StatusObject(JsonModel):
+class ResultStatus(JsonModel):
     """Contains information about a status object."""
 
     status_type: StatusType
@@ -32,10 +32,23 @@ class StatusObject(JsonModel):
     """The name of the status."""
 
 
+class StandardResultStatus:
+    LOOPING = ResultStatus(status_type=StatusType.LOOPING)
+    SKIPPED = ResultStatus(status_type=StatusType.SKIPPED)
+    DONE = ResultStatus(status_type=StatusType.DONE)
+    PASSED = ResultStatus(status_type=StatusType.PASSED)
+    FAILED = ResultStatus(status_type=StatusType.FAILED)
+    RUNNING = ResultStatus(status_type=StatusType.RUNNING)
+    WAITING = ResultStatus(status_type=StatusType.WAITING)
+    TERMINATED = ResultStatus(status_type=StatusType.TERMINATED)
+    ERRORED = ResultStatus(status_type=StatusType.ERRORED)
+    TIMED_OUT = ResultStatus(status_type=StatusType.TIMED_OUT)
+
+
 class Result(JsonModel):
     """Contains information about a result."""
 
-    status: Optional[StatusObject]
+    status: Optional[ResultStatus]
     """The status of the result."""
 
     started_at: Optional[datetime]

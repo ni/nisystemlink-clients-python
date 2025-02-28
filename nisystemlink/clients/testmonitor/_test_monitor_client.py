@@ -14,7 +14,9 @@ from uplink import Field, Query, retry, returns
 from . import models
 
 
-@retry(when=retry.when.status([429, 503, 504]), stop=retry.stop.after_attempt(5))
+@retry(
+    when=retry.when.status([408, 429, 502, 503, 504]), stop=retry.stop.after_attempt(5)
+)
 class TestMonitorClient(BaseClient):
     # prevent pytest from thinking this is a test class
     __test__ = False

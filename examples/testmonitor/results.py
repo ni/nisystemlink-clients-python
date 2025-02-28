@@ -5,7 +5,8 @@ from nisystemlink.clients.testmonitor.models import (
     QueryResultsRequest,
     QueryResultValuesRequest,
     ResultField,
-    StatusObject,
+    ResultStatus,
+    StandardResultStatus,
     StatusType,
 )
 
@@ -21,7 +22,7 @@ def create_some_results():
             part_number="Example 123 AA",
             program_name=program_name,
             host_name=host_name,
-            status=StatusObject(status_type=StatusType.PASSED),
+            status=StandardResultStatus.PASSED,
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         ),
@@ -29,7 +30,7 @@ def create_some_results():
             part_number="Example 123 AA1",
             program_name=program_name,
             host_name=host_name,
-            status=StatusObject(status_type=StatusType.CUSTOM, status_name="Custom"),
+            status=ResultStatus(status_type=StatusType.CUSTOM, status_name="Custom"),
             keywords=["original keyword"],
             properties={"original property key": "original"},
         ),
@@ -38,11 +39,15 @@ def create_some_results():
     return create_response
 
 
-# Setup the server configuration to point to your instance of SystemLink Enterprise
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
+# Server configuration is not required when used with Systemlink Client or run throught Jupyter on SLE
+server_configuration: HttpConfiguration = None
+
+# # Example of setting up the server configuration to point to your instance of SystemLink Enterprise
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="YourAPIKeyGeneratedFromSystemLink",
+# )
+
 client = TestMonitorClient(configuration=server_configuration)
 
 create_response = create_some_results()
