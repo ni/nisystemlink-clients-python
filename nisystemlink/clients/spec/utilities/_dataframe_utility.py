@@ -104,9 +104,35 @@ def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
     }
 
 
+def __format_specs_columns(specs_df: pd.DataFrame) -> pd.DataFrame:
+    """Format specs column to group conditions and keep properties adn keywords at the end.
+
+    Args:
+        specs_df: Dataframe of specs.
+
+    Returns:
+        Formatted dataframe of specs.
+    """
+    column_headers = specs_df.columns.to_list()
+    formatted_column_headers = [
+        header
+        for header in column_headers
+        if "condition_" not in header
+        and "properties." not in header
+        and "keywords" not in header
+    ]
+    condition_headers = [header for header in column_headers if "condition_" in header]
+    properties_header = [header for header in column_headers if "properties." in header]
+    formatted_column_headers += condition_headers + properties_header + ["keywords"]
+
+    specs_df = specs_df.reindex(columns=formatted_column_headers)
+
+    return specs_df
+
+
 def __serialize_specs(
     specs: List[SpecificationWithOptionalFields],
-    condition_format: Callable[[List[Condition]], Dict],
+    condition_format: Optional[Callable[[List[Condition]], Dict]] = None,
 ) -> pd.DataFrame:
     """Format specs of with respect to the provided condition format.
 
@@ -120,8 +146,12 @@ def __serialize_specs(
                           respective column header.
 
                           This is an optional parameter. By default column header will be
-                          "condition_conditionName(conditionUnit)" and column value will be
-                          condition value.
+                          "condition_conditionName(conditionUnit)".
+                          The column value will be "[min: num; max: num, step: num], num, num"
+                          where data within the '[]' is numeric condition range and other num
+                          values are numeric condition discrete values.
+                          The column value will be "str, str, str" - where str values are the
+                          condition discrete values where the data is stringcontion.
 
     Returns:
         The list of specs of the specified product as a dataframe.
@@ -129,12 +159,17 @@ def __serialize_specs(
     specs_dict = [
         {
             **{key: value for key, value in vars(spec).items() if key != "conditions"},
-            **(condition_format(spec.conditions) if spec.conditions else {}),
+            **(
+                condition_format(spec.conditions)
+                if condition_format and spec.conditions
+                else {}
+            ),
         }
         for spec in specs
     ]
 
     specs_df = pd.json_normalize(specs_dict)
+    specs_df = __format_specs_columns(specs_df=specs_df)
     specs_df.dropna(axis="columns", how="all", inplace=True)
 
     return specs_df
@@ -143,6 +178,7 @@ def __serialize_specs(
 def __batch_query_specs(
     client: SpecClient,
     product_id: str,
+    filter: Optional[str] = None,
     column_projection: Optional[List[SpecificationProjection]] = None,
 ) -> List[SpecificationWithOptionalFields]:
     """Batch query specs of a specific product.
@@ -150,6 +186,7 @@ def __batch_query_specs(
     Args:
         client: The Spec Client to use for the request.
         product_ids: ID of the product to query specs.
+        filter: The specification query filter in Dynamic Linq format.
         column_projection: List of columns to be included to the spec dataframe
 
                            This is an optional parameter. By default all the values will be retrieved.
@@ -158,7 +195,7 @@ def __batch_query_specs(
         The list of specs of the specified product.
     """
     query_request = QuerySpecificationsRequest(
-        product_ids=[product_id], take=1000, projection=column_projection
+        product_ids=[product_id], take=1000, filter=filter, projection=column_projection
     )
     spec_response = client.query_specs(query_request)
     specs = []
@@ -179,6 +216,7 @@ def __batch_query_specs(
 def get_specs_dataframe(
     client: SpecClient,
     product_id: str,
+    filter: Optional[str] = None,
     column_projection: Optional[List[SpecificationProjection]] = None,
     condition_format: Callable[
         [List[Condition]], Dict[str, str]
@@ -189,6 +227,7 @@ def get_specs_dataframe(
     Args:
         client: The Spec Client to use for the request.
         product_ids: ID of the product to query specs.
+        filter: The specification query filter in Dynamic Linq format.
         column_projection: List of columns to be included to the spec dataframe
 
                            This is an optional parameter. By default all the values will be retrieved.
@@ -200,8 +239,12 @@ def get_specs_dataframe(
                           respective column header.
 
                           This is an optional parameter. By default column header will be
-                          "condition_conditionName(conditionUnit)" and column value will be
-                          condition value.
+                          "condition_conditionName(conditionUnit)".
+                          The column value will be "[min: num; max: num, step: num], num, num"
+                          where data within the '[]' is numeric condition range and other num
+                          values are numeric condition discrete values.
+                          The column value will be "str, str, str" - where str values are the
+                          condition discrete values where the data is stringcontion.
 
     Returns:
         The list of specs of the specified product as a dataframe.
@@ -211,8 +254,17 @@ def get_specs_dataframe(
         invalid arguments.
     """
     specs = __batch_query_specs(
-        client=client, product_id=product_id, column_projection=column_projection
+        client=client,
+        product_id=product_id,
+        filter=filter,
+        column_projection=column_projection,
     )
-    specs_df = __serialize_specs(specs=specs, condition_format=condition_format)
+    if (column_projection) and (
+        SpecificationProjection.CONDITION_NAME not in column_projection
+        or SpecificationProjection.CONDITION_VALUES not in column_projection
+    ):
+        specs_df = __serialize_specs(specs=specs)
+    else:
+        specs_df = __serialize_specs(specs=specs, condition_format=condition_format)
 
     return specs_df
