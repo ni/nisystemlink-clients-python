@@ -293,7 +293,7 @@ class TestSpec:
         spec_columns = {
             key for spec in specs for key in spec.keys() if spec[key] is not None
         }
-
+        
         assert response.specs
         assert len(response.specs) == 3
         assert len(spec_columns) == 2
