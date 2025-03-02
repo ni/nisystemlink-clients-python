@@ -9,8 +9,9 @@ from ._create_result_request import CreateResultRequest
 from ._update_result_request import UpdateResultRequest
 from ._query_results_request import (
     QueryResultsRequest,
-    ResultField,
     QueryResultValuesRequest,
+    ResultField,
+    ResultProjection,
 )
 
 # flake8: noqa
