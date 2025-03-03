@@ -7,9 +7,9 @@ from nisystemlink.clients.product._product_client import ProductClient
 from nisystemlink.clients.product.models import (
     CreateProductRequest,
     CreateProductsPartialSuccess,
+    Product,
     ProductField,
     ProductProjection,
-    ProductResponse,
     UpdateProductRequest,
 )
 from nisystemlink.clients.product.models._paged_products import PagedProducts
@@ -38,7 +38,7 @@ def create_update_product_request():
     """Fixture to create a request object for updating products, from a product response"""
 
     def _create_update_product_request(
-        product_response: ProductResponse,
+        product_response: Product,
     ) -> UpdateProductRequest:
         product_data = product_response.dict()
 
@@ -64,7 +64,7 @@ def create_products(client: ProductClient):
 
     yield _create_products
 
-    created_products: List[ProductResponse] = []
+    created_products: List[Product] = []
     for response in responses:
         if response.products:
             created_products = created_products + response.products

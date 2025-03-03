@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class ProductResponse(JsonModel):
+class Product(JsonModel):
     """Contains information about a product, where all the fields are optional.
 
     - This is because when using query products' projection, user can request for any of the available

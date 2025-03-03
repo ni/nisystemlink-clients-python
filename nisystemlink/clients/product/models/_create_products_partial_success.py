@@ -3,11 +3,11 @@ from typing import List, Optional
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.product.models._product_request import CreateProductRequest
-from nisystemlink.clients.product.models._product_response import ProductResponse
+from nisystemlink.clients.product.models._product_response import Product
 
 
 class CreateProductsPartialSuccess(JsonModel):
-    products: List[ProductResponse]
+    products: List[Product]
     """The list of products that were successfully created."""
 
     failed: Optional[List[CreateProductRequest]]

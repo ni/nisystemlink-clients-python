@@ -75,7 +75,7 @@ class ProductClient(BaseClient):
         ...
 
     @get("products/{id}")
-    def get_product(self, id: str) -> models.ProductResponse:
+    def get_product(self, id: str) -> models.Product:
         """Retrieves a single product by id.
 
         Args:
