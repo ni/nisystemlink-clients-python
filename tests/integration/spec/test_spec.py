@@ -327,10 +327,16 @@ class TestSpec:
         specs_dict = []
         for spec in response.specs or []:
             specs_dict.append(
-                {key: value for key, value in vars(spec).items() if key != "conditions"}
+                {
+                    key: value
+                    for key, value in vars(spec).items()
+                    if key not in ["conditions", "properties"]
+                }
             )
         expected_specs_df = pd.json_normalize(specs_dict)
         expected_specs_df.dropna(axis="columns", how="all", inplace=True)
+        keywords_column = expected_specs_df.pop("keywords")
+        expected_specs_df["keywords"] = keywords_column
 
         specs_df = get_specs_dataframe(client=client, product_id=product)
         specs_df = specs_df.drop(
@@ -344,7 +350,7 @@ class TestSpec:
         assert response.specs
         assert not specs_df.empty
         assert len(specs_df) == 3
-        assert specs_df.equals(expected_specs_df)
+        assert specs_df.equals(expected_specs_df), specs_df.compare(expected_specs_df)
 
     def test__get_specs_dataframe_with_column_projection__returns_specs_dataframe_with_projected_columns(
         self, client: SpecClient, create_specs, create_specs_for_query, product
