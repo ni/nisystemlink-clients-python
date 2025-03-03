@@ -220,7 +220,7 @@ SystemsStateService API
 Overview
 ~~~~~~~~
 
-The :class:`.SystemsStateClient` class is the primary entry point of the Product API.
+The :class:`.SystemsStateClient` class is the primary entry point of the Systems State API.
 
 When constructing a :class:`.SystemsStateClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the

@@ -13,7 +13,7 @@ class StateDescriptionListResponse(JsonModel):
 
     error: Optional[ApiError] = None
 
-    totalCount: int
+    total_count: int
     """Gets or sets total count of states."""
 
     states: Optional[List[StateMetaData]] = None
@@ -25,5 +25,5 @@ class StateResponse(StateMetaData, AdditionalStateInformation):
 
     error: Optional[ApiError] = None
 
-    containsExtraOperations: bool
+    contains_extra_operations: bool
     """Gets or sets whether the state contains extra operations in addition to feeds and packages."""

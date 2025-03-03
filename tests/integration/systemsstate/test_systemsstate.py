@@ -1,3 +1,4 @@
+import io
 from typing import List
 
 import pytest
@@ -49,7 +50,7 @@ def create_state(client: SystemsStateClient):
 @pytest.mark.enterprise
 class TestSystemsState:
     def test__create_single_state__state_created_with_right_field_values(
-        self, client: SystemsStateClient, create_state, default_work_space
+        self, create_state, default_work_space
     ):
         name = "Test State"
         description = "Test Description"
@@ -62,7 +63,7 @@ class TestSystemsState:
             workspace=default_work_space,
             architecture=models.Architecture.X64,
             distribution=models.Distribution.ANY,
-            systemImage=system_image,
+            system_image=system_image,
         )
 
         response = create_state(state)
@@ -74,7 +75,7 @@ class TestSystemsState:
         assert response.workspace == default_work_space
 
     def test__create_multiple_states__multiple_creates_succeed(
-        self, client: SystemsStateClient, create_state, default_work_space
+        self, create_state, default_work_space
     ):
         states = [
             models.StateRequest(
@@ -82,7 +83,7 @@ class TestSystemsState:
                 workspace=default_work_space,
                 architecture=models.Architecture.X64,
                 distribution=models.Distribution.ANY,
-                systemImage={"name": "System Image Name", "version": "1.0"},
+                system_image={"name": "System Image Name", "version": "1.0"},
             )
             for i in range(2)
         ]
@@ -100,7 +101,7 @@ class TestSystemsState:
             workspace=default_work_space,
             architecture=models.Architecture.X64,
             distribution=models.Distribution.ANY,
-            systemImage={"name": "System Image Name", "version": "1.0"},
+            system_image={"name": "System Image Name", "version": "1.0"},
         )
         create_state(state)
 
@@ -119,7 +120,7 @@ class TestSystemsState:
                 workspace=default_work_space,
                 architecture=models.Architecture.X64,
                 distribution=models.Distribution.ANY,
-                systemImage={"name": "System Image Name", "version": "1.0"},
+                system_image={"name": "System Image Name", "version": "1.0"},
             )
             for i in range(2)
         ]
@@ -141,7 +142,7 @@ class TestSystemsState:
             workspace=default_work_space,
             architecture=models.Architecture.X64,
             distribution=models.Distribution.ANY,
-            systemImage={"name": "System Image Name", "version": "1.0"},
+            system_image={"name": "System Image Name", "version": "1.0"},
         )
         created_state = create_state(state)
         assert created_state is not None
@@ -156,14 +157,13 @@ class TestSystemsState:
     ):
         original_properties = {"original_key": "original_value"}
         new_properties = {"new_key": "new_value"}
-
         state = models.StateRequest(
             name="Test Update Properties",
             workspace=default_work_space,
             properties=original_properties,
             architecture=models.Architecture.X64,
             distribution=models.Distribution.ANY,
-            systemImage={"name": "System Image Name", "version": "1.0"},
+            system_image={"name": "System Image Name", "version": "1.0"},
         )
         created_state = create_state(state)
         assert created_state is not None
@@ -181,14 +181,13 @@ class TestSystemsState:
             workspace=default_work_space,
             architecture=models.Architecture.X64,
             distribution=models.Distribution.ANY,
-            systemImage={"name": "System Image Name", "version": "1.0"},
+            system_image={"name": "System Image Name", "version": "1.0"},
         )
         created_state = create_state(state)
         assert created_state is not None
 
-        test_content = "Test content"
+        test_content = io.BytesIO(b"Test content")
         change_description = "Test change"
-
         updated_state = client.replace_state_content(
             created_state.id, change_description, test_content
         )
@@ -205,7 +204,7 @@ class TestSystemsState:
             workspace=default_work_space,
             architecture=models.Architecture.X64,
             distribution=models.Distribution.ANY,
-            systemImage={"name": "System Image Name", "version": "1.0"},
+            system_image={"name": "System Image Name", "version": "1.0"},
         )
         created_state = create_state(state)
         assert created_state is not None
@@ -224,14 +223,14 @@ class TestSystemsState:
     ):
         name = "Test Import"
         description = "Test Import Description"
-        test_file = "Test state file content"
+        test_file = io.BytesIO(b"Test state file content")
         properties = "{}"  # Empty JSON string for properties
 
         imported_state = client.import_state(
             name=name,
             description=description,
-            distribution=models.Distribution.ANY.value,
-            architecture=models.Architecture.X64.value,
+            distribution=models.Distribution.ANY,
+            architecture=models.Architecture.X64,
             properties=properties,
             workspace=default_work_space,
             file=test_file,

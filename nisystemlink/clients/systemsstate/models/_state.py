@@ -40,10 +40,10 @@ class StateMetaData(State):
     id: Optional[str] = None
     """Gets or sets the ID of the state."""
 
-    createdTimestamp: datetime
+    created_timestamp: datetime
     """Gets or sets ISO-8601 formatted timestamp specifying the state creation date."""
 
-    lastUpdatedTimestamp: datetime
+    last_updated_timestamp: datetime
     """Gets or sets ISO-8601 formatted timestamp specifying the last date that the state was updated."""
 
 
@@ -53,7 +53,7 @@ class AdditionalStateInformation(JsonModel):
     feeds: Optional[List[Feed]] = None
     """List of all feeds associated with the particular state"""
 
-    systemImage: SystemImage
+    system_image: SystemImage
     """Object defining a system image containing the name and version"""
 
     packages: Optional[List[Package]] = None

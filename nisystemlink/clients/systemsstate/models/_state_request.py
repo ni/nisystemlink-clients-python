@@ -27,7 +27,7 @@ class ExportStateRequest(JsonModel):
     """
 
     state: StateIDVersionPair
-    """Contains the stateID and stateVersion"""
+    """Contains the stateID and state_version"""
 
 
 class ExportStateFromSystemRequest(JsonModel):

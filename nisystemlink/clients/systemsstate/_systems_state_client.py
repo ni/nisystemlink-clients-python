@@ -1,18 +1,18 @@
 """Implementation of SystemsStateService Client"""
 
-from typing import Dict, List, Optional
+from io import BytesIO
+from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, patch, post
-from uplink import Body, Part, Path, Query
+from uplink import Body, multipart, Part, Path, Query
+
 
 from . import models
 
 
 class SystemsStateClient(BaseClient):
-    # prevent pytest from thinking this is a test class
-    __test__ = False
 
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
@@ -31,16 +31,6 @@ class SystemsStateClient(BaseClient):
 
         super().__init__(configuration, base_path="/nisystemsstate/v1/")
 
-    @get(
-        "states",
-        args=[
-            Query("Skip"),
-            Query("Take"),
-            Query("Workspace"),
-            Query("Architecture"),
-            Query("Distribution"),
-        ],
-    )
     def get_states(
         self,
         skip: Optional[int] = None,
@@ -65,10 +55,44 @@ class SystemsStateClient(BaseClient):
             ApiException : if unable to communicate with the ``/nisystemsstate`` Service
                 or provided an invalid argument.
         """
-        ...
+        """Uplink does not support enum serializing into str
+
+        The below inner function is the uplink executable and the outer one acts as a wrapper function,
+        which is exposed to the end user
+        """
+
+        @get(
+            "states",
+            args=[
+                Query("Skip"),
+                Query("Take"),
+                Query("Workspace"),
+                Query("Architecture"),
+                Query("Distribution"),
+            ],
+        )
+        def __get_states(
+            self,
+            skip: Optional[int] = None,
+            take: Optional[int] = None,
+            workspace: Optional[str] = None,
+            architecture: Optional[str] = None,
+            distribution: Optional[str] = None,
+        ) -> models.StateDescriptionListResponse:
+            """Uplink implementation"""
+            ...
+
+        return __get_states(
+            self,
+            skip=skip,
+            take=take,
+            workspace=workspace,
+            architecture=architecture.value if architecture is not None else None,
+            distribution=distribution.value if distribution is not None else None,
+        )
 
     @post("states", args=[Body])
-    def create_state(self, new_state: models.StateRequest) -> models.StateResponse:
+    def create_state(self, state: models.StateRequest) -> models.StateResponse:
         """Create state
 
         Args:
@@ -84,11 +108,11 @@ class SystemsStateClient(BaseClient):
         ...
 
     @post("export-state", args=[Body])
-    def export_state(self, export_state_request: models.ExportStateRequest) -> str:
+    def export_state(self, query: models.ExportStateRequest) -> str:
         """Generate state export
 
         Args:
-            `export_state_request`: Contains identifying information on the state to export.
+            `query`: Contains identifying information on the state to export.
 
         Returns:
             The exported state as a file.
@@ -118,11 +142,11 @@ class SystemsStateClient(BaseClient):
         ...
 
     @get("states/{stateId}", args=[Path("stateId")])
-    def get_state(self, state_id: str) -> models.StateResponse:
+    def get_state(self, id: str) -> models.StateResponse:
         """Get state based on the give stateId parameter
 
         Args:
-            `state_id`: The respective id of the state
+            `id`: The respective id of the state
 
         Returns:
             The state of the given id
@@ -135,12 +159,12 @@ class SystemsStateClient(BaseClient):
 
     @patch("states/{stateId}", args=[Path("stateId"), Body])
     def update_state(
-        self, state_id: str, patch_updates: Dict[str, str]
+        self, id: str, patch_updates: Dict[str, Any]
     ) -> models.StateResponse:
         """Update an existing state
 
         Args:
-            `state_id`: The respective id of the state to be updated
+            `id`: The respective id of the state to be updated
             `patch_updates`: A dictionary containing the properties to update, where
             keys are property names (strings) and values are the updated values.
 
@@ -154,11 +178,11 @@ class SystemsStateClient(BaseClient):
         ...
 
     @delete("states/{stateId}", args=[Path("stateId")])
-    def delete_state(self, state_id: str) -> None:
+    def delete_state(self, id: str) -> None:
         """Deleting an existing state
 
         Args:
-            `state_id`: The respective id of the state to be deleted
+            `id`: The respective id of the state to be deleted
 
         Returns:
             None
@@ -174,11 +198,11 @@ class SystemsStateClient(BaseClient):
         args=[
             Part(name="Id", type=str),
             Part(name="ChangeDescription", type=str),
-            Part(name="File", type=str),
+            Part(name="File", type=BytesIO),
         ],
     )
     def replace_state_content(
-        self, id: str, change_description: str, file: str
+        self, id: str, change_description: str, file: BytesIO
     ) -> models.StateResponse:
         """Replace state content
 
@@ -196,27 +220,15 @@ class SystemsStateClient(BaseClient):
         """
         ...
 
-    @post(
-        "import-state",
-        args=[
-            Part(name="Name", type=str),
-            Part(name="Description", type=str),
-            Part(name="Distribution", type=str),
-            Part(name="Architecture", type=str),
-            Part(name="Properties", type=str),
-            Part(name="Workspace", type=str),
-            Part(name="File", type=str),
-        ],
-    )
     def import_state(
         self,
         name: str,
         description: str,
-        distribution: str,
-        architecture: str,
+        distribution: models.Distribution,
+        architecture: models.Architecture,
         properties: str,
         workspace: str,
-        file: str,
+        file: BytesIO,
     ) -> models.StateResponse:
         """Import state
 
@@ -237,14 +249,54 @@ class SystemsStateClient(BaseClient):
             ApiException : if unable to communicate with the ``/nisystemsstate`` Service
                 or provided an invalid argument.
         """
-        ...
+        """Uplink does not support enum serializing into str
+
+        The below inner function is the uplink executable and the outer one acts as a wrapper function,
+        which is exposed to the end user
+        """
+
+        @post(
+            "import-state",
+            args=[
+                Part(name="Name", type=str),
+                Part(name="Description", type=str),
+                Part(name="Distribution", type=str),
+                Part(name="Architecture", type=str),
+                Part(name="Properties", type=str),
+                Part(name="Workspace", type=str),
+                Part(name="File", type=BytesIO),
+            ],
+        )
+        def __import_state(
+            self,
+            name: str,
+            description: str,
+            distribution: str,
+            architecture: str,
+            properties: str,
+            workspace: str,
+            file: BytesIO,
+        ) -> models.StateResponse:
+            """Uplink implementation"""
+            ...
+
+        return __import_state(
+            self,
+            name=name,
+            description=description,
+            distribution=distribution.value if distribution is not None else None,
+            architecture=architecture.value if architecture is not None else None,
+            properties=properties,
+            workspace=workspace,
+            file=file,
+        )
 
     @post("delete-states", args=[Body])
-    def delete_states(self, states_id_list: List[str]) -> None:
+    def delete_states(self, ids: List[str]) -> None:
         """Delete multiple states
 
         Args:
-            `states_id_list`: A list of state ids for the states that are to be deleted.
+            `ids`: A list of state ids for the states that are to be deleted.
 
         Returns:
             None.

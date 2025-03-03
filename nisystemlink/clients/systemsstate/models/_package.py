@@ -12,7 +12,7 @@ class Package(JsonModel):
     version: Optional[str] = None
     """Gets or sets version of the package."""
 
-    installRecommends: bool
+    install_recommends: bool
     """Gets or sets a boolean variable whose value controls the installation of the recommended packages.
 
     This property is available starting with version 2 of the getStates and createOrUpdateStates operations.
