@@ -285,13 +285,15 @@ class TestSpec:
             product_ids=[product],
             projection=[SpecificationProjection.SPEC_ID, SpecificationProjection.NAME],
         )
+
         response = client.query_specs(request)
-        assert response.specs
-        assert len(response.specs) == 3
-        specs = [vars(spec) for spec in response.specs]
+        specs = [vars(spec) for spec in response.specs or []]
         spec_columns = {
             key for spec in specs for key in spec.keys() if spec[key] is not None
         }
+
+        assert response.specs
+        assert len(response.specs) == 3
         assert len(spec_columns) == 2
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
