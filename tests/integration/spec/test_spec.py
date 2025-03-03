@@ -18,7 +18,7 @@ from nisystemlink.clients.spec.models import (
     SpecificationProjection,
     SpecificationType,
     UpdateSpecificationsRequest,
-    UpdateSpecificationsRequestObject
+    UpdateSpecificationsRequestObject,
 )
 
 
