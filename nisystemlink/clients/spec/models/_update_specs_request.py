@@ -35,6 +35,12 @@ class UpdateSpecificationsRequestObject(SpecificationDefinition):
     type: SpecificationType
     """Type of the specification."""
 
+    workspace: str
+    """Id of the workspace to which the specification will be associated.
+
+    Default workspace will be taken if the value is not given.
+    """
+
 
 class UpdateSpecificationsRequest(JsonModel):
 
