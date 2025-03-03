@@ -5,6 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 from nisystemlink.clients.spec.models._specification import (
     Condition,
+    Specification,
     SpecificationCreation,
     SpecificationLimit,
     SpecificationType,
@@ -109,74 +110,14 @@ class QuerySpecificationsRequest(JsonModel):
     """
 
 
-class SpecificationWithOptionalFields(SpecificationCreation, SpecificationUpdated):
-    """A full specification with update and create history with only optional fields"""
-
-    id: Optional[str] = None
-    """The global Id of the specification."""
-
-    version: Optional[int] = None
-    """
-    Current version of the specification.
-
-    When an update is applied, the version is automatically incremented.
-    """
-
-    product_id: Optional[str] = None
-    """Id of the product to which the specification will be associated."""
-
-    spec_id: Optional[str] = None
-    """User provided value using which the specification will be identified.
-
-    This should be unique for a product and workspace combination.
-    """
-
-    workspace: Optional[str] = None
-    """Id of the workspace to which the specification will be associated.
-
-    Default workspace will be taken if the value is not given.
-    """
-
-    name: Optional[str] = None
-    """Name of the specification."""
-
-    category: Optional[str] = None
-    """Category of the specification."""
-
-    type: Optional[SpecificationType] = None
-    """Type of the specification."""
-
-    symbol: Optional[str] = None
-    """Short form identifier of the specification."""
-
-    block: Optional[str] = None
-    """Block name of the specification.
-
-    Typically a block is one of the subsystems of the overall product being specified.
-    """
-
-    limit: Optional[SpecificationLimit] = None
-    """The limits for this spec."""
-
-    unit: Optional[str] = None
-    """Unit of the specification."""
-
-    conditions: Optional[List[Condition]] = None
-    """Conditions associated with the specification."""
-
-    keywords: Optional[List[str]] = None
-    """Keywords or phrases associated with the specification."""
-
-    properties: Optional[Dict[str, str]] = None
-    """Additional properties associated with the specification."""
-
-    """When the spec was created and when."""
+class QuerySpecificationResponse(Specification, SpecificationCreation, SpecificationUpdated):
+    """A full specification with update and create history."""
 
 
 class PagedSpecifications(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
-    specs: Optional[List[SpecificationWithOptionalFields]] = None
+    specs: Optional[List[QuerySpecificationResponse]] = None
     """List of queried specifications.
 
     An empty list indicates that there are no specifications meeting the criteria provided in the

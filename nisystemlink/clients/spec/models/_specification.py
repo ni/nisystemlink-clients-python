@@ -41,10 +41,10 @@ class SpecificationType(Enum):
 
 
 class SpecificationUserManaged(JsonModel):
-    product_id: str
+    product_id: Optional[str] = None
     """Id of the product to which the specification will be associated."""
 
-    spec_id: str
+    spec_id: Optional[str] = None
     """User provided value using which the specification will be identified.
 
     This should be unique for a product and workspace combination.
@@ -58,10 +58,10 @@ class SpecificationUserManaged(JsonModel):
 
 
 class SpecificationServerManaged(JsonModel):
-    id: str
+    id: Optional[str] = None
     """The global Id of the specification."""
 
-    version: int
+    version: Optional[int] = None
     """
     Current version of the specification.
 
@@ -77,7 +77,7 @@ class SpecificationDefinition(SpecificationUserManaged):
     category: Optional[str] = None
     """Category of the specification."""
 
-    type: SpecificationType
+    type: Optional[SpecificationType] = None
     """Type of the specification."""
 
     symbol: Optional[str] = None
