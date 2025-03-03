@@ -2,6 +2,9 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.spec.models._base_specification_response import (
+    BaseSpecificationResponse,
+)
 from nisystemlink.clients.spec.models._specification import (
     SpecificationCreation,
     SpecificationDefinition,
@@ -30,27 +33,8 @@ class CreateSpecificationsRequest(JsonModel):
     """List of specifications to be created."""
 
 
-class CreatedSpecification(SpecificationCreation):
+class CreatedSpecification(BaseSpecificationResponse, SpecificationCreation):
     """A specification successfully created on the server."""
-
-    id: str
-    """The global Id of the specification."""
-
-    version: int
-    """
-    Current version of the specification.
-
-    When an update is applied, the version is automatically incremented.
-    """
-
-    product_id: str
-    """Id of the product to which the specification will be associated."""
-
-    spec_id: str
-    """User provided value using which the specification will be identified.
-
-    This should be unique for a product and workspace combination.
-    """
 
     workspace: Optional[str] = None
     """Id of the workspace to which the specification will be associated.

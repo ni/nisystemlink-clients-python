@@ -2,14 +2,17 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.spec.models._base_specification_response import (
+    BaseSpecificationResponse,
+)
 from nisystemlink.clients.spec.models._specification import (
-    Specification,
+    SpecificationDefinition,
     SpecificationType,
     SpecificationUpdated,
 )
 
 
-class UpdateSpecificationsRequestObject(Specification):
+class UpdateSpecificationsRequestObject(SpecificationDefinition):
     id: str
     """The global Id of the specification."""
 
@@ -39,27 +42,8 @@ class UpdateSpecificationsRequest(JsonModel):
     """List of specifications to be updated."""
 
 
-class UpdatedSpecification(SpecificationUpdated):
+class UpdatedSpecification(BaseSpecificationResponse, SpecificationUpdated):
     """A specification that was updated on the server."""
-
-    id: str
-    """The global Id of the specification."""
-
-    version: int
-    """
-    Current version of the specification.
-
-    When an update is applied, the version is automatically incremented.
-    """
-
-    product_id: str
-    """Id of the product to which the specification will be associated."""
-
-    spec_id: str
-    """User provided value using which the specification will be identified.
-
-    This should be unique for a product and workspace combination.
-    """
 
     workspace: str
     """Id of the workspace to which the specification will be associated.
