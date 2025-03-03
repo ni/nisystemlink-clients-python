@@ -18,6 +18,7 @@ from nisystemlink.clients.spec.models import (
     SpecificationLimit,
     SpecificationProjection,
     SpecificationType,
+    StringConditionValue,
     UpdateSpecificationsRequest,
     UpdateSpecificationsRequestObject,
 )
@@ -70,6 +71,24 @@ def create_specs_for_query(create_specs, product):
             name="output voltage",
             limit=SpecificationLimit(min=1.2, max=1.5),
             unit="mV",
+            conditions=[
+                Condition(
+                    name="Temperature",
+                    value=NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="C",
+                    ),
+                ),
+                Condition(
+                    name="Package",
+                    value=StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["D", "QFIN"],
+                    ),
+                ),
+            ],
         ),
         CreateSpecificationsRequestObject(
             product_id=product,
@@ -310,18 +329,22 @@ class TestSpec:
             specs_dict.append(
                 {key: value for key, value in vars(spec).items() if key != "conditions"}
             )
-        specs_response_df = pd.json_normalize(specs_dict)
-        specs_response_df.dropna(axis="columns", how="all", inplace=True)
+        expected_specs_df = pd.json_normalize(specs_dict)
+        expected_specs_df.dropna(axis="columns", how="all", inplace=True)
 
         specs_df = get_specs_dataframe(client=client, product_id=product)
         specs_df = specs_df.drop(
-            columns=["condition_Temperature(C)", "condition_Supply Voltage(mV)"]
+            columns=[
+                "condition_Temperature(C)",
+                "condition_Supply Voltage(mV)",
+                "condition_Package",
+            ]
         )
 
         assert response.specs
         assert not specs_df.empty
         assert len(specs_df) == 3
-        assert specs_response_df.equals(specs_df)
+        assert specs_df.equals(expected_specs_df)
 
     def test__get_specs_dataframe_with_column_projection__returns_specs_dataframe_with_projected_columns(
         self, client: SpecClient, create_specs, create_specs_for_query, product
@@ -337,8 +360,8 @@ class TestSpec:
         specs_dict = []
         for spec in response.specs or []:
             specs_dict.append(vars(spec))
-        specs_response_df = pd.json_normalize(specs_dict)
-        specs_response_df.dropna(axis="columns", how="all", inplace=True)
+        expected_specs_df = pd.json_normalize(specs_dict)
+        expected_specs_df.dropna(axis="columns", how="all", inplace=True)
 
         specs_df = get_specs_dataframe(
             client=client,
@@ -353,28 +376,40 @@ class TestSpec:
         assert not specs_df.empty
         assert len(specs_df) == 3
         assert len(specs_df_columns) == 2
-        assert specs_response_df.equals(specs_df)
+        assert specs_df.equals(expected_specs_df)
 
     def test__get_specs_dataframe_without_condition_formatting__returns_specs_dataframe_with_default_condition_format(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
-        specs_conditions = {
-            "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+        expected_specs_conditions = {
+            "condition_Temperature(C)": [
+                "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                "[min: -25.0; max: 85.0; step: 20.0]",
+            ],
+            "condition_Package": "D, QFIN",
             "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
         }
 
         specs_df = get_specs_dataframe(client=client, product_id=product)
-        specs__df_values = specs_df.to_dict()
+        specs_df_values = specs_df.to_dict()
 
         assert not specs_df.empty
         assert len(specs_df) == 3
         assert (
-            specs__df_values["condition_Temperature(C)"][1]
-            == specs_conditions["condition_Temperature(C)"]
+            specs_df_values["condition_Temperature(C)"][0]
+            == expected_specs_conditions["condition_Temperature(C)"][0]
         )
         assert (
-            specs__df_values["condition_Supply Voltage(mV)"][1]
-            == specs_conditions["condition_Supply Voltage(mV)"]
+            specs_df_values["condition_Temperature(C)"][1]
+            == expected_specs_conditions["condition_Temperature(C)"][1]
+        )
+        assert (
+            specs_df_values["condition_Package"][0]
+            == expected_specs_conditions["condition_Package"]
+        )
+        assert (
+            specs_df_values["condition_Supply Voltage(mV)"][1]
+            == expected_specs_conditions["condition_Supply Voltage(mV)"]
         )
 
     def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
@@ -386,13 +421,16 @@ class TestSpec:
     ):
         def condition_formatting(conditions: List[Condition]) -> Dict[str, str]:
             return {
-                str(condition.name): str(condition.value.unit)
+                str(condition.name): str(condition.value.discrete)
                 for condition in conditions
-                if isinstance(condition.value, NumericConditionValue)
-                and condition.value.unit
+                if condition.value and condition.value.discrete
             }
 
-        specs_conditions = {"Temperature": "C", "Supply Voltage": "mV"}
+        expected_specs_conditions = {
+            "Temperature": "[1.3, 1.5, 1.7]",
+            "Package": "['D', 'QFIN']",
+            "Supply Voltage": "[1.3, 1.5, 1.7]",
+        }
 
         specs_df = get_specs_dataframe(
             client=client,
@@ -402,8 +440,11 @@ class TestSpec:
 
         assert not specs_df.empty
         assert len(specs_df) == 3
-        assert specs_df["Temperature"][1] == specs_conditions["Temperature"]
-        assert specs_df["Supply Voltage"][1] == specs_conditions["Supply Voltage"]
+        assert specs_df["Temperature"][0] == expected_specs_conditions["Temperature"]
+        assert specs_df["Package"][0] == expected_specs_conditions["Package"]
+        assert (
+            specs_df["Supply Voltage"][1] == expected_specs_conditions["Supply Voltage"]
+        )
 
     def test__get_specs_dataframe_with_invalid_product_id__returns_empty_dataframe(
         self,
@@ -420,8 +461,12 @@ class TestSpec:
         create_specs_for_query,
         product,
     ):
-        specs_conditions = {
-            "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+        expected_specs_conditions = {
+            "condition_Temperature(C)": [
+                "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                "[min: -25.0; max: 85.0; step: 20.0]",
+            ],
+            "condition_Package": "D, QFIN",
             "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
         }
 
@@ -433,17 +478,25 @@ class TestSpec:
                 SpecificationProjection.CONDITION_VALUES,
             ],
         )
-        specs__df_values = specs_df.to_dict()
+        specs_df_values = specs_df.to_dict()
 
         assert not specs_df.empty
         assert len(specs_df) == 3
         assert (
-            specs__df_values["condition_Temperature(C)"][1]
-            == specs_conditions["condition_Temperature(C)"]
+            specs_df_values["condition_Temperature(C)"][0]
+            == expected_specs_conditions["condition_Temperature(C)"][0]
         )
         assert (
-            specs__df_values["condition_Supply Voltage(mV)"][1]
-            == specs_conditions["condition_Supply Voltage(mV)"]
+            specs_df_values["condition_Temperature(C)"][1]
+            == expected_specs_conditions["condition_Temperature(C)"][1]
+        )
+        assert (
+            specs_df_values["condition_Package"][0]
+            == expected_specs_conditions["condition_Package"]
+        )
+        assert (
+            specs_df_values["condition_Supply Voltage(mV)"][1]
+            == expected_specs_conditions["condition_Supply Voltage(mV)"]
         )
 
     def test__get_specs_dataframe_with_only_condition_values__returns_empty_datafarme(

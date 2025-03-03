@@ -126,7 +126,11 @@ def __format_specs_columns(specs_df: pd.DataFrame) -> pd.DataFrame:
     properties_headers = [
         header for header in column_headers if "properties." in header
     ]
-    formatted_column_headers += condition_headers + properties_headers + ["keywords"]
+    formatted_column_headers += (
+        condition_headers
+        + properties_headers
+        + (["keywords"] if "keywords" in column_headers else [])
+    )
 
     specs_df = specs_df.reindex(columns=formatted_column_headers)
 
@@ -146,12 +150,13 @@ def __serialize_specs(
                           should be the condition name and the values should be the condition
                           value in any format you need. Keys will be used as the dataframe
                           column header and values will be used as the row cells for the
-                          respective column header.
+                          respective column header. For all the condition columns to be grouped
+                          together in the dataframe, the dictionary key should have the prefix "condition_".
                           This is an optional parameter. By default column header will be
-                          "condition_conditionName(conditionUnit)".
-                          The column value will be "[min: num; max: num, step: num],
-                          [min: num; max: num, step: num], num, num" where data within the '[]' is
-                          numeric condition range and other num values are numeric condition discrete values.
+                          "condition_<conditionName>(<conditionUnit>)".
+                          The column value will be "[min: num; max: num, step: num], num, num"
+                          where data within the '[]' is numeric condition range and other num
+                          values are numeric condition discrete values.
                           The column value will be "str, str, str" - where str values are the
                           condition discrete values for a string condition.
 
@@ -236,12 +241,13 @@ def get_specs_dataframe(
                           should be the condition name and the values should be the condition
                           value in any format you need. Keys will be used as the dataframe
                           column header and values will be used as the row cells for the
-                          respective column header.
+                          respective column header. For all the condition columns to be grouped
+                          together in the dataframe, the dictionary key should have the prefix "condition_".
                           This is an optional parameter. By default column header will be
-                          "condition_conditionName(conditionUnit)".
-                          The column value will be "[min: num; max: num, step: num],
-                          [min: num; max: num, step: num], num, num" where data within the '[]' is
-                          numeric condition range and other num values are numeric condition discrete values.
+                          "condition_<conditionName>(<conditionUnit>)".
+                          The column value will be "[min: num; max: num, step: num], num, num"
+                          where data within the '[]' is numeric condition range and other num
+                          values are numeric condition discrete values.
                           The column value will be "str, str, str" - where str values are the
                           condition discrete values for a string condition.
 
