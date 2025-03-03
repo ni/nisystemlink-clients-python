@@ -446,7 +446,7 @@ class TestSpec:
             == specs_conditions["condition_Supply Voltage(mV)"]
         )
 
-    def test__get_specs_dataframe_without_condition_name_or_values__returns_specs_datafarme_without_conditions(
+    def test__get_specs_dataframe_with_only_condition_values__returns_empty_datafarme(
         self,
         client: SpecClient,
         create_specs,

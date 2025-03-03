@@ -115,15 +115,12 @@ def __format_specs_columns(specs_df: pd.DataFrame) -> pd.DataFrame:
     """
     column_headers = specs_df.columns.to_list()
     formatted_column_headers = [
-        header
-        for header in column_headers
-        if "condition_" not in header
-        and "properties." not in header
-        and "keywords" not in header
+        header for header in column_headers
+        if not any(substring in header for substring in ["condition_", "properties.", "keywords"])
     ]
     condition_headers = [header for header in column_headers if "condition_" in header]
-    properties_header = [header for header in column_headers if "properties." in header]
-    formatted_column_headers += condition_headers + properties_header + ["keywords"]
+    properties_headers = [header for header in column_headers if "properties." in header]
+    formatted_column_headers += condition_headers + properties_headers + ["keywords"]
 
     specs_df = specs_df.reindex(columns=formatted_column_headers)
 
@@ -134,7 +131,7 @@ def __serialize_specs(
     specs: List[SpecificationWithOptionalFields],
     condition_format: Optional[Callable[[List[Condition]], Dict]] = None,
 ) -> pd.DataFrame:
-    """Format specs of with respect to the provided condition format.
+    """Format specs with respect to the provided condition format.
 
     Args:
         specs: List of specs of the specified product.
@@ -255,12 +252,10 @@ def get_specs_dataframe(
         filter=filter,
         column_projection=column_projection,
     )
-    if column_projection and (
+    should_not_format_condition = column_projection and (
         SpecificationProjection.CONDITION_NAME not in column_projection
         or SpecificationProjection.CONDITION_VALUES not in column_projection
-    ):
-        specs_df = __serialize_specs(specs=specs)
-    else:
-        specs_df = __serialize_specs(specs=specs, condition_format=condition_format)
+    )
+    specs_df = __serialize_specs(specs=specs, condition_format=None if should_not_format_condition else condition_format)
 
     return specs_df
