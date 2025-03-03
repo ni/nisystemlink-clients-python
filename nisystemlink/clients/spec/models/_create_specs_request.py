@@ -5,9 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.spec.models._specification import (
     SpecificationCreation,
     SpecificationDefinition,
-    SpecificationServerManaged,
     SpecificationType,
-    SpecificationUserManaged,
 )
 
 
@@ -32,9 +30,7 @@ class CreateSpecificationsRequest(JsonModel):
     """List of specifications to be created."""
 
 
-class CreatedSpecification(
-    SpecificationServerManaged, SpecificationUserManaged, SpecificationCreation
-):
+class CreatedSpecification(SpecificationCreation):
     """A specification successfully created on the server."""
 
     id: str
@@ -54,6 +50,12 @@ class CreatedSpecification(
     """User provided value using which the specification will be identified.
 
     This should be unique for a product and workspace combination.
+    """
+
+    workspace: Optional[str] = None
+    """Id of the workspace to which the specification will be associated.
+
+    Default workspace will be taken if the value is not given.
     """
 
 
