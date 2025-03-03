@@ -293,7 +293,7 @@ class TestSpec:
         spec_columns = {
             key for spec in specs for key in spec.keys() if spec[key] is not None
         }
-        
+
         assert response.specs
         assert len(response.specs) == 3
         assert len(spec_columns) == 2
@@ -410,5 +410,53 @@ class TestSpec:
         client: SpecClient,
     ):
         specs_df = get_specs_dataframe(client=client, product_id="Invalid Product Id")
+
+        assert specs_df.empty
+
+    def test__get_specs_dataframe_with_condition_name_and_values__returns_specs_dataframe_with_conditions(
+        self,
+        client: SpecClient,
+        create_specs,
+        create_specs_for_query,
+        product,
+    ):
+        specs_conditions = {
+            "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+            "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
+        }
+
+        specs_df = get_specs_dataframe(
+            client=client,
+            product_id=product,
+            column_projection=[
+                SpecificationProjection.CONDITION_NAME,
+                SpecificationProjection.CONDITION_VALUES,
+            ],
+        )
+        specs__df_values = specs_df.to_dict()
+
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        assert (
+            specs__df_values["condition_Temperature(C)"][1]
+            == specs_conditions["condition_Temperature(C)"]
+        )
+        assert (
+            specs__df_values["condition_Supply Voltage(mV)"][1]
+            == specs_conditions["condition_Supply Voltage(mV)"]
+        )
+
+    def test__get_specs_dataframe_without_condition_name_or_values__returns_specs_datafarme_without_conditions(
+        self,
+        client: SpecClient,
+        create_specs,
+        create_specs_for_query,
+        product,
+    ):
+        specs_df = get_specs_dataframe(
+            client=client,
+            product_id=product,
+            column_projection=[SpecificationProjection.CONDITION_VALUES],
+        )
 
         assert specs_df.empty

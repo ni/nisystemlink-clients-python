@@ -144,14 +144,13 @@ def __serialize_specs(
                           value in any format you need. Keys will be used as the dataframe
                           column header and values will be used as the row cells for the
                           respective column header.
-
                           This is an optional parameter. By default column header will be
                           "condition_conditionName(conditionUnit)".
-                          The column value will be "[min: num; max: num, step: num], num, num"
-                          where data within the '[]' is numeric condition range and other num
-                          values are numeric condition discrete values.
+                          The column value will be "[min: num; max: num, step: num],
+                          [min: num; max: num, step: num], num, num" where data within the '[]' is
+                          numeric condition range and other num values are numeric condition discrete values.
                           The column value will be "str, str, str" - where str values are the
-                          condition discrete values where the data is stringcontion.
+                          condition discrete values for a string condition.
 
     Returns:
         The list of specs of the specified product as a dataframe.
@@ -187,8 +186,7 @@ def __batch_query_specs(
         client: The Spec Client to use for the request.
         product_ids: ID of the product to query specs.
         filter: The specification query filter in Dynamic Linq format.
-        column_projection: List of columns to be included to the spec dataframe
-
+        column_projection: List of columns to be included to the spec dataframe.
                            This is an optional parameter. By default all the values will be retrieved.
 
     Returns:
@@ -228,8 +226,7 @@ def get_specs_dataframe(
         client: The Spec Client to use for the request.
         product_ids: ID of the product to query specs.
         filter: The specification query filter in Dynamic Linq format.
-        column_projection: List of columns to be included to the spec dataframe
-
+        column_projection: List of columns to be included to the spec dataframe.
                            This is an optional parameter. By default all the values will be retrieved.
         condition_format: Function which takes in a list of condition objects and returns
                           a dictionary of condition and its values. The dictionary keys
@@ -237,14 +234,13 @@ def get_specs_dataframe(
                           value in any format you need. Keys will be used as the dataframe
                           column header and values will be used as the row cells for the
                           respective column header.
-
                           This is an optional parameter. By default column header will be
                           "condition_conditionName(conditionUnit)".
-                          The column value will be "[min: num; max: num, step: num], num, num"
-                          where data within the '[]' is numeric condition range and other num
-                          values are numeric condition discrete values.
+                          The column value will be "[min: num; max: num, step: num],
+                          [min: num; max: num, step: num], num, num" where data within the '[]' is
+                          numeric condition range and other num values are numeric condition discrete values.
                           The column value will be "str, str, str" - where str values are the
-                          condition discrete values where the data is stringcontion.
+                          condition discrete values for a string condition.
 
     Returns:
         The list of specs of the specified product as a dataframe.
@@ -259,7 +255,7 @@ def get_specs_dataframe(
         filter=filter,
         column_projection=column_projection,
     )
-    if (column_projection) and (
+    if column_projection and (
         SpecificationProjection.CONDITION_NAME not in column_projection
         or SpecificationProjection.CONDITION_VALUES not in column_projection
     ):
