@@ -77,9 +77,6 @@ class SpecificationDefinition(SpecificationUserManaged):
     category: Optional[str] = None
     """Category of the specification."""
 
-    type: Optional[SpecificationType] = None
-    """Type of the specification."""
-
     symbol: Optional[str] = None
     """Short form identifier of the specification."""
 
@@ -107,6 +104,9 @@ class SpecificationDefinition(SpecificationUserManaged):
 
 class Specification(SpecificationDefinition, SpecificationServerManaged):
     """The complete definition of a specification."""
+
+    type: Optional[SpecificationType] = None
+    """Type of the specification."""
 
 
 class SpecificationCreation(JsonModel):

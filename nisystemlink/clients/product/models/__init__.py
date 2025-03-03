@@ -8,7 +8,7 @@ from ._query_products_request import (
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
-from ._product_response import Product
+from ._product import Product
 from ._product_request import CreateProductRequest, UpdateProductRequest
 
 # flake8: noqa

@@ -2,7 +2,7 @@ from typing import List
 
 from nisystemlink.clients.product._product_client import ProductClient
 from nisystemlink.clients.product.models._paged_products import PagedProducts
-from nisystemlink.clients.product.models._product_response import (
+from nisystemlink.clients.product.models._product import (
     Product,
 )
 from nisystemlink.clients.product.models._query_products_request import (
