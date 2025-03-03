@@ -19,7 +19,7 @@ from nisystemlink.clients.spec.models import (
     SpecificationProjection,
     SpecificationType,
     UpdateSpecificationsRequest,
-    UpdateSpecificationsRequestObject
+    UpdateSpecificationsRequestObject,
 )
 from nisystemlink.clients.spec.utilities._dataframe_utility import get_specs_dataframe
 
