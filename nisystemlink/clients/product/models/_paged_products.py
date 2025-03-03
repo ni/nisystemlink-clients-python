@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.product.models._product_response import ProductResponse
+from nisystemlink.clients.product.models._product_response import Product
 
 
 class PagedProducts(WithPaging):
@@ -9,7 +9,7 @@ class PagedProducts(WithPaging):
     token if applicable.
     """
 
-    products: List[ProductResponse]
+    products: List[Product]
     """A list of all the products in this page."""
 
     total_count: Optional[int]
