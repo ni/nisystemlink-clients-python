@@ -5,12 +5,15 @@ import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.product._product_client import ProductClient
 from nisystemlink.clients.product.models import (
+    CreateProductRequest,
     CreateProductsPartialSuccess,
     Product,
+    ProductField,
+    ProductProjection,
+    UpdateProductRequest,
 )
 from nisystemlink.clients.product.models._paged_products import PagedProducts
 from nisystemlink.clients.product.models._query_products_request import (
-    ProductField,
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
@@ -31,11 +34,30 @@ def unique_identifier() -> str:
 
 
 @pytest.fixture
+def create_update_product_request():
+    """Fixture to create a request object for updating products, from a product response"""
+
+    def _create_update_product_request(
+        product_response: Product,
+    ) -> UpdateProductRequest:
+        product_data = product_response.dict()
+
+        product_data.pop("updated_at", None)
+        product_data.pop("part_number", None)
+
+        return UpdateProductRequest(**product_data)
+
+    return _create_update_product_request
+
+
+@pytest.fixture
 def create_products(client: ProductClient):
     """Fixture to return a factory that creates specs."""
     responses: List[CreateProductsPartialSuccess] = []
 
-    def _create_products(products: List[Product]) -> CreateProductsPartialSuccess:
+    def _create_products(
+        products: List[CreateProductRequest],
+    ) -> CreateProductsPartialSuccess:
         response = client.create_products(products)
         responses.append(response)
         return response
@@ -61,7 +83,7 @@ class TestProductClient:
         family = "Example Family"
         keywords = ["testing"]
         properties = {"test_property": "yes"}
-        product = Product(
+        product = CreateProductRequest(
             part_number=part_number,
             name=name,
             family=family,
@@ -83,8 +105,8 @@ class TestProductClient:
         self, client: ProductClient, create_products
     ):
         products = [
-            Product(part_number=uuid.uuid1().hex),
-            Product(part_number=uuid.uuid1().hex),
+            CreateProductRequest(part_number=uuid.uuid1().hex),
+            CreateProductRequest(part_number=uuid.uuid1().hex),
         ]
         response: CreateProductsPartialSuccess = create_products(products)
         assert response is not None
@@ -93,7 +115,7 @@ class TestProductClient:
     def test__create_single_product_and_get_products__at_least_one_product_exists(
         self, client: ProductClient, create_products, unique_identifier
     ):
-        products = [Product(part_number=unique_identifier)]
+        products = [CreateProductRequest(part_number=unique_identifier)]
         create_products(products)
         get_response = client.get_products_paged()
         assert get_response is not None
@@ -103,8 +125,8 @@ class TestProductClient:
         self, client: ProductClient, create_products, unique_identifier
     ):
         products = [
-            Product(part_number=unique_identifier),
-            Product(part_number=unique_identifier),
+            CreateProductRequest(part_number=unique_identifier),
+            CreateProductRequest(part_number=unique_identifier),
         ]
         create_products(products)
         get_response = client.get_products_paged(take=1)
@@ -115,8 +137,8 @@ class TestProductClient:
         self, client: ProductClient, create_products, unique_identifier
     ):
         products = [
-            Product(part_number=unique_identifier),
-            Product(part_number=unique_identifier),
+            CreateProductRequest(part_number=unique_identifier),
+            CreateProductRequest(part_number=unique_identifier),
         ]
         create_products(products)
         get_response: PagedProducts = client.get_products_paged(return_count=True)
@@ -127,7 +149,7 @@ class TestProductClient:
         self, client: ProductClient, create_products, unique_identifier
     ):
         part_number = unique_identifier
-        products = [Product(part_number=part_number)]
+        products = [CreateProductRequest(part_number=part_number)]
         create_response: CreateProductsPartialSuccess = create_products(products)
         assert create_response is not None
         id = str(create_response.products[0].id)
@@ -139,7 +161,7 @@ class TestProductClient:
         self, client: ProductClient, create_products, unique_identifier
     ):
         part_number = unique_identifier
-        products = [Product(part_number=part_number)]
+        products = [CreateProductRequest(part_number=part_number)]
         create_response: CreateProductsPartialSuccess = create_products(products)
         assert create_response is not None
         query_request = QueryProductsRequest(
@@ -155,7 +177,7 @@ class TestProductClient:
         part_number = unique_identifier
         test_name = "query values test"
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=part_number, name=test_name)]
+            [CreateProductRequest(part_number=part_number, name=test_name)]
         )
         assert create_response is not None
         query_request = QueryProductValuesRequest(
@@ -167,18 +189,29 @@ class TestProductClient:
         assert query_response[0] == test_name
 
     def test__update_keywords_with_replace__keywords_replaced(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         original_keyword = "originalKeyword"
         updated_keyword = "updatedKeyword"
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_identifier, keywords=[original_keyword])]
+            [
+                CreateProductRequest(
+                    part_number=unique_identifier, keywords=[original_keyword]
+                )
+            ]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
         updated_product = create_response.products[0]
         updated_product.keywords = [updated_keyword]
-        update_response = client.update_products([updated_product], replace=True)
+        update_response = client.update_products(
+            [create_update_product_request(product_response=updated_product)],
+            replace=True,
+        )
         assert update_response is not None
         assert len(update_response.products) == 1
         assert (
@@ -188,18 +221,29 @@ class TestProductClient:
         assert original_keyword not in update_response.products[0].keywords
 
     def test__update_keywords_no_replace__keywords_appended(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         original_keyword = "originalKeyword"
         additional_keyword = "additionalKeyword"
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_identifier, keywords=[original_keyword])]
+            [
+                CreateProductRequest(
+                    part_number=unique_identifier, keywords=[original_keyword]
+                )
+            ]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
         updated_product = create_response.products[0]
         updated_product.keywords = [additional_keyword]
-        update_response = client.update_products([updated_product], replace=False)
+        update_response = client.update_products(
+            [create_update_product_request(product_response=updated_product)],
+            replace=False,
+        )
         assert update_response is not None
         assert len(update_response.products) == 1
         assert (
@@ -212,19 +256,30 @@ class TestProductClient:
         )
 
     def test__update_properties_with_replace__properties_replaced(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         new_key = "newKey"
         original_properties = {"originalKey": "originalValue"}
         new_properties = {new_key: "newValue"}
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_identifier, properties=original_properties)]
+            [
+                CreateProductRequest(
+                    part_number=unique_identifier, properties=original_properties
+                )
+            ]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
         updated_product = create_response.products[0]
         updated_product.properties = new_properties
-        update_response = client.update_products([updated_product], replace=True)
+        update_response = client.update_products(
+            [create_update_product_request(product_response=updated_product)],
+            replace=True,
+        )
         assert update_response is not None
         assert len(update_response.products) == 1
         assert (
@@ -237,20 +292,31 @@ class TestProductClient:
         )
 
     def test__update_properties_append__properties_appended(
-        self, client: ProductClient, create_products, unique_identifier
+        self,
+        client: ProductClient,
+        create_products,
+        unique_identifier,
+        create_update_product_request,
     ):
         original_key = "originalKey"
         new_key = "newKey"
         original_properties = {original_key: "originalValue"}
         new_properties = {new_key: "newValue"}
         create_response: CreateProductsPartialSuccess = create_products(
-            [Product(part_number=unique_identifier, properties=original_properties)]
+            [
+                CreateProductRequest(
+                    part_number=unique_identifier, properties=original_properties
+                )
+            ]
         )
         assert create_response is not None
         assert len(create_response.products) == 1
         updated_product = create_response.products[0]
         updated_product.properties = new_properties
-        update_response = client.update_products([updated_product], replace=False)
+        update_response = client.update_products(
+            [create_update_product_request(product_response=updated_product)],
+            replace=False,
+        )
         assert update_response is not None
         assert len(update_response.products) == 1
         updated_product = update_response.products[0]
@@ -272,12 +338,12 @@ class TestProductClient:
         file_id = uuid.uuid1().hex
         product_name_with_file = "Has File"
         products = [
-            Product(
+            CreateProductRequest(
                 part_number=uuid.uuid1().hex,
                 name=product_name_with_file,
                 file_ids=[file_id],
             ),
-            Product(part_number=uuid.uuid1().hex, name="No File Link"),
+            CreateProductRequest(part_number=uuid.uuid1().hex, name="No File Link"),
         ]
         print(products)
         create_response: CreateProductsPartialSuccess = create_products(products)
@@ -286,3 +352,36 @@ class TestProductClient:
         linked_products = get_products_linked_to_file(client, file_id)
         names = [product.name for product in linked_products]
         assert product_name_with_file in names
+
+    def test__query_products_with_projection__returns_only_specified_fields(
+        self, client: ProductClient, create_products, unique_identifier
+    ):
+        part_number = unique_identifier
+        name = "Test Name"
+        family = "Example Family"
+        keywords = ["testing"]
+        properties = {"test_property": "yes"}
+        product = CreateProductRequest(
+            part_number=part_number,
+            name=name,
+            family=family,
+            keywords=keywords,
+            properties=properties,
+        )
+        response: CreateProductsPartialSuccess = create_products([product])
+        assert response is not None
+
+        query_request = QueryProductsRequest(
+            filter=f'partNumber=="{part_number}"',
+            projection=[ProductProjection.FAMILY, ProductProjection.NAME],
+        )
+        query_response: PagedProducts = client.query_products_paged(query_request)
+        queried_product = query_response.products[0]
+
+        # Assert that the projected fields are returned as expected.
+        assert queried_product.family == family
+        assert queried_product.name == name
+        # Assert that non-projected fields are not returned.
+        assert queried_product.part_number is None
+        assert queried_product.keywords is None
+        assert queried_product.properties is None

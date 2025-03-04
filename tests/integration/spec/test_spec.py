@@ -1,6 +1,7 @@
 import uuid
-from typing import List
+from typing import Dict, List
 
+import pandas as pd
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
@@ -11,14 +12,17 @@ from nisystemlink.clients.spec.models import (
     CreatedSpecification,
     CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
+    CreateSpecificationsRequestObject,
     NumericConditionValue,
     QuerySpecificationsRequest,
-    Specification,
-    SpecificationDefinition,
     SpecificationLimit,
+    SpecificationProjection,
     SpecificationType,
+    StringConditionValue,
     UpdateSpecificationsRequest,
+    UpdateSpecificationsRequestObject,
 )
+from nisystemlink.clients.spec.utilities._dataframe_utilities import get_specs_dataframe
 
 
 @pytest.fixture(scope="class")
@@ -59,7 +63,7 @@ def create_specs(client: SpecClient):
 def create_specs_for_query(create_specs, product):
     """Fixture for creating a set of specs that can be used to test query operations."""
     spec_requests = [
-        SpecificationDefinition(
+        CreateSpecificationsRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.PARAMETRIC,
@@ -67,8 +71,26 @@ def create_specs_for_query(create_specs, product):
             name="output voltage",
             limit=SpecificationLimit(min=1.2, max=1.5),
             unit="mV",
+            conditions=[
+                Condition(
+                    name="Temperature",
+                    value=NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="C",
+                    ),
+                ),
+                Condition(
+                    name="Package",
+                    value=StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["D", "QFIN"],
+                    ),
+                ),
+            ],
         ),
-        SpecificationDefinition(
+        CreateSpecificationsRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.PARAMETRIC,
@@ -95,7 +117,7 @@ def create_specs_for_query(create_specs, product):
                 ),
             ],
         ),
-        SpecificationDefinition(
+        CreateSpecificationsRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.FUNCTIONAL,
@@ -118,7 +140,7 @@ class TestSpec:
     ):
         specId = uuid.uuid1().hex
         productId = product
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=productId,
             spec_id=specId,
             type=SpecificationType.FUNCTIONAL,
@@ -140,7 +162,7 @@ class TestSpec:
         productId = product
         specs = []
         for id in specIds:
-            spec = SpecificationDefinition(
+            spec = CreateSpecificationsRequestObject(
                 product_id=productId,
                 spec_id=id,
                 type=SpecificationType.FUNCTIONAL,
@@ -158,7 +180,7 @@ class TestSpec:
     ):
         duplicate_id = uuid.uuid1().hex
         productId = product
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=productId,
             spec_id=duplicate_id,
             type=SpecificationType.FUNCTIONAL,
@@ -179,7 +201,7 @@ class TestSpec:
         # Not using the fixture here so that we can inspect delete response.
         specId = uuid.uuid1().hex
         productId = product
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=productId,
             spec_id=specId,
             type=SpecificationType.FUNCTIONAL,
@@ -201,7 +223,7 @@ class TestSpec:
     def test__update_single_same_version__version_updates(
         self, client: SpecClient, create_specs, product
     ):
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=product,
             spec_id="spec1",
             type=SpecificationType.FUNCTIONAL,
@@ -215,7 +237,7 @@ class TestSpec:
         created_spec = response.created_specs[0]
         assert created_spec.version == 0
 
-        update_spec = Specification(
+        update_spec = UpdateSpecificationsRequestObject(
             id=created_spec.id,
             product_id=created_spec.product_id,
             spec_id=created_spec.spec_id,
@@ -276,3 +298,240 @@ class TestSpec:
         voltage_spec = response.specs[0]
         assert voltage_spec.conditions
         assert len(voltage_spec.conditions) == 2
+
+    def test__query_spec_projection_columns__columns_returned(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            projection=[SpecificationProjection.SPEC_ID, SpecificationProjection.NAME],
+        )
+
+        response = client.query_specs(request)
+        specs = [vars(spec) for spec in response.specs or []]
+        spec_columns = {
+            key for spec in specs for key in spec.keys() if spec[key] is not None
+        }
+
+        assert response.specs
+        assert len(response.specs) == 3
+        assert len(spec_columns) == 2
+        assert "spec_id" in spec_columns
+        assert "name" in spec_columns
+
+    def test__get_specs_dataframe_without_column_projection__returns_whole_specs_dataframe(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(product_ids=[product])
+        response = client.query_specs(request)
+        specs_dict = []
+        for spec in response.specs or []:
+            specs_dict.append(
+                {
+                    key: value
+                    for key, value in vars(spec).items()
+                    if key not in ["conditions", "properties"]
+                }
+            )
+        expected_specs_df = pd.json_normalize(specs_dict)
+        expected_specs_df.dropna(axis="columns", how="all", inplace=True)
+        keywords_column = expected_specs_df.pop("keywords")
+        expected_specs_df["keywords"] = keywords_column
+
+        specs_df = get_specs_dataframe(client=client, product_id=product)
+        specs_df = specs_df.drop(
+            columns=[
+                "condition_Temperature(C)",
+                "condition_Supply Voltage(mV)",
+                "condition_Package",
+            ]
+        )
+
+        assert response.specs
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        assert specs_df.equals(expected_specs_df), specs_df.compare(expected_specs_df)
+
+    def test__get_specs_dataframe_with_column_projection__returns_specs_dataframe_with_projected_columns(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            projection=[
+                SpecificationProjection.PRODUCT_ID,
+                SpecificationProjection.TYPE,
+            ],
+        )
+        response = client.query_specs(request)
+        specs_dict = []
+        for spec in response.specs or []:
+            specs_dict.append(vars(spec))
+        expected_specs_df = pd.json_normalize(specs_dict)
+        expected_specs_df.dropna(axis="columns", how="all", inplace=True)
+
+        specs_df = get_specs_dataframe(
+            client=client,
+            product_id=product,
+            column_projection=[
+                SpecificationProjection.PRODUCT_ID,
+                SpecificationProjection.TYPE,
+            ],
+        )
+        specs_df_columns = specs_df.columns.to_list()
+
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        assert len(specs_df_columns) == 2
+        assert specs_df.equals(expected_specs_df)
+
+    def test__get_specs_dataframe_without_condition_formatting__returns_specs_dataframe_with_default_condition_format(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        expected_specs_conditions = {
+            "condition_Temperature(C)": [
+                "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                "[min: -25.0; max: 85.0; step: 20.0]",
+            ],
+            "condition_Package": "D, QFIN",
+            "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
+        }
+
+        specs_df = get_specs_dataframe(client=client, product_id=product)
+        specs_df_values = specs_df.to_dict()
+
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        assert (
+            specs_df_values["condition_Temperature(C)"][0]
+            == expected_specs_conditions["condition_Temperature(C)"][0]
+        )
+        assert (
+            specs_df_values["condition_Temperature(C)"][1]
+            == expected_specs_conditions["condition_Temperature(C)"][1]
+        )
+        assert pd.isna(specs_df_values["condition_Temperature(C)"][2])
+        assert (
+            specs_df_values["condition_Package"][0]
+            == expected_specs_conditions["condition_Package"]
+        )
+        assert pd.isna(specs_df_values["condition_Package"][1])
+        assert pd.isna(specs_df_values["condition_Package"][2])
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][0])
+        assert (
+            specs_df_values["condition_Supply Voltage(mV)"][1]
+            == expected_specs_conditions["condition_Supply Voltage(mV)"]
+        )
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][2])
+
+    def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
+        self,
+        client: SpecClient,
+        create_specs,
+        create_specs_for_query,
+        product,
+    ):
+        def condition_formatting(conditions: List[Condition]) -> Dict[str, str]:
+            return {
+                str(condition.name): str(condition.value.discrete)
+                for condition in conditions
+                if condition.value and condition.value.discrete
+            }
+
+        expected_specs_conditions = {
+            "Temperature": "[1.3, 1.5, 1.7]",
+            "Package": "['D', 'QFIN']",
+            "Supply Voltage": "[1.3, 1.5, 1.7]",
+        }
+
+        specs_df = get_specs_dataframe(
+            client=client,
+            product_id=product,
+            condition_format=condition_formatting,
+        )
+
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        assert specs_df["Temperature"][0] == expected_specs_conditions["Temperature"]
+        assert pd.isna(specs_df["Temperature"][1])
+        assert pd.isna(specs_df["Temperature"][2])
+        assert specs_df["Package"][0] == expected_specs_conditions["Package"]
+        assert pd.isna(specs_df["Package"][1])
+        assert pd.isna(specs_df["Package"][2])
+        assert pd.isna(specs_df["Supply Voltage"][0])
+        assert (
+            specs_df["Supply Voltage"][1] == expected_specs_conditions["Supply Voltage"]
+        )
+        assert pd.isna(specs_df["Supply Voltage"][2])
+
+    def test__get_specs_dataframe_with_invalid_product_id__returns_empty_dataframe(
+        self,
+        client: SpecClient,
+    ):
+        specs_df = get_specs_dataframe(client=client, product_id="Invalid Product Id")
+
+        assert specs_df.empty
+
+    def test__get_specs_dataframe_with_condition_name_and_values__returns_specs_dataframe_with_conditions(
+        self,
+        client: SpecClient,
+        create_specs,
+        create_specs_for_query,
+        product,
+    ):
+        expected_specs_conditions = {
+            "condition_Temperature(C)": [
+                "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                "[min: -25.0; max: 85.0; step: 20.0]",
+            ],
+            "condition_Package": "D, QFIN",
+            "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
+        }
+
+        specs_df = get_specs_dataframe(
+            client=client,
+            product_id=product,
+            column_projection=[
+                SpecificationProjection.CONDITION_NAME,
+                SpecificationProjection.CONDITION_VALUES,
+            ],
+        )
+        specs_df_values = specs_df.to_dict()
+
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        assert (
+            specs_df_values["condition_Temperature(C)"][0]
+            == expected_specs_conditions["condition_Temperature(C)"][0]
+        )
+        assert (
+            specs_df_values["condition_Temperature(C)"][1]
+            == expected_specs_conditions["condition_Temperature(C)"][1]
+        )
+        assert pd.isna(specs_df_values["condition_Temperature(C)"][2])
+        assert (
+            specs_df_values["condition_Package"][0]
+            == expected_specs_conditions["condition_Package"]
+        )
+        assert pd.isna(specs_df_values["condition_Package"][1])
+        assert pd.isna(specs_df_values["condition_Package"][2])
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][0])
+        assert (
+            specs_df_values["condition_Supply Voltage(mV)"][1]
+            == expected_specs_conditions["condition_Supply Voltage(mV)"]
+        )
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][2])
+
+    def test__get_specs_dataframe_with_only_condition_values__returns_empty_datafarme(
+        self,
+        client: SpecClient,
+        create_specs,
+        create_specs_for_query,
+        product,
+    ):
+        specs_df = get_specs_dataframe(
+            client=client,
+            product_id=product,
+            column_projection=[SpecificationProjection.CONDITION_VALUES],
+        )
+
+        assert specs_df.empty

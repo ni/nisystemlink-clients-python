@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
 
 
-class ProductField(str, Enum):
+class ProductOrderBy(str, Enum):
     """The valid ways to order a product query."""
 
     ID = "ID"
@@ -13,6 +13,32 @@ class ProductField(str, Enum):
     PART_NUMBER = "PART_NUMBER"
     NAME = "NAME"
     UPDATED_AT = "UPDATED_AT"
+
+
+class ProductField(str, Enum):
+    """An enumeration of product fields for which the values can be queried for."""
+
+    ID = "ID"
+    FAMILY = "FAMILY"
+    PART_NUMBER = "PART_NUMBER"
+    NAME = "NAME"
+    UPDATED_AT = "UPDATED_AT"
+
+
+class ProductProjection(str, Enum):
+    """An enumeration of all fields in a Product. These are used to project the required fields
+    from the API response.
+    """
+
+    ID = "ID"
+    FAMILY = "FAMILY"
+    PART_NUMBER = "PART_NUMBER"
+    NAME = "NAME"
+    UPDATED_AT = "UPDATED_AT"
+    WORKSPACE = "WORKSPACE"
+    KEYWORDS = "KEYWORDS"
+    PROPERTIES = "PROPERTIES"
+    FILE_IDS = "FILE_IDS"
 
 
 class QueryProductsBase(JsonModel):
@@ -50,7 +76,7 @@ class QueryProductsBase(JsonModel):
 
 class QueryProductsRequest(QueryProductsBase):
 
-    order_by: Optional[ProductField] = Field(None, alias="orderBy")
+    order_by: Optional[ProductOrderBy] = Field(None, alias="orderBy")
     """Specifies the fields to use to sort the products.
 
     By default, products are sorted by `id`
@@ -61,11 +87,21 @@ class QueryProductsRequest(QueryProductsBase):
 
     By default, this value is `false` and products are sorted in ascending order.
     """
+
+    projection: Optional[List[ProductProjection]] = None
+    """Specifies the product fields to project.
+
+    When a field value is given here, the corresponding field will be present in all returned products,
+    and all unspecified fields will be excluded. If no projection is specified, all product fields
+    will be returned.
+    """
+
     take: Optional[int] = None
     """Maximum number of products to return in the current API response.
 
     Uses the default if the specified value is negative. The default value is `1000` products.
     """
+
     continuation_token: Optional[str] = None
     """Allows users to continue the query at the next product that matches the given criteria.
 

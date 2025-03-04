@@ -5,11 +5,14 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
-from uplink import Field
+from uplink import Field, retry
 
 from . import models
 
 
+@retry(
+    when=retry.when.status([408, 429, 502, 503, 504]), stop=retry.stop.after_attempt(5)
+)
 class SpecClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
@@ -80,7 +83,7 @@ class SpecClient(BaseClient):
     @post("query-specs")
     def query_specs(
         self, query: models.QuerySpecificationsRequest
-    ) -> models.QuerySpecifications:
+    ) -> models.PagedSpecifications:
         """Queries for specs that match the filters.
 
         Args:

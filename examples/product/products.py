@@ -1,8 +1,9 @@
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.product import ProductClient
 from nisystemlink.clients.product.models import (
-    Product,
+    CreateProductRequest,
     ProductField,
+    ProductOrderBy,
     QueryProductsRequest,
     QueryProductValuesRequest,
 )
@@ -14,14 +15,14 @@ family = "Example Family"
 def create_some_products():
     """Create two example products on your server."""
     new_products = [
-        Product(
+        CreateProductRequest(
             part_number="Example 123 AA",
             name=name,
             family=family,
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         ),
-        Product(
+        CreateProductRequest(
             part_number="Example 123 AA1",
             name=name,
             family=family,
@@ -58,9 +59,9 @@ created_product = client.get_product(create_response.products[0].id)
 query_request = QueryProductsRequest(
     filter=f'family="{family}" && name="{name}"',
     return_count=True,
-    order_by=ProductField.FAMILY,
+    order_by=ProductOrderBy.FAMILY,
 )
-response = client.query_products_paged(query_request)
+query_response = client.query_products_paged(query_request)
 
 # Update the first product that you just created and replace the keywords
 updated_product = create_response.products[0]

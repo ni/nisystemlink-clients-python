@@ -56,4 +56,4 @@ if response.specs:
 # query all specs
 response = client.query_specs(QuerySpecificationsRequest(product_ids=[product]))
 if response.specs:
-    client.delete_specs(ids=[spec.id for spec in response.specs])
+    client.delete_specs(ids=[spec.id for spec in response.specs if spec.id])
