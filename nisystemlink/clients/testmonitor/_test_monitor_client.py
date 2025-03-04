@@ -5,7 +5,7 @@ from typing import List, Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from uplink import Field, Path, Query, retry
+from uplink import Field, Path, Query, retry, returns
 
 from . import models
 
@@ -188,6 +188,7 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
+    @returns.json  # type: ignore
     @post("query-step-values")
     def query_step_values(self, query: models.QueryStepValuesRequest) -> List[str]:
         """Queries values for a step field.
