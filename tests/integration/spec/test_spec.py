@@ -409,14 +409,19 @@ class TestSpec:
             specs_df_values["condition_Temperature(C)"][1]
             == expected_specs_conditions["condition_Temperature(C)"][1]
         )
+        assert pd.isna(specs_df_values["condition_Temperature(C)"][2])
         assert (
             specs_df_values["condition_Package"][0]
             == expected_specs_conditions["condition_Package"]
         )
+        assert pd.isna(specs_df_values["condition_Package"][1])
+        assert pd.isna(specs_df_values["condition_Package"][2])
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][0])
         assert (
             specs_df_values["condition_Supply Voltage(mV)"][1]
             == expected_specs_conditions["condition_Supply Voltage(mV)"]
         )
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][2])
 
     def test__get_specs_dataframe_with_condition_formatting__returns_specs_dataframe_with_specified_condition_format(
         self,
@@ -447,10 +452,16 @@ class TestSpec:
         assert not specs_df.empty
         assert len(specs_df) == 3
         assert specs_df["Temperature"][0] == expected_specs_conditions["Temperature"]
+        assert pd.isna(specs_df["Temperature"][1])
+        assert pd.isna(specs_df["Temperature"][2])
         assert specs_df["Package"][0] == expected_specs_conditions["Package"]
+        assert pd.isna(specs_df["Package"][1])
+        assert pd.isna(specs_df["Package"][2])
+        assert pd.isna(specs_df["Supply Voltage"][0])
         assert (
             specs_df["Supply Voltage"][1] == expected_specs_conditions["Supply Voltage"]
         )
+        assert pd.isna(specs_df["Supply Voltage"][2])
 
     def test__get_specs_dataframe_with_invalid_product_id__returns_empty_dataframe(
         self,
@@ -496,14 +507,19 @@ class TestSpec:
             specs_df_values["condition_Temperature(C)"][1]
             == expected_specs_conditions["condition_Temperature(C)"][1]
         )
+        assert pd.isna(specs_df_values["condition_Temperature(C)"][2])
         assert (
             specs_df_values["condition_Package"][0]
             == expected_specs_conditions["condition_Package"]
         )
+        assert pd.isna(specs_df_values["condition_Package"][1])
+        assert pd.isna(specs_df_values["condition_Package"][2])
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][0])
         assert (
             specs_df_values["condition_Supply Voltage(mV)"][1]
             == expected_specs_conditions["condition_Supply Voltage(mV)"]
         )
+        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][2])
 
     def test__get_specs_dataframe_with_only_condition_values__returns_empty_datafarme(
         self,
