@@ -9,7 +9,7 @@ from nisystemlink.clients.testmonitor.models._step import (
 )
 
 
-class StepRequestObjectBase(JsonModel):
+class BaseStepRequestObject(JsonModel):
     step_id: str
     """Step ID."""
 
@@ -50,7 +50,7 @@ class StepRequestObjectBase(JsonModel):
     """Test step properties."""
 
 
-class CreateStepRequestObject(StepRequestObjectBase):
+class CreateStepRequestObject(BaseStepRequestObject):
     name: str
     """Step name."""
 
