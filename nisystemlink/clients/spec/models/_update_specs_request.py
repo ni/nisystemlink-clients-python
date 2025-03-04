@@ -1,27 +1,20 @@
+from datetime import datetime
 from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.spec.models._base_specification_response import (
+from nisystemlink.clients.spec.models._create_specs_request import (
     BaseSpecificationResponse,
 )
 from nisystemlink.clients.spec.models._specification import (
     SpecificationDefinition,
     SpecificationType,
-    SpecificationUpdated,
 )
 
 
 class UpdateSpecificationsRequestObject(SpecificationDefinition):
     id: str
     """The global Id of the specification."""
-
-    version: int
-    """
-    Current version of the specification.
-
-    When an update is applied, the version is automatically incremented.
-    """
 
     product_id: str
     """Id of the product to which the specification will be associated."""
@@ -41,6 +34,13 @@ class UpdateSpecificationsRequestObject(SpecificationDefinition):
     Default workspace will be taken if the value is not given.
     """
 
+    version: int
+    """
+    Current version of the specification.
+
+    When an update is applied, the version is automatically incremented.
+    """
+
 
 class UpdateSpecificationsRequest(JsonModel):
 
@@ -48,14 +48,14 @@ class UpdateSpecificationsRequest(JsonModel):
     """List of specifications to be updated."""
 
 
-class UpdatedSpecification(BaseSpecificationResponse, SpecificationUpdated):
+class UpdatedSpecification(BaseSpecificationResponse):
     """A specification that was updated on the server."""
 
-    workspace: str
-    """Id of the workspace to which the specification will be associated.
+    updated_at: datetime
+    """ISO-8601 formatted timestamp indicating when the specification was last updated."""
 
-    Default workspace will be taken if the value is not given.
-    """
+    updated_by: str
+    """Id of the user who last updated the specification."""
 
 
 class UpdateSpecificationsPartialSuccess(JsonModel):

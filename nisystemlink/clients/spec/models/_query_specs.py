@@ -3,11 +3,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.spec.models._specification import (
-    Specification,
-    SpecificationCreation,
-    SpecificationUpdated,
-)
+from nisystemlink.clients.spec.models._specification import Specification
 
 
 class SpecificationProjection(str, Enum):
@@ -107,16 +103,10 @@ class QuerySpecificationsRequest(JsonModel):
     """
 
 
-class QuerySpecificationsResponse(
-    Specification, SpecificationCreation, SpecificationUpdated
-):
-    """A full specification with update and create history."""
-
-
 class PagedSpecifications(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
-    specs: Optional[List[QuerySpecificationsResponse]] = None
+    specs: Optional[List[Specification]] = None
     """List of queried specifications.
 
     An empty list indicates that there are no specifications meeting the criteria provided in the
