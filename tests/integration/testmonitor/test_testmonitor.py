@@ -19,7 +19,7 @@ from nisystemlink.clients.testmonitor.models import (
     Step,
     StepField,
     StepIdResultIdPair,
-    UpdateStepRequestObject,
+    UpdateStepRequest,
     UpdateStepsPartialSuccess,
     UpdateStepsRequest,
 )
@@ -293,7 +293,7 @@ class TestTestMonitor:
         update_response: UpdateStepsPartialSuccess = client.update_steps(
             UpdateStepsRequest(
                 steps=[
-                    UpdateStepRequestObject(
+                    UpdateStepRequest(
                         step_id= step.step_id, result_id = step.result_id, name=new_name
                     )
                 ]

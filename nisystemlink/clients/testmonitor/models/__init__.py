@@ -5,7 +5,7 @@ from ._delete_steps_partial_success import DeleteStepsPartialSuccess, StepIdResu
 from ._create_steps_partial_success import CreateStepsPartialSuccess
 from ._update_steps_partial_success import UpdateStepsPartialSuccess
 from ._create_steps_request import CreateStepsRequest, CreateStepRequest
-from ._update_steps_request import UpdateStepsRequest, UpdateStepRequestObject
+from ._update_steps_request import UpdateStepsRequest, UpdateStepRequest
 from ._query_steps_request import (
     QueryStepsRequest,
     QueryStepValuesRequest,

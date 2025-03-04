@@ -6,16 +6,16 @@ from nisystemlink.clients.testmonitor.models._create_steps_request import (
 )
 
 
-class UpdateStepRequestObject(BaseStepRequestObject):
+class UpdateStepRequest(BaseStepRequestObject):
     name: Optional[str] = None
     """Step name."""
 
-    children: Optional[List["UpdateStepRequestObject"]] = None
+    children: Optional[List["UpdateStepRequest"]] = None
     """Nested child steps."""
 
 
 class UpdateStepsRequest(JsonModel):
-    steps: List[UpdateStepRequestObject]
+    steps: List[UpdateStepRequest]
     """Array of test steps to update."""
 
     update_result_total_time: Optional[bool] = None
