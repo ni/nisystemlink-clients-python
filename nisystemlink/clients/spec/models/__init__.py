@@ -17,17 +17,12 @@ from ._query_specs import (
     QuerySpecificationsRequest,
     PagedSpecifications,
     SpecificationProjection,
-    QuerySpecificationsResponse,
 )
 from ._specification import (
     Specification,
-    SpecificationCreation,
     SpecificationDefinition,
     SpecificationLimit,
-    SpecificationServerManaged,
     SpecificationType,
-    SpecificationUpdated,
-    SpecificationUserManaged,
 )
 from ._update_specs_request import (
     UpdatedSpecification,

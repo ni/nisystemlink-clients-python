@@ -40,7 +40,8 @@ class SpecificationType(Enum):
     """Functional specs only have pass/fail status."""
 
 
-class SpecificationUserManaged(JsonModel):
+class SpecificationDefinition(JsonModel):
+
     product_id: Optional[str] = None
     """Id of the product to which the specification will be associated."""
 
@@ -50,32 +51,14 @@ class SpecificationUserManaged(JsonModel):
     This should be unique for a product and workspace combination.
     """
 
-    workspace: Optional[str] = None
-    """Id of the workspace to which the specification will be associated.
-
-    Default workspace will be taken if the value is not given.
-    """
-
-
-class SpecificationServerManaged(JsonModel):
-    id: Optional[str] = None
-    """The global Id of the specification."""
-
-    version: Optional[int] = None
-    """
-    Current version of the specification.
-
-    When an update is applied, the version is automatically incremented.
-    """
-
-
-class SpecificationDefinition(SpecificationUserManaged):
-
     name: Optional[str] = None
     """Name of the specification."""
 
     category: Optional[str] = None
     """Category of the specification."""
+
+    type: Optional[SpecificationType] = None
+    """Type of the specification."""
 
     symbol: Optional[str] = None
     """Short form identifier of the specification."""
@@ -101,16 +84,18 @@ class SpecificationDefinition(SpecificationUserManaged):
     properties: Optional[Dict[str, str]] = None
     """Additional properties associated with the specification."""
 
+    workspace: Optional[str] = None
+    """Id of the workspace to which the specification will be associated.
 
-class Specification(SpecificationDefinition, SpecificationServerManaged):
+    Default workspace will be taken if the value is not given.
+    """
+
+
+class Specification(SpecificationDefinition):
     """The complete definition of a specification."""
 
-    type: Optional[SpecificationType] = None
-    """Type of the specification."""
-
-
-class SpecificationCreation(JsonModel):
-    """When the spec was created and when."""
+    id: Optional[str] = None
+    """The global Id of the specification."""
 
     created_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was created."""
@@ -118,12 +103,15 @@ class SpecificationCreation(JsonModel):
     created_by: Optional[str] = None
     """Id of the user who created the specification."""
 
-
-class SpecificationUpdated(JsonModel):
-    """When the spec was updated and when."""
-
     updated_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the specification was last updated."""
 
     updated_by: Optional[str] = None
     """Id of the user who last updated the specification."""
+
+    version: Optional[int] = None
+    """
+    Current version of the specification.
+
+    When an update is applied, the version is automatically incremented.
+    """
