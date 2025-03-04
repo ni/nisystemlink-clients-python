@@ -13,9 +13,9 @@ from nisystemlink.clients.spec.models._query_specs import (
 from nisystemlink.clients.spec.models._specification import Specification
 from nisystemlink.clients.spec.utilities._client_utilities import __batch_query_specs
 from nisystemlink.clients.spec.utilities._constants import (
-    CONDITION_COLUMN_HEADER,
+    CONDITION_COLUMN_HEADER_PREFIX,
     KEYWORDS_COLUMN_HEADER,
-    PROPERTY_COLUMN_HEADER,
+    PROPERTY_COLUMN_HEADER_PREFIX,
 )
 
 
@@ -149,10 +149,10 @@ def __serialize_numeric_condition_range(value: NumericConditionValue) -> List[st
     return [
         f"[{'; '.join(
             f'{range_key}: {range_value}'
-            for range_key, range_value in vars(r).items()
+            for range_key, range_value in vars(range).items()
             if range_value is not None
         )}]"
-        for r in value.range
+        for range in value.range
     ]
 
 
@@ -199,10 +199,10 @@ def __is_condition_header(header: str) -> bool:
         header: column header for specs dataframe.
 
     Returns:
-        True if header contians 'condition_'. Else returns false.
+        True if header contains 'condition_'. Else returns false.
 
     """
-    return CONDITION_COLUMN_HEADER in header
+    return header.startswith(CONDITION_COLUMN_HEADER_PREFIX)
 
 
 def __is_property_header(header: str) -> bool:
@@ -212,10 +212,10 @@ def __is_property_header(header: str) -> bool:
         header: column header for specs dataframe.
 
     Returns:
-        True if header contians 'properties.'. Else returns false.
+        True if header contains 'properties.'. Else returns false.
 
     """
-    return PROPERTY_COLUMN_HEADER in header
+    return header.startswith(PROPERTY_COLUMN_HEADER_PREFIX)
 
 
 def __is_keywords_header(header: str) -> bool:
@@ -225,13 +225,13 @@ def __is_keywords_header(header: str) -> bool:
         header: column header for specs dataframe.
 
     Returns:
-        True if header contians 'keywords'. Else returns false.
+        True if header equals 'keywords'. Else returns false.
 
     """
-    return KEYWORDS_COLUMN_HEADER in header
+    return header == KEYWORDS_COLUMN_HEADER
 
 
-def __is_allowed_headers(header: str) -> bool:
+def __is_standard_column_header(header: str) -> bool:
     """Check if column header is not a condition, property or keywords.
 
     Args:
@@ -259,7 +259,7 @@ def __format_specs_columns(specs_dataframe: pd.DataFrame) -> pd.DataFrame:
     """
     column_headers = specs_dataframe.columns.to_list()
     formatted_column_headers = [
-        header for header in column_headers if __is_allowed_headers(header)
+        header for header in column_headers if __is_standard_column_header(header)
     ]
     condition_headers = [header for header in column_headers if "condition_" in header]
     properties_headers = [

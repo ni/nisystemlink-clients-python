@@ -32,7 +32,10 @@ def __batch_query_specs(
         The list of specs of the specified product.
     """
     query_request = QuerySpecificationsRequest(
-        product_ids=[product_id], take=1000, filter=filter, projection=column_projection
+        product_ids=[product_id],
+        take=DEFAULT_QUERY_SPECS_TAKE,
+        filter=filter,
+        projection=column_projection,
     )
     spec_response = client.query_specs(query_request)
     specs = []
