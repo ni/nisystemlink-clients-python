@@ -3,10 +3,10 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.spec.models._specification import SpecificationWithHistory
+from nisystemlink.clients.spec.models._specification import Specification
 
 
-class Projection(str, Enum):
+class SpecificationProjection(str, Enum):
     """The allowed projections for query.
 
     When using projection, only the fields specified by the projection element will be included in
@@ -34,7 +34,7 @@ class Projection(str, Enum):
     CREATED_BY = "CREATED_BY"
 
 
-class OrderBy(Enum):
+class SpecificationOrderBy(Enum):
     """The valid ways to order the response to a spec query."""
 
     ID = "ID"
@@ -85,13 +85,13 @@ class QuerySpecificationsRequest(JsonModel):
     documentation for more details.
     """
 
-    projection: Optional[List[Projection]] = None
+    projection: Optional[List[SpecificationProjection]] = None
     """Specifies the fields to include in the returned specifications.
 
     Fields you do not specify are excluded. Returns all fields if no value is specified.
     """
 
-    order_by: Optional[OrderBy] = None
+    order_by: Optional[SpecificationOrderBy] = None
     """Specifies the field to use to sort specifications.
 
     By default, specifications are sorted by `ID`.
@@ -103,10 +103,10 @@ class QuerySpecificationsRequest(JsonModel):
     """
 
 
-class QuerySpecifications(WithPaging):
+class PagedSpecifications(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
-    specs: Optional[List[SpecificationWithHistory]] = None
+    specs: Optional[List[Specification]] = None
     """List of queried specifications.
 
     An empty list indicates that there are no specifications meeting the criteria provided in the
