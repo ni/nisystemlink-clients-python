@@ -9,7 +9,7 @@ from nisystemlink.clients.testmonitor.models._update_steps_request import (
 
 
 class UpdateStepsPartialSuccess(JsonModel):
-    steps: Optional[List[Step]] = None
+    steps: List[Step]
     """The list of steps that were successfully updated."""
 
     failed: Optional[List[UpdateStepRequest]] = None

@@ -15,7 +15,7 @@ class StepIdResultIdPair(JsonModel):
 class DeleteStepsPartialSuccess(JsonModel):
     """The result of deleting multiple steps when one or more steps could not be deleted."""
 
-    steps: Optional[List[StepIdResultIdPair]] = None
+    steps: List[StepIdResultIdPair]
     """The step_id and result_id pairs of the steps that were successfully deleted."""
 
     failed: Optional[List[StepIdResultIdPair]] = None
