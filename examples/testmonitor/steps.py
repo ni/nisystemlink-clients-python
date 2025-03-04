@@ -6,9 +6,15 @@ from nisystemlink.clients.testmonitor.models import (
     QueryStepsRequest,
     StepIdResultIdPair,
 )
-from nisystemlink.clients.testmonitor.models._query_steps_request import QueryStepValuesRequest, StepField
+from nisystemlink.clients.testmonitor.models._query_steps_request import (
+    QueryStepValuesRequest,
+    StepField,
+)
 from nisystemlink.clients.testmonitor.models._step import NamedValueObject
-from nisystemlink.clients.testmonitor.models._update_steps_request import UpdateStepRequest, UpdateStepsRequest
+from nisystemlink.clients.testmonitor.models._update_steps_request import (
+    UpdateStepRequest,
+    UpdateStepsRequest,
+)
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
 server_configuration = HttpConfiguration(

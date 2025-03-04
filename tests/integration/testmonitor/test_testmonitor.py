@@ -145,15 +145,19 @@ class TestTestMonitor:
     ):
         steps = [
             CreateStepRequest(
-                step_id=uuid.uuid1().hex, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 1"
+                step_id=uuid.uuid1().hex,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 1",
             ),
             CreateStepRequest(
-                step_id=uuid.uuid1().hex, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 2"
+                step_id=uuid.uuid1().hex,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 2",
             ),
         ]
 
         response: CreateStepsPartialSuccess = create_steps(steps)
-        
+
         assert response is not None
         assert len(response.steps) == 2
 
@@ -162,13 +166,15 @@ class TestTestMonitor:
     ):
         steps = [
             CreateStepRequest(
-                step_id=unique_identifier, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 1"
+                step_id=unique_identifier,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 1",
             )
         ]
         create_steps(steps)
 
         get_response = client.get_steps()
-        
+
         assert get_response is not None
         assert len(get_response.steps) >= 1
 
@@ -177,16 +183,20 @@ class TestTestMonitor:
     ):
         steps = [
             CreateStepRequest(
-                step_id=unique_identifier, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 1"
+                step_id=unique_identifier,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 1",
             ),
             CreateStepRequest(
-                step_id=unique_identifier, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 2"
+                step_id=unique_identifier,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 2",
             ),
         ]
         create_steps(steps)
 
         get_response = client.get_steps(take=1)
-        
+
         assert get_response is not None
         assert len(get_response.steps) == 1
 
@@ -195,16 +205,20 @@ class TestTestMonitor:
     ):
         steps = [
             CreateStepRequest(
-                step_id=unique_identifier, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 1"
+                step_id=unique_identifier,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 1",
             ),
             CreateStepRequest(
-                step_id=unique_identifier, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 2"
+                step_id=unique_identifier,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 2",
             ),
         ]
         create_steps(steps)
 
         get_response: PagedSteps = client.get_steps(return_count=True, take=5)
-        
+
         assert get_response is not None
         assert get_response.total_count is not None and get_response.total_count >= 2
 
@@ -213,14 +227,12 @@ class TestTestMonitor:
     ):
         step_id = unique_identifier
         result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
-        steps = [
-            CreateStepRequest(step_id=step_id, result_id=result_id, name="Step 1")
-        ]
+        steps = [CreateStepRequest(step_id=step_id, result_id=result_id, name="Step 1")]
         create_response: CreateStepsPartialSuccess = create_steps(steps)
         assert create_response is not None
-        
+
         step: Step = client.get_step(result_id=result_id, step_id=step_id)
-        
+
         assert step is not None
         assert step.step_id == step_id
         assert step.result_id == result_id
@@ -230,18 +242,20 @@ class TestTestMonitor:
     ):
         step_id = unique_identifier
         step_name = "Step 1"
-        result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e"
+        result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
         steps = [
             CreateStepRequest(step_id=step_id, result_id=result_id, name=step_name)
         ]
         create_response: CreateStepsPartialSuccess = create_steps(steps)
         assert create_response is not None
-        
+
         query_request = QueryStepsRequest(
-            filter=f'name="{step_name}" & resultId="{result_id}"', return_count=False, take=5
+            filter=f'name="{step_name}" & resultId="{result_id}"',
+            return_count=False,
+            take=5,
         )
         query_response: PagedSteps = client.query_steps(query_request)
-        
+
         assert query_response is not None
         assert query_response.steps is not None
         assert len(query_response.steps) == 1
@@ -256,20 +270,17 @@ class TestTestMonitor:
         step_name = "query values test"
         result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
         create_response: CreateStepsPartialSuccess = create_steps(
-            [
-                CreateStepRequest(
-                    step_id=step_id, result_id=result_id, name=step_name
-                )
-            ]
+            [CreateStepRequest(step_id=step_id, result_id=result_id, name=step_name)]
         )
         assert create_response is not None
         assert len(create_response.steps) == 1
-        
+
         query_request = QueryStepValuesRequest(
-            filter=f'stepId="{step_id}" & resultId = "{result_id}"', field=StepField.NAME
+            filter=f'stepId="{step_id}" & resultId = "{result_id}"',
+            field=StepField.NAME,
         )
         query_response: List[str] = client.query_step_values(query_request)
-        
+
         assert query_response is not None
         assert len(query_response) == 1
         assert query_response[0] == str(step_name)
@@ -281,7 +292,9 @@ class TestTestMonitor:
         create_response: CreateStepsPartialSuccess = create_steps(
             [
                 CreateStepRequest(
-                    step_id=step_id, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Original Name"
+                    step_id=step_id,
+                    result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                    name="Original Name",
                 )
             ]
         )
@@ -289,12 +302,12 @@ class TestTestMonitor:
         assert len(create_response.steps) == 1
         step = create_response.steps[0]
         new_name = "Updated Name"
-        
+
         update_response: UpdateStepsPartialSuccess = client.update_steps(
             UpdateStepsRequest(
                 steps=[
                     UpdateStepRequest(
-                        step_id= step.step_id, result_id = step.result_id, name=new_name
+                        step_id=step.step_id, result_id=step.result_id, name=new_name
                     )
                 ]
             )
@@ -309,7 +322,11 @@ class TestTestMonitor:
     ):
         step_id = unique_identifier
         steps = [
-            CreateStepRequest(step_id=step_id, result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", name="Step 1")
+            CreateStepRequest(
+                step_id=step_id,
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                name="Step 1",
+            )
         ]
         create_response: CreateStepsPartialSuccess = create_steps(steps)
         assert create_response.steps
@@ -323,14 +340,16 @@ class TestTestMonitor:
 
     def test__delete_non_existent_step__delete_fails(self, client: TestMonitorClient):
         bad_id = "DEADBEEF"
-        
+
         with pytest.raises(ApiException, match="InvalidResultOrStepId"):
-            client.delete_step(result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", step_id=bad_id)
+            client.delete_step(
+                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e", step_id=bad_id
+            )
 
     def test__delete_multiple_steps__deletion_succeed(
         self, client: TestMonitorClient, create_steps
     ):
-        result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e"
+        result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
         steps = [
             CreateStepRequest(
                 step_id=uuid.uuid1().hex, result_id=result_id, name="Step 1"
