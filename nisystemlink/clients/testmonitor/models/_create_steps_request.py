@@ -50,16 +50,16 @@ class BaseStepRequestObject(JsonModel):
     """Test step properties."""
 
 
-class CreateStepRequestObject(BaseStepRequestObject):
+class CreateStepRequest(BaseStepRequestObject):
     name: str
     """Step name."""
 
-    children: Optional[List["CreateStepRequestObject"]] = None
+    children: Optional[List["CreateStepRequest"]] = None
     """Nested child steps."""
 
 
 class CreateStepsRequest(JsonModel):
-    steps: List[CreateStepRequestObject]
+    steps: List[CreateStepRequest]
     """Array of test steps to create."""
 
     update_result_total_time: Optional[bool] = None
