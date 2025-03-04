@@ -332,6 +332,8 @@ class TestTestMonitor:
         assert create_response.steps
         created_step = create_response.steps[0]
 
+        assert created_step.step_id is not None
+        assert created_step.result_id is not None
         delete_response = client.delete_step(
             result_id=created_step.result_id, step_id=created_step.step_id
         )

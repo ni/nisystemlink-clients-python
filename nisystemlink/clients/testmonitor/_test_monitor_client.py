@@ -64,7 +64,7 @@ class TestMonitorClient(BaseClient):
     @post("delete-steps", args=[Field("steps")])
     def delete_steps(
         self, steps: List[models.StepIdResultIdPair]
-    ) -> Optional[models.DeleteStepsPartialSuccess]:
+    ) -> models.DeleteStepsPartialSuccess:
         """Deletes one or more steps by global ID.
 
         Args:
@@ -99,7 +99,7 @@ class TestMonitorClient(BaseClient):
     @post("update-steps")
     def update_steps(
         self, steps: models.UpdateStepsRequest
-    ) -> Optional[models.UpdateStepsPartialSuccess]:
+    ) -> models.UpdateStepsPartialSuccess:
         """Updates one or more steps.
 
         Update requires that the version field matches the version being updated from.

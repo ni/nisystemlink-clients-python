@@ -78,15 +78,16 @@ update_response = client.update_steps(
 )
 
 # delete all steps at once
-response = client.delete_steps(
+delete_response = client.delete_steps(
     steps=[
         StepIdResultIdPair(step_id=step.step_id, result_id=step.result_id)
         for step in queried_steps
     ]
 )
 
-response = client.create_steps(CreateStepsRequest(steps=step_requests))
+create_response = client.create_steps(CreateStepsRequest(steps=step_requests))
 # delete steps one by one
-created_steps = response.steps
+created_steps = create_response.steps
 for step in created_steps:
-    client.delete_step(result_id=step.result_id, step_id=step.step_id)
+    if step.step_id and step.result_id:
+        client.delete_step(result_id=step.result_id, step_id=step.step_id)
