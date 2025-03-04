@@ -22,7 +22,7 @@ from nisystemlink.clients.spec.models import (
     UpdateSpecificationsRequest,
     UpdateSpecificationsRequestObject,
 )
-from nisystemlink.clients.spec.utilities._dataframe_utility import get_specs_dataframe
+from nisystemlink.clients.spec.utilities._dataframe_utilities import get_specs_dataframe
 
 
 @pytest.fixture(scope="class")
