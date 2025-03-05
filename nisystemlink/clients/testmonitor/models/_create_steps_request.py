@@ -3,9 +3,9 @@ from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.testmonitor.models._step import (
-    NamedValueObject,
+    NamedValue,
     Status,
-    StepDataObject,
+    StepData,
 )
 
 
@@ -19,7 +19,7 @@ class BaseStepRequest(JsonModel):
     parent_id: Optional[str] = None
     """Parent step ID."""
 
-    data: Optional[StepDataObject] = None
+    data: Optional[StepData] = None
     """Data returned by the test step."""
 
     data_model: Optional[str] = None
@@ -37,10 +37,10 @@ class BaseStepRequest(JsonModel):
     total_time_in_seconds: Optional[float] = None
     """Total number of seconds the step took to execute."""
 
-    inputs: Optional[List[NamedValueObject]] = None
+    inputs: Optional[List[NamedValue]] = None
     """Inputs and their values passed to the test."""
 
-    outputs: Optional[List[NamedValueObject]] = None
+    outputs: Optional[List[NamedValue]] = None
     """Outputs and their values logged by the test."""
 
     keywords: Optional[List[str]] = None

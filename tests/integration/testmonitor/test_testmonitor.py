@@ -31,8 +31,8 @@ from nisystemlink.clients.testmonitor.models._query_results_request import (
     ResultField,
 )
 from nisystemlink.clients.testmonitor.models._step import (
-    NamedValueObject,
-    StepDataObject,
+    NamedValue,
+    StepData,
 )
 
 
@@ -454,12 +454,12 @@ class TestTestMonitor:
         step_id = unique_identifier
         result_id = created_result.results[0].id
         name = "Test Step 1"
-        data = StepDataObject(
+        data = StepData(
             text="This is a test step", parameters=[{"name": "param1", "value": "10"}]
         )
         properties = {"property1": "value1", "property2": "value2"}
         keywords = ["keyword1", "keyword2"]
-        inputs = [NamedValueObject(name="input1", value="inputValue1")]
+        inputs = [NamedValue(name="input1", value="inputValue1")]
         step = CreateStepRequest(
             step_id=step_id,
             result_id=result_id,

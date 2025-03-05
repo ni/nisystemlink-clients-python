@@ -13,7 +13,7 @@ from nisystemlink.clients.testmonitor.models._query_steps_request import (
     StepField,
 )
 from nisystemlink.clients.testmonitor.models._status import Status
-from nisystemlink.clients.testmonitor.models._step import NamedValueObject
+from nisystemlink.clients.testmonitor.models._step import NamedValue
 from nisystemlink.clients.testmonitor.models._update_steps_request import (
     UpdateStepRequest,
     UpdateStepsRequest,
@@ -58,8 +58,8 @@ step_requests = [
         name="step1",
         result_id=result_id,
         inputs=[
-            NamedValueObject(name="Temperature", value="35"),
-            NamedValueObject(name="Voltage", value="5"),
+            NamedValue(name="Temperature", value="35"),
+            NamedValue(name="Voltage", value="5"),
         ],
     ),
     CreateStepRequest(

@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.testmonitor.models._status import Status
 
 
-class NamedValueObject(JsonModel):
+class NamedValue(JsonModel):
     name: str
     """The name of the value."""
 
@@ -13,7 +13,7 @@ class NamedValueObject(JsonModel):
     """The value."""
 
 
-class StepDataObject(JsonModel):
+class StepData(JsonModel):
     text: Optional[str] = None
     """Text string describing the output data."""
 
@@ -55,16 +55,16 @@ class Step(JsonModel):
     updated_at: Optional[datetime] = None
     """The ISO-8601 formatted timestamp indicating when the step was last updated."""
 
-    inputs: Optional[List[NamedValueObject]] = None
+    inputs: Optional[List[NamedValue]] = None
     """Inputs and their values passed to the test."""
 
-    outputs: Optional[List[NamedValueObject]] = None
+    outputs: Optional[List[NamedValue]] = None
     """Outputs and their values logged by the test."""
 
     data_model: Optional[str] = None
     """Custom string defining the model of the data object."""
 
-    data: Optional[StepDataObject] = None
+    data: Optional[StepData] = None
     """Data returned by the test step."""
 
     has_children: Optional[bool] = None
