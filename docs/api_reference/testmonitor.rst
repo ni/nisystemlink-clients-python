@@ -14,6 +14,14 @@ nisystemlink.clients.testmonitor
    .. automethod:: update_results
    .. automethod:: delete_result
    .. automethod:: delete_results
+   .. automethod:: create_steps
+   .. automethod:: query_steps
+   .. automethod:: query_step_values
+   .. automethod:: delete_steps
+   .. automethod:: delete_step
+   .. automethod:: update_steps
+   .. automethod:: get_steps
+   .. automethod:: get_step
 
 .. automodule:: nisystemlink.clients.testmonitor.models
    :members:
