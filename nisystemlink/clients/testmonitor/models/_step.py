@@ -3,30 +3,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-
-
-class StatusType(str, Enum):
-    """The types of statuses that a step can have."""
-
-    LOOPING = "LOOPING"
-    SKIPPED = "SKIPPED"
-    CUSTOM = "CUSTOM"
-    DONE = "DONE"
-    PASSED = "PASSED"
-    FAILED = "FAILED"
-    RUNNING = "RUNNING"
-    WAITING = "WAITING"
-    TERMINATED = "TERMINATED"
-    ERRORED = "ERRORED"
-    TIMED_OUT = "TIMED_OUT"
-
-
-class StatusObject(JsonModel):
-    status_type: StatusType
-    """The type of status."""
-
-    status_name: Optional[str] = None
-    """The name of the status."""
+from nisystemlink.clients.testmonitor.models._status import Status
 
 
 class NamedValueObject(JsonModel):
@@ -67,7 +44,7 @@ class Step(JsonModel):
     path_ids: Optional[List[str]] = None
     """The IDs of the steps in the path."""
 
-    status: Optional[StatusObject] = None
+    status: Optional[Status] = None
     """The status of the step."""
 
     total_time_in_seconds: Optional[int] = None

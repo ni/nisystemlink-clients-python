@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.testmonitor.models._step import (
     NamedValueObject,
-    StatusObject,
+    Status,
     StepDataObject,
 )
 
@@ -28,7 +28,7 @@ class BaseStepRequest(JsonModel):
     started_at: Optional[datetime] = None
     """ISO-8601 formatted timestamp indicating when the test result began."""
 
-    status: Optional[StatusObject] = None
+    status: Optional[Status] = None
     """The status of the step."""
 
     step_type: Optional[str] = None

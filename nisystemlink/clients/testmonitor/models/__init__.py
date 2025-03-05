@@ -1,7 +1,7 @@
 from ._api_info import Operation, V2Operations, ApiInfo
 from ._result import Result
 from ._status import StatusType, Status
-from ._step import Step, StatusObject, NamedValueObject, StepDataObject, StatusType
+from ._step import Step, NamedValueObject, StepDataObject
 from ._paged_results import PagedResults
 from ._paged_steps import PagedSteps
 from ._delete_results_partial_success import DeleteResultsPartialSuccess
