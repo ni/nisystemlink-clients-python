@@ -219,7 +219,7 @@ class TestMonitorClient(BaseClient):
     @post("delete-steps", args=[Field("steps")])
     def delete_steps(
         self, steps: List[models.StepIdResultIdPair]
-    ) -> models.DeleteStepsPartialSuccess:
+    ) -> Optional[models.DeleteStepsPartialSuccess]:
         """Deletes one or more steps by global ID.
 
         Args:
