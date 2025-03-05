@@ -122,7 +122,10 @@ class TestTestMonitor:
         status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status, properties={"test": None}
+                part_number=unique_identifier,
+                program_name=program_name,
+                status=status,
+                properties={"test": None},
             )
         ]
         create_results(results)
