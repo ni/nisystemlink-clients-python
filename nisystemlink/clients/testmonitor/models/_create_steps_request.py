@@ -60,7 +60,7 @@ class CreateStepRequest(BaseStepRequest):
 
 class CreateStepsRequest(JsonModel):
     steps: List[CreateStepRequest]
-    """Array of test steps to create."""
+    """List of test steps to create."""
 
     update_result_total_time: Optional[bool] = None
     """Determine test result total time from the test step total times."""
