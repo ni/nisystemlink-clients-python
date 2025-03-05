@@ -41,7 +41,7 @@ def client(enterprise_config: HttpConfiguration) -> TestMonitorClient:
 
 @pytest.fixture
 def unique_identifier() -> str:
-    """Unique step id for this test."""
+    """Unique result/step id for this test."""
     unique_id = uuid.uuid1().hex
     return unique_id
 
