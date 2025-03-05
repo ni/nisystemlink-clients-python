@@ -18,7 +18,7 @@ class StepDataObject(JsonModel):
     """Text string describing the output data."""
 
     parameters: Optional[List[dict[str, Optional[str]]]] = None
-    """Array of properties objects."""
+    """List of properties objects."""
 
 
 class Step(JsonModel):

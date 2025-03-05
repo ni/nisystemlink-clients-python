@@ -13,7 +13,7 @@ class CreateStepsPartialSuccess(JsonModel):
     """The list of steps that were successfully created."""
 
     failed: Optional[List[CreateStepRequest]] = None
-    """The list of steps that were not created.
+    """The list of step requests that failed.
 
     If this is `None`, then all steps were successfully created.
     """

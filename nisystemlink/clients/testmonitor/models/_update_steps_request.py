@@ -16,7 +16,7 @@ class UpdateStepRequest(BaseStepRequest):
 
 class UpdateStepsRequest(JsonModel):
     steps: List[UpdateStepRequest]
-    """Array of test steps to update."""
+    """List of test steps to update."""
 
     update_result_total_time: Optional[bool] = None
     """Determine test result total time from the test step total times."""

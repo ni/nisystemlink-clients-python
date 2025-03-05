@@ -86,8 +86,9 @@ delete_response = client.delete_steps(
 )
 
 create_response = client.create_steps(CreateStepsRequest(steps=step_requests))
-# delete steps one by one
 created_steps = create_response.steps
+
+# delete steps one by one
 for step in created_steps:
     if step.step_id and step.result_id:
         client.delete_step(result_id=step.result_id, step_id=step.step_id)
