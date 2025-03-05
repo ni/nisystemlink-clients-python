@@ -11,9 +11,9 @@ from ._create_steps_partial_success import CreateStepsPartialSuccess
 from ._update_results_partial_success import UpdateResultsPartialSuccess
 from ._update_steps_partial_success import UpdateStepsPartialSuccess
 from ._create_result_request import CreateResultRequest
-from ._create_steps_request import CreateStepsRequest, CreateStepRequest
+from ._create_steps_request import CreateMultipleStepsRequest, CreateStepRequest
 from ._update_result_request import UpdateResultRequest
-from ._update_steps_request import UpdateStepsRequest, UpdateStepRequest
+from ._update_steps_request import UpdateMultipleStepsRequest, UpdateStepRequest
 from ._query_results_request import (
     QueryResultsRequest,
     QueryResultValuesRequest,

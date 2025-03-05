@@ -200,7 +200,7 @@ class TestMonitorClient(BaseClient):
 
     @post("steps")
     def create_steps(
-        self, steps: models.CreateStepsRequest
+        self, steps: models.CreateMultipleStepsRequest
     ) -> models.CreateStepsPartialSuccess:
         """Creates one or more steps.
 
@@ -253,7 +253,7 @@ class TestMonitorClient(BaseClient):
 
     @post("update-steps")
     def update_steps(
-        self, steps: models.UpdateStepsRequest
+        self, steps: models.UpdateMultipleStepsRequest
     ) -> models.UpdateStepsPartialSuccess:
         """Updates one or more steps.
 

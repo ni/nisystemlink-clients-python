@@ -58,7 +58,7 @@ class CreateStepRequest(BaseStepRequest):
     """Nested child steps."""
 
 
-class CreateStepsRequest(JsonModel):
+class CreateMultipleStepsRequest(JsonModel):
     steps: List[CreateStepRequest]
     """List of test steps to create."""
 

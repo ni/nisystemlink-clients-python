@@ -1,22 +1,16 @@
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
-    CreateStepRequest,
-    CreateStepsRequest,
-    QueryStepsRequest,
-    StepIdResultIdPair,
-)
-from nisystemlink.clients.testmonitor.models._create_result_request import (
+    CreateMultipleStepsRequest,
     CreateResultRequest,
-)
-from nisystemlink.clients.testmonitor.models._query_steps_request import (
+    CreateStepRequest,
+    NamedValue,
+    QueryStepsRequest,
     QueryStepValuesRequest,
+    Status,
     StepField,
-)
-from nisystemlink.clients.testmonitor.models._status import Status
-from nisystemlink.clients.testmonitor.models._step import NamedValue
-from nisystemlink.clients.testmonitor.models._update_steps_request import (
+    StepIdResultIdPair,
+    UpdateMultipleStepsRequest,
     UpdateStepRequest,
-    UpdateStepsRequest,
 )
 
 
@@ -70,7 +64,7 @@ step_requests = [
 ]
 
 # Create the steps
-create_response = client.create_steps(CreateStepsRequest(steps=step_requests))
+create_response = client.create_steps(CreateMultipleStepsRequest(steps=step_requests))
 created_steps = create_response.steps
 print(create_response)
 
@@ -92,7 +86,7 @@ query_values_response = client.query_step_values(
 
 # update the name of a step
 update_response = client.update_steps(
-    UpdateStepsRequest(
+    UpdateMultipleStepsRequest(
         steps=[
             UpdateStepRequest(
                 step_id=step.step_id,
@@ -112,7 +106,7 @@ delete_response = client.delete_steps(
     ]
 )
 
-create_response = client.create_steps(CreateStepsRequest(steps=step_requests))
+create_response = client.create_steps(CreateMultipleStepsRequest(steps=step_requests))
 created_steps = create_response.steps
 
 # delete steps one by one

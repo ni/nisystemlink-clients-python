@@ -6,11 +6,11 @@ from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
+    CreateMultipleStepsRequest,
     CreateResultRequest,
     CreateResultsPartialSuccess,
     CreateStepRequest,
     CreateStepsPartialSuccess,
-    CreateStepsRequest,
     PagedSteps,
     QueryStepsRequest,
     QueryStepValuesRequest,
@@ -19,10 +19,10 @@ from nisystemlink.clients.testmonitor.models import (
     Step,
     StepField,
     StepIdResultIdPair,
+    UpdateMultipleStepsRequest,
     UpdateResultRequest,
     UpdateStepRequest,
     UpdateStepsPartialSuccess,
-    UpdateStepsRequest,
 )
 from nisystemlink.clients.testmonitor.models._paged_results import PagedResults
 from nisystemlink.clients.testmonitor.models._query_results_request import (
@@ -78,7 +78,7 @@ def create_steps(client: TestMonitorClient):
     def _create_steps(
         steps: List[CreateStepRequest],
     ) -> CreateStepsPartialSuccess:
-        response = client.create_steps(CreateStepsRequest(steps=steps))
+        response = client.create_steps(CreateMultipleStepsRequest(steps=steps))
         responses.append(response)
         return response
 
@@ -717,7 +717,7 @@ class TestTestMonitor:
         new_name = "Updated Name"
 
         update_response: UpdateStepsPartialSuccess = client.update_steps(
-            UpdateStepsRequest(
+            UpdateMultipleStepsRequest(
                 steps=[
                     UpdateStepRequest(
                         step_id=step.step_id, result_id=step.result_id, name=new_name
@@ -761,7 +761,7 @@ class TestTestMonitor:
         new_properties = {"property1": "value1", "property2": "value2"}
         new_keywords = ["keyword1", "keyword2"]
         update_response: UpdateStepsPartialSuccess = client.update_steps(
-            UpdateStepsRequest(
+            UpdateMultipleStepsRequest(
                 steps=[
                     UpdateStepRequest(
                         step_id=step.step_id,

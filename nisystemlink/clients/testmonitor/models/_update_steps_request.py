@@ -14,7 +14,7 @@ class UpdateStepRequest(BaseStepRequest):
     """Nested child steps."""
 
 
-class UpdateStepsRequest(JsonModel):
+class UpdateMultipleStepsRequest(JsonModel):
     steps: List[UpdateStepRequest]
     """List of test steps to update."""
 
