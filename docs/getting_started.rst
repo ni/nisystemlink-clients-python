@@ -261,7 +261,7 @@ Overview
 ~~~~~~~~
 
 The :class:`.TestMonitorClient` class is the primary entry point of the Test Monitor API
-used to interact with test results (Results).
+used to interact with test results (Results) and Steps.
 
 When constructing a :class:`.TestMonitorClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the
@@ -271,6 +271,7 @@ default connection. The default connection depends on your environment.
 With a :class:`.TestMonitorClient` object, you can:
 
 * Create, update, query, and delete results
+* Create, update, query, and delete steps
 
 Examples
 ~~~~~~~~
