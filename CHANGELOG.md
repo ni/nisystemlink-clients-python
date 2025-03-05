@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.0 (2025-03-05)
+
+### Feature
+
+* Add and resolve query projection for products and specs respectively ([#97](https://github.com/ni/nisystemlink-clients-python/issues/97)) ([`e9feff6`](https://github.com/ni/nisystemlink-clients-python/commit/e9feff6dc3e473dd34cbb53739f1c96eb7a8db0e))
+
+### Breaking
+
+* Product and Specification models have been updated to support projections.  - Product client changes--    - `models.Product` now defines all fields as Optional.    - `ProductClient.create_product`'s `products` parameter is now typed      as `models.CreateProductRequest`    - `ProductClient.update_product`'s `products` parameter is now typed      as `models.UpdateProductRequest`  - Specifications client changes--    - `models.Specification` and `models.SpecificationDefinition` now      define all fields as Optional.    - `models.QuerySpecifications` has been renamed `models.PagedSpecifications`      to better align to other clients.    - `models.CreateSpecificationeRequest.specs` is now typed as `models.CreateSpecificationsRequestObject`      instead of `models.SpecificationDefinition`    - `models.UpdateSpecificationeRequest.specs` is now typed as `models.UpdateSpecificationsRequestObject`      instead of `models.Specification` ([`e9feff6`](https://github.com/ni/nisystemlink-clients-python/commit/e9feff6dc3e473dd34cbb53739f1c96eb7a8db0e))
+
 ## v1.10.0 (2025-02-13)
 
 ### Feature
