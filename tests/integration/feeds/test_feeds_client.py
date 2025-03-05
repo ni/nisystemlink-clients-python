@@ -1,5 +1,6 @@
 """Integration tests for FeedsClient."""
 
+import uuid
 from pathlib import Path
 from random import randint
 from typing import BinaryIO, Callable
@@ -9,13 +10,13 @@ from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
 
-
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 PACKAGE_PATH = str(
     Path(__file__).parent.resolve()
     / "test_files"
     / "sample-measurement_0.5.0_windows_x64.nipkg"
 )
+PREFIX = "Feeds Client Test - "
 
 
 @pytest.fixture(scope="class")
@@ -73,13 +74,11 @@ def invalid_id() -> str:
 @pytest.fixture(scope="class")
 def get_feed_name():
     """Generate a feed name."""
-    name = "testfeed_"
-    feed_count = 0
 
     def _get_feed_name():
-        nonlocal feed_count
-        feed_count += 1
-        feed_name = name + str(feed_count)
+        uuid_part = uuid.uuid4().hex
+        feed_name = f"{PREFIX}{uuid_part}"
+
         return feed_name
 
     yield _get_feed_name

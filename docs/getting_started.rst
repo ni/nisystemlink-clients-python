@@ -253,3 +253,30 @@ Delete a feed.
 .. literalinclude:: ../examples/feeds/delete_feed.py
    :language: python
    :linenos:
+
+TestMonitor API (Results)
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.TestMonitorClient` class is the primary entry point of the Test Monitor API
+used to interact with test results (Results).
+
+When constructing a :class:`.TestMonitorClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.TestMonitorClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.TestMonitorClient` object, you can:
+
+* Create, update, query, and delete results
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete some results
+
+.. literalinclude:: ../examples/result/results.py
+   :language: python
+   :linenos:

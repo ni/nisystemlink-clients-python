@@ -11,13 +11,14 @@ from nisystemlink.clients.spec.models import (
     CreatedSpecification,
     CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
+    CreateSpecificationsRequestObject,
     NumericConditionValue,
     QuerySpecificationsRequest,
-    Specification,
-    SpecificationDefinition,
     SpecificationLimit,
+    SpecificationProjection,
     SpecificationType,
     UpdateSpecificationsRequest,
+    UpdateSpecificationsRequestObject,
 )
 
 
@@ -59,7 +60,7 @@ def create_specs(client: SpecClient):
 def create_specs_for_query(create_specs, product):
     """Fixture for creating a set of specs that can be used to test query operations."""
     spec_requests = [
-        SpecificationDefinition(
+        CreateSpecificationsRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.PARAMETRIC,
@@ -68,7 +69,7 @@ def create_specs_for_query(create_specs, product):
             limit=SpecificationLimit(min=1.2, max=1.5),
             unit="mV",
         ),
-        SpecificationDefinition(
+        CreateSpecificationsRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.PARAMETRIC,
@@ -95,7 +96,7 @@ def create_specs_for_query(create_specs, product):
                 ),
             ],
         ),
-        SpecificationDefinition(
+        CreateSpecificationsRequestObject(
             product_id=product,
             spec_id=uuid.uuid1().hex,
             type=SpecificationType.FUNCTIONAL,
@@ -118,7 +119,7 @@ class TestSpec:
     ):
         specId = uuid.uuid1().hex
         productId = product
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=productId,
             spec_id=specId,
             type=SpecificationType.FUNCTIONAL,
@@ -140,7 +141,7 @@ class TestSpec:
         productId = product
         specs = []
         for id in specIds:
-            spec = SpecificationDefinition(
+            spec = CreateSpecificationsRequestObject(
                 product_id=productId,
                 spec_id=id,
                 type=SpecificationType.FUNCTIONAL,
@@ -158,7 +159,7 @@ class TestSpec:
     ):
         duplicate_id = uuid.uuid1().hex
         productId = product
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=productId,
             spec_id=duplicate_id,
             type=SpecificationType.FUNCTIONAL,
@@ -179,7 +180,7 @@ class TestSpec:
         # Not using the fixture here so that we can inspect delete response.
         specId = uuid.uuid1().hex
         productId = product
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=productId,
             spec_id=specId,
             type=SpecificationType.FUNCTIONAL,
@@ -201,7 +202,7 @@ class TestSpec:
     def test__update_single_same_version__version_updates(
         self, client: SpecClient, create_specs, product
     ):
-        spec = SpecificationDefinition(
+        spec = CreateSpecificationsRequestObject(
             product_id=product,
             spec_id="spec1",
             type=SpecificationType.FUNCTIONAL,
@@ -215,7 +216,7 @@ class TestSpec:
         created_spec = response.created_specs[0]
         assert created_spec.version == 0
 
-        update_spec = Specification(
+        update_spec = UpdateSpecificationsRequestObject(
             id=created_spec.id,
             product_id=created_spec.product_id,
             spec_id=created_spec.spec_id,
@@ -276,3 +277,23 @@ class TestSpec:
         voltage_spec = response.specs[0]
         assert voltage_spec.conditions
         assert len(voltage_spec.conditions) == 2
+
+    def test__query_spec_projection_columns__columns_returned(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            projection=[SpecificationProjection.SPEC_ID, SpecificationProjection.NAME],
+        )
+
+        response = client.query_specs(request)
+        specs = [vars(spec) for spec in response.specs or []]
+        spec_columns = {
+            key for spec in specs for key in spec.keys() if spec[key] is not None
+        }
+
+        assert response.specs
+        assert len(response.specs) == 3
+        assert len(spec_columns) == 2
+        assert "spec_id" in spec_columns
+        assert "name" in spec_columns
