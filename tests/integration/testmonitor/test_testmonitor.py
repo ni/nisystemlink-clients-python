@@ -30,7 +30,10 @@ from nisystemlink.clients.testmonitor.models._query_results_request import (
     QueryResultValuesRequest,
     ResultField,
 )
-from nisystemlink.clients.testmonitor.models._step import StepDataObject
+from nisystemlink.clients.testmonitor.models._step import (
+    NamedValueObject,
+    StepDataObject,
+)
 
 
 @pytest.fixture(scope="class")
@@ -455,12 +458,16 @@ class TestTestMonitor:
             text="This is a test step", parameters=[{"name": "param1", "value": "10"}]
         )
         properties = {"property1": "value1", "property2": "value2"}
+        keywords = ["keyword1", "keyword2"]
+        inputs = [NamedValueObject(name="input1", value="inputValue1")]
         step = CreateStepRequest(
             step_id=step_id,
             result_id=result_id,
             name=name,
             data=data,
             properties=properties,
+            keywords=keywords,
+            inputs=inputs,
         )
 
         response: CreateStepsPartialSuccess = create_steps([step])
@@ -473,7 +480,8 @@ class TestTestMonitor:
         assert created_step.name == name
         assert created_step.data == data
         assert created_step.properties == properties
-        assert not created_step.inputs
+        assert created_step.keywords == keywords
+        assert created_step.inputs == inputs
         assert not created_step.outputs
 
     def test__create_multiple_steps__multiple_creation_succeed(
@@ -679,7 +687,7 @@ class TestTestMonitor:
 
         assert query_response is not None
         assert len(query_response) == 1
-        assert query_response[0] == str(step_name)
+        assert query_response[0] == step_name
 
     def test__update_step_name__name_updated(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
@@ -721,6 +729,56 @@ class TestTestMonitor:
         assert update_response is not None
         assert len(update_response.steps) == 1
         assert update_response.steps[0].name == new_name
+
+    def test__update_step_with_replace_true__replace_keywords_and_properties(
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
+    ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
+        step_id = unique_identifier
+        create_response: CreateStepsPartialSuccess = create_steps(
+            [
+                CreateStepRequest(
+                    step_id=step_id,
+                    result_id=result_id,
+                    name="Original Name",
+                    properties={"originalProperty": "originalValue"},
+                    keywords=["originalKeyword"],
+                )
+            ]
+        )
+        assert create_response is not None
+        assert len(create_response.steps) == 1
+        step = create_response.steps[0]
+
+        new_properties = {"property1": "value1", "property2": "value2"}
+        new_keywords = ["keyword1", "keyword2"]
+        update_response: UpdateStepsPartialSuccess = client.update_steps(
+            UpdateStepsRequest(
+                steps=[
+                    UpdateStepRequest(
+                        step_id=step.step_id,
+                        result_id=step.result_id,
+                        keywords=new_keywords,
+                        properties=new_properties,
+                    )
+                ],
+                replace_keywords=True,
+                replace_properties=True,
+            )
+        )
+
+        assert update_response is not None
+        assert len(update_response.steps) == 1
+        assert update_response.steps[0].keywords == new_keywords
+        assert update_response.steps[0].properties == new_properties
 
     def test__delete_existing_step__deleted(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier

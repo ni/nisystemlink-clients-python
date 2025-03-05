@@ -1,4 +1,3 @@
-from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateStepRequest,
@@ -6,25 +5,53 @@ from nisystemlink.clients.testmonitor.models import (
     QueryStepsRequest,
     StepIdResultIdPair,
 )
+from nisystemlink.clients.testmonitor.models._create_result_request import (
+    CreateResultRequest,
+)
 from nisystemlink.clients.testmonitor.models._query_steps_request import (
     QueryStepValuesRequest,
     StepField,
 )
+from nisystemlink.clients.testmonitor.models._status import Status
 from nisystemlink.clients.testmonitor.models._step import NamedValueObject
 from nisystemlink.clients.testmonitor.models._update_steps_request import (
     UpdateStepRequest,
     UpdateStepsRequest,
 )
 
-# Setup the server configuration to point to your instance of SystemLink Enterprise
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
+
+def create_test_result():
+    """Create example result on your server."""
+    new_results = [
+        CreateResultRequest(
+            part_number="Example 123 AA",
+            program_name="Example Name",
+            host_name="Example Host",
+            status=Status.PASSED(),
+            keywords=["original keyword"],
+            properties={"original property key": "yes"},
+        )
+    ]
+    create_response = client.create_results(new_results)
+    return create_response
+
+
+# Server configuration is not required when used with Systemlink Client or run throught Jupyter on SLE
+server_configuration = None
+
+# # Example of setting up the server configuration to point to your instance of SystemLink Enterprise
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="YourAPIKeyGeneratedFromSystemLink",
+# )
+
 client = TestMonitorClient(configuration=server_configuration)
 
+# create a result to attach the steps to
+create_response = create_test_result()
+
 # Create the step requests
-result_id = "4bef8c3c-afbf-400a-9d30-065dfb0b8d24"
+result_id = create_response.results[0].result_id
 step_requests = [
     CreateStepRequest(
         step_id="step1",
