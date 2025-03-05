@@ -92,7 +92,7 @@ class TestMonitorClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
-    
+
     @get("results/{id}")
     def get_result(self, id: str) -> models.Result:
         """Retrieves a single result by id.
@@ -126,6 +126,7 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
+    @returns.json  # type: ignore
     @post("query-result-values")
     def query_result_values(self, query: models.QueryResultValuesRequest) -> List[str]:
         """Queries for results that match the query and returns a list of the requested field.

@@ -93,39 +93,6 @@ def create_steps(client: TestMonitorClient):
     )
 
 
-# @pytest.fixture
-# def create_result_for_step(client: TestMonitorClient):
-#     """Fixture to return a factory that creates results."""
-#     responses: List[CreateResultsPartialSuccess] = []
-
-#     def _create_result() -> CreateResultsPartialSuccess:
-#         part_number = uuid.uuid1().hex
-#         program_name = "Test Program"
-#         status = Status.PASSED()
-#         host_name = "Test Host"
-#         system_id = "Test System"
-#         serial_number = "Test Serial Number"
-#         result = CreateResultRequest(
-#             part_number=part_number,
-#             program_name=program_name,
-#             status=status,
-#             host_name=host_name,
-#             system_id=system_id,
-#             serial_number=serial_number,
-#         )
-#         response = client.create_results([result])
-#         responses.append(response)
-#         return response
-
-#     yield _create_result
-
-#     created_results: List[Result] = []
-#     for response in responses:
-#         if response.results:
-#             created_results = created_results + response.results
-#     client.delete_results(ids=[str(result.id) for result in created_results])
-
-
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestTestMonitor:
@@ -471,19 +438,23 @@ class TestTestMonitor:
         return UpdateResultRequest(**result_dict)
 
     def test__create_single_step__creation_succeed(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
         step_id = unique_identifier
-        result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
+        result_id = created_result.results[0].id
         name = "Test Step 1"
         data = StepDataObject(
             text="This is a test step", parameters=[{"name": "param1", "value": "10"}]
         )
         properties = {"property1": "value1", "property2": "value2"}
-        # createResultResponse: CreateResultsPartialSuccess = create_result()
-        # assert createResultResponse is not None
-        # assert len(createResultResponse.results) == 1
-        # result_id = createResultResponse.results[0].id
         step = CreateStepRequest(
             step_id=step_id,
             result_id=result_id,
@@ -506,17 +477,26 @@ class TestTestMonitor:
         assert not created_step.outputs
 
     def test__create_multiple_steps__multiple_creation_succeed(
-        self, client: TestMonitorClient, create_steps
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         steps = [
             CreateStepRequest(
                 step_id=uuid.uuid1().hex,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 1",
             ),
             CreateStepRequest(
                 step_id=uuid.uuid1().hex,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 2",
             ),
         ]
@@ -527,12 +507,21 @@ class TestTestMonitor:
         assert len(response.steps) == 2
 
     def test__get_steps__at_least_one_step_exists(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         steps = [
             CreateStepRequest(
                 step_id=unique_identifier,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 1",
             )
         ]
@@ -544,17 +533,26 @@ class TestTestMonitor:
         assert len(get_response.steps) >= 1
 
     def test_with_multiple_steps__get_steps_with_take__only_take_returned(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         steps = [
             CreateStepRequest(
                 step_id=unique_identifier,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 1",
             ),
             CreateStepRequest(
                 step_id=unique_identifier,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 2",
             ),
         ]
@@ -566,17 +564,26 @@ class TestTestMonitor:
         assert len(get_response.steps) == 1
 
     def test__get_steps_with_return_count__steps_and_count_returned(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         steps = [
             CreateStepRequest(
                 step_id=unique_identifier,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 1",
             ),
             CreateStepRequest(
                 step_id=unique_identifier,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 2",
             ),
         ]
@@ -588,10 +595,18 @@ class TestTestMonitor:
         assert get_response.total_count is not None and get_response.total_count >= 2
 
     def test__get_step_by_id__expected_step_returned(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         step_id = unique_identifier
-        result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
         steps = [CreateStepRequest(step_id=step_id, result_id=result_id, name="Step 1")]
         create_response: CreateStepsPartialSuccess = create_steps(steps)
         assert create_response is not None
@@ -603,11 +618,19 @@ class TestTestMonitor:
         assert step.result_id == result_id
 
     def test__query_step_by_name_and_result_id__expected_step_returned(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         step_id = unique_identifier
         step_name = "Step 1"
-        result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
         steps = [
             CreateStepRequest(step_id=step_id, result_id=result_id, name=step_name)
         ]
@@ -629,11 +652,19 @@ class TestTestMonitor:
         assert query_response.steps[0].result_id == result_id
 
     def test__query_step_values_for_name__name_matches(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         step_id = unique_identifier
         step_name = "query values test"
-        result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
         create_response: CreateStepsPartialSuccess = create_steps(
             [CreateStepRequest(step_id=step_id, result_id=result_id, name=step_name)]
         )
@@ -651,14 +682,23 @@ class TestTestMonitor:
         assert query_response[0] == str(step_name)
 
     def test__update_step_name__name_updated(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         step_id = unique_identifier
         create_response: CreateStepsPartialSuccess = create_steps(
             [
                 CreateStepRequest(
                     step_id=step_id,
-                    result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                    result_id=result_id,
                     name="Original Name",
                 )
             ]
@@ -683,13 +723,22 @@ class TestTestMonitor:
         assert update_response.steps[0].name == new_name
 
     def test__delete_existing_step__deleted(
-        self, client: TestMonitorClient, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         step_id = unique_identifier
         steps = [
             CreateStepRequest(
                 step_id=step_id,
-                result_id="ea6f8d2c-8d57-441e-8375-aa897f59835e",
+                result_id=result_id,
                 name="Step 1",
             )
         ]
@@ -714,9 +763,17 @@ class TestTestMonitor:
             )
 
     def test__delete_multiple_steps__deletion_succeed(
-        self, client: TestMonitorClient, create_steps
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
-        result_id = "ea6f8d2c-8d57-441e-8375-aa897f59835e"
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
         steps = [
             CreateStepRequest(
                 step_id=uuid.uuid1().hex, result_id=result_id, name="Step 1"
@@ -731,7 +788,7 @@ class TestTestMonitor:
         created_steps = create_response.steps
 
         delete_response = client.delete_steps(
-            [
+            steps=[
                 StepIdResultIdPair(step_id=step.step_id, result_id=step.result_id)
                 for step in created_steps
             ]
