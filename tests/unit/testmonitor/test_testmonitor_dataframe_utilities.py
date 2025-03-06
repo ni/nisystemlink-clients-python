@@ -102,14 +102,13 @@ def empty_steps_data() -> List:
 
 
 @pytest.mark.enterprise
+@pytest.mark.unit
 class TestTestMonitorDataframeUtilities:
     def test__convert_steps_to_dataframe__with_complete_data(
         self, mock_step_data, expected_steps_dataframe
     ):
         """Test normal case with valid step data."""
-        steps = mock_step_data
-
-        steps_dataframe = convert_steps_to_dataframe(steps)
+        steps_dataframe = convert_steps_to_dataframe(mock_step_data)
 
         assert not steps_dataframe.empty
         assert (
@@ -122,9 +121,7 @@ class TestTestMonitorDataframeUtilities:
 
     def test__convert_steps_to_dataframe__with_empty_data(self, empty_steps_data):
         """Test case when the input steps data is empty."""
-        steps = empty_steps_data
-
-        steps_dataframe = convert_steps_to_dataframe(steps)
+        steps_dataframe = convert_steps_to_dataframe(empty_steps_data)
 
         assert steps_dataframe.empty
 
@@ -133,8 +130,8 @@ class TestTestMonitorDataframeUtilities:
     ):
         """Test case when some fields in step data are missing."""
         steps = mock_step_data
-        del steps[0].keywords
-        del steps[0].inputs
+        steps[0].keywords = None
+        steps[0].inputs = None
 
         steps_dataframe = convert_steps_to_dataframe(steps)
         expected_steps_dataframe = expected_steps_dataframe.drop(
