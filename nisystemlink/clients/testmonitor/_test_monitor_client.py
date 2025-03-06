@@ -205,7 +205,7 @@ class TestMonitorClient(BaseClient):
     def create_steps(
         self,
         steps: List[models.CreateStepRequest],
-        update_result_total_time: Optional[bool] = False,
+        update_result_total_time: bool = False,
     ) -> models.CreateStepsPartialSuccess:
         """Creates one or more steps.
 
@@ -297,9 +297,9 @@ class TestMonitorClient(BaseClient):
     def update_steps(
         self,
         steps: List[models.UpdateStepRequest],
-        update_result_total_time: Optional[bool] = False,
-        replace_keywords: Optional[bool] = False,
-        replace_properties: Optional[bool] = False,
+        update_result_total_time: bool = False,
+        replace_keywords: bool = False,
+        replace_properties: bool = False,
     ) -> models.UpdateStepsPartialSuccess:
         """Updates one or more steps.
 

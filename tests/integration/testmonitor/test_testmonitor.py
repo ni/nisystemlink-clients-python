@@ -710,7 +710,7 @@ class TestTestMonitor:
                         parameters=[
                             Measurement(
                                 name="Current",
-                                status=Status.PASSED(),
+                                status="Passed",
                                 measurement="3.725",
                                 lowLimit="3.65",
                                 highLimit="3.8",
@@ -738,13 +738,14 @@ class TestTestMonitor:
             parameters=[
                 Measurement(
                     name="Voltage",
-                    status=Status.PASSED(),
+                    status="Passed",
                     measurement="3.725",
                     lowLimit="3.65",
                     highLimit="3.8",
                     units="V",
                     comparisonType="GELE",
                     specId="spec_01",
+                    specInfo={"specKey": "specValue"},
                 )
             ],
         )
@@ -753,7 +754,6 @@ class TestTestMonitor:
             NamedValue(name="Voltage", value="10"),
         ]
         updated_outputs = [NamedValue(name="Current", value="4.725")]
-
         update_response: UpdateStepsPartialSuccess = client.update_steps(
             steps=[
                 UpdateStepRequest(

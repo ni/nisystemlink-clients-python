@@ -1,13 +1,12 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.testmonitor.models._status import Status
 from pydantic import Extra
 
 
 class Measurement(JsonModel):
     name: Optional[str] = None
-    status: Optional[Status] = None
+    status: Optional[str] = None
     measurement: Optional[str] = None
     lowLimit: Optional[str] = None
     highLimit: Optional[str] = None
@@ -16,6 +15,13 @@ class Measurement(JsonModel):
 
     class Config:
         extra = Extra.allow
+
+    def __init__(self, **data: Any) -> None:
+        # Convert all extra fields to str while keeping known fields unchanged
+        processed_data = {
+            k: str(v) if k not in self.__annotations__ else v for k, v in data.items()
+        }
+        super().__init__(**processed_data)
 
 
 class StepData(JsonModel):
