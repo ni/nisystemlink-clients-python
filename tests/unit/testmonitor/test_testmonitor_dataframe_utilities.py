@@ -5,7 +5,9 @@ import pandas as pd
 import pytest
 from nisystemlink.clients.testmonitor.models._result import Result
 from nisystemlink.clients.testmonitor.models._status import Status, StatusType
-from nisystemlink.clients.testmonitor.utilities._dataframe_utilities import convert_results_to_dataframe
+from nisystemlink.clients.testmonitor.utilities._dataframe_utilities import (
+    convert_results_to_dataframe,
+)
 
 
 @pytest.fixture(scope="class")
