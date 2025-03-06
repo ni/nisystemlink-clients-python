@@ -9,41 +9,40 @@ from pandas import DataFrame
 
 
 @pytest.fixture
-def mock_product_data() -> List[Product]:
+def mock_products_data() -> List[Product]:
     """Fixture to return a mock product data."""
-    product = Product(
-        id="product_id",
-        part_number="product_part_number",
-        name="product_name",
+    product1 = Product(
+        id="5ffb2bf6771fa11e877838dd1",
+        part_number="p1",
+        name="product_1",
         family="product_family",
         updated_at=datetime(2024, 2, 2, 14, 22, 4, 625155),
-        file_ids=["file1", "file2"],
-        keywords=["keyword1", "keyword2"],
-        properties={"property1": "property1_value", "property2": "property2_value"},
-        workspace="product_workspace",
+        file_ids=["file11", "file12"],
+        keywords=["keyword11", "keyword12"],
+        properties={"property11": "property11_value", "property12": "property12_value"},
+        workspace="5ffb2bf6771fa11e877838dd0",
+    )
+    product2 = Product(
+        id="5ffb2bf6771fa11e877838dd2",
+        part_number="p2",
+        name="product_2",
+        family="product_family",
+        updated_at=datetime(2024, 2, 2, 14, 22, 4, 625455),
+        file_ids=["file21", "file22"],
+        keywords=["keyword21", "keyword22"],
+        properties={"property21": "property21_value"},
+        workspace="5ffb2bf6771fa11e877838dd0",
     )
 
-    return [product]
+    return [product1, product2]
 
 
 @pytest.fixture
-def expected_products_dataframe(mock_product_data) -> DataFrame:
+def expected_products_dataframe(mock_products_data: List[Product]) -> DataFrame:
     """Fixture to return the expected DataFrame based on the mock product data."""
-    product = mock_product_data[0]
-    expected_dataframe_structure = {
-        "id": product.id,
-        "part_number": product.part_number,
-        "name": product.name,
-        "family": product.family,
-        "updated_at": product.updated_at,
-        "file_ids": product.file_ids,
-        "keywords": product.keywords,
-        "workspace": product.workspace,
-        "properties.property1": "property1_value",
-        "properties.property2": "property2_value",
-    }
-
-    return pd.json_normalize(expected_dataframe_structure)
+    return pd.json_normalize(
+        [mock_product.dict() for mock_product in mock_products_data]
+    )
 
 
 @pytest.fixture
@@ -56,10 +55,10 @@ def empty_products_data() -> List:
 @pytest.mark.unit
 class TestProductDataframeUtilities:
     def test__convert_products_to_dataframe__with_complete_data(
-        self, mock_product_data, expected_products_dataframe
+        self, mock_products_data: List[Product], expected_products_dataframe: DataFrame
     ):
         """Test normal case with valid product data."""
-        products_dataframe = convert_products_to_dataframe(mock_product_data)
+        products_dataframe = convert_products_to_dataframe(mock_products_data)
 
         assert not products_dataframe.empty
         assert (
@@ -70,23 +69,29 @@ class TestProductDataframeUtilities:
             products_dataframe, expected_products_dataframe, check_dtype=True
         )
 
-    def test__convert_products_to_dataframe__with_empty_data(self, empty_products_data):
+    def test__convert_products_to_dataframe__with_empty_data(
+        self, empty_products_data: List
+    ):
         """Test case when the input products data is empty."""
         products_dataframe = convert_products_to_dataframe(empty_products_data)
 
         assert products_dataframe.empty
 
     def test__convert_products_to_dataframe__with_missing_fields(
-        self, mock_product_data, expected_products_dataframe
+        self, mock_products_data: List[Product], expected_products_dataframe: DataFrame
     ):
         """Test case when some fields in product data are missing."""
-        products = mock_product_data
-        products[0].keywords = None
-        products[0].properties = None
+        products = mock_products_data
+        for product in products:
+            product.keywords = None
+            product.properties = None
 
         products_dataframe = convert_products_to_dataframe(products)
         expected_products_dataframe = expected_products_dataframe.drop(
-            columns=["keywords", "properties.property1", "properties.property2"]
+            columns=expected_products_dataframe.filter(
+                like="properties"
+            ).columns.to_list()
+            + ["keywords"]
         )
 
         assert not products_dataframe.empty
