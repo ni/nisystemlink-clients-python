@@ -1,7 +1,6 @@
 import uuid
 from typing import List
 
-import pandas as pd
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
@@ -9,7 +8,6 @@ from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
     CreateResultsPartialSuccess,
     Result,
-    ResultProjection,
     Status,
     UpdateResultRequest,
 )
@@ -19,7 +17,6 @@ from nisystemlink.clients.testmonitor.models._query_results_request import (
     QueryResultValuesRequest,
     ResultField,
 )
-from nisystemlink.clients.testmonitor.utilities import get_results_dataframe
 
 
 @pytest.fixture(scope="class")
@@ -394,92 +391,8 @@ class TestTestMonitor:
         )
         assert updated_result.properties[new_key] == new_properties[new_key]
 
-    def test__get_results_dataframe_without_column_projection__returns_complete_results_dataframe(
-        self, client: TestMonitorClient, create_results, unique_identifier
-    ):
-        create_results_request = CreateResultRequest(
-            part_number=unique_identifier,
-            program_name="Test Program",
-            status=Status.PASSED(),
-        )
-        create_results([create_results_request, create_results_request])
-        query_results_filter = f'partNumber="{unique_identifier}"'
-        query_response: PagedResults = client.query_results(
-            QueryResultsRequest(filter=query_results_filter)
-        )
-        expected_results_dataframe = self.__get_expected_results_dataframe(
-            query_response.results
-        )
-
-        results_dataframe = get_results_dataframe(
-            client, query_filter=query_results_filter
-        )
-
-        assert not results_dataframe.empty
-        assert isinstance(results_dataframe, pd.DataFrame)
-        assert len(results_dataframe) == 2
-        assert len(results_dataframe.columns.tolist()) == 22
-        assert results_dataframe.equals(expected_results_dataframe)
-
-    def test__get_results_dataframe_with_column_projection__returns_dataframe_with_projected_columns(
-        self, client: TestMonitorClient, create_results, unique_identifier
-    ):
-        create_results_request = CreateResultRequest(
-            part_number=unique_identifier,
-            program_name="Test Program",
-            status=Status.PASSED(),
-        )
-        create_results([create_results_request, create_results_request])
-        query_results_filter = f'partNumber="{unique_identifier}"'
-        query_response: PagedResults = client.query_results(
-            QueryResultsRequest(
-                filter=query_results_filter,
-                projection=[
-                    ResultProjection.PART_NUMBER,
-                    ResultProjection.PROGRAM_NAME,
-                ],
-            )
-        )
-        expected_results_dataframe = self.__get_expected_results_dataframe(
-            query_response.results
-        )
-
-        results_dataframe = get_results_dataframe(
-            client,
-            query_filter=query_results_filter,
-            column_projection=[
-                ResultProjection.PART_NUMBER,
-                ResultProjection.PROGRAM_NAME,
-            ],
-        )
-
-        assert not results_dataframe.empty
-        assert isinstance(results_dataframe, pd.DataFrame)
-        assert len(results_dataframe) == 2
-        assert len(results_dataframe.columns.tolist()) == 2
-        assert results_dataframe.equals(expected_results_dataframe)
-
-    def test__get_results_dataframe_with_no_results__returns_empty_dataframe(
-        self, client: TestMonitorClient, create_results, unique_identifier
-    ):
-        invalid_part_number = unique_identifier
-
-        results_dataframe = get_results_dataframe(
-            client, query_filter=f'partNumber="{invalid_part_number}"'
-        )
-
-        assert isinstance(results_dataframe, pd.DataFrame)
-        assert results_dataframe.empty
-
     def __map_result_to_update_result_request(
         self, result: Result
     ) -> UpdateResultRequest:
         result_dict = result.dict(exclude={"status_type_summary", "updated_at"})
         return UpdateResultRequest(**result_dict)
-
-    def __get_expected_results_dataframe(self, results: List[Result]) -> List[dict]:
-        expected_results_dict = [result.dict(exclude_unset=True) for result in results]
-        expected_results_dataframe = pd.json_normalize(expected_results_dict, sep=".")
-        expected_results_dataframe.dropna(axis="columns", how="all", inplace=True)
-
-        return expected_results_dataframe
