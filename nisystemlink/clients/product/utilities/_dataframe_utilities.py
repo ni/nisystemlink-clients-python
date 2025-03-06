@@ -14,9 +14,7 @@ def convert_products_to_dataframe(products: List[Product]) -> DataFrame:
     Returns:
         DataFrame: A Pandas DataFrame containing the normalized product data.
     """
-    products_dict_representation = [
-        product.dict(exclude_unset=True) for product in products
-    ]
+    products_dict_representation = [product.dict() for product in products]
     normalized_products_dataframe = pd.json_normalize(
         products_dict_representation, sep="."
     )

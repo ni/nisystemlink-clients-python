@@ -53,14 +53,13 @@ def empty_products_data() -> List:
 
 
 @pytest.mark.enterprise
+@pytest.mark.unit
 class TestProductDataframeUtilities:
     def test__convert_products_to_dataframe__with_complete_data(
         self, mock_product_data, expected_products_dataframe
     ):
         """Test normal case with valid product data."""
-        products = mock_product_data
-
-        products_dataframe = convert_products_to_dataframe(products)
+        products_dataframe = convert_products_to_dataframe(mock_product_data)
 
         assert not products_dataframe.empty
         assert (
@@ -73,9 +72,7 @@ class TestProductDataframeUtilities:
 
     def test__convert_products_to_dataframe__with_empty_data(self, empty_products_data):
         """Test case when the input products data is empty."""
-        products = empty_products_data
-
-        products_dataframe = convert_products_to_dataframe(products)
+        products_dataframe = convert_products_to_dataframe(empty_products_data)
 
         assert products_dataframe.empty
 
@@ -84,8 +81,8 @@ class TestProductDataframeUtilities:
     ):
         """Test case when some fields in product data are missing."""
         products = mock_product_data
-        del products[0].keywords
-        del products[0].properties
+        products[0].keywords = None
+        products[0].properties = None
 
         products_dataframe = convert_products_to_dataframe(products)
         expected_products_dataframe = expected_products_dataframe.drop(
