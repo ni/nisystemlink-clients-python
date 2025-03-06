@@ -1,24 +1,10 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.testmonitor.models._named_value import NamedValue
 from nisystemlink.clients.testmonitor.models._status import Status
-
-
-class NamedValue(JsonModel):
-    name: str
-    """The name of the value."""
-
-    value: Any
-    """The value."""
-
-
-class StepData(JsonModel):
-    text: Optional[str] = None
-    """Text string describing the output data."""
-
-    parameters: Optional[List[dict[str, Optional[str]]]] = None
-    """List of properties objects."""
+from nisystemlink.clients.testmonitor.models._step_data import StepData
 
 
 class Step(JsonModel):

@@ -2,11 +2,9 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.testmonitor.models._step import (
-    NamedValue,
-    Status,
-    StepData,
-)
+from nisystemlink.clients.testmonitor.models._named_value import NamedValue
+from nisystemlink.clients.testmonitor.models._step import Status
+from nisystemlink.clients.testmonitor.models._step_data import StepData
 
 
 class BaseStepRequest(JsonModel):
@@ -56,11 +54,3 @@ class CreateStepRequest(BaseStepRequest):
 
     children: Optional[List["CreateStepRequest"]] = None
     """Nested child steps."""
-
-
-class CreateMultipleStepsRequest(JsonModel):
-    steps: List[CreateStepRequest]
-    """List of test steps to create."""
-
-    update_result_total_time: Optional[bool] = None
-    """Determine test result total time from the test step total times."""

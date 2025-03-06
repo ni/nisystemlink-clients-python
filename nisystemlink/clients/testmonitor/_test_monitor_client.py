@@ -198,14 +198,21 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
-    @post("steps")
+    @post(
+        "steps",
+        args=[Field("steps"), Field("updateResultTotalTime")],
+    )
     def create_steps(
-        self, steps: models.CreateMultipleStepsRequest
+        self,
+        steps: List[models.CreateStepRequest],
+        update_result_total_time: Optional[bool] = False,
     ) -> models.CreateStepsPartialSuccess:
         """Creates one or more steps.
 
         Args:
             steps: A list of steps to create.
+            update_result_total_time: Determine test result total time from the step total times.
+                Defaults to False.
 
         Returns:
             A list of steps that were successfully created and ones that failed to be created.
@@ -235,6 +242,33 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
+    @delete(
+        "results/{resultId}/steps/{stepId}",
+        args=[Path("resultId"), Path("stepId"), Query("updateResultTotalTime")],
+    )
+    def delete_step(
+        self,
+        result_id: str,
+        step_id: str,
+        update_result_total_time: Optional[bool] = False,
+    ) -> None:
+        """Deletes a single step.
+
+        Args:
+            result_id: The resultId of the step to delete.
+            step_id: The stepId of the step to delete.
+            update_result_total_time: Determine test result total time from the step total times.
+                Defaults to False.
+
+        Returns:
+            None
+
+        Raises:
+            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
+            invalid arguments.
+        """
+        ...
+
     @post("query-steps")
     def query_steps(self, query: models.QueryStepsRequest) -> models.PagedSteps:
         """Queries for steps that match the filters.
@@ -251,9 +285,21 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
-    @post("update-steps")
+    @post(
+        "update-steps",
+        args=[
+            Field("steps"),
+            Field("updateResultTotalTime"),
+            Field("replaceKeywords"),
+            Field("replaceProperties"),
+        ],
+    )
     def update_steps(
-        self, steps: models.UpdateMultipleStepsRequest
+        self,
+        steps: List[models.UpdateStepRequest],
+        update_result_total_time: Optional[bool] = False,
+        replace_keywords: Optional[bool] = False,
+        replace_properties: Optional[bool] = False,
     ) -> models.UpdateStepsPartialSuccess:
         """Updates one or more steps.
 
@@ -262,6 +308,12 @@ class TestMonitorClient(BaseClient):
         Args:
             steps: a list of steps that are to be updated. Must include the global ID and
             each step being updated must match the version currently on the server.
+            update_result_total_time: Determine test result total time from the step total times.
+                Defaults to False.
+            replace_keywords: Replace with existing keywords instead of merging them.
+                Defaults to False.
+            replace_properties: Replace with existing properties instead of merging them.
+                Defaults to False.
 
         Returns
             A list of steps that were successfully updated and a list of ones that were not along
@@ -309,33 +361,6 @@ class TestMonitorClient(BaseClient):
 
         Returns:
             The step.
-
-        Raises:
-            ApiException: if unable to communicate with the `/nitestmonitor` service or if there are
-            invalid arguments.
-        """
-        ...
-
-    @delete(
-        "results/{resultId}/steps/{stepId}",
-        args=[Path("resultId"), Path("stepId"), Query("updateResultTotalTime")],
-    )
-    def delete_step(
-        self,
-        result_id: str,
-        step_id: str,
-        update_result_total_time: Optional[bool] = False,
-    ) -> None:
-        """Deletes a single step.
-
-        Args:
-            result_id: The resultId of the step to delete.
-            step_id: The stepId of the step to delete.
-            update_result_total_time: Determine test result total time from the step total times.
-                Defaults to False.
-
-        Returns:
-            None
 
         Raises:
             ApiException: if unable to communicate with the `/nitestmonitor` service or if there are

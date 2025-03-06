@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
 
 class StepOrderBy(str, Enum):
@@ -67,13 +68,6 @@ class StepProjection(str, Enum):
     PROPERTIES = "PROPERTIES"
 
 
-class StepResponseFormat(str, Enum):
-    """An enumeration of response formats for step queries."""
-
-    JSON = "JSON"
-    CSV = "CSV"
-
-
 class QueryStepsBase(JsonModel):
     filter: Optional[str] = None
     """The step query filter in Dynamic Linq format."""
@@ -89,7 +83,7 @@ class QueryStepsBase(JsonModel):
     """
 
 
-class QueryStepsRequest(QueryStepsBase):
+class QueryStepsRequest(QueryStepsBase, WithPaging):
     order_by: Optional[StepOrderBy] = None
     """Specifies the fields to use to sort the steps."""
 
@@ -98,15 +92,6 @@ class QueryStepsRequest(QueryStepsBase):
 
     take: Optional[int] = None
     """Maximum number of steps to return in the current API response."""
-
-    continuation_token: Optional[str] = None
-    """Allows users to continue the query at the next step that matches the given criteria.
-
-    To retrieve the next page of steps, pass the continuation token from the previous
-    page in the next request. The service responds with the next page of data and provides a new
-    continuation token. To paginate results, continue sending requests with the newest continuation
-    token provided in each response.
-    """
 
     return_count: Optional[bool] = None
     """If true, the response will include a count of all steps matching the filter.
@@ -129,12 +114,9 @@ class QueryStepsRequest(QueryStepsBase):
     all step fields will be returned.
     """
 
-    response_format: Optional[StepResponseFormat] = None
-    """Enum indicating the expected response format (CSV or JSON)."""
-
 
 class QueryStepValuesRequest(QueryStepsBase):
-    field: Optional[StepField] = None
+    field: StepField
     """The step field to return for this query."""
 
     starts_with: Optional[str] = None

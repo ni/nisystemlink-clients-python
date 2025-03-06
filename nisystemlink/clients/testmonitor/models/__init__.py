@@ -1,7 +1,9 @@
 from ._api_info import Operation, V2Operations, ApiInfo
+from ._named_value import NamedValue
 from ._result import Result
 from ._status import StatusType, Status
-from ._step import Step, NamedValue, StepData
+from ._step import Step
+from ._step_data import Measurement, StepData
 from ._paged_results import PagedResults
 from ._paged_steps import PagedSteps
 from ._delete_results_partial_success import DeleteResultsPartialSuccess
@@ -11,9 +13,9 @@ from ._create_steps_partial_success import CreateStepsPartialSuccess
 from ._update_results_partial_success import UpdateResultsPartialSuccess
 from ._update_steps_partial_success import UpdateStepsPartialSuccess
 from ._create_result_request import CreateResultRequest
-from ._create_steps_request import CreateMultipleStepsRequest, CreateStepRequest
+from ._create_steps_request import CreateStepRequest
 from ._update_result_request import UpdateResultRequest
-from ._update_steps_request import UpdateMultipleStepsRequest, UpdateStepRequest
+from ._update_steps_request import UpdateStepRequest
 from ._query_results_request import (
     QueryResultsRequest,
     QueryResultValuesRequest,
@@ -26,7 +28,6 @@ from ._query_steps_request import (
     StepOrderBy,
     StepField,
     StepProjection,
-    StepResponseFormat,
 )
 
 # flake8: noqa

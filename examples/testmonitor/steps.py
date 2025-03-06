@@ -1,6 +1,5 @@
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
-    CreateMultipleStepsRequest,
     CreateResultRequest,
     CreateStepRequest,
     NamedValue,
@@ -9,9 +8,9 @@ from nisystemlink.clients.testmonitor.models import (
     Status,
     StepField,
     StepIdResultIdPair,
-    UpdateMultipleStepsRequest,
     UpdateStepRequest,
 )
+from nisystemlink.clients.testmonitor.models._step_data import Measurement, StepData
 
 
 def create_test_result():
@@ -64,7 +63,7 @@ step_requests = [
 ]
 
 # Create the steps
-create_response = client.create_steps(CreateMultipleStepsRequest(steps=step_requests))
+create_response = client.create_steps(steps=step_requests)
 created_steps = create_response.steps
 print(create_response)
 
@@ -86,16 +85,27 @@ query_values_response = client.query_step_values(
 
 # update the name of a step
 update_response = client.update_steps(
-    UpdateMultipleStepsRequest(
-        steps=[
-            UpdateStepRequest(
-                step_id=step.step_id,
-                result_id=step.result_id,
-                name="updated name",
-            )
-            for step in created_steps
-        ]
-    )
+    steps=[
+        UpdateStepRequest(
+            step_id=step.step_id,
+            result_id=step.result_id,
+            data=StepData(
+                text="My output string",
+                parameters=[
+                    Measurement(
+                        name="Temperature",
+                        status=Status.PASSED(),
+                        measurement="35",
+                        lowLimit="30",
+                        highLimit="40",
+                        units="C",
+                        comparisonType="Numeric",
+                    )
+                ],
+            ),
+        )
+        for step in created_steps
+    ]
 )
 
 # delete all steps at once
@@ -106,7 +116,7 @@ delete_response = client.delete_steps(
     ]
 )
 
-create_response = client.create_steps(CreateMultipleStepsRequest(steps=step_requests))
+create_response = client.create_steps(steps=step_requests)
 created_steps = create_response.steps
 
 # delete steps one by one

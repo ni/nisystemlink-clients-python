@@ -278,6 +278,12 @@ Examples
 
 Create, query, update, and delete some results
 
-.. literalinclude:: ../examples/result/results.py
+.. literalinclude:: ../examples/testmonitor/results.py
+   :language: python
+   :linenos:
+
+Create, update, query, and delete steps
+
+.. literalinclude:: ../examples/testmonitor/steps.py
    :language: python
    :linenos:

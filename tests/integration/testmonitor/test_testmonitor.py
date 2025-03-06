@@ -6,7 +6,6 @@ from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
-    CreateMultipleStepsRequest,
     CreateResultRequest,
     CreateResultsPartialSuccess,
     CreateStepRequest,
@@ -19,21 +18,18 @@ from nisystemlink.clients.testmonitor.models import (
     Step,
     StepField,
     StepIdResultIdPair,
-    UpdateMultipleStepsRequest,
     UpdateResultRequest,
     UpdateStepRequest,
     UpdateStepsPartialSuccess,
 )
+from nisystemlink.clients.testmonitor.models._named_value import NamedValue
 from nisystemlink.clients.testmonitor.models._paged_results import PagedResults
 from nisystemlink.clients.testmonitor.models._query_results_request import (
     QueryResultsRequest,
     QueryResultValuesRequest,
     ResultField,
 )
-from nisystemlink.clients.testmonitor.models._step import (
-    NamedValue,
-    StepData,
-)
+from nisystemlink.clients.testmonitor.models._step_data import Measurement, StepData
 
 
 @pytest.fixture(scope="class")
@@ -78,7 +74,7 @@ def create_steps(client: TestMonitorClient):
     def _create_steps(
         steps: List[CreateStepRequest],
     ) -> CreateStepsPartialSuccess:
-        response = client.create_steps(CreateMultipleStepsRequest(steps=steps))
+        response = client.create_steps(steps)
         responses.append(response)
         return response
 
@@ -455,7 +451,8 @@ class TestTestMonitor:
         result_id = created_result.results[0].id
         name = "Test Step 1"
         data = StepData(
-            text="This is a test step", parameters=[{"name": "param1", "value": "10"}]
+            text="This is a test step",
+            parameters=[Measurement(name="param1", measurement="10")],
         )
         properties = {"property1": "value1", "property2": "value2"}
         keywords = ["keyword1", "keyword2"]
@@ -470,7 +467,7 @@ class TestTestMonitor:
             inputs=inputs,
         )
 
-        response: CreateStepsPartialSuccess = create_steps([step])
+        response: CreateStepsPartialSuccess = create_steps(steps=[step])
 
         assert response is not None
         assert len(response.steps) == 1
@@ -689,7 +686,7 @@ class TestTestMonitor:
         assert len(query_response) == 1
         assert query_response[0] == step_name
 
-    def test__update_step_name__name_updated(
+    def test__update_step_data_and_inputs__data_and_inputs_updated(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
         results = [
@@ -707,28 +704,73 @@ class TestTestMonitor:
                 CreateStepRequest(
                     step_id=step_id,
                     result_id=result_id,
-                    name="Original Name",
+                    name="My Step",
+                    data=StepData(
+                        text="My output string",
+                        parameters=[
+                            Measurement(
+                                name="Current",
+                                status=Status.PASSED(),
+                                measurement="3.725",
+                                lowLimit="3.65",
+                                highLimit="3.8",
+                                units="A",
+                                comparisonType="GELE",
+                            )
+                        ],
+                    ),
+                    inputs=[
+                        NamedValue(name="Temperature", value="35"),
+                        NamedValue(name="Voltage", value="5"),
+                    ],
+                    outputs=[
+                        NamedValue(name="Current", value="3.725"),
+                    ],
                 )
             ]
         )
         assert create_response is not None
         assert len(create_response.steps) == 1
         step = create_response.steps[0]
-        new_name = "Updated Name"
+
+        updated_data = StepData(
+            text="My updated output string",
+            parameters=[
+                Measurement(
+                    name="Voltage",
+                    status=Status.PASSED(),
+                    measurement="3.725",
+                    lowLimit="3.65",
+                    highLimit="3.8",
+                    units="V",
+                    comparisonType="GELE",
+                    specId="spec_01",
+                )
+            ],
+        )
+        updated_inputs = [
+            NamedValue(name="Temperature", value="40"),
+            NamedValue(name="Voltage", value="10"),
+        ]
+        updated_outputs = [NamedValue(name="Current", value="4.725")]
 
         update_response: UpdateStepsPartialSuccess = client.update_steps(
-            UpdateMultipleStepsRequest(
-                steps=[
-                    UpdateStepRequest(
-                        step_id=step.step_id, result_id=step.result_id, name=new_name
-                    )
-                ]
-            )
+            steps=[
+                UpdateStepRequest(
+                    step_id=step.step_id,
+                    result_id=step.result_id,
+                    data=updated_data,
+                    inputs=updated_inputs,
+                    outputs=updated_outputs,
+                )
+            ]
         )
 
         assert update_response is not None
         assert len(update_response.steps) == 1
-        assert update_response.steps[0].name == new_name
+        assert update_response.steps[0].data == updated_data
+        assert update_response.steps[0].inputs == updated_inputs
+        assert update_response.steps[0].outputs == updated_outputs
 
     def test__update_step_with_replace_true__replace_keywords_and_properties(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
@@ -761,18 +803,16 @@ class TestTestMonitor:
         new_properties = {"property1": "value1", "property2": "value2"}
         new_keywords = ["keyword1", "keyword2"]
         update_response: UpdateStepsPartialSuccess = client.update_steps(
-            UpdateMultipleStepsRequest(
-                steps=[
-                    UpdateStepRequest(
-                        step_id=step.step_id,
-                        result_id=step.result_id,
-                        keywords=new_keywords,
-                        properties=new_properties,
-                    )
-                ],
-                replace_keywords=True,
-                replace_properties=True,
-            )
+            steps=[
+                UpdateStepRequest(
+                    step_id=step.step_id,
+                    result_id=step.result_id,
+                    keywords=new_keywords,
+                    properties=new_properties,
+                )
+            ],
+            replace_keywords=True,
+            replace_properties=True,
         )
 
         assert update_response is not None
