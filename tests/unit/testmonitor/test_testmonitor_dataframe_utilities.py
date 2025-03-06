@@ -15,27 +15,23 @@ def results() -> List[Result]:
     """Sample results for testing purposes."""
     results = [
         Result(
-            status=Status(status_type=StatusType.PASSED),
-            id=uuid.uuid1().hex,
-            part_number=uuid.uuid1().hex,
-            keywords=["keyword1", "keyword2"],
-            properties={"property1": "value1", "property2": "value2"},
-        ),
-        Result(
-            status=Status(status_type=StatusType.PASSED),
-            id=uuid.uuid1().hex,
-            part_number=uuid.uuid1().hex,
-            keywords=[],
-        ),
-        Result(
-            status=Status(status_type=StatusType.PASSED),
-            id=uuid.uuid1().hex,
-            part_number=uuid.uuid1().hex,
-            properties={
-                "property1": "value1",
-                "property2": "value2",
-                "property3": "value3",
-            },
+            status = Status.PASSED(),
+            started_at = "2018-05-07T18:58:05.219692Z",
+            updated_at = "2018-05-07T18:58:05.219692Z",
+            program_name = "My Program Name",
+            id = uuid.uuid1().hex,
+            system_id = uuid.uuid1().hex,
+            host_name = "host name",
+            part_number = uuid.uuid1().hex,
+            serial_number = uuid.uuid1().hex,
+            total_time_in_seconds = 16.76845106446358,
+            keywords = ["keyword1", "keyword2"],
+            properties = {"property1": "value1", "property2": "value2"},
+            operator = "sample operator",
+            file_ids = [uuid.uuid1().hex, uuid.uuid1().hex],
+            data_table_ids = [uuid.uuid1().hex, uuid.uuid1().hex],
+            status_type_summary = {StatusType.PASSED: 1, StatusType.FAILED: 0},
+            workspace = uuid.uuid1().hex,
         ),
     ]
 
@@ -44,7 +40,7 @@ def results() -> List[Result]:
 
 @pytest.mark.enterprise
 class TestTestmonitorDataframeUtilities:
-    def test__convert_results_to_dataframe__returns_results_dataframe(self, results):
+    def test__convert_results_to_dataframe__returns_results_dataframe(self, results: List[Result]):
         expected_results_dict = []
         for result in results:
             expected_results_dict.append(result.dict(exclude_unset=True))
@@ -55,9 +51,10 @@ class TestTestmonitorDataframeUtilities:
 
         assert not results_dataframe.empty
         assert isinstance(results_dataframe, pd.DataFrame)
-        assert len(results_dataframe) == 3
-        assert len(results_dataframe.columns.tolist()) == 7
-        assert results_dataframe.equals(expected_results_dataframe)
+        assert len(results_dataframe) == 1
+        assert len(results_dataframe.columns.tolist()) == 19
+        assert results_dataframe.equals(expected_results_dataframe), expected_results_dataframe
+        pd.testing.assert_frame_equal(results_dataframe, expected_results_dataframe, check_dtype=True), expected_results_dataframe
 
     def test__convert_results_to_dataframe_with_no_results__returns_empty_dataframe(
         self,
