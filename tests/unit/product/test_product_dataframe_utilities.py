@@ -40,9 +40,28 @@ def mock_products_data() -> List[Product]:
 @pytest.fixture
 def expected_products_dataframe(mock_products_data: List[Product]) -> DataFrame:
     """Fixture to return the expected DataFrame based on the mock product data."""
-    return pd.json_normalize(
-        [mock_product.dict() for mock_product in mock_products_data]
-    )
+    restructured_mock_products = []
+
+    for product in mock_products_data:
+        properties = (
+            {f"properties.{key}": value for key, value in product.properties.items()}
+            if product.properties
+            else {}
+        )
+        restructured_product = {
+            "id": product.id,
+            "part_number": product.part_number,
+            "name": product.name,
+            "family": product.family,
+            "updated_at": product.updated_at,
+            "file_ids": product.file_ids,
+            "keywords": product.keywords,
+            "workspace": product.workspace,
+            **properties,
+        }
+        restructured_mock_products.append(restructured_product)
+
+    return pd.json_normalize(restructured_mock_products)
 
 
 @pytest.fixture

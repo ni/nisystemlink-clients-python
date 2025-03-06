@@ -9,16 +9,14 @@ def convert_products_to_dataframe(products: List[Product]) -> DataFrame:
     """Converts a list of products into a normalized dataframe.
 
     Args:
-        products (List[Product]): A list of product responses retrieved from the API.
+        products (List[Product]): A list of products
 
     Returns:
         DataFrame:
-            - A Pandas DataFrame containing the normalized product data. The DataFrame would consist
-            of all the fields received from the product response.
-
-            - Further, the properties field alone would get normalized. In the sense, there
-            would be separate columns for each of the properties in the list of all products. The
-            normalized column headers would be in the format `properties.property_name`.
+            - A Pandas DataFrame containing the product data. The DataFrame would consist of all the
+            fields in the input products.
+            - A new column would be created for unique properties across all products. The property
+            columns would be named in the format `properties.property_name`.
     """
     products_dict_representation = [product.dict() for product in products]
     normalized_products_dataframe = pd.json_normalize(
