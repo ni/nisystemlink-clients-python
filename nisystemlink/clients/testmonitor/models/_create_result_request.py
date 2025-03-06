@@ -35,7 +35,7 @@ class CreateResultRequest(JsonModel):
     keywords: Optional[List[str]]
     """A list of keywords that categorize this result."""
 
-    properties: Optional[Dict[str, str]]
+    properties: Optional[Dict[str, Optional[str]]]
     """A list of custom properties for this result."""
 
     operator: Optional[str]
