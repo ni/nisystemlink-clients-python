@@ -106,7 +106,7 @@ def specs() -> List[Specification]:
 
 
 @pytest.mark.enterprise
-class TestSpec:
+class TestSpecDataframeUtilities:
     def test__convert_specs_to_dataframe__returns_specs_dataframe(self, specs):
         specs_dict = []
         for spec in specs:
