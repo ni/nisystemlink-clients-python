@@ -40,7 +40,7 @@ def results() -> List[Result]:
 
 @pytest.mark.enterprise
 class TestTestmonitorDataframeUtilities:
-    def test__convert_results_to_dataframe__returns_results_dataframe(self, results: List[Result]):
+    def test__convert_results_to_dataframe__returns_results_dataframe(self, results):
         expected_results_dict = []
         for result in results:
             expected_results_dict.append(result.dict(exclude_unset=True))
