@@ -5,12 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class Product(JsonModel):
-    """Contains information about a product, where all the fields are optional.
-
-    - This is because when using query products' projection, specific product fields alone can be
-    queried. The value can be None if no projection is applied and the field is unset, or it can be
-    None when the field is not included in the projection.
-    """
+    """Contains information about a product."""
 
     id: Optional[str]
     """The globally unique id of the product."""

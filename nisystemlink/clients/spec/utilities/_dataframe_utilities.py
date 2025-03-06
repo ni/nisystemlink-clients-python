@@ -7,11 +7,7 @@ from nisystemlink.clients.spec.models._condition import (
     StringConditionValue,
 )
 from nisystemlink.clients.spec.models._specification import Specification
-from nisystemlink.clients.spec.utilities._constants import (
-    CONDITION_COLUMN_HEADER_PREFIX,
-    KEYWORDS_COLUMN_HEADER,
-    PROPERTY_COLUMN_HEADER_PREFIX,
-)
+from nisystemlink.clients.spec.utilities._constants import DataFrameHeaders
 
 
 def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
@@ -102,14 +98,16 @@ def __format_specs_columns(specs_dataframe: pd.DataFrame) -> pd.DataFrame:
     formatted_column_headers = [
         header for header in column_headers if __is_standard_column_header(header)
     ]
-    condition_headers = [header for header in column_headers if "condition_" in header]
+    condition_headers = [
+        header for header in column_headers if __is_condition_header(header=header)
+    ]
     properties_headers = [
-        header for header in column_headers if "properties." in header
+        header for header in column_headers if __is_property_header(header=header)
     ]
     formatted_column_headers += (
         condition_headers
-        + properties_headers
         + (["keywords"] if "keywords" in column_headers else [])
+        + properties_headers
     )
 
     return specs_dataframe.reindex(columns=formatted_column_headers)
@@ -142,7 +140,7 @@ def __is_condition_header(header: str) -> bool:
         True if header contains 'condition_'. Else returns false.
 
     """
-    return header.startswith(CONDITION_COLUMN_HEADER_PREFIX)
+    return header.startswith(DataFrameHeaders.CONDITION_COLUMN_HEADER_PREFIX)
 
 
 def __is_property_header(header: str) -> bool:
@@ -155,7 +153,7 @@ def __is_property_header(header: str) -> bool:
         True if header contains 'properties.'. Else returns false.
 
     """
-    return header.startswith(PROPERTY_COLUMN_HEADER_PREFIX)
+    return header.startswith(DataFrameHeaders.PROPERTY_COLUMN_HEADER_PREFIX)
 
 
 def __is_keywords_header(header: str) -> bool:
@@ -168,7 +166,7 @@ def __is_keywords_header(header: str) -> bool:
         True if header equals 'keywords'. Else returns false.
 
     """
-    return header == KEYWORDS_COLUMN_HEADER
+    return header == DataFrameHeaders.KEYWORDS_COLUMN_HEADER
 
 
 def __generate_condition_column_header(condition: Condition) -> str:

@@ -105,22 +105,44 @@ def specs() -> List[Specification]:
     return specs
 
 
+@pytest.fixture
+def expected_specs_dataframe(specs) -> pd.DataFrame:
+    """Fixture to return expected dataframe based on sample specs."""
+    specs_dict = []
+    for spec in specs:
+        specs_dict.append(
+            {
+                key: value
+                for key, value in vars(spec).items()
+                if key not in ["conditions"]
+            }
+        )
+    expected_specs_df = pd.json_normalize(specs_dict)
+
+    return expected_specs_df
+
+
 @pytest.mark.enterprise
+@pytest.mark.unit
 class TestSpecDataframeUtilities:
-    def test__convert_specs_to_dataframe__returns_specs_dataframe(self, specs):
-        specs_dict = []
-        for spec in specs:
-            specs_dict.append(
-                {
-                    key: value
-                    for key, value in vars(spec).items()
-                    if key not in ["conditions"]
-                }
-            )
-        expected_specs_df = pd.json_normalize(specs_dict)
+    def test__convert_specs_to_dataframe__returns_specs_dataframe(
+        self, specs, expected_specs_dataframe
+    ):
+        expected_specs_df = expected_specs_dataframe
         expected_specs_df.dropna(axis="columns", how="all", inplace=True)
+        properties_count = len(
+            [
+                column
+                for column in expected_specs_df.columns.to_list()
+                if column.startswith("properties.")
+            ]
+        )
         keywords_column = expected_specs_df.pop("keywords")
-        expected_specs_df["keywords"] = keywords_column
+        expected_specs_df.insert(
+            loc=len(expected_specs_df.columns) - properties_count,
+            column="keywords",
+            value=keywords_column,
+        )
 
         specs_df = convert_specs_to_dataframe(specs=specs)
         specs_df = specs_df.drop(
@@ -133,7 +155,7 @@ class TestSpecDataframeUtilities:
 
         assert not specs_df.empty
         assert len(specs_df) == 3
-        assert specs_df.equals(expected_specs_df), specs_df.compare(expected_specs_df)
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
     def test__convert_specs_to_dataframe_without_condition_format__returns_dataframe_with_default_condition_format(
         self, specs
@@ -217,8 +239,6 @@ class TestSpecDataframeUtilities:
                 product_id=uuid.uuid1().hex,
                 spec_id=uuid.uuid1().hex,
                 name="Input referred voltage noise vs freq",
-                category="Parametric Specs",
-                type=SpecificationType.PARAMETRIC,
                 conditions=[
                     Condition(
                         name="Temperature",
@@ -233,12 +253,17 @@ class TestSpecDataframeUtilities:
             "product_id",
             "spec_id",
             "name",
-            "category",
-            "type",
         ]
+        expected_specs_dict = {
+            "product_id": specs[0].product_id,
+            "spec_id": specs[0].spec_id,
+            "name": specs[0].name,
+        }
+        expected_specs_df = pd.DataFrame(expected_specs_dict, index=[0])
 
         specs_df = convert_specs_to_dataframe(specs=specs)
         specs_columns = specs_df.columns.to_list()
 
         assert not specs_df.empty
         assert specs_columns == expected_specs_columns
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
