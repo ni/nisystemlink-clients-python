@@ -284,7 +284,5 @@ class TestSpecDataframeUtilities:
             index += 1
         expected_specs_df = pd.DataFrame(specs_dict)
         expected_specs_df.dropna(axis="columns", how="all", inplace=True)
-        print(expected_specs_df)
-        print(expected_specs_df.columns.to_list())
 
         return expected_specs_df
