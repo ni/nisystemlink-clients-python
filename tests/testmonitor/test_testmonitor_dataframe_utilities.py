@@ -80,19 +80,14 @@ class TestTestmonitorDataframeUtilities:
     def test__convert_results_with_all_fields_to_dataframe__returns_whole_results_dataframe(
         self, results
     ):
-        expected_results_dataframe = self.get_expected_results_dataframe(
+        expected_results_dataframe = self.__get_expected_results_dataframe(
             results=results
         )
-        expected_result_index = [0, 1, 2]
 
         results_dataframe = convert_results_to_dataframe(results=results)
-        results_index = results_dataframe.index.to_list()
 
         assert not results_dataframe.empty
-        assert isinstance(results_dataframe, pd.DataFrame)
-        assert len(results_dataframe) == 3
         assert len(results_dataframe.columns.tolist()) == 20
-        assert results_index == expected_result_index
         pd.testing.assert_frame_equal(
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
@@ -111,19 +106,14 @@ class TestTestmonitorDataframeUtilities:
         self, results
     ):
         results = results[1:]
-        expected_results_dataframe = self.get_expected_results_dataframe(
+        expected_results_dataframe = self.__get_expected_results_dataframe(
             results=results
         )
-        expected_result_index = [0, 1]
 
         results_dataframe = convert_results_to_dataframe(results=results)
-        results_index = results_dataframe.index.to_list()
 
         assert not results_dataframe.empty
-        assert isinstance(results_dataframe, pd.DataFrame)
-        assert len(results_dataframe) == 2
         assert len(results_dataframe.columns.tolist()) == 13
-        assert results_index == expected_result_index
         pd.testing.assert_frame_equal(
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
@@ -139,22 +129,17 @@ class TestTestmonitorDataframeUtilities:
     def test__convert_results_to_dataframe_with_id_index__returns_results_dataframe_with_id_index(
         self, results
     ):
-        expected_results_dataframe = self.get_expected_results_dataframe(
+        expected_results_dataframe = self.__get_expected_results_dataframe(
             results=results
         )
         expected_results_dataframe = expected_results_dataframe.set_index("id")
-        expected_result_index = expected_results_dataframe.index.to_list()
 
         results_dataframe = convert_results_to_dataframe(
             results=results, set_id_as_index=True
         )
-        results_index = results_dataframe.index.to_list()
 
         assert not results_dataframe.empty
-        assert isinstance(results_dataframe, pd.DataFrame)
-        assert len(results_dataframe) == 3
         assert len(results_dataframe.columns.tolist()) == 19
-        assert results_index == expected_result_index
         pd.testing.assert_frame_equal(
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
@@ -177,47 +162,52 @@ class TestTestmonitorDataframeUtilities:
         assert isinstance(results_dataframe, pd.DataFrame)
         assert results_dataframe.empty
 
-    def get_expected_results_dataframe(self, results):
-        results_dict = [
-            {
-                "status": {
-                    "status_type": result.status.status_type,
-                    "status_name": result.status.status_name,
-                },
-                "started_at": result.started_at,
-                "updated_at": result.updated_at,
-                "program_name": result.program_name,
-                "id": result.id,
-                "system_id": result.system_id,
-                "host_name": result.host_name,
-                "part_number": result.part_number,
-                "serial_number": result.serial_number,
-                "total_time_in_seconds": result.total_time_in_seconds,
-                "keywords": result.keywords,
-                "properties": result.properties,
-                "operator": result.operator,
-                "file_ids": result.file_ids,
-                "data_table_ids": result.data_table_ids,
-                "status_type_summary": result.status_type_summary,
-                "workspace": result.workspace,
-            }
-            for result in results
-        ]
+    def __get_expected_results_dataframe(self, results: List[Result]):
+        results_dict = []
+        for result in results:
+            status_type_summary = (
+                {
+                    f"status_type_summary.{key}": value
+                    for key, value in result.status_type_summary.items()
+                }
+                if result.status_type_summary
+                else {}
+            )
+            properties = (
+                {f"properties.{key}": value for key, value in result.properties.items()}
+                if result.properties
+                else {}
+            )
+            results_dict.append(
+                {
+                    **{
+                        "started_at": result.started_at,
+                        "updated_at": result.updated_at,
+                        "program_name": result.program_name,
+                        "id": result.id,
+                        "system_id": result.system_id,
+                        "host_name": result.host_name,
+                        "part_number": result.part_number,
+                        "serial_number": result.serial_number,
+                        "total_time_in_seconds": result.total_time_in_seconds,
+                        "keywords": result.keywords,
+                        "operator": result.operator,
+                        "file_ids": result.file_ids,
+                        "data_table_ids": result.data_table_ids,
+                        "workspace": result.workspace,
+                        "status.status_type": (
+                            result.status.status_type if result.status else None
+                        ),
+                        "status.status_name": (
+                            result.status.status_name if result.status else None
+                        ),
+                    },
+                    **status_type_summary,
+                    **properties,
+                }
+            )
 
-        results_df = pd.json_normalize(results_dict, sep=".")
+        results_df = pd.DataFrame(results_dict)
         results_df.dropna(axis="columns", how="all", inplace=True)
-        status_type_summary_columns = [
-            results_df.pop(column)
-            for column in results_df.columns.to_list()
-            if column.startswith("status_type_summary.")
-        ]
-        property_columns = [
-            results_df.pop(column)
-            for column in results_df.columns.to_list()
-            if column.startswith("properties.")
-        ]
-        results_df = pd.concat(
-            [results_df] + status_type_summary_columns + property_columns, axis=1
-        )
 
         return results_df
