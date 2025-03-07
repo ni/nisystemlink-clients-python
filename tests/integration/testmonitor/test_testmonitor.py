@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-import pytest
+import pytest  # type: ignore
 from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
@@ -511,6 +511,42 @@ class TestTestMonitor:
         assert response is not None
         assert len(response.steps) == 2
 
+    def test__create_multiple_steps_with_children__multiple_creation_succeed(
+        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
+    ):
+        results = [
+            CreateResultRequest(
+                part_number=unique_identifier,
+                program_name="Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
+        parent_step_id = uuid.uuid1().hex
+        steps = [
+            CreateStepRequest(
+                step_id=parent_step_id,
+                result_id=result_id,
+                name="Step 1",
+                children=[
+                    CreateStepRequest(
+                        step_id=uuid.uuid1().hex,
+                        result_id=result_id,
+                        name="Step 2",
+                    ),
+                ],
+            ),
+        ]
+
+        response: CreateStepsPartialSuccess = create_steps(steps)
+
+        assert response is not None
+        assert len(response.steps) == 2
+        child_step = response.steps[1]
+        assert child_step is not None
+        assert child_step.parent_id == parent_step_id
+
     def test__get_steps__at_least_one_step_exists(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
@@ -768,9 +804,24 @@ class TestTestMonitor:
 
         assert update_response is not None
         assert len(update_response.steps) == 1
-        assert update_response.steps[0].data == updated_data
         assert update_response.steps[0].inputs == updated_inputs
         assert update_response.steps[0].outputs == updated_outputs
+        assert update_response.steps[0].data.text == updated_data.text
+        assert update_response.steps[0].data.parameters is not None
+        assert len(update_response.steps[0].data.parameters) == 1
+        updated_measurement = update_response.steps[0].data.parameters[0]
+        assert updated_measurement.name == updated_data.parameters[0].name
+        assert updated_measurement.status == updated_data.parameters[0].status
+        assert updated_measurement.measurement == updated_data.parameters[0].measurement
+        assert updated_measurement.lowLimit == updated_data.parameters[0].lowLimit
+        assert updated_measurement.highLimit == updated_data.parameters[0].highLimit
+        assert updated_measurement.units == updated_data.parameters[0].units
+        assert (
+            updated_measurement.comparisonType
+            == updated_data.parameters[0].comparisonType
+        )
+        assert updated_measurement.specId == updated_data.parameters[0].specId
+        assert updated_measurement.specInfo == updated_data.parameters[0].specInfo
 
     def test__update_step_with_replace_true__replace_keywords_and_properties(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier

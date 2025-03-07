@@ -1,10 +1,9 @@
-from typing import Any, List, Optional
+from re import M
+from typing import Any, Optional
+from pydantic import BaseModel, Extra
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Extra
 
-
-class Measurement(JsonModel):
+class Measurement(BaseModel):
     name: Optional[str] = None
     status: Optional[str] = None
     measurement: Optional[str] = None
@@ -18,15 +17,12 @@ class Measurement(JsonModel):
 
     def __init__(self, **data: Any) -> None:
         # Convert all extra fields to str while keeping known fields unchanged
+        print(self.__fields__)
+        print(data)
         processed_data = {
             k: str(v) if k not in self.__fields__ else v for k, v in data.items()
         }
         super().__init__(**processed_data)
 
-
-class StepData(JsonModel):
-    text: Optional[str] = None
-    """Text string describing the output data."""
-
-    parameters: Optional[List[Measurement]] = None
-    """List of properties objects."""
+meas = Measurement(name="test", status="pass", measurement="test", lowLimit="0", highLimit="1", units="test", comparisonType="test", specInfo={"specKey": 10})
+print(meas)

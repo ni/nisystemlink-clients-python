@@ -5,7 +5,6 @@ from nisystemlink.clients.testmonitor.models import (
     NamedValue,
     QueryStepsRequest,
     QueryStepValuesRequest,
-    Status,
     StepField,
     StepIdResultIdPair,
     UpdateStepRequest,
@@ -20,7 +19,7 @@ def create_test_result():
             part_number="Example 123 AA",
             program_name="Example Name",
             host_name="Example Host",
-            status=Status.PASSED(),
+            status="Passed",
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         )
@@ -83,7 +82,8 @@ query_values_response = client.query_step_values(
     )
 )
 
-# update the name of a step
+# update the data of the step
+# extra properties of the measurements will be converted to string if not already a string
 update_response = client.update_steps(
     steps=[
         UpdateStepRequest(
@@ -94,12 +94,16 @@ update_response = client.update_steps(
                 parameters=[
                     Measurement(
                         name="Temperature",
-                        status=Status.PASSED(),
+                        status="Passed",
                         measurement="35",
                         lowLimit="30",
                         highLimit="40",
                         units="C",
                         comparisonType="Numeric",
+                        spec_id="spec1",
+                        spec_info={
+                            "specKey": 10
+                        },  # will be converted to string as '{"specKey": 10}'
                     )
                 ],
             ),
