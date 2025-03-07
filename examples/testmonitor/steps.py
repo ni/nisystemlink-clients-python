@@ -9,6 +9,7 @@ from nisystemlink.clients.testmonitor.models import (
     StepIdResultIdPair,
     UpdateStepRequest,
 )
+from nisystemlink.clients.testmonitor.models._status import Status
 from nisystemlink.clients.testmonitor.models._step_data import Measurement, StepData
 
 
@@ -19,7 +20,7 @@ def create_test_result():
             part_number="Example 123 AA",
             program_name="Example Name",
             host_name="Example Host",
-            status="Passed",
+            status=Status.PASSED(),
             keywords=["original keyword"],
             properties={"original property key": "yes"},
         )
