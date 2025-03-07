@@ -10,9 +10,29 @@ from nisystemlink.clients.spec.models._specification import Specification
 from nisystemlink.clients.spec.utilities._constants import DataFrameHeaders
 
 
+def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
+    """Serialize conditions into desired format.
+
+    Args:
+        conditions: List of all conditions in a spec.
+
+    Returns:
+        Conditions as a dictionary.
+    """
+    return {
+        __generate_condition_column_header(condition): ", ".join(
+            __get_condition_values(condition)
+        )
+        for condition in conditions
+        if condition.name and condition.value
+    }
+
+
 def convert_specs_to_dataframe(
     specs: List[Specification],
-    condition_format: Optional[Callable[[List[Condition]], Dict]] = None,
+    condition_format: Optional[
+        Callable[[List[Condition]], Dict]
+    ] = __serialize_conditions,
 ) -> pd.DataFrame:
     """Format specs with respect to the provided condition format.
 
@@ -46,12 +66,14 @@ def convert_specs_to_dataframe(
         and column values will be in "str, str, str" format where str values are the condition discrete
         values for a string condition.
     """
-    if not condition_format:
-        condition_format = __serialize_conditions
     specs_dict = [
         {
             **{key: value for key, value in vars(spec).items() if key != "conditions"},
-            **(condition_format(spec.conditions) if spec.conditions else {}),
+            **(
+                condition_format(spec.conditions)
+                if condition_format and spec.conditions
+                else {}
+            ),
         }
         for spec in specs
     ]
@@ -61,24 +83,6 @@ def convert_specs_to_dataframe(
     specs_dataframe.dropna(axis="columns", how="all", inplace=True)
 
     return specs_dataframe
-
-
-def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
-    """Serialize conditions into desired format.
-
-    Args:
-        conditions: List of all conditions in a spec.
-
-    Returns:
-        Conditions as a dictionary.
-    """
-    return {
-        __generate_condition_column_header(condition): ", ".join(
-            __get_condition_values(condition)
-        )
-        for condition in conditions
-        if condition.name and condition.value
-    }
 
 
 def __format_specs_columns(specs_dataframe: pd.DataFrame) -> pd.DataFrame:
