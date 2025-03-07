@@ -18,10 +18,9 @@ def convert_products_to_dataframe(products: List[Product]) -> DataFrame:
             - A new column would be created for unique properties across all products. The property
             columns would be named in the format `properties.property_name`.
     """
-    products_dict_representation = [product.dict() for product in products]
+    products_dict_representation = [product.dict(exclude_none=True) for product in products]
     normalized_products_dataframe = pd.json_normalize(
         products_dict_representation, sep="."
     )
-    normalized_products_dataframe.dropna(axis="columns", how="all", inplace=True)
 
     return normalized_products_dataframe
