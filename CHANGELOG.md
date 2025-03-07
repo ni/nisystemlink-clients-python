@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.3.0 (2025-03-07)
+
+### Feature
+
+* Add steps APIs to the testmonitor client ([#96](https://github.com/ni/nisystemlink-clients-python/issues/96)) ([`85a676d`](https://github.com/ni/nisystemlink-clients-python/commit/85a676d000b68233b03339a943834d1054fbf2ab))
+
 ## v2.2.0 (2025-03-07)
 
 ### Feature
