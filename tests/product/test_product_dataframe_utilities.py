@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 import pandas as pd
@@ -16,7 +16,7 @@ def mock_products_data() -> List[Product]:
         part_number="p1",
         name="product_1",
         family="product_family",
-        updated_at=datetime(2024, 2, 2, 14, 22, 4, 625155),
+        updated_at=datetime(2024, 2, 2, 14, 22, 4, 625155, tzinfo=timezone.utc),
         file_ids=["file11", "file12"],
         keywords=["keyword11", "keyword12"],
         properties={"property11": "property11_value", "property12": "property12_value"},
@@ -27,7 +27,7 @@ def mock_products_data() -> List[Product]:
         part_number="p2",
         name="product_2",
         family="product_family",
-        updated_at=datetime(2024, 2, 2, 14, 22, 4, 625455),
+        updated_at=datetime(2024, 2, 2, 14, 22, 4, 625455, tzinfo=timezone.utc),
         file_ids=["file21", "file22"],
         keywords=["keyword21", "keyword22"],
         properties={"property21": "property21_value"},
@@ -84,7 +84,7 @@ class TestProductDataframeUtilities:
             products_dataframe.columns.to_list()
             == expected_products_dataframe.columns.to_list()
         )
-        assert products_dataframe["updated_at"].dtype == "datetime64[ns]"
+        assert products_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
         assert products_dataframe["file_ids"].dtype == "object"
         assert isinstance(products_dataframe["file_ids"].iloc[0], List)
         assert products_dataframe["keywords"].dtype == "object"
