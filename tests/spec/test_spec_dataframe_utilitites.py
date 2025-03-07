@@ -105,31 +105,12 @@ def specs() -> List[Specification]:
     return specs
 
 
-@pytest.fixture
-def expected_specs_dataframe(specs) -> pd.DataFrame:
-    """Fixture to return expected dataframe based on sample specs."""
-    specs_dict = []
-    for spec in specs:
-        specs_dict.append(
-            {
-                key: value
-                for key, value in vars(spec).items()
-                if key not in ["conditions"]
-            }
-        )
-    expected_specs_df = pd.json_normalize(specs_dict)
-
-    return expected_specs_df
-
-
 @pytest.mark.enterprise
 @pytest.mark.unit
 class TestSpecDataframeUtilities:
-    def test__convert_specs_to_dataframe__returns_specs_dataframe(
-        self, specs, expected_specs_dataframe
-    ):
-        expected_specs_df = expected_specs_dataframe
-        expected_specs_df.dropna(axis="columns", how="all", inplace=True)
+    def test__convert_specs_to_dataframe__returns_specs_dataframe(self, specs):
+        expected_specs_df = self.expected_specs_dataframe(specs=specs)
+        expected_specs_df.pop("conditions")
         properties_count = len(
             [
                 column
@@ -249,21 +230,19 @@ class TestSpecDataframeUtilities:
                 ],
             ),
         ]
-        expected_specs_columns = [
-            "product_id",
-            "spec_id",
-            "name",
-        ]
-        expected_specs_dict = {
-            "product_id": specs[0].product_id,
-            "spec_id": specs[0].spec_id,
-            "name": specs[0].name,
-        }
-        expected_specs_df = pd.DataFrame(expected_specs_dict, index=[0])
+        expected_specs_df = self.expected_specs_dataframe(specs=specs)
+        expected_specs_df.pop("conditions")
 
         specs_df = convert_specs_to_dataframe(specs=specs)
-        specs_columns = specs_df.columns.to_list()
 
         assert not specs_df.empty
-        assert specs_columns == expected_specs_columns
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+
+    def expected_specs_dataframe(self, specs: pd.DataFrame) -> pd.DataFrame:
+        specs_dict = []
+        for spec in specs:
+            specs_dict.append({key: value for key, value in vars(spec).items()})
+        expected_specs_df = pd.json_normalize(specs_dict)
+        expected_specs_df.dropna(axis="columns", how="all", inplace=True)
+
+        return expected_specs_df
