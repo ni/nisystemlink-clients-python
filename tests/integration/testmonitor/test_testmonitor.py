@@ -1,7 +1,7 @@
 import uuid
-from typing import List
+from typing import List, no_type_check
 
-import pytest  # type: ignore
+import pytest
 from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
@@ -802,26 +802,34 @@ class TestTestMonitor:
             ]
         )
 
-        assert update_response is not None
-        assert len(update_response.steps) == 1
-        assert update_response.steps[0].inputs == updated_inputs
-        assert update_response.steps[0].outputs == updated_outputs
-        assert update_response.steps[0].data.text == updated_data.text
-        assert update_response.steps[0].data.parameters is not None
-        assert len(update_response.steps[0].data.parameters) == 1
-        updated_measurement = update_response.steps[0].data.parameters[0]
-        assert updated_measurement.name == updated_data.parameters[0].name
-        assert updated_measurement.status == updated_data.parameters[0].status
-        assert updated_measurement.measurement == updated_data.parameters[0].measurement
-        assert updated_measurement.lowLimit == updated_data.parameters[0].lowLimit
-        assert updated_measurement.highLimit == updated_data.parameters[0].highLimit
-        assert updated_measurement.units == updated_data.parameters[0].units
-        assert (
-            updated_measurement.comparisonType
-            == updated_data.parameters[0].comparisonType
-        )
-        assert updated_measurement.specId == updated_data.parameters[0].specId
-        assert updated_measurement.specInfo == updated_data.parameters[0].specInfo
+        @no_type_check
+        def assert_data():
+            assert update_response is not None
+            assert update_response.steps is not None
+            assert len(update_response.steps) == 1
+            assert update_response.steps[0].inputs == updated_inputs
+            assert update_response.steps[0].outputs == updated_outputs
+            assert update_response.steps[0].data.text == updated_data.text
+            assert update_response.steps[0].data.parameters[0] is not None
+            assert len(update_response.steps[0].data.parameters) == 1
+            updated_measurement = update_response.steps[0].data.parameters[0]
+            assert updated_measurement.name == updated_data.parameters[0].name
+            assert updated_measurement.status == updated_data.parameters[0].status
+            assert (
+                updated_measurement.measurement
+                == updated_data.parameters[0].measurement
+            )
+            assert updated_measurement.lowLimit == updated_data.parameters[0].lowLimit
+            assert updated_measurement.highLimit == updated_data.parameters[0].highLimit
+            assert updated_measurement.units == updated_data.parameters[0].units
+            assert (
+                updated_measurement.comparisonType
+                == updated_data.parameters[0].comparisonType
+            )
+            assert updated_measurement.specId == updated_data.parameters[0].specId
+            assert updated_measurement.specInfo == updated_data.parameters[0].specInfo
+
+        assert_data()
 
     def test__update_step_with_replace_true__replace_keywords_and_properties(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
