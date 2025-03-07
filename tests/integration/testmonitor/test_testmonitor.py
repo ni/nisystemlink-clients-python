@@ -1,5 +1,5 @@
 import uuid
-from typing import List, no_type_check
+from typing import Dict, List, no_type_check, Optional 
 
 import pytest
 from nisystemlink.clients.core._api_exception import ApiException
