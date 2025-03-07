@@ -142,8 +142,8 @@ class TestTestmonitorDataframeUtilities:
         expected_results_dataframe = self.get_expected_results_dataframe(
             results=results
         )
-        expected_result_index = [id for id in expected_results_dataframe["id"]]
         expected_results_dataframe = expected_results_dataframe.set_index("id")
+        expected_result_index = expected_results_dataframe.index.to_list()
 
         results_dataframe = convert_results_to_dataframe(
             results=results, set_id_as_index=True
@@ -216,7 +216,8 @@ class TestTestmonitorDataframeUtilities:
             for column in results_df.columns.to_list()
             if column.startswith("properties.")
         ]
-        results_df = pd.concat([results_df] + status_type_summary_columns, axis=1)
-        results_df = pd.concat([results_df] + property_columns, axis=1)
+        results_df = pd.concat(
+            [results_df] + status_type_summary_columns + property_columns, axis=1
+        )
 
         return results_df

@@ -30,7 +30,7 @@ def convert_results_to_dataframe(
     normalized_dataframe = __format_results_columns(
         results_dataframe=normalized_dataframe
     )
-    if set_id_as_index:
+    if set_id_as_index and "id" in normalized_dataframe.columns.to_list():
         normalized_dataframe = normalized_dataframe.set_index("id")
 
     return normalized_dataframe
