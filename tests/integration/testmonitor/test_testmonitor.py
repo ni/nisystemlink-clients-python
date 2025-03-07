@@ -818,10 +818,7 @@ class TestTestMonitor:
         updated_measurement = update_response.steps[0].data.parameters[0]
         assert updated_measurement.name == updated_data.parameters[0].name
         assert updated_measurement.status == updated_data.parameters[0].status
-        assert (
-            updated_measurement.measurement
-            == updated_data.parameters[0].measurement
-        )
+        assert updated_measurement.measurement == updated_data.parameters[0].measurement
         assert updated_measurement.lowLimit == updated_data.parameters[0].lowLimit
         assert updated_measurement.highLimit == updated_data.parameters[0].highLimit
         assert updated_measurement.units == updated_data.parameters[0].units
@@ -829,8 +826,12 @@ class TestTestMonitor:
             updated_measurement.comparisonType
             == updated_data.parameters[0].comparisonType
         )
-        assert updated_measurement.dict().get("specId") == updated_data.parameters[0].dict().get("specId")
-        assert getattr(updated_measurement, "specInfo", None) == updated_data.parameters[0].dict().get("specInfo")
+        assert updated_measurement.dict().get("specId") == updated_data.parameters[
+            0
+        ].dict().get("specId")
+        assert getattr(
+            updated_measurement, "specInfo", None
+        ) == updated_data.parameters[0].dict().get("specInfo")
 
     def test__update_step_with_replace_true__replace_keywords_and_properties(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
