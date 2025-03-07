@@ -161,7 +161,10 @@ class TestTestMonitor:
         status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status
+                part_number=unique_identifier,
+                program_name=program_name,
+                status=status,
+                properties={"test": None},
             )
         ]
         create_results(results)
@@ -357,7 +360,7 @@ class TestTestMonitor:
         original_properties = {"originalKey": "originalValue"}
         program_name = "Test Program"
         status = Status.PASSED()
-        new_properties = {new_key: "newValue"}
+        new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
@@ -394,7 +397,7 @@ class TestTestMonitor:
         original_properties = {original_key: "originalValue"}
         program_name = "Test Program"
         status = Status.PASSED()
-        new_properties = {new_key: "newValue"}
+        new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(

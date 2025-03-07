@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.0 (2025-03-06)
+
+### Feature
+
+* Add client for SystemLink results API ([#82](https://github.com/ni/nisystemlink-clients-python/issues/82)) ([`53f1188`](https://github.com/ni/nisystemlink-clients-python/commit/53f1188b4c4806819dbd20011c4b69d6f51487f9))
+
+### Fix
+
+* Enable null value for results properties ([#99](https://github.com/ni/nisystemlink-clients-python/issues/99)) ([`cba5106`](https://github.com/ni/nisystemlink-clients-python/commit/cba510629a142bffc8d9c5872d2f7a27bca2e8c3))
+
 ## v2.0.0 (2025-03-05)
 
 ### Feature
