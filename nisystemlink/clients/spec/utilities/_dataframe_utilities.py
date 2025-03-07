@@ -34,10 +34,10 @@ def convert_specs_to_dataframe(
         Callable[[List[Condition]], Dict]
     ] = __serialize_conditions,
 ) -> pd.DataFrame:
-    """Format specs with respect to the provided condition format.
+    """Creates a Pandas DataFrame for the specs.
 
     Args:
-        specs: List of specs of the specified products.
+        specs: List of specs.
         condition_format: Function which takes in a list of condition objects and returns
                           a dictionary of condition and its values. The dictionary keys
                           should be the condition name and the values should be the condition
@@ -214,7 +214,9 @@ def __serialize_numeric_condition_range(value: NumericConditionValue) -> List[st
         value: A condition's value with NumericConditionValue type.
 
     Returns:
-        The list of ranges of the given value in a specific format.
+        The list of ranges of the given condition where each range will be in
+        string format `[min: <value>; max: <value>; step: <value>]` if the corresponding
+        fields are not none.
     """
     if not value.range:
         return []

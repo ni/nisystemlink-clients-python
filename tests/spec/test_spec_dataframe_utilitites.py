@@ -52,7 +52,7 @@ def specs() -> List[Specification]:
             ],
             keywords=["Test specification only", "First"],
             properties={"Comments": "comma separated with unicode"},
-            workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+            workspace=uuid.uuid1().hex,
             id=uuid.uuid1().hex,
             created_at="2024-03-28T13:59:12.744Z",
             created_by=uuid.uuid1().hex,
@@ -110,73 +110,56 @@ def specs() -> List[Specification]:
 @pytest.mark.unit
 class TestSpecDataframeUtilities:
     def test__convert_specs_to_dataframe__returns_specs_dataframe(self, specs):
-        expected_specs_df = self.__expected_specs_dataframe(specs=specs)
-        expected_specs_df.pop("conditions")
-        properties_count = len(
-            [
-                column
-                for column in expected_specs_df.columns.to_list()
-                if column.startswith("properties.")
-            ]
-        )
-        keywords_column = expected_specs_df.pop("keywords")
-        expected_specs_df.insert(
-            loc=len(expected_specs_df.columns) - properties_count,
-            column="keywords",
-            value=keywords_column,
+        conditions_dict = [
+            {
+                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                "condition_Package": "D, QFIN",
+                "condition_Supply Voltage(mV)": None,
+            },
+            {
+                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+                "condition_Package": None,
+                "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
+            },
+            {
+                "condition_Temperature(C)": None,
+                "condition_Package": None,
+                "condition_Supply Voltage(mV)": None,
+            },
+        ]
+        properties_dict = [
+            {
+                "properties.Comments": "comma separated with unicode",
+                "properties.input": None,
+            },
+            {"properties.Comments": None, "properties.input": None},
+            {"properties.Comments": "comma separated", "properties.input": "voltage"},
+        ]
+        keywords_dict = [
+            {"keywords": ["Test specification only", "First"]},
+            {"keywords": None},
+            {"keywords": None},
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(
+            specs=specs,
+            conditions_dict=conditions_dict,
+            properties_dict=properties_dict,
+            keywords_dict=keywords_dict,
         )
 
         specs_df = convert_specs_to_dataframe(specs=specs)
-        specs_df = specs_df.drop(
-            columns=[
-                "condition_Temperature(C)",
-                "condition_Supply Voltage(mV)",
-                "condition_Package",
-            ]
-        )
 
         assert not specs_df.empty
         assert len(specs_df) == 3
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
-
-    def test__convert_specs_to_dataframe_without_condition_format__returns_dataframe_with_default_condition_format(
-        self, specs
-    ):
-        expected_specs_conditions = {
-            "condition_Temperature(C)": [
-                "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
-                "[min: -25.0; max: 85.0; step: 20.0]",
-            ],
-            "condition_Package": "D, QFIN",
-            "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
-        }
-
-        specs_df = convert_specs_to_dataframe(specs=specs)
-        specs_df_values = specs_df.to_dict()
-
-        assert not specs_df.empty
-        assert len(specs_df) == 3
-        assert (
-            specs_df_values["condition_Temperature(C)"][0]
-            == expected_specs_conditions["condition_Temperature(C)"][0]
-        )
-        assert (
-            specs_df_values["condition_Temperature(C)"][1]
-            == expected_specs_conditions["condition_Temperature(C)"][1]
-        )
-        assert pd.isna(specs_df_values["condition_Temperature(C)"][2])
-        assert (
-            specs_df_values["condition_Package"][0]
-            == expected_specs_conditions["condition_Package"]
-        )
-        assert pd.isna(specs_df_values["condition_Package"][1])
-        assert pd.isna(specs_df_values["condition_Package"][2])
-        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][0])
-        assert (
-            specs_df_values["condition_Supply Voltage(mV)"][1]
-            == expected_specs_conditions["condition_Supply Voltage(mV)"]
-        )
-        assert pd.isna(specs_df_values["condition_Supply Voltage(mV)"][2])
+        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["type"].dtype == "object"
+        assert isinstance(specs_df["type"].iloc[0], SpecificationType)
+        assert specs_df["limit"].dtype == "object"
+        assert isinstance(specs_df["limit"].iloc[0], SpecificationLimit)
+        assert specs_df["keywords"].dtype == "object"
+        assert isinstance(specs_df["keywords"].iloc[0], List)
 
     def test__convert_specs_to_dataframe_with_condition_format__returns_dataframe_with_specified_condition_format(
         self, specs
@@ -188,11 +171,42 @@ class TestSpecDataframeUtilities:
                 if condition.value and condition.value.discrete
             }
 
-        expected_specs_conditions = {
-            "Temperature": "[1.3, 1.5, 1.7]",
-            "Package": "['D', 'QFIN']",
-            "Supply Voltage": "[1.3, 1.5, 1.7]",
-        }
+        conditions_dict = [
+            {
+                "Temperature": "[1.3, 1.5, 1.7]",
+                "Package": "['D', 'QFIN']",
+                "Supply Voltage": None,
+            },
+            {
+                "Temperature": None,
+                "Package": None,
+                "Supply Voltage": "[1.3, 1.5, 1.7]",
+            },
+            {
+                "Temperature": None,
+                "Package": None,
+                "Supply Voltage(mV)": None,
+            },
+        ]
+        properties_dict = [
+            {
+                "properties.Comments": "comma separated with unicode",
+                "properties.input": None,
+            },
+            {"properties.Comments": None, "properties.input": None},
+            {"properties.Comments": "comma separated", "properties.input": "voltage"},
+        ]
+        keywords_dict = [
+            {"keywords": ["Test specification only", "First"]},
+            {"keywords": None},
+            {"keywords": None},
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(
+            specs=specs,
+            conditions_dict=conditions_dict,
+            properties_dict=properties_dict,
+            keywords_dict=keywords_dict,
+        )
 
         specs_df = convert_specs_to_dataframe(
             specs=specs,
@@ -201,17 +215,15 @@ class TestSpecDataframeUtilities:
 
         assert not specs_df.empty
         assert len(specs_df) == 3
-        assert specs_df["Temperature"][0] == expected_specs_conditions["Temperature"]
-        assert pd.isna(specs_df["Temperature"][1])
-        assert pd.isna(specs_df["Temperature"][2])
-        assert specs_df["Package"][0] == expected_specs_conditions["Package"]
-        assert pd.isna(specs_df["Package"][1])
-        assert pd.isna(specs_df["Package"][2])
-        assert pd.isna(specs_df["Supply Voltage"][0])
-        assert (
-            specs_df["Supply Voltage"][1] == expected_specs_conditions["Supply Voltage"]
-        )
-        assert pd.isna(specs_df["Supply Voltage"][2])
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["type"].dtype == "object"
+        assert isinstance(specs_df["type"].iloc[0], SpecificationType)
+        assert specs_df["limit"].dtype == "object"
+        assert isinstance(specs_df["limit"].iloc[0], SpecificationLimit)
+        assert specs_df["keywords"].dtype == "object"
+        assert isinstance(specs_df["keywords"].iloc[0], List)
 
     def test__convert_specs_to_dataframe_without_condition_values__returns_specs_dataframe_without_condition(
         self,
@@ -232,21 +244,18 @@ class TestSpecDataframeUtilities:
             ),
         ]
         expected_specs_df = self.__expected_specs_dataframe(specs=specs)
-        expected_specs_df.pop("conditions")
 
         specs_df = convert_specs_to_dataframe(specs=specs)
 
         assert not specs_df.empty
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
-    def __expected_specs_dataframe(self, specs: List[Specification]) -> pd.DataFrame:
+    def __expected_specs_dataframe(
+        self, specs, conditions_dict=None, properties_dict=None, keywords_dict=None
+    ):
         specs_dict = []
+        index = 0
         for spec in specs:
-            properties = (
-                {f"properties.{key}": value for key, value in spec.properties.items()}
-                if spec.properties
-                else {}
-            )
             specs_dict.append(
                 {
                     **{
@@ -259,8 +268,6 @@ class TestSpecDataframeUtilities:
                         "block": spec.block,
                         "limit": spec.limit,
                         "unit": spec.unit,
-                        "conditions": spec.conditions,
-                        "keywords": spec.keywords,
                         "workspace": spec.workspace,
                         "id": spec.id,
                         "created_at": spec.created_at,
@@ -269,10 +276,15 @@ class TestSpecDataframeUtilities:
                         "updated_by": spec.updated_by,
                         "version": spec.version,
                     },
-                    **properties,
+                    **(conditions_dict[index] if conditions_dict else {}),
+                    **(keywords_dict[index] if conditions_dict else {}),
+                    **(properties_dict[index] if conditions_dict else {}),
                 }
             )
+            index += 1
         expected_specs_df = pd.DataFrame(specs_dict)
         expected_specs_df.dropna(axis="columns", how="all", inplace=True)
+        print(expected_specs_df)
+        print(expected_specs_df.columns.to_list())
 
         return expected_specs_df
