@@ -56,15 +56,12 @@ def convert_specs_to_dataframe(
                           have values, it will not be added to the dataframe.
 
     Returns:
-        The list of specs of the specified product as a dataframe. Condition column will be formatted based on the
-        condition_format method. If condition_format is not passed while calling, default condition
-        formatting will be done. By default, if condition value is numeric condition value column names
-        will be in "condition_conditionName(conditionUnit)" format and column values will be in
-        "[min: num; max: num, step: num], num, num" format where data within the '[]' is numeric
-        condition range and other num values are numeric condition discrete values. And if condition
-        value is string condition value, the column header will be in "condition_conditionName" format
-        and column values will be in "str, str, str" format where str values are the condition discrete
-        values for a string condition.
+        A Pandas DataFrame with the each spec fields having a separate column.
+        Following fields are split into sub-columns.
+            - conditions: format of the condition columns are decided by the  `condition_format`
+            argument of this function.
+            - Properties: All the unique properties across all specs will be split into separate columns.
+            For example, properties.property1, properties.property2, etc.
     """
     specs_dict = [
         {
