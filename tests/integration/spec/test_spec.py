@@ -17,7 +17,6 @@ from nisystemlink.clients.spec.models import (
     SpecificationLimit,
     SpecificationProjection,
     SpecificationType,
-    StringConditionValue,
     UpdateSpecificationsRequest,
     UpdateSpecificationsRequestObject,
 )
@@ -69,24 +68,6 @@ def create_specs_for_query(create_specs, product):
             name="output voltage",
             limit=SpecificationLimit(min=1.2, max=1.5),
             unit="mV",
-            conditions=[
-                Condition(
-                    name="Temperature",
-                    value=NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
-                        range=[ConditionRange(min=-25, step=20, max=85)],
-                        discrete=[1.3, 1.5, 1.7],
-                        unit="C",
-                    ),
-                ),
-                Condition(
-                    name="Package",
-                    value=StringConditionValue(
-                        condition_type=ConditionType.STRING,
-                        discrete=["D", "QFIN"],
-                    ),
-                ),
-            ],
         ),
         CreateSpecificationsRequestObject(
             product_id=product,

@@ -99,6 +99,7 @@ def specs() -> List[Specification]:
             block="Amplifier",
             limit=SpecificationLimit(min=1.2, max=1.5),
             unit="mV",
+            properties={"Comments": "comma separated", "input": "voltage"},
         ),
     ]
 
@@ -109,7 +110,7 @@ def specs() -> List[Specification]:
 @pytest.mark.unit
 class TestSpecDataframeUtilities:
     def test__convert_specs_to_dataframe__returns_specs_dataframe(self, specs):
-        expected_specs_df = self.expected_specs_dataframe(specs=specs)
+        expected_specs_df = self.__expected_specs_dataframe(specs=specs)
         expected_specs_df.pop("conditions")
         properties_count = len(
             [
@@ -230,7 +231,7 @@ class TestSpecDataframeUtilities:
                 ],
             ),
         ]
-        expected_specs_df = self.expected_specs_dataframe(specs=specs)
+        expected_specs_df = self.__expected_specs_dataframe(specs=specs)
         expected_specs_df.pop("conditions")
 
         specs_df = convert_specs_to_dataframe(specs=specs)
@@ -238,11 +239,40 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
-    def expected_specs_dataframe(self, specs: pd.DataFrame) -> pd.DataFrame:
+    def __expected_specs_dataframe(self, specs: List[Specification]) -> pd.DataFrame:
         specs_dict = []
         for spec in specs:
-            specs_dict.append({key: value for key, value in vars(spec).items()})
-        expected_specs_df = pd.json_normalize(specs_dict)
+            properties = (
+                {f"properties.{key}": value for key, value in spec.properties.items()}
+                if spec.properties
+                else {}
+            )
+            specs_dict.append(
+                {
+                    **{
+                        "product_id": spec.product_id,
+                        "spec_id": spec.spec_id,
+                        "name": spec.name,
+                        "category": spec.category,
+                        "type": spec.type,
+                        "symbol": spec.symbol,
+                        "block": spec.block,
+                        "limit": spec.limit,
+                        "unit": spec.unit,
+                        "conditions": spec.conditions,
+                        "keywords": spec.keywords,
+                        "workspace": spec.workspace,
+                        "id": spec.id,
+                        "created_at": spec.created_at,
+                        "created_by": spec.created_by,
+                        "updated_at": spec.updated_at,
+                        "updated_by": spec.updated_by,
+                        "version": spec.version,
+                    },
+                    **properties,
+                }
+            )
+        expected_specs_df = pd.DataFrame(specs_dict)
         expected_specs_df.dropna(axis="columns", how="all", inplace=True)
 
         return expected_specs_df
