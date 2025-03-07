@@ -84,6 +84,11 @@ class TestProductDataframeUtilities:
             products_dataframe.columns.to_list()
             == expected_products_dataframe.columns.to_list()
         )
+        assert products_dataframe["updated_at"].dtype == "datetime64[ns]"
+        assert products_dataframe["file_ids"].dtype == "object"
+        assert isinstance(products_dataframe["file_ids"].iloc[0], List)
+        assert products_dataframe["keywords"].dtype == "object"
+        assert isinstance(products_dataframe["keywords"].iloc[0], List)
         pd.testing.assert_frame_equal(
             products_dataframe, expected_products_dataframe, check_dtype=True
         )
