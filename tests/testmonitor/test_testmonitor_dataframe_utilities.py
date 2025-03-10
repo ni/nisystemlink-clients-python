@@ -30,6 +30,7 @@ def mock_steps_data() -> List[Step]:
         started_at=datetime(2023, 3, 27, 18, 39, 49, tzinfo=timezone.utc),
         updated_at=datetime(2024, 2, 2, 14, 22, 4, 625155, tzinfo=timezone.utc),
         inputs=[
+            NamedValue(name="Input00", value="input_value_00"),
             NamedValue(name="Input11", value="input_value_11"),
             NamedValue(name="Input12", value="input_value_12"),
         ],
@@ -70,6 +71,7 @@ def mock_steps_data() -> List[Step]:
         started_at=datetime(2023, 3, 27, 18, 39, 49, tzinfo=timezone.utc),
         updated_at=datetime(2024, 2, 2, 14, 22, 4, 625255, tzinfo=timezone.utc),
         inputs=[
+            NamedValue(name="Input00", value="input_value_00"),
             NamedValue(name="Input21", value="input_value_21"),
             NamedValue(name="Input22", value="input_value_22"),
         ],
@@ -183,6 +185,7 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> DataFrame:
         "keywords",
         "status.status_type",
         "status.status_name",
+        "inputs.Input00",
         "inputs.Input11",
         "inputs.Input12",
         "inputs.Input21",
@@ -205,7 +208,7 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> DataFrame:
         "properties.property22",
     ]
 
-    return expected_dataframe.reindex(columns=expected_column_order)
+    return expected_dataframe.reindex(columns=expected_column_order, copy=False)
 
 
 @pytest.fixture
@@ -266,6 +269,7 @@ class TestTestMonitorDataframeUtilities:
                 "data.parameters.measurement",
                 "data.parameters.comparisonType",
                 "data.text",
+                "inputs.Input00",
                 "inputs.Input11",
                 "inputs.Input12",
                 "inputs.Input21",
