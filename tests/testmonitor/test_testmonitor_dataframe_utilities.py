@@ -57,7 +57,7 @@ def results() -> List[Result]:
             workspace=uuid.uuid1().hex,
         ),
         Result(
-            status=Status.FAILED(),
+            status=Status(status_type=StatusType.CUSTOM, status_name="custom_status"),
             started_at=datetime.datetime(
                 2018, 5, 7, 18, 58, 5, 219692, tzinfo=datetime.timezone.utc
             ),
@@ -91,8 +91,7 @@ class TestTestmonitorDataframeUtilities:
         pd.testing.assert_frame_equal(
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
-        assert results_dataframe["status.status_type"].dtype == "object"
-        assert isinstance(results_dataframe["status.status_type"].iloc[0], StatusType)
+        assert isinstance(results_dataframe["status"].iloc[0], str)
         assert results_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
         assert results_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
         assert results_dataframe["file_ids"].dtype == "object"
@@ -117,8 +116,7 @@ class TestTestmonitorDataframeUtilities:
         pd.testing.assert_frame_equal(
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
-        assert results_dataframe["status.status_type"].dtype == "object"
-        assert isinstance(results_dataframe["status.status_type"].iloc[0], StatusType)
+        assert isinstance(results_dataframe["status"].iloc[0], str)
         assert results_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
         assert results_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
         assert results_dataframe["file_ids"].dtype == "object"
@@ -143,8 +141,7 @@ class TestTestmonitorDataframeUtilities:
         pd.testing.assert_frame_equal(
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
-        assert results_dataframe["status.status_type"].dtype == "object"
-        assert isinstance(results_dataframe["status.status_type"].iloc[0], StatusType)
+        assert isinstance(results_dataframe["status"].iloc[0], str)
         assert results_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
         assert results_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
         assert results_dataframe["file_ids"].dtype == "object"
@@ -165,6 +162,10 @@ class TestTestmonitorDataframeUtilities:
     def __get_expected_results_dataframe(self, results: List[Result]):
         results_dict = []
         for result in results:
+            status = (
+                {f"status": result.status.status_type.value if result.status.status_type
+                    != "CUSTOM" else result.status.status_name}
+            )
             status_type_summary = (
                 {
                     f"status_type_summary.{key}": value
@@ -180,6 +181,7 @@ class TestTestmonitorDataframeUtilities:
             )
             results_dict.append(
                 {
+                    **status,
                     **{
                         "started_at": result.started_at,
                         "updated_at": result.updated_at,
@@ -195,12 +197,6 @@ class TestTestmonitorDataframeUtilities:
                         "file_ids": result.file_ids,
                         "data_table_ids": result.data_table_ids,
                         "workspace": result.workspace,
-                        "status.status_type": (
-                            result.status.status_type if result.status else None
-                        ),
-                        "status.status_name": (
-                            result.status.status_name if result.status else None
-                        ),
                     },
                     **status_type_summary,
                     **properties,

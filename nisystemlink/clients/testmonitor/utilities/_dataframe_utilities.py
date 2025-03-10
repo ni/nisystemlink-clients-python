@@ -25,7 +25,7 @@ def convert_results_to_dataframe(
             - Properties: All the properties will be split into separate columns. For example,
             properties.property1, properties.property2, etc.
     """
-    results_dict = [result.dict(exclude_none=True) for result in results]
+    results_dict = __format_results_dictionary(results)
     normalized_dataframe = pd.json_normalize(results_dict, sep=".")
     normalized_dataframe = __format_results_columns(
         results_dataframe=normalized_dataframe
@@ -34,6 +34,29 @@ def convert_results_to_dataframe(
         normalized_dataframe.set_index("id", inplace=True)
 
     return normalized_dataframe
+
+
+def __format_results_dictionary(results: List[Result]) -> List[dict]:
+    """Get list of results and modifies the status object.
+
+    Args:
+        results: List of results.
+
+    Returns:
+        A list of result fields as dictionary. If status.status_type is "CUSTOM" 
+            the status field takes the value of "status_name", else value of "status_type" is used.
+    """
+    return [
+        {
+            **(result_dict := result.dict(exclude_none=True)),
+            "status": (
+                result_dict["status"]["status_type"].value
+                if "status" in result_dict and result_dict["status"]["status_type"] != "CUSTOM"
+                else result_dict["status"]["status_name"]
+            )
+        }
+        for result in results
+    ]
 
 
 def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:
