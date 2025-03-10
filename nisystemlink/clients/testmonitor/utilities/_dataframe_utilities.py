@@ -31,13 +31,13 @@ def convert_results_to_dataframe(
         results_dataframe=normalized_dataframe
     )
     if set_id_as_index and "id" in normalized_dataframe.columns:
-        normalized_dataframe = normalized_dataframe.set_index("id")
+        normalized_dataframe.set_index("id", inplace=True)
 
     return normalized_dataframe
 
 
 def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:
-    """Format results column keep properties at the end.
+    """Format results column to keep properties at the end.
 
     Args:
         results_dataframe: Dataframe of results.
@@ -46,7 +46,7 @@ def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:
         Formatted dataframe of results.
     """
     column_headers = results_dataframe.columns.to_list()
-    formatted_column_headers = [
+    standard_column_headers = [
         header for header in column_headers if __is_standard_column_header(header)
     ]
     status_type_summary_header = [
@@ -57,13 +57,13 @@ def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:
     properties_headers = [
         header for header in column_headers if __is_property_header(header=header)
     ]
-    formatted_column_headers += status_type_summary_header + properties_headers
+    standard_column_headers += status_type_summary_header + properties_headers
 
-    return results_dataframe.reindex(columns=formatted_column_headers)
+    return results_dataframe.reindex(columns=standard_column_headers, copy=False)
 
 
 def __is_standard_column_header(header: str) -> bool:
-    """Check if column header is not a status type summary or property.
+    """Check if column header is not status type summary or property.
 
     Args:
         header: column header for results dataframe.
