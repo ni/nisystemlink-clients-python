@@ -42,23 +42,14 @@ def mock_steps_data() -> List[Step]:
             text="data1",
             parameters=[
                 {
-                    "name": "parameter_11",
+                    "name": "parameter_21",
                     "units": "A",
-                    "status": "Failed",
+                    "status": "Passed",
                     "lowLimit": "6.0",
                     "highLimit": "21.0",
                     "measurement": "11.0",
                     "comparisonType": "GTLT",
-                },
-                {
-                    "name": "parameter_12",
-                    "units": "B",
-                    "status": "Passed",
-                    "lowLimit": "7.0",
-                    "highLimit": "22.0",
-                    "measurement": "12.0",
-                    "comparisonType": "GTLT",
-                },
+                }
             ],
         ),
         has_children=False,

@@ -11,13 +11,6 @@ from pandas import DataFrame
 def convert_steps_to_dataframe(steps: List[Step]) -> DataFrame:
     """Converts a list of steps into a normalized dataframe.
 
-    - A new column would be created for unique `properties` across all steps. The property
-    columns would be named in the format `properties.property_name`.
-    - `Inputs` and `Outputs` are converted from a list of name-value pairs to a dict and then
-    normalized - similar to properties.
-    - For each `parameter` entry in `data`, a new row is added in the dataframe, with all the
-    other values are duplicated.
-
     Args:
         steps: A list of steps.
 
@@ -27,24 +20,23 @@ def convert_steps_to_dataframe(steps: List[Step]) -> DataFrame:
             fields in the input steps.
             - A new column would be created for unique `properties` across all steps. The property
             columns would be named in the format `properties.property_name`.
-            - `Inputs` and `Outputs` are converted from a list of name-value pairs to a dict and then
-            normalized - similar to properties.
-            - For each `parameter` entry in `data`, a new row is added in the dataframe, with all the
-            other values are duplicated.
+            - A new column would be created for unique `Inputs` and `Outputs` across all steps. The columns
+            would be named in the format `inputs.input_name` and `outputs.output_name` respectively.
+            - For each `parameter` entry in `data`, a new row is added in the dataframe, with data for
+            all other step fields are duplicated.
     """
     DATA_PARAMETERS = "data.parameters"
 
     restructured_steps = __restructure_steps(steps)
 
     steps_dataframe = pd.json_normalize(restructured_steps, sep=".")
-    if DATA_PARAMETERS in steps_dataframe.columns.to_list():
-        steps_dataframe = __explode_and_normalize(
-            steps_dataframe, DATA_PARAMETERS, f"{DATA_PARAMETERS}."
-        )
+    steps_dataframe = __explode_and_normalize(
+        steps_dataframe, DATA_PARAMETERS, f"{DATA_PARAMETERS}."
+    )
 
     grouped_columns = __group_step_columns(steps_dataframe.columns)
 
-    return steps_dataframe.reindex(columns=grouped_columns)
+    return steps_dataframe.reindex(columns=grouped_columns, copy=False)
 
 
 def __explode_and_normalize(
@@ -93,18 +85,18 @@ def __restructure_steps(steps: List[Step]) -> List[Dict[str, Any]]:
         List[Step]: Restructured steps - modification involves the conversion of list of inputs and outputs
         into dictionaries respectively.
     """
-    INPUTS = StepProjection.INPUTS.lower()
-    OUTPUTS = StepProjection.OUTPUTS.lower()
+    STEP_INPUTS = StepProjection.INPUTS.lower()
+    STEP_OUTPUTS = StepProjection.OUTPUTS.lower()
     restructured_steps = []
 
     for step in steps:
         step_dict = step.dict(exclude_none=True)
-        if INPUTS in step_dict:
-            step_dict[INPUTS] = (
+        if STEP_INPUTS in step_dict:
+            step_dict[STEP_INPUTS] = (
                 {item.name: item.value for item in step.inputs} if step.inputs else {}
             )
-        if OUTPUTS in step_dict:
-            step_dict[OUTPUTS] = (
+        if STEP_OUTPUTS in step_dict:
+            step_dict[STEP_OUTPUTS] = (
                 {item.name: item.value for item in step.outputs} if step.outputs else {}
             )
 
@@ -138,19 +130,16 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
 
     for column in dataframe_columns:
         column_lower = column.lower()
-        if (
-            StepProjection.DATA.lower() in column_lower
-            and column != StepProjection.DATA_MODEL.lower()
-        ):
-            grouped_columns[StepProjection.DATA].append(column)
-        elif StepProjection.INPUTS.lower() in column_lower:
-            grouped_columns[StepProjection.INPUTS].append(column)
-        elif StepProjection.OUTPUTS.lower() in column_lower:
-            grouped_columns[StepProjection.OUTPUTS].append(column)
-        elif StepProjection.PROPERTIES.lower() in column_lower:
-            grouped_columns[StepProjection.PROPERTIES].append(column)
-        else:
-            grouped_columns[GENERAL_CATEGORIES].append(column)
+        key = next(
+            (
+                category
+                for category in CATEGORY_KEYS
+                if category.lower() in column_lower
+                and column != StepProjection.DATA_MODEL.lower()
+            ),
+            GENERAL_CATEGORIES,
+        )
+        grouped_columns[key].append(column)
 
     return [
         column for category in CATEGORY_KEYS for column in grouped_columns[category]
