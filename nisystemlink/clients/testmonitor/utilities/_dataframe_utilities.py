@@ -26,7 +26,7 @@ def convert_results_to_dataframe(
             properties.property1, properties.property2, etc.
     """
     results_dict = [result.dict(exclude_none=True) for result in results]
-    results_dict_with_normalized_status = __format_results_status(results_dict)
+    results_dict_with_normalized_status = __normalize_results_status(results_dict)
     normalized_dataframe = pd.json_normalize(
         results_dict_with_normalized_status, sep="."
     )
@@ -39,7 +39,7 @@ def convert_results_to_dataframe(
     return normalized_dataframe
 
 
-def __format_results_status(results_dict: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def __normalize_results_status(results_dict: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Gets dictionary of results data and modifies the status object.
 
     Args:

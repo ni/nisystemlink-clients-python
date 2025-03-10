@@ -84,7 +84,7 @@ class TestTestmonitorDataframeUtilities:
             results=results
         )
 
-        results_dataframe = convert_results_to_dataframe(results=results)
+        results_dataframe = convert_results_to_dataframe(results=results, set_id_as_index=False)
 
         assert not results_dataframe.empty
         assert len(results_dataframe.columns.tolist()) == 20
@@ -109,7 +109,7 @@ class TestTestmonitorDataframeUtilities:
             results=results
         )
 
-        results_dataframe = convert_results_to_dataframe(results=results)
+        results_dataframe = convert_results_to_dataframe(results=results, set_id_as_index=False)
 
         assert not results_dataframe.empty
         assert len(results_dataframe.columns.tolist()) == 13
@@ -133,7 +133,7 @@ class TestTestmonitorDataframeUtilities:
         expected_results_dataframe = expected_results_dataframe.set_index("id")
 
         results_dataframe = convert_results_to_dataframe(
-            results=results, set_id_as_index=True
+            results=results
         )
 
         assert not results_dataframe.empty
