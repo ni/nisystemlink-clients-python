@@ -14,14 +14,21 @@ from nisystemlink.clients.spec.models._specification import (
 from nisystemlink.clients.spec.utilities._constants import DataFrameHeaders
 
 
-def serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
+def serialize_conditions_to_string(conditions: List[Condition]) -> Dict[str, str]:
     """Serialize conditions into desired format.
 
     Args:
         conditions: List of all conditions in a spec.
 
     Returns:
-        Conditions as a dictionary.
+        Conditions as a dictionary. The column header will be
+        "condition_<conditionName>(<conditionUnit>)".
+        The column value will be "[min: num; max: num, step: num], num, num"
+        where data within the '[]' is numeric condition range and other num
+        values are numeric condition discrete values.
+        The column value will be "str, str, str" - where str values are the
+        condition discrete values for a string condition. If the condition doesn't
+        have values, it will not be added to the dataframe.
     """
     return {
         __generate_condition_column_header(condition): ", ".join(
@@ -36,7 +43,7 @@ def convert_specs_to_dataframe(
     specs: List[Specification],
     condition_format: Optional[
         Callable[[List[Condition]], Dict]
-    ] = serialize_conditions,
+    ] = serialize_conditions_to_string,
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the specs.
 

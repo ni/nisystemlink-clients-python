@@ -16,6 +16,9 @@ from nisystemlink.clients.spec.models._specification import (
     SpecificationType,
 )
 from nisystemlink.clients.spec.utilities import convert_specs_to_dataframe
+from nisystemlink.clients.spec.utilities._dataframe_utilities import (
+    serialize_conditions_to_string,
+)
 
 
 @pytest.fixture(scope="class")
@@ -271,6 +274,28 @@ class TestSpecDataframeUtilities:
         assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
+
+    def test__serialize_conditions_to_string__returns_only_conditions_with_value_in_string_format(
+        self, specs
+    ):
+        expected_conditions_dict = [
+            {
+                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                "condition_Package": "D, QFIN",
+            },
+            {
+                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+                "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
+            },
+        ]
+
+        conditions_dict = [
+            serialize_conditions_to_string(spec.conditions)
+            for spec in specs
+            if spec.conditions
+        ]
+
+        assert conditions_dict == expected_conditions_dict
 
     def __expected_specs_dataframe(
         self, specs, conditions_dict=None, keywords_dict=None, properties_dict=None
