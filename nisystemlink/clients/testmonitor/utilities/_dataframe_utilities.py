@@ -27,9 +27,12 @@ def convert_steps_to_dataframe(steps: List[Step]) -> DataFrame:
     """
     DATA_PARAMETERS = "data.parameters"
 
-    restructured_steps = __restructure_steps(steps)
+    step_dicts = __convert_steps_to_dict(steps)
+    step_dict_with_normalized_inputs_outputs = __normalize_inputs_outputs(step_dicts)
 
-    steps_dataframe = pd.json_normalize(restructured_steps, sep=".")
+    steps_dataframe = pd.json_normalize(
+        step_dict_with_normalized_inputs_outputs, sep="."
+    )
     steps_dataframe = __explode_and_normalize(
         steps_dataframe, DATA_PARAMETERS, f"{DATA_PARAMETERS}."
     )
@@ -71,38 +74,47 @@ def __explode_and_normalize(
     return dataframe
 
 
-def __restructure_steps(steps: List[Step]) -> List[Dict[str, Any]]:
-    """Restructures a list of step responses by converting input and output lists into dictionaries.
-
-    Each dictionary maps input/output names to their corresponding values, making it easier to
-    normalize the data into a DataFrame. Without this transformation, inputs and outputs would
-    remain as lists within a single cell.
+def __convert_steps_to_dict(steps: List[Step]) -> List[Dict[str, Any]]:
+    """Converts a list of steps to dictionaries, excluding None values.
 
     Args:
-        steps: A list of step responses retrieved from the API.
+        steps: A list of steps.
 
     Returns:
-        List[Step]: Restructured steps - modification involves the conversion of list of inputs and outputs
-        into dictionaries respectively.
+        List[Dict[str, Any]]: A list of dictionaries containing step information.
+    """
+    return [step.dict(exclude_none=True) for step in steps]
+
+
+def __normalize_inputs_outputs(
+    steps_dict: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """Normalizes the input and output fields by converting them into dictionaries.
+
+    Args:
+        steps: A list of dictionaries with step information.
+
+    Returns:
+        List[Dict[str, Any]]: A list of step dictionaries with normalized input and output fields.
     """
     STEP_INPUTS = StepProjection.INPUTS.lower()
     STEP_OUTPUTS = StepProjection.OUTPUTS.lower()
-    restructured_steps = []
 
-    for step in steps:
-        step_dict = step.dict(exclude_none=True)
-        if STEP_INPUTS in step_dict:
-            step_dict[STEP_INPUTS] = (
-                {item.name: item.value for item in step.inputs} if step.inputs else {}
+    for step in steps_dict:
+        if STEP_INPUTS in step:
+            step[STEP_INPUTS] = (
+                {item["name"]: item["value"] for item in step[STEP_INPUTS]}
+                if step[STEP_INPUTS]
+                else {}
             )
-        if STEP_OUTPUTS in step_dict:
-            step_dict[STEP_OUTPUTS] = (
-                {item.name: item.value for item in step.outputs} if step.outputs else {}
+        if STEP_OUTPUTS in step:
+            step[STEP_OUTPUTS] = (
+                {item["name"]: item["value"] for item in step[STEP_OUTPUTS]}
+                if step[STEP_OUTPUTS]
+                else {}
             )
 
-        restructured_steps.append(step_dict)
-
-    return restructured_steps
+    return steps_dict
 
 
 def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
