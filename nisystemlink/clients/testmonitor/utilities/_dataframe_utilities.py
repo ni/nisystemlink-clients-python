@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List
 
 import pandas as pd
 from nisystemlink.clients.testmonitor.models import Result
@@ -6,7 +6,7 @@ from nisystemlink.clients.testmonitor.utilities.constants import DataFrameHeader
 
 
 def convert_results_to_dataframe(
-    results: List[Result], set_id_as_index: Optional[bool] = False
+    results: List[Result], set_id_as_index: bool = True
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the results.
 
@@ -25,8 +25,11 @@ def convert_results_to_dataframe(
             - Properties: All the properties will be split into separate columns. For example,
             properties.property1, properties.property2, etc.
     """
-    results_dict = __format_results_dictionary(results)
-    normalized_dataframe = pd.json_normalize(results_dict, sep=".")
+    results_dict = [result.dict(exclude_none=True) for result in results]
+    results_dict_with_normalized_status = __format_results_status(results_dict)
+    normalized_dataframe = pd.json_normalize(
+        results_dict_with_normalized_status, sep="."
+    )
     normalized_dataframe = __format_results_columns(
         results_dataframe=normalized_dataframe
     )
@@ -36,8 +39,8 @@ def convert_results_to_dataframe(
     return normalized_dataframe
 
 
-def __format_results_dictionary(results: List[Result]) -> List[dict]:
-    """Get list of results and modifies the status object.
+def __format_results_status(results_dict: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Gets dictionary of results data and modifies the status object.
 
     Args:
         results: List of results.
@@ -46,18 +49,14 @@ def __format_results_dictionary(results: List[Result]) -> List[dict]:
         A list of result fields as dictionary. If status.status_type is "CUSTOM"
             the status field takes the value of "status_name", else value of "status_type" is used.
     """
-    return [
-        {
-            **(result_dict := result.dict(exclude_none=True)),
-            "status": (
-                result_dict["status"]["status_type"].value
-                if "status" in result_dict
-                and result_dict["status"]["status_type"] != "CUSTOM"
-                else result_dict["status"]["status_name"]
-            ),
-        }
-        for result in results
-    ]
+    for result in results_dict:
+        status = result.get("status", {})
+        if status.get("status_type") == "CUSTOM":
+            result["status"] = status["status_name"]
+        else:
+            result["status"] = status["status_type"].value
+
+    return results_dict
 
 
 def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:
