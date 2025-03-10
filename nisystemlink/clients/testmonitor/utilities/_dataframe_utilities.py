@@ -43,7 +43,7 @@ def __format_results_dictionary(results: List[Result]) -> List[dict]:
         results: List of results.
 
     Returns:
-        A list of result fields as dictionary. If status.status_type is "CUSTOM" 
+        A list of result fields as dictionary. If status.status_type is "CUSTOM"
             the status field takes the value of "status_name", else value of "status_type" is used.
     """
     return [
@@ -51,9 +51,10 @@ def __format_results_dictionary(results: List[Result]) -> List[dict]:
             **(result_dict := result.dict(exclude_none=True)),
             "status": (
                 result_dict["status"]["status_type"].value
-                if "status" in result_dict and result_dict["status"]["status_type"] != "CUSTOM"
+                if "status" in result_dict
+                and result_dict["status"]["status_type"] != "CUSTOM"
                 else result_dict["status"]["status_name"]
-            )
+            ),
         }
         for result in results
     ]

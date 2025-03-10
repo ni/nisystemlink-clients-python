@@ -162,10 +162,13 @@ class TestTestmonitorDataframeUtilities:
     def __get_expected_results_dataframe(self, results: List[Result]):
         results_dict = []
         for result in results:
-            status = (
-                {f"status": result.status.status_type.value if result.status.status_type
-                    != "CUSTOM" else result.status.status_name}
-            )
+            status = {
+                "status": (
+                    result.status.status_type.value
+                    if result.status and result.status.status_type != "CUSTOM"
+                    else result.status.status_name if result.status else None
+                )
+            }
             status_type_summary = (
                 {
                     f"status_type_summary.{key}": value
@@ -181,7 +184,6 @@ class TestTestmonitorDataframeUtilities:
             )
             results_dict.append(
                 {
-                    **status,
                     **{
                         "started_at": result.started_at,
                         "updated_at": result.updated_at,
@@ -198,12 +200,16 @@ class TestTestmonitorDataframeUtilities:
                         "data_table_ids": result.data_table_ids,
                         "workspace": result.workspace,
                     },
+                    **status,
                     **status_type_summary,
                     **properties,
                 }
             )
 
         results_df = pd.DataFrame(results_dict)
+        results_df = results_df[
+            ["status"] + [col for col in results_df.columns if col != "status"]
+        ]
         results_df.dropna(axis="columns", how="all", inplace=True)
 
         return results_df
