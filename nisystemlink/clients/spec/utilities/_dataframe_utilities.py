@@ -6,11 +6,15 @@ from nisystemlink.clients.spec.models._condition import (
     NumericConditionValue,
     StringConditionValue,
 )
-from nisystemlink.clients.spec.models._specification import Specification
+from nisystemlink.clients.spec.models._specification import (
+    Specification,
+    SpecificationLimit,
+    SpecificationType,
+)
 from nisystemlink.clients.spec.utilities._constants import DataFrameHeaders
 
 
-def __serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
+def serialize_conditions(conditions: List[Condition]) -> Dict[str, str]:
     """Serialize conditions into desired format.
 
     Args:
@@ -32,7 +36,7 @@ def convert_specs_to_dataframe(
     specs: List[Specification],
     condition_format: Optional[
         Callable[[List[Condition]], Dict]
-    ] = __serialize_conditions,
+    ] = serialize_conditions,
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the specs.
 
@@ -43,7 +47,8 @@ def convert_specs_to_dataframe(
                           should be the condition name and the values should be the condition
                           value in any format you need. Keys will be used as the dataframe
                           column header and values will be used as the row cells for the
-                          respective column header. If not passed, default condition format will be used.
+                          respective column header. If not passed, default condition format will be used
+                          and if None is passed, conditions won't be included in the dataframe.
                           By default, for all the condition columns to be grouped
                           together in the dataframe, the dictionary key should have the prefix "condition_".
                           This is an optional parameter. By default column header will be
@@ -65,7 +70,13 @@ def convert_specs_to_dataframe(
     """
     specs_dict = [
         {
-            **{key: value for key, value in vars(spec).items() if key != "conditions"},
+            **{
+                key: value
+                for key, value in vars(spec).items()
+                if key not in ["type", "limit", "conditions"]
+            },
+            **(__serialize_type(spec.type) if spec.type else {}),
+            **(__serialize_limits(spec.limit) if spec.limit else {}),
             **(
                 condition_format(spec.conditions)
                 if condition_format and spec.conditions
@@ -82,6 +93,30 @@ def convert_specs_to_dataframe(
     return specs_dataframe
 
 
+def __serialize_limits(limit: SpecificationLimit) -> Dict[str, str]:
+    """Serialize limit into limit.min, limit.typical and limit.max.
+
+    Args:
+        limit: Limit of a spec.
+
+    Returns:
+        Limit as a dictionary.
+    """
+    return {f"limit.{key}": value for key, value in vars(limit).items()}
+
+
+def __serialize_type(type: SpecificationType) -> Dict[str, str]:
+    """Serialize type into it's string value.
+
+    Args:
+        type: Type of a spec.
+
+    Returns:
+        Type as a dictionary.
+    """
+    return {"type": type.name}
+
+
 def __format_specs_columns(specs_dataframe: pd.DataFrame) -> pd.DataFrame:
     """Format specs column to group conditions and keep properties and keywords at the end.
 
@@ -92,7 +127,7 @@ def __format_specs_columns(specs_dataframe: pd.DataFrame) -> pd.DataFrame:
         Formatted dataframe of specs.
     """
     column_headers = specs_dataframe.columns.to_list()
-    formatted_column_headers = [
+    standard_column_headers = [
         header for header in column_headers if __is_standard_column_header(header)
     ]
     condition_headers = [
@@ -101,8 +136,9 @@ def __format_specs_columns(specs_dataframe: pd.DataFrame) -> pd.DataFrame:
     properties_headers = [
         header for header in column_headers if __is_property_header(header=header)
     ]
-    formatted_column_headers += (
-        condition_headers
+    formatted_column_headers = (
+        standard_column_headers
+        + condition_headers
         + (["keywords"] if "keywords" in column_headers else [])
         + properties_headers
     )

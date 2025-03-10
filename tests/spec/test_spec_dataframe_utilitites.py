@@ -154,10 +154,6 @@ class TestSpecDataframeUtilities:
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
         assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
         assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
-        assert specs_df["type"].dtype == "object"
-        assert isinstance(specs_df["type"].iloc[0], SpecificationType)
-        assert specs_df["limit"].dtype == "object"
-        assert isinstance(specs_df["limit"].iloc[0], SpecificationLimit)
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
@@ -218,10 +214,6 @@ class TestSpecDataframeUtilities:
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
         assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
         assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
-        assert specs_df["type"].dtype == "object"
-        assert isinstance(specs_df["type"].iloc[0], SpecificationType)
-        assert specs_df["limit"].dtype == "object"
-        assert isinstance(specs_df["limit"].iloc[0], SpecificationLimit)
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
@@ -250,8 +242,38 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
+    def test__convert_specs_to_dataframe_when_condtion_format_none__returns_dataframe_without_condition(
+        self, specs
+    ):
+        properties_dict = [
+            {
+                "properties.Comments": "comma separated with unicode",
+                "properties.input": None,
+            },
+            {"properties.Comments": None, "properties.input": None},
+            {"properties.Comments": "comma separated", "properties.input": "voltage"},
+        ]
+        keywords_dict = [
+            {"keywords": ["Test specification only", "First"]},
+            {"keywords": None},
+            {"keywords": None},
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(
+            specs=specs, properties_dict=properties_dict, keywords_dict=keywords_dict
+        )
+
+        specs_df = convert_specs_to_dataframe(specs=specs, condition_format=None)
+
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["keywords"].dtype == "object"
+        assert isinstance(specs_df["keywords"].iloc[0], List)
+
     def __expected_specs_dataframe(
-        self, specs, conditions_dict=None, properties_dict=None, keywords_dict=None
+        self, specs, conditions_dict=None, keywords_dict=None, properties_dict=None
     ):
         specs_dict = []
         index = 0
@@ -263,10 +285,8 @@ class TestSpecDataframeUtilities:
                         "spec_id": spec.spec_id,
                         "name": spec.name,
                         "category": spec.category,
-                        "type": spec.type,
                         "symbol": spec.symbol,
                         "block": spec.block,
-                        "limit": spec.limit,
                         "unit": spec.unit,
                         "workspace": spec.workspace,
                         "id": spec.id,
@@ -275,10 +295,14 @@ class TestSpecDataframeUtilities:
                         "updated_at": spec.updated_at,
                         "updated_by": spec.updated_by,
                         "version": spec.version,
+                        "type": spec.type.name if spec.type else None,
+                        "limit.min": spec.limit.min if spec.limit else None,
+                        "limit.typical": spec.limit.typical if spec.limit else None,
+                        "limit.max": spec.limit.max if spec.limit else None,
                     },
                     **(conditions_dict[index] if conditions_dict else {}),
-                    **(keywords_dict[index] if conditions_dict else {}),
-                    **(properties_dict[index] if conditions_dict else {}),
+                    **(keywords_dict[index] if keywords_dict else {}),
+                    **(properties_dict[index] if properties_dict else {}),
                 }
             )
             index += 1
