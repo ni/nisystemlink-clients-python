@@ -251,8 +251,6 @@ class TestTestMonitorDataframeUtilities:
         """Test case when the input steps data is empty."""
         steps_dataframe = convert_steps_to_dataframe(empty_steps_data)
 
-        print(steps_dataframe)
-
         assert steps_dataframe.empty
 
     def test__convert_steps_to_dataframe__with_missing_fields(
@@ -263,6 +261,7 @@ class TestTestMonitorDataframeUtilities:
         for step in steps:
             step.path_ids = None
             step.data = None
+            step.inputs = None
 
         steps_dataframe = convert_steps_to_dataframe(steps)
         expected_steps_dataframe = expected_steps_dataframe.drop(
@@ -276,6 +275,10 @@ class TestTestMonitorDataframeUtilities:
                 "data.parameters.measurement",
                 "data.parameters.comparisonType",
                 "data.text",
+                "inputs.Input11",
+                "inputs.Input12",
+                "inputs.Input21",
+                "inputs.Input22",
             ]
         )
         expected_steps_dataframe = expected_steps_dataframe.drop_duplicates(
