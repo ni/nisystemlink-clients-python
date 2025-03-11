@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 import pandas as pd
 from nisystemlink.clients.testmonitor.models import Result, Step, StepProjection
@@ -39,11 +39,19 @@ def convert_results_to_dataframe(
     return normalized_dataframe
 
 
-def convert_steps_to_dataframe(steps: List[Step]) -> pd.DataFrame:
+def convert_steps_to_dataframe(
+    steps: List[Step],
+    is_valid_measurement: Optional[Callable[[Dict[str, Any]], bool]] = None,
+) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
 
     Args:
         steps: A list of steps.
+        is_valid_measurement: Optional function to check if a measurement is valid. The method takes
+            a dictionary as input and returns a boolean value. If the function is not provided, the
+            default behavior is to keep only those measurements that have both 'name' and 'measurement' fields.
+            If none of the measurement data have the desired fields, the data.parameters will not
+            appear in the dataframe.
 
     Returns:
         DataFrame:
@@ -57,7 +65,7 @@ def convert_steps_to_dataframe(steps: List[Step]) -> pd.DataFrame:
             all other step fields are duplicated.
     """
     DATA_PARAMETERS = "data.parameters"
-    step_dicts = __convert_steps_to_dict(steps)
+    step_dicts = __convert_steps_to_dict(steps, is_valid_measurement)
     steps_dataframe = pd.json_normalize(step_dicts, sep=".")
     steps_dataframe = __explode_and_normalize(
         steps_dataframe, DATA_PARAMETERS, f"{DATA_PARAMETERS}."
@@ -156,7 +164,10 @@ def __is_property_header(header: str) -> bool:
     return header.startswith(DataFrameHeaders.PROPERTY_COLUMN_HEADER_PREFIX)
 
 
-def __convert_steps_to_dict(steps: List[Step]) -> List[Dict[str, Any]]:
+def __convert_steps_to_dict(
+    steps: List[Step],
+    is_valid_measurement: Optional[Callable[[Dict[str, Any]], bool]] = None,
+) -> List[Dict[str, Any]]:
     """Converts a list of steps to dictionaries, excluding None values.
 
     Args:
@@ -168,10 +179,42 @@ def __convert_steps_to_dict(steps: List[Step]) -> List[Dict[str, Any]]:
     steps_dict = []
     for step in steps:
         single_step_dict = step.dict(exclude_none=True)
+
+        if step.data is not None and step.data.parameters is not None:
+            single_step_dict["data"]["parameters"] = __get_valid_data_parameters(
+                single_step_dict, is_valid_measurement
+            )
+
         __normalize_inputs_outputs(single_step_dict, step)
         __normalize_step_status(single_step_dict)
         steps_dict.append(single_step_dict)
     return steps_dict
+
+
+def __get_valid_data_parameters(
+    step_dict: Dict[str, Any],
+    is_valid_measurement: Optional[Callable[[Dict[str, Any]], bool]] = None,
+) -> List[Dict[str, Any]]:
+    """Gets valid measurement data parameters from the step dictionary.
+
+    Args:
+        step_dict: A dictionary with step information.
+        is_valid_measurement: Optional callback function to check if a measurement is valid. The method takes
+            a dictionary as input and returns a boolean value. If the function is not provided, the
+            default behavior is to keep only those measurements that have both 'name' and 'measurement' fields.
+
+    Returns:
+        List[Dict[str, Any]]: A list of dictionaries containing valid measurement data.
+    """
+    allowed_measurement_keys = ["name", "units"]
+    valid_measurement_parameters = []
+    for parameter in step_dict["data"]["parameters"]:
+        if (is_valid_measurement and is_valid_measurement(parameter)) or all(
+            key in parameter for key in allowed_measurement_keys
+        ):
+            valid_measurement_parameters.append(parameter)
+
+    return valid_measurement_parameters
 
 
 def __normalize_inputs_outputs(

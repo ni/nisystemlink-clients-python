@@ -174,7 +174,6 @@ def mock_steps_data() -> List[Step]:
                     "status": "Passed",
                     "lowLimit": "7.0",
                     "highLimit": "22.0",
-                    "measurement": "12.0",
                     "comparisonType": "GTLT",
                 },
             ],
@@ -210,38 +209,42 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> pd.DataFrame:
         if not (step.data and step.data.parameters):
             continue
         for parametric_data in step.data.parameters:
-            parameter_data = {
-                f"data.parameters.{key}": value
-                for key, value in parametric_data.dict().items()
-            }
+            if (
+                "name" in parametric_data.dict()
+                and "measurement" in parametric_data.dict()
+            ):
+                parameter_data = {
+                    f"data.parameters.{key}": value
+                    for key, value in parametric_data.dict().items()
+                }
 
-            restructured_step = {
-                "name": step.name,
-                "step_type": step.step_type,
-                "step_id": step.step_id,
-                "parent_id": step.parent_id,
-                "result_id": step.result_id,
-                "path": step.path,
-                "path_ids": step.path_ids,
-                "status": (
-                    step.status.status_type.value
-                    if step.status and step.status.status_type != "CUSTOM"
-                    else step.status.status_name if step.status else None
-                ),
-                "total_time_in_seconds": step.total_time_in_seconds,
-                "started_at": step.started_at,
-                "updated_at": step.updated_at,
-                "data_model": step.data_model,
-                "has_children": step.has_children,
-                "workspace": step.workspace,
-                "keywords": step.keywords,
-                **inputs,
-                **outputs,
-                "data.text": step.data.text,
-                **parameter_data,
-                **properties,
-            }
-            restructured_mock_steps.append(restructured_step)
+                restructured_step = {
+                    "name": step.name,
+                    "step_type": step.step_type,
+                    "step_id": step.step_id,
+                    "parent_id": step.parent_id,
+                    "result_id": step.result_id,
+                    "path": step.path,
+                    "path_ids": step.path_ids,
+                    "status": (
+                        step.status.status_type.value
+                        if step.status and step.status.status_type != "CUSTOM"
+                        else step.status.status_name if step.status else None
+                    ),
+                    "total_time_in_seconds": step.total_time_in_seconds,
+                    "started_at": step.started_at,
+                    "updated_at": step.updated_at,
+                    "data_model": step.data_model,
+                    "has_children": step.has_children,
+                    "workspace": step.workspace,
+                    "keywords": step.keywords,
+                    **inputs,
+                    **outputs,
+                    "data.text": step.data.text,
+                    **parameter_data,
+                    **properties,
+                }
+                restructured_mock_steps.append(restructured_step)
     expected_dataframe = pd.DataFrame(restructured_mock_steps)
     expected_column_order = [
         "name",
@@ -291,6 +294,7 @@ def empty_steps_data() -> List:
 
 
 @pytest.mark.enterprise
+@pytest.mark.unit
 class TestTestmonitorDataframeUtilities:
     def test__convert_results_with_all_fields_to_dataframe__returns_whole_results_dataframe(
         self, results
