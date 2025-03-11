@@ -253,7 +253,7 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
             (
                 category
                 for category in CATEGORY_KEYS
-                if column_lower.startswith(f"{category.lower()}.")
+                if column_lower.startswith(category.lower())
                 and column != StepProjection.DATA_MODEL.lower()
             ),
             GENERAL_CATEGORIES,
