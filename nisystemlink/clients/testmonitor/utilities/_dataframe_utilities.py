@@ -41,8 +41,10 @@ def convert_results_to_dataframe(
 
 def convert_steps_to_dataframe(steps: List[Step]) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
+
     Args:
         steps: A list of steps.
+
     Returns:
         DataFrame:
             - A Pandas DataFrame containing the steps data. The DataFrame would consist of all the
@@ -156,8 +158,10 @@ def __is_property_header(header: str) -> bool:
 
 def __convert_steps_to_dict(steps: List[Step]) -> List[Dict[str, Any]]:
     """Converts a list of steps to dictionaries, excluding None values.
+
     Args:
         steps: A list of steps.
+
     Returns:
         List[Dict[str, Any]]: A list of dictionaries containing step information.
     """
@@ -174,9 +178,11 @@ def __normalize_inputs_outputs(
     step: Step,
 ) -> None:
     """Normalizes the input and output fields by converting them into dictionaries.
+
     Args:
         step_dict: A dictionary with step information.
         step: A Step object containing inputs and outputs.
+
     Returns:
         None: The function modifies step_dict in place.
     """
@@ -200,10 +206,12 @@ def __explode_and_normalize(
     transforming each list element into a separate row. After exploding, it normalizes the
     nested data into flat columns using the specified prefix, making it easier to analyze
     and manipulate. The new columns are added to the original dataframe.
+
     Args:
         dataframe: The input DataFrame that contains the column to explode and normalize.
         column: The name of the column in the DataFrame that contains the list-like data to explode.
         prefix: The prefix to add to the new column names created during the normalization process.
+
     Returns:
         DataFrame:
         - A new DataFrame with the exploded rows and the normalized columns, all combined
@@ -223,8 +231,10 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
     """Groups and orders dataframe columns into predefined categories to maintain a consistent structure.
     When normalizing steps into a dataframe, new input, output, or property fields may be added at the end,
     disrupting the expected column order. This function ensures columns are grouped properly.
+
     Args:
         dataframe_columns: The list of all columns from the normalized dataframe.
+
     Returns:
         List[str]: A list containing grouped and ordered columns.
     """
