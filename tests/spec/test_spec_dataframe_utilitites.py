@@ -1,6 +1,7 @@
 import uuid
 from typing import Dict, List
 
+import numpy as np
 import pandas as pd
 import pytest
 from nisystemlink.clients.spec.models._condition import (
@@ -17,7 +18,7 @@ from nisystemlink.clients.spec.models._specification import (
 )
 from nisystemlink.clients.spec.utilities import convert_specs_to_dataframe
 from nisystemlink.clients.spec.utilities._dataframe_utilities import (
-    serialize_conditions_to_string,
+    summarize_conditions_as_a_string,
 )
 
 
@@ -114,21 +115,27 @@ def specs() -> List[Specification]:
 class TestSpecDataframeUtilities:
     def test__convert_specs_to_dataframe__returns_specs_dataframe(self, specs):
         conditions_dict = [
-            {
-                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
-                "condition_Package": "D, QFIN",
-                "condition_Supply Voltage(mV)": None,
-            },
-            {
-                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
-                "condition_Package": None,
-                "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
-            },
-            {
-                "condition_Temperature(C)": None,
-                "condition_Package": None,
-                "condition_Supply Voltage(mV)": None,
-            },
+            [
+                {
+                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                    "condition_Package": "D, QFIN",
+                    "condition_Supply Voltage(mV)": None,
+                }
+            ],
+            [
+                {
+                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+                    "condition_Package": None,
+                    "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
+                }
+            ],
+            [
+                {
+                    "condition_Temperature(C)": None,
+                    "condition_Package": None,
+                    "condition_Supply Voltage(mV)": None,
+                }
+            ],
         ]
         properties_dict = [
             {
@@ -150,7 +157,9 @@ class TestSpecDataframeUtilities:
             keywords_dict=keywords_dict,
         )
 
-        specs_df = convert_specs_to_dataframe(specs=specs)
+        specs_df = convert_specs_to_dataframe(
+            specs=specs, condition_format=summarize_conditions_as_a_string
+        )
 
         assert not specs_df.empty
         assert len(specs_df) == 3
@@ -163,29 +172,37 @@ class TestSpecDataframeUtilities:
     def test__convert_specs_to_dataframe_with_condition_format__returns_dataframe_with_specified_condition_format(
         self, specs
     ):
-        def format_conditions(conditions: List[Condition]) -> Dict[str, str]:
-            return {
-                str(condition.name): str(condition.value.discrete)
-                for condition in conditions
-                if condition.value and condition.value.discrete
-            }
+        def format_conditions(conditions: List[Condition]) -> List[Dict[str, str]]:
+            return [
+                {
+                    str(condition.name): str(condition.value.discrete)
+                    for condition in conditions
+                    if condition.value and condition.value.discrete
+                }
+            ]
 
         conditions_dict = [
-            {
-                "Temperature": "[1.3, 1.5, 1.7]",
-                "Package": "['D', 'QFIN']",
-                "Supply Voltage": None,
-            },
-            {
-                "Temperature": None,
-                "Package": None,
-                "Supply Voltage": "[1.3, 1.5, 1.7]",
-            },
-            {
-                "Temperature": None,
-                "Package": None,
-                "Supply Voltage(mV)": None,
-            },
+            [
+                {
+                    "Temperature": "[1.3, 1.5, 1.7]",
+                    "Package": "['D', 'QFIN']",
+                    "Supply Voltage": None,
+                }
+            ],
+            [
+                {
+                    "Temperature": None,
+                    "Package": None,
+                    "Supply Voltage": "[1.3, 1.5, 1.7]",
+                }
+            ],
+            [
+                {
+                    "Temperature": None,
+                    "Package": None,
+                    "Supply Voltage(mV)": None,
+                }
+            ],
         ]
         properties_dict = [
             {
@@ -245,9 +262,48 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
-    def test__convert_specs_to_dataframe_when_condtion_format_none__returns_dataframe_without_condition(
+    def test__convert_specs_to_dataframe_when_condtion_format_none__returns_dataframe_with_default_condition_format(
         self, specs
     ):
+        conditions_dict = [
+            [
+                {
+                    "Temperature": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="C",
+                    ),
+                    "Package": StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["D", "QFIN"],
+                    ),
+                    "Supply Voltage": None,
+                }
+            ],
+            [
+                {
+                    "Temperature": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        unit="C",
+                    ),
+                    "Package": None,
+                    "Supply Voltage": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="mV",
+                    ),
+                }
+            ],
+            [
+                {
+                    "Temperature": None,
+                    "Package": None,
+                    "Supply Voltage(mV)": None,
+                }
+            ],
+        ]
         properties_dict = [
             {
                 "properties.Comments": "comma separated with unicode",
@@ -262,7 +318,10 @@ class TestSpecDataframeUtilities:
             {"keywords": None},
         ]
         expected_specs_df = self.__expected_specs_dataframe(
-            specs=specs, properties_dict=properties_dict, keywords_dict=keywords_dict
+            specs=specs,
+            conditions_dict=conditions_dict,
+            properties_dict=properties_dict,
+            keywords_dict=keywords_dict,
         )
 
         specs_df = convert_specs_to_dataframe(specs=specs, condition_format=None)
@@ -279,18 +338,22 @@ class TestSpecDataframeUtilities:
         self, specs
     ):
         expected_conditions_dict = [
-            {
-                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
-                "condition_Package": "D, QFIN",
-            },
-            {
-                "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
-                "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
-            },
+            [
+                {
+                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], 1.3, 1.5, 1.7",
+                    "condition_Package": "D, QFIN",
+                }
+            ],
+            [
+                {
+                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+                    "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
+                }
+            ],
         ]
 
         conditions_dict = [
-            serialize_conditions_to_string(spec.conditions)
+            summarize_conditions_as_a_string(spec.conditions)
             for spec in specs
             if spec.conditions
         ]
@@ -303,35 +366,40 @@ class TestSpecDataframeUtilities:
         specs_dict = []
         index = 0
         for spec in specs:
-            specs_dict.append(
-                {
-                    **{
-                        "product_id": spec.product_id,
-                        "spec_id": spec.spec_id,
-                        "name": spec.name,
-                        "category": spec.category,
-                        "symbol": spec.symbol,
-                        "block": spec.block,
-                        "unit": spec.unit,
-                        "workspace": spec.workspace,
-                        "id": spec.id,
-                        "created_at": spec.created_at,
-                        "created_by": spec.created_by,
-                        "updated_at": spec.updated_at,
-                        "updated_by": spec.updated_by,
-                        "version": spec.version,
-                        "type": spec.type.name if spec.type else None,
-                        "limit.min": spec.limit.min if spec.limit else None,
-                        "limit.typical": spec.limit.typical if spec.limit else None,
-                        "limit.max": spec.limit.max if spec.limit else None,
-                    },
-                    **(conditions_dict[index] if conditions_dict else {}),
-                    **(keywords_dict[index] if keywords_dict else {}),
-                    **(properties_dict[index] if properties_dict else {}),
-                }
-            )
+            for condition in (
+                conditions_dict[index]
+                if (conditions_dict and conditions_dict[index])
+                else [{}]
+            ):
+                specs_dict.append(
+                    {
+                        **{
+                            "product_id": spec.product_id,
+                            "spec_id": spec.spec_id,
+                            "name": spec.name,
+                            "category": spec.category,
+                            "symbol": spec.symbol,
+                            "block": spec.block,
+                            "unit": spec.unit,
+                            "workspace": spec.workspace,
+                            "id": spec.id,
+                            "created_at": spec.created_at,
+                            "created_by": spec.created_by,
+                            "updated_at": spec.updated_at,
+                            "updated_by": spec.updated_by,
+                            "version": spec.version,
+                            "type": spec.type.name if spec.type else None,
+                            "limit.min": spec.limit.min if spec.limit else None,
+                            "limit.typical": spec.limit.typical if spec.limit else None,
+                            "limit.max": spec.limit.max if spec.limit else None,
+                        },
+                        **{key: value for key, value in condition.items()},
+                        **(keywords_dict[index] if keywords_dict else {}),
+                        **(properties_dict[index] if properties_dict else {}),
+                    }
+                )
             index += 1
-        expected_specs_df = pd.DataFrame(specs_dict)
+        expected_specs_df = pd.DataFrame(specs_dict).replace({None: np.nan})
         expected_specs_df.dropna(axis="columns", how="all", inplace=True)
 
         return expected_specs_df

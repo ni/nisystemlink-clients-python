@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
 from nisystemlink.clients.spec.models._condition import (
@@ -14,14 +14,17 @@ from nisystemlink.clients.spec.models._specification import (
 from nisystemlink.clients.spec.utilities._constants import DataFrameHeaders
 
 
-def serialize_conditions_to_string(conditions: List[Condition]) -> Dict[str, str]:
-    """Serialize conditions into desired format.
+def summarize_conditions_as_a_string(
+    conditions: List[Condition],
+) -> List[Dict[str, str]]:
+    """Converts the condition values to an easily readable string format that summarizes
+    either of numeric or string condition.
 
     Args:
         conditions: List of all conditions in a spec.
 
     Returns:
-        Conditions as a dictionary. The column header will be
+        Conditions as a list of dictionary. The column header will be
         "condition_<conditionName>(<conditionUnit>)".
         The column value will be "[min: num; max: num, step: num], num, num"
         where data within the '[]' is numeric condition range and other num
@@ -30,20 +33,22 @@ def serialize_conditions_to_string(conditions: List[Condition]) -> Dict[str, str
         condition discrete values for a string condition. If the condition doesn't
         have values, it will not be added to the dataframe.
     """
-    return {
-        __generate_condition_column_header(condition): ", ".join(
-            __get_condition_values(condition)
-        )
-        for condition in conditions
-        if condition.name and condition.value
-    }
+    return [
+        {
+            __generate_condition_column_header(condition): ", ".join(
+                __serialize_condition_value(condition)
+            )
+            for condition in conditions
+            if condition.name and condition.value
+        }
+    ]
 
 
 def convert_specs_to_dataframe(
     specs: List[Specification],
     condition_format: Optional[
-        Callable[[List[Condition]], Dict]
-    ] = serialize_conditions_to_string,
+        Callable[[List[Condition]], List[Dict[str, Any]]]
+    ] = None,
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the specs.
 
@@ -75,22 +80,26 @@ def convert_specs_to_dataframe(
             - Properties: All the unique properties across all specs will be split into separate columns.
             For example, properties.property1, properties.property2, etc.
     """
+    if not condition_format:
+        condition_format = __default_condition_forrmatting
+
     specs_dict = [
-        {
-            **{
-                key: value
-                for key, value in vars(spec).items()
-                if key not in ["type", "limit", "conditions"]
-            },
-            **(__serialize_type(spec.type) if spec.type else {}),
-            **(__serialize_limits(spec.limit) if spec.limit else {}),
-            **(
-                condition_format(spec.conditions)
-                if condition_format and spec.conditions
-                else {}
-            ),
-        }
+        (
+            {
+                **{
+                    key: value
+                    for key, value in vars(spec).items()
+                    if key not in ["type", "limit", "conditions"]
+                },
+                **(__serialize_type(spec.type) if spec.type else {}),
+                **(__serialize_limits(spec.limit) if spec.limit else {}),
+                **{key: value for key, value in condition.items()},
+            }
+        )
         for spec in specs
+        for condition in (
+            condition_format(spec.conditions) if spec.conditions else [{}]
+        )
     ]
 
     specs_dataframe = pd.json_normalize(specs_dict)
@@ -98,6 +107,28 @@ def convert_specs_to_dataframe(
     specs_dataframe.dropna(axis="columns", how="all", inplace=True)
 
     return specs_dataframe
+
+
+def __default_condition_forrmatting(
+    conditions: List[Condition],
+) -> List[Dict[str, Any]]:
+    """Convert conditions into defauilt format.
+
+    Args:
+        conditions: List of all conditions in a spec.
+
+    Returns:
+        Conditions as a list of dictionary. The key will be
+        the condition name and the value will be the condition value which is
+        either Numeric Condition Value, String Condition Value or None.
+    """
+    return [
+        {
+            condition.name: condition.value
+            for condition in conditions
+            if condition.name and condition.value
+        }
+    ]
 
 
 def __serialize_limits(limit: SpecificationLimit) -> Dict[str, str]:
@@ -228,7 +259,7 @@ def __generate_condition_column_header(condition: Condition) -> str:
     return f"condition_{name}{unit}"
 
 
-def __get_condition_values(condition: Condition) -> List[str]:
+def __serialize_condition_value(condition: Condition) -> List[str]:
     """Get ranges and discrete values of a condition.
 
     Args:
