@@ -28,11 +28,8 @@ def convert_steps_to_dataframe(steps: List[Step]) -> DataFrame:
     DATA_PARAMETERS = "data.parameters"
 
     step_dicts = __convert_steps_to_dict(steps)
-    step_dict_with_normalized_inputs_outputs = __normalize_inputs_outputs(step_dicts)
 
-    steps_dataframe = pd.json_normalize(
-        step_dict_with_normalized_inputs_outputs, sep="."
-    )
+    steps_dataframe = pd.json_normalize(step_dicts, sep=".")
     steps_dataframe = __explode_and_normalize(
         steps_dataframe, DATA_PARAMETERS, f"{DATA_PARAMETERS}."
     )
@@ -40,6 +37,52 @@ def convert_steps_to_dataframe(steps: List[Step]) -> DataFrame:
     grouped_columns = __group_step_columns(steps_dataframe.columns)
 
     return steps_dataframe.reindex(columns=grouped_columns, copy=False)
+
+
+def __convert_steps_to_dict(steps: List[Step]) -> List[Dict[str, Any]]:
+    """Converts a list of steps to dictionaries, excluding None values.
+
+    Args:
+        steps: A list of steps.
+
+    Returns:
+        List[Dict[str, Any]]: A list of dictionaries containing step information.
+    """
+    steps_dict = []
+
+    for step in steps:
+        single_step_dict = step.dict(exclude_none=True)
+        __normalize_inputs_outputs(single_step_dict, step)
+        steps_dict.append(single_step_dict)
+
+    return steps_dict
+
+
+def __normalize_inputs_outputs(
+    step_dict: Dict[str, Any],
+    step: Step,
+) -> None:
+    """Normalizes the input and output fields by converting them into dictionaries.
+
+    Args:
+        step_dict: A dictionary with step information.
+        step: A Step object containing inputs and outputs.
+
+    Returns:
+        None: The function modifies step_dict in place.
+    """
+    STEP_INPUTS = StepProjection.INPUTS.lower()
+    STEP_OUTPUTS = StepProjection.OUTPUTS.lower()
+
+    if STEP_INPUTS in step_dict:
+        step_dict[STEP_INPUTS] = (
+            {item.name: item.value for item in step.inputs} if step.inputs else {}
+        )
+
+    if STEP_OUTPUTS in step_dict:
+        step_dict[STEP_OUTPUTS] = (
+            {item.name: item.value for item in step.outputs} if step.outputs else {}
+        )
 
 
 def __explode_and_normalize(
@@ -74,49 +117,6 @@ def __explode_and_normalize(
     return dataframe
 
 
-def __convert_steps_to_dict(steps: List[Step]) -> List[Dict[str, Any]]:
-    """Converts a list of steps to dictionaries, excluding None values.
-
-    Args:
-        steps: A list of steps.
-
-    Returns:
-        List[Dict[str, Any]]: A list of dictionaries containing step information.
-    """
-    return [step.dict(exclude_none=True) for step in steps]
-
-
-def __normalize_inputs_outputs(
-    steps_dict: List[Dict[str, Any]]
-) -> List[Dict[str, Any]]:
-    """Normalizes the input and output fields by converting them into dictionaries.
-
-    Args:
-        steps: A list of dictionaries with step information.
-
-    Returns:
-        List[Dict[str, Any]]: A list of step dictionaries with normalized input and output fields.
-    """
-    STEP_INPUTS = StepProjection.INPUTS.lower()
-    STEP_OUTPUTS = StepProjection.OUTPUTS.lower()
-
-    for step in steps_dict:
-        if STEP_INPUTS in step:
-            step[STEP_INPUTS] = (
-                {item["name"]: item["value"] for item in step[STEP_INPUTS]}
-                if step[STEP_INPUTS]
-                else {}
-            )
-        if STEP_OUTPUTS in step:
-            step[STEP_OUTPUTS] = (
-                {item["name"]: item["value"] for item in step[STEP_OUTPUTS]}
-                if step[STEP_OUTPUTS]
-                else {}
-            )
-
-    return steps_dict
-
-
 def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
     """Groups and orders dataframe columns into predefined categories to maintain a consistent structure.
 
@@ -146,7 +146,7 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
             (
                 category
                 for category in CATEGORY_KEYS
-                if category.lower() in column_lower
+                if column_lower.startswith(f"{category.lower()}.")
                 and column != StepProjection.DATA_MODEL.lower()
             ),
             GENERAL_CATEGORIES,
