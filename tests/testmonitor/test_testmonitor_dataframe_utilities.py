@@ -138,7 +138,7 @@ def mock_steps_data() -> List[Step]:
         result_id="5ffb2bf6771fa11e877838dd8",
         path="Path",
         path_ids=["path_id_21", "path_id_22"],
-        status=Status(status_type=StatusType.DONE, status_name="Done"),
+        status=Status(status_type=StatusType.CUSTOM, status_name="newstatus"),
         total_time_in_seconds=5,
         started_at=datetime.datetime(
             2023, 3, 27, 18, 39, 49, tzinfo=datetime.timezone.utc
@@ -214,6 +214,7 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> pd.DataFrame:
                 f"data.parameters.{key}": value
                 for key, value in parametric_data.dict().items()
             }
+
             restructured_step = {
                 "name": step.name,
                 "step_type": step.step_type,
@@ -222,6 +223,11 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> pd.DataFrame:
                 "result_id": step.result_id,
                 "path": step.path,
                 "path_ids": step.path_ids,
+                "status": (
+                    step.status.status_type.value
+                    if step.status and step.status.status_type != "CUSTOM"
+                    else step.status.status_name if step.status else None
+                ),
                 "total_time_in_seconds": step.total_time_in_seconds,
                 "started_at": step.started_at,
                 "updated_at": step.updated_at,
@@ -229,8 +235,6 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> pd.DataFrame:
                 "has_children": step.has_children,
                 "workspace": step.workspace,
                 "keywords": step.keywords,
-                "status.status_type": step.status.status_type if step.status else None,
-                "status.status_name": step.status.status_name if step.status else None,
                 **inputs,
                 **outputs,
                 "data.text": step.data.text,
@@ -247,6 +251,7 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> pd.DataFrame:
         "result_id",
         "path",
         "path_ids",
+        "status",
         "total_time_in_seconds",
         "started_at",
         "updated_at",
@@ -254,8 +259,6 @@ def expected_steps_dataframe(mock_steps_data: List[Step]) -> pd.DataFrame:
         "has_children",
         "workspace",
         "keywords",
-        "status.status_type",
-        "status.status_name",
         "inputs.Input00",
         "inputs.Input11",
         "inputs.Input12",

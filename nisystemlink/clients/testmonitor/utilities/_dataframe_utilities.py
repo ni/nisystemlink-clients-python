@@ -169,6 +169,7 @@ def __convert_steps_to_dict(steps: List[Step]) -> List[Dict[str, Any]]:
     for step in steps:
         single_step_dict = step.dict(exclude_none=True)
         __normalize_inputs_outputs(single_step_dict, step)
+        __normalize_step_status(single_step_dict)
         steps_dict.append(single_step_dict)
     return steps_dict
 
@@ -196,6 +197,14 @@ def __normalize_inputs_outputs(
         step_dict[STEP_OUTPUTS] = (
             {item.name: item.value for item in step.outputs} if step.outputs else {}
         )
+
+
+def __normalize_step_status(step_dict: Dict[str, Any]) -> None:
+    step_status = step_dict.get("status", {})
+    if step_status.get("status_type") == "CUSTOM":
+        step_dict["status"] = step_status["status_name"]
+    else:
+        step_dict["status"] = step_status["status_type"].value
 
 
 def __explode_and_normalize(
