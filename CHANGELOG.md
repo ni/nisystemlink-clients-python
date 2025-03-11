@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.4.0 (2025-03-11)
+
+### Feature
+
+* Export Results as Dataframe ([#100](https://github.com/ni/nisystemlink-clients-python/issues/100)) ([`1faa54a`](https://github.com/ni/nisystemlink-clients-python/commit/1faa54aae16a6090f20639b42d760af47bb9adc7))
+
 ## v2.3.0 (2025-03-07)
 
 ### Feature
