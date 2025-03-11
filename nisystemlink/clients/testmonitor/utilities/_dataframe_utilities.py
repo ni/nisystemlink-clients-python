@@ -320,7 +320,7 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
         key = next(
             (
                 category
-                for category in CATEGORY_KEYS
+                for category in CATEGORY_KEYS[1:]
                 if column_lower.startswith(category.lower())
                 and column != StepProjection.DATA_MODEL.lower()
             ),
