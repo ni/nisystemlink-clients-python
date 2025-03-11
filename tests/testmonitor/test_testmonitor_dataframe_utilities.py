@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 import pytest
@@ -115,7 +115,7 @@ def mock_steps_data() -> List[Step]:
             text="data1",
             parameters=[
                 {
-                    "name": "parameter_21",
+                    "name": "parameter_11",
                     "units": "A",
                     "status": "Passed",
                     "lowLimit": "6.0",
@@ -184,107 +184,6 @@ def mock_steps_data() -> List[Step]:
         properties={"property21": "property21_value", "property22": "property22_value"},
     )
     return [step1, step2]
-
-
-@pytest.fixture
-def expected_steps_dataframe(mock_steps_data: List[Step]) -> pd.DataFrame:
-    """Fixture to return the expected DataFrame based on the mock step data."""
-    restructured_mock_steps = []
-    for step in mock_steps_data:
-        properties = (
-            {f"properties.{key}": value for key, value in step.properties.items()}
-            if step.properties
-            else {}
-        )
-        inputs = (
-            {f"inputs.{item.name}": item.value for item in step.inputs}
-            if step.inputs
-            else {}
-        )
-        outputs = (
-            {f"outputs.{item.name}": item.value for item in step.outputs}
-            if step.outputs
-            else {}
-        )
-        if not (step.data and step.data.parameters):
-            continue
-        for parametric_data in step.data.parameters:
-            if (
-                "name" in parametric_data.dict()
-                and "measurement" in parametric_data.dict()
-            ):
-                parameter_data = {
-                    f"data.parameters.{key}": value
-                    for key, value in parametric_data.dict().items()
-                }
-
-                restructured_step = {
-                    "name": step.name,
-                    "step_type": step.step_type,
-                    "step_id": step.step_id,
-                    "parent_id": step.parent_id,
-                    "result_id": step.result_id,
-                    "path": step.path,
-                    "path_ids": step.path_ids,
-                    "status": (
-                        step.status.status_type.value
-                        if step.status and step.status.status_type != "CUSTOM"
-                        else step.status.status_name if step.status else None
-                    ),
-                    "total_time_in_seconds": step.total_time_in_seconds,
-                    "started_at": step.started_at,
-                    "updated_at": step.updated_at,
-                    "data_model": step.data_model,
-                    "has_children": step.has_children,
-                    "workspace": step.workspace,
-                    "keywords": step.keywords,
-                    **inputs,
-                    **outputs,
-                    "data.text": step.data.text,
-                    **parameter_data,
-                    **properties,
-                }
-                restructured_mock_steps.append(restructured_step)
-    expected_dataframe = pd.DataFrame(restructured_mock_steps)
-    expected_column_order = [
-        "name",
-        "step_type",
-        "step_id",
-        "parent_id",
-        "result_id",
-        "path",
-        "path_ids",
-        "status",
-        "total_time_in_seconds",
-        "started_at",
-        "updated_at",
-        "data_model",
-        "has_children",
-        "workspace",
-        "keywords",
-        "inputs.Input00",
-        "inputs.Input11",
-        "inputs.Input12",
-        "inputs.Input21",
-        "inputs.Input22",
-        "outputs.Output11",
-        "outputs.Output12",
-        "outputs.Output21",
-        "outputs.Output22",
-        "data.text",
-        "data.parameters.name",
-        "data.parameters.status",
-        "data.parameters.measurement",
-        "data.parameters.lowLimit",
-        "data.parameters.highLimit",
-        "data.parameters.units",
-        "data.parameters.comparisonType",
-        "properties.property11",
-        "properties.property12",
-        "properties.property21",
-        "properties.property22",
-    ]
-    return expected_dataframe.reindex(columns=expected_column_order, copy=False)
 
 
 @pytest.fixture
@@ -381,15 +280,19 @@ class TestTestmonitorDataframeUtilities:
         assert results_dataframe.empty
 
     def test__convert_steps_to_dataframe__with_complete_data(
-        self, mock_steps_data: List[Step], expected_steps_dataframe: pd.DataFrame
+        self, mock_steps_data: List[Step]
     ):
         """Test normal case with valid step data."""
+        expected_steps_dataframe = self.__get_expected_steps_dataframe(mock_steps_data)
+
         steps_dataframe = convert_steps_to_dataframe(mock_steps_data)
+
         assert not steps_dataframe.empty
         assert (
             steps_dataframe.columns.to_list()
             == expected_steps_dataframe.columns.to_list()
         )
+
         assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
         assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
         assert steps_dataframe["path_ids"].dtype == "object"
@@ -403,18 +306,19 @@ class TestTestmonitorDataframeUtilities:
     def test__convert_steps_to_dataframe__with_empty_data(self, empty_steps_data: List):
         """Test case when the input steps data is empty."""
         steps_dataframe = convert_steps_to_dataframe(empty_steps_data)
+
         assert steps_dataframe.empty
 
     def test__convert_steps_to_dataframe__with_missing_fields(
-        self, mock_steps_data: List[Step], expected_steps_dataframe: pd.DataFrame
+        self, mock_steps_data: List[Step]
     ):
         """Test case when some fields in step data are missing."""
+        expected_steps_dataframe = self.__get_expected_steps_dataframe(mock_steps_data)
         steps = mock_steps_data
         for step in steps:
             step.path_ids = None
             step.data = None
             step.inputs = None
-        steps_dataframe = convert_steps_to_dataframe(steps)
         expected_steps_dataframe = expected_steps_dataframe.drop(
             columns=[
                 "path_ids",
@@ -436,6 +340,7 @@ class TestTestmonitorDataframeUtilities:
         expected_steps_dataframe = expected_steps_dataframe.drop_duplicates(
             subset=["step_id", "result_id"], ignore_index=True
         )
+        steps_dataframe = convert_steps_to_dataframe(steps)
         assert not steps_dataframe.empty
         assert (
             steps_dataframe.columns.to_list()
@@ -499,3 +404,110 @@ class TestTestmonitorDataframeUtilities:
         results_df.dropna(axis="columns", how="all", inplace=True)
 
         return results_df
+
+    def __get_expected_steps_dataframe(
+        self, mock_steps_data: List[Step], measurement_keys: Optional[List[str]] = None
+    ) -> pd.DataFrame:
+        if measurement_keys is None:
+            measurement_keys = ["name", "measurement"]
+        restructured_mock_steps = []
+        for step in mock_steps_data:
+            properties = (
+                {f"properties.{key}": value for key, value in step.properties.items()}
+                if step.properties
+                else {}
+            )
+            inputs = (
+                {f"inputs.{item.name}": item.value for item in step.inputs}
+                if step.inputs
+                else {}
+            )
+            outputs = (
+                {f"outputs.{item.name}": item.value for item in step.outputs}
+                if step.outputs
+                else {}
+            )
+            if not (step.data and step.data.parameters):
+                continue
+
+            filtered_parameters = []
+            for measurement in step.data.parameters:
+                if all(
+                    hasattr(measurement, key) and getattr(measurement, key) is not None
+                    for key in measurement_keys
+                ):
+                    filtered_parameters.append(measurement)
+
+            for parametric_data in filtered_parameters:
+                parameter_data = {
+                    f"data.parameters.{key}": value
+                    for key, value in parametric_data.dict().items()
+                }
+
+                restructured_step = {
+                    "name": step.name,
+                    "step_type": step.step_type,
+                    "step_id": step.step_id,
+                    "parent_id": step.parent_id,
+                    "result_id": step.result_id,
+                    "path": step.path,
+                    "path_ids": step.path_ids,
+                    "status": (
+                        step.status.status_type.value
+                        if step.status and step.status.status_type != "CUSTOM"
+                        else step.status.status_name if step.status else None
+                    ),
+                    "total_time_in_seconds": step.total_time_in_seconds,
+                    "started_at": step.started_at,
+                    "updated_at": step.updated_at,
+                    "data_model": step.data_model,
+                    "has_children": step.has_children,
+                    "workspace": step.workspace,
+                    "keywords": step.keywords,
+                    **inputs,
+                    **outputs,
+                    "data.text": step.data.text,
+                    **parameter_data,
+                    **properties,
+                }
+                restructured_mock_steps.append(restructured_step)
+        expected_dataframe = pd.DataFrame(restructured_mock_steps)
+        data_parameter_columns = [
+            col
+            for col in expected_dataframe.columns
+            if col.startswith("data.parameters.")
+        ]
+        expected_column_order = [
+            "name",
+            "step_type",
+            "step_id",
+            "parent_id",
+            "result_id",
+            "path",
+            "path_ids",
+            "status",
+            "total_time_in_seconds",
+            "started_at",
+            "updated_at",
+            "data_model",
+            "has_children",
+            "workspace",
+            "keywords",
+            "inputs.Input00",
+            "inputs.Input11",
+            "inputs.Input12",
+            "inputs.Input21",
+            "inputs.Input22",
+            "outputs.Output11",
+            "outputs.Output12",
+            "outputs.Output21",
+            "outputs.Output22",
+            "data.text",
+            *data_parameter_columns,
+            "properties.property11",
+            "properties.property12",
+            "properties.property21",
+            "properties.property22",
+        ]
+
+        return expected_dataframe.reindex(columns=expected_column_order, copy=False)

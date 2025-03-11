@@ -5,6 +5,19 @@ from nisystemlink.clients.testmonitor.models import Result, Step, StepProjection
 from nisystemlink.clients.testmonitor.utilities.constants import DataFrameHeaders
 
 
+def is_default_measurement_data_parameter(measurement_data: Dict[str, Any]) -> bool:
+    """Checks if a measurement is valid by ensuring it has both 'name' and 'measurement' fields.
+
+    Args:
+        measurement: A dictionary containing measurement data.
+
+    Returns:
+        bool: True if the measurement has both 'name' and 'measurement' fields, False otherwise.
+    """
+    allowed_measurement_keys = ["name", "measurement"]
+    return all(key in measurement_data for key in allowed_measurement_keys)
+
+
 def convert_results_to_dataframe(
     results: List[Result], set_id_as_index: bool = True
 ) -> pd.DataFrame:
@@ -21,7 +34,6 @@ def convert_results_to_dataframe(
         Following fields are split into sub-columns.
             - status_type_summary: All the entries will be split into separate columns.
             For example, status_type_summary.LOOPING, status_type_summary.PASSED, etc
-            - status: Split into status.status_type and status.status_name columns.
             - Properties: All the properties will be split into separate columns. For example,
             properties.property1, properties.property2, etc.
     """
@@ -41,13 +53,15 @@ def convert_results_to_dataframe(
 
 def convert_steps_to_dataframe(
     steps: List[Step],
-    is_valid_measurement: Optional[Callable[[Dict[str, Any]], bool]] = None,
+    is_measurement_data_parameter: Optional[
+        Callable[[Dict[str, Any]], bool]
+    ] = is_default_measurement_data_parameter,
 ) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
 
     Args:
         steps: A list of steps.
-        is_valid_measurement: Optional function to check if a measurement is valid. The method takes
+        is_measurement_data_parameter: Optional function to check if a measurement is valid. The method takes
             a dictionary as input and returns a boolean value. If the function is not provided, the
             default behavior is to keep only those measurements that have both 'name' and 'measurement' fields.
             If none of the measurement data have the desired fields, the data.parameters will not
@@ -65,7 +79,7 @@ def convert_steps_to_dataframe(
             all other step fields are duplicated.
     """
     DATA_PARAMETERS = "data.parameters"
-    step_dicts = __convert_steps_to_dict(steps, is_valid_measurement)
+    step_dicts = __convert_steps_to_dict(steps, is_measurement_data_parameter)
     steps_dataframe = pd.json_normalize(step_dicts, sep=".")
     steps_dataframe = __explode_and_normalize(
         steps_dataframe, DATA_PARAMETERS, f"{DATA_PARAMETERS}."
@@ -166,7 +180,7 @@ def __is_property_header(header: str) -> bool:
 
 def __convert_steps_to_dict(
     steps: List[Step],
-    is_valid_measurement: Optional[Callable[[Dict[str, Any]], bool]] = None,
+    is_measurement_data_parameter: Optional[Callable[[Dict[str, Any]], bool]] = None,
 ) -> List[Dict[str, Any]]:
     """Converts a list of steps to dictionaries, excluding None values.
 
@@ -180,9 +194,13 @@ def __convert_steps_to_dict(
     for step in steps:
         single_step_dict = step.dict(exclude_none=True)
 
-        if step.data is not None and step.data.parameters is not None:
-            single_step_dict["data"]["parameters"] = __get_valid_data_parameters(
-                single_step_dict, is_valid_measurement
+        if (
+            is_measurement_data_parameter is not None
+            and step.data is not None
+            and step.data.parameters is not None
+        ):
+            single_step_dict["data"]["parameters"] = __get_measurement_data_parameters(
+                single_step_dict, is_measurement_data_parameter
             )
 
         __normalize_inputs_outputs(single_step_dict, step)
@@ -191,27 +209,24 @@ def __convert_steps_to_dict(
     return steps_dict
 
 
-def __get_valid_data_parameters(
+def __get_measurement_data_parameters(
     step_dict: Dict[str, Any],
-    is_valid_measurement: Optional[Callable[[Dict[str, Any]], bool]] = None,
+    is_measurement_data_parameter: Optional[Callable[[Dict[str, Any]], bool]] = None,
 ) -> List[Dict[str, Any]]:
     """Gets valid measurement data parameters from the step dictionary.
 
     Args:
         step_dict: A dictionary with step information.
-        is_valid_measurement: Optional callback function to check if a measurement is valid. The method takes
+        is_measurement_data_parameter: Optional callback function to check if a measurement is valid. The method takes
             a dictionary as input and returns a boolean value. If the function is not provided, the
             default behavior is to keep only those measurements that have both 'name' and 'measurement' fields.
 
     Returns:
         List[Dict[str, Any]]: A list of dictionaries containing valid measurement data.
     """
-    allowed_measurement_keys = ["name", "units"]
     valid_measurement_parameters = []
     for parameter in step_dict["data"]["parameters"]:
-        if (is_valid_measurement and is_valid_measurement(parameter)) or all(
-            key in parameter for key in allowed_measurement_keys
-        ):
+        if is_measurement_data_parameter and is_measurement_data_parameter(parameter):
             valid_measurement_parameters.append(parameter)
 
     return valid_measurement_parameters
@@ -244,10 +259,8 @@ def __normalize_inputs_outputs(
 
 def __normalize_step_status(step_dict: Dict[str, Any]) -> None:
     step_status = step_dict.get("status", {})
-    if step_status.get("status_type") == "CUSTOM":
-        step_dict["status"] = step_status.get("status_name", None)
-    else:
-        step_dict["status"] = step_status["status_type"].value
+    step_dict["status"] = step_status.get("status_name", None) if step_status.get(
+        "status_type") == "CUSTOM" else step_status["status_type"].value
 
 
 def __explode_and_normalize(
