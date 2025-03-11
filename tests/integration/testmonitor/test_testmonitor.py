@@ -4,6 +4,8 @@ from typing import Dict, List, Optional
 import pytest
 from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
+from nisystemlink.clients.product._product_client import ProductClient
+from nisystemlink.clients.product.models._query_products_request import ProductProjection, QueryProductsRequest
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
@@ -38,6 +40,12 @@ def client(enterprise_config: HttpConfiguration) -> TestMonitorClient:
     return TestMonitorClient(enterprise_config)
 
 
+@pytest.fixture(scope="class")
+def product_client(enterprise_config: HttpConfiguration) -> ProductClient:
+    """Fixture to create a TestMonitorClient instance."""
+    return ProductClient(enterprise_config)
+
+
 @pytest.fixture
 def unique_identifier() -> str:
     """Unique result/step id for this test."""
@@ -46,7 +54,7 @@ def unique_identifier() -> str:
 
 
 @pytest.fixture
-def create_results(client: TestMonitorClient):
+def create_results(client: TestMonitorClient, product_client: ProductClient):
     """Fixture to return a factory that creates results."""
     responses: List[CreateResultsPartialSuccess] = []
 
@@ -63,7 +71,14 @@ def create_results(client: TestMonitorClient):
     for response in responses:
         if response.results:
             created_results = created_results + response.results
+
+    part_number_of_created_product = created_results[0].part_number
+
     client.delete_results(ids=[str(result.id) for result in created_results])
+
+    product = product_client.query_products_paged(QueryProductsRequest(
+        filter=f'partNumber="{part_number_of_created_product}"', projection=[ProductProjection.ID], take=1))
+    product_client.delete_product(product.products[0].id)
 
 
 @pytest.fixture
@@ -136,16 +151,16 @@ class TestTestMonitor:
         assert created_result.serial_number == serial_number
 
     def test__create_multiple_results__multiple_creates_succeed(
-        self, client: TestMonitorClient, create_results
+        self, client: TestMonitorClient, create_results, unique_identifier
     ):
         program_name = "Test Program"
         status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=uuid.uuid1().hex, program_name=program_name, status=status
+                part_number=unique_identifier, program_name=program_name, status=status
             ),
             CreateResultRequest(
-                part_number=uuid.uuid1().hex, program_name=program_name, status=status
+                part_number=unique_identifier, program_name=program_name, status=status
             ),
         ]
 
