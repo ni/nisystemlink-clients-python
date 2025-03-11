@@ -442,7 +442,9 @@ class TestTestmonitorDataframeUtilities:
         return results_df
 
     def __get_expected_steps_dataframe(
-        self, mock_steps_data: List[Step], measurement_keys: Optional[List[str]] = ["name", "measurement"]
+        self,
+        mock_steps_data: List[Step],
+        measurement_keys: Optional[List[str]] = ["name", "measurement"],
     ) -> pd.DataFrame:
         restructured_mock_steps = []
         for step in mock_steps_data:
