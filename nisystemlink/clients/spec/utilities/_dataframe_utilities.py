@@ -24,14 +24,14 @@ def summarize_conditions_as_a_string(
         conditions: List of all conditions in a spec.
 
     Returns:
-        Conditions as a list of dictionary. The column header will be
+        Conditions as a list of dictionary. The dictionary key will be
         "condition_<conditionName>(<conditionUnit>)".
-        The column value will be "[min: num; max: num, step: num], num, num"
+        The dictionary value will be "[min: num; max: num, step: num], num, num"
         where data within the '[]' is numeric condition range and other num
         values are numeric condition discrete values.
-        The column value will be "str, str, str" - where str values are the
+        The dictionary value will be "str, str, str" - where str values are the
         condition discrete values for a string condition. If the condition doesn't
-        have values, it will not be added to the dataframe.
+        have a name and value, it will be skipped.
     """
     return [
         {
@@ -54,27 +54,21 @@ def convert_specs_to_dataframe(
 
     Args:
         specs: List of specs.
-        condition_format: Function which takes in a list of condition objects and returns
+        condition_format: A callback function which takes in a list of condition of a spec and returns
                           a list of dictionary of condition and its values. The dictionary keys
                           should be the condition name and the values should be the condition
                           value in any format you need. Dataframe rows will be constructed based on
                           these list of dictionaries. Each dictionary in the list indicates a row.
-                          Combinations will be created for other spec columns and conditions if there
-                          are more than one dictionary in the list. Keys will be used as the dataframe
+                          If there is more than one dictionary in the list, it will be considered as a new
+                          row and other spec column data will be duplicated.  Keys will be used as the dataframe
                           column header and values will be used as the row cells for the
-                          respective column header. If not passed or None is passed, default
-                          condition format will be used. By default, key will be condition name and
-                          value will be condition value. If the public method `summarize_conditions_as_a_string`
-                          is passed, for all the condition columns to be grouped together in the dataframe,
+                          respective column header.
+                          If not passed or None is passed, condition column header will be condition name and
+                          corresponding row value will be condition value.
+                          For all the condition columns to be grouped together in the dataframe,
                           the dictionary key should have the prefix "condition_".
-                          This is an optional parameter. By default column header will be
-                          "condition_<conditionName>(<conditionUnit>)".
-                          The column value will be "[min: num; max: num, step: num], num, num"
-                          where data within the '[]' is numeric condition range and other num
-                          values are numeric condition discrete values.
-                          The column value will be "str, str, str" - where str values are the
-                          condition discrete values for a string condition. If the condition doesn't
-                          have values, it will not be added to the dataframe.
+                          If condition value is needed as a string summary of condition data, the public method
+                          `summarize_conditions_as_a_string` can be provided as this callback function.
 
     Returns:
         A Pandas DataFrame with the each spec fields having a separate column.
@@ -84,22 +78,10 @@ def convert_specs_to_dataframe(
             - Properties: All the unique properties across all specs will be split into separate columns.
             For example, properties.property1, properties.property2, etc.
     """
-    if not condition_format:
-        condition_format = __default_condition_formatting
+    condition_format = condition_format or __default_condition_formatting
 
     specs_dict = [
-        (
-            {
-                **{
-                    key: value
-                    for key, value in vars(spec).items()
-                    if key not in ["type", "limit", "conditions"]
-                },
-                **(__serialize_type(spec.type) if spec.type else {}),
-                **(__serialize_limits(spec.limit) if spec.limit else {}),
-                **{key: value for key, value in condition.items()},
-            }
-        )
+        __convert_spec_to_dict(spec=spec, condition=condition)
         for spec in specs
         for condition in (
             condition_format(spec.conditions) if spec.conditions else [{}]
@@ -113,10 +95,35 @@ def convert_specs_to_dataframe(
     return specs_dataframe
 
 
+def __convert_spec_to_dict(
+    spec: Specification, condition: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Converts a spec into dictionary.
+
+    Args:
+        spec: Spec object.
+        condition: Condition as a dictionary which is added to the output spec dictionary.
+
+    Returns:
+        Spec as a dictionary with the provided condition dictionary included.
+    """
+    return {
+        **{
+            key: value
+            for key, value in vars(spec).items()
+            if key not in ["type", "limit", "conditions"]
+        },
+        **(__serialize_type(spec.type) if spec.type else {}),
+        **(__serialize_limits(spec.limit) if spec.limit else {}),
+        **{key: value for key, value in condition.items()},
+    }
+
+
 def __default_condition_formatting(
     conditions: List[Condition],
 ) -> List[Dict[str, Any]]:
-    """Convert conditions into default format.
+    """Convert conditions into list of dictionaries where dictionary key will be condition name
+    and dictionary value will be condition value.
 
     Args:
         conditions: List of all conditions in a spec.
@@ -185,7 +192,7 @@ def __format_specs_columns(specs_dataframe: pd.DataFrame) -> pd.DataFrame:
         + properties_headers
     )
 
-    return specs_dataframe.reindex(columns=formatted_column_headers)
+    return specs_dataframe.reindex(columns=formatted_column_headers, copy=False)
 
 
 def __is_standard_column_header(header: str) -> bool:

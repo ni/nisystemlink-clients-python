@@ -41,7 +41,9 @@ def specs() -> List[Specification]:
                     name="Temperature",
                     value=NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
-                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                        ],
                         discrete=[1.3, 1.5, 1.7],
                         unit="C",
                     ),
@@ -79,7 +81,10 @@ def specs() -> List[Specification]:
                     name="Temperature",
                     value=NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
-                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                            ConditionRange(min=-10, step=10),
+                        ],
                         unit="C",
                     ),
                 ),
@@ -124,7 +129,7 @@ class TestSpecDataframeUtilities:
             ],
             [
                 {
-                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], [min: -10.0; step: 10.0]",
                     "condition_Package": None,
                     "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
                 }
@@ -270,7 +275,9 @@ class TestSpecDataframeUtilities:
                 {
                     "Temperature": NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
-                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                        ],
                         discrete=[1.3, 1.5, 1.7],
                         unit="C",
                     ),
@@ -285,7 +292,10 @@ class TestSpecDataframeUtilities:
                 {
                     "Temperature": NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
-                        range=[ConditionRange(min=-25, step=20, max=85)],
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                            ConditionRange(min=-10, step=10),
+                        ],
                         unit="C",
                     ),
                     "Package": None,
@@ -346,7 +356,7 @@ class TestSpecDataframeUtilities:
             ],
             [
                 {
-                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0]",
+                    "condition_Temperature(C)": "[min: -25.0; max: 85.0; step: 20.0], [min: -10.0; step: 10.0]",
                     "condition_Supply Voltage(mV)": "1.3, 1.5, 1.7",
                 }
             ],
