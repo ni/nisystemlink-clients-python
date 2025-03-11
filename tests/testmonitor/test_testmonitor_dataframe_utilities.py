@@ -468,7 +468,7 @@ class TestTestmonitorDataframeUtilities:
                 "has_children": step.has_children,
                 "workspace": step.workspace,
                 "keywords": step.keywords,
-                "data.text": step.data.text,
+                "data.text": step.data.text if step.data else None,
             }
 
             restructured_step.update(
@@ -499,7 +499,7 @@ class TestTestmonitorDataframeUtilities:
                     if all(
                         hasattr(measurement, key)
                         and getattr(measurement, key) is not None
-                        for key in measurement_keys
+                        for key in (measurement_keys or [])
                     )
                 ]
             else:
