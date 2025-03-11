@@ -202,7 +202,7 @@ def __normalize_inputs_outputs(
 def __normalize_step_status(step_dict: Dict[str, Any]) -> None:
     step_status = step_dict.get("status", {})
     if step_status.get("status_type") == "CUSTOM":
-        step_dict["status"] = step_status["status_name"]
+        step_dict["status"] = step_status.get("status_name", None)
     else:
         step_dict["status"] = step_status["status_type"].value
 
