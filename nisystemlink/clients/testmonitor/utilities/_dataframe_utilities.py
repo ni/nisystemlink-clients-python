@@ -259,8 +259,11 @@ def __normalize_inputs_outputs(
 
 def __normalize_step_status(step_dict: Dict[str, Any]) -> None:
     step_status = step_dict.get("status", {})
-    step_dict["status"] = step_status.get("status_name", None) if step_status.get(
-        "status_type") == "CUSTOM" else step_status["status_type"].value
+    step_dict["status"] = (
+        step_status.get("status_name", None)
+        if step_status.get("status_type") == "CUSTOM"
+        else step_status["status_type"].value
+    )
 
 
 def __explode_and_normalize(
