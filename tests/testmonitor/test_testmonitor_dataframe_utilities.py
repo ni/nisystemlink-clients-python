@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import pytest
@@ -161,6 +161,7 @@ def mock_steps_data() -> List[Step]:
             parameters=[
                 {
                     "name": "parameter_21",
+                    "temperature": "A",
                     "units": "A",
                     "status": "Passed",
                     "lowLimit": "6.0",
@@ -328,6 +329,7 @@ class TestTestmonitorDataframeUtilities:
                 "data.parameters.lowLimit",
                 "data.parameters.highLimit",
                 "data.parameters.measurement",
+                "data.parameters.temperature",
                 "data.parameters.comparisonType",
                 "data.text",
                 "inputs.Input00",
@@ -346,6 +348,40 @@ class TestTestmonitorDataframeUtilities:
             steps_dataframe.columns.to_list()
             == expected_steps_dataframe.columns.to_list()
         )
+        pd.testing.assert_frame_equal(
+            steps_dataframe, expected_steps_dataframe, check_dtype=True
+        )
+
+    def test__convert_steps_to_dataframe_with_is_callback__returns_dataframe_with_valid_measurement(
+        self, mock_steps_data: List[Step]
+    ):
+        """Test if the function returns a dataframe of steps with valid measurement."""
+
+        def is_measurement_data_parameter(step_dict: Dict[str, Any]) -> bool:
+            return all(key in step_dict for key in desired_measurement_keys)
+
+        desired_measurement_keys = ["name", "temperature"]
+        expected_steps_dataframe = self.__get_expected_steps_dataframe(
+            mock_steps_data, desired_measurement_keys
+        )
+
+        steps_dataframe = convert_steps_to_dataframe(
+            mock_steps_data, is_measurement_data_parameter
+        )
+
+        # import pdb
+        # pdb.set_trace()
+        assert not steps_dataframe.empty
+        assert (
+            steps_dataframe.columns.to_list()
+            == expected_steps_dataframe.columns.to_list()
+        )
+        assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["path_ids"].dtype == "object"
+        assert isinstance(steps_dataframe["path_ids"].iloc[0], List)
+        assert steps_dataframe["keywords"].dtype == "object"
+        assert isinstance(steps_dataframe["keywords"].iloc[0], List)
         pd.testing.assert_frame_equal(
             steps_dataframe, expected_steps_dataframe, check_dtype=True
         )
@@ -406,76 +442,78 @@ class TestTestmonitorDataframeUtilities:
         return results_df
 
     def __get_expected_steps_dataframe(
-        self, mock_steps_data: List[Step], measurement_keys: Optional[List[str]] = None
+        self, mock_steps_data: List[Step], measurement_keys: Optional[List[str]] = ["name", "measurement"]
     ) -> pd.DataFrame:
-        if measurement_keys is None:
-            measurement_keys = ["name", "measurement"]
         restructured_mock_steps = []
         for step in mock_steps_data:
-            properties = (
+            restructured_step = {
+                "name": step.name,
+                "step_type": step.step_type,
+                "step_id": step.step_id,
+                "parent_id": step.parent_id,
+                "result_id": step.result_id,
+                "path": step.path,
+                "path_ids": step.path_ids,
+                "status": (
+                    step.status.status_type.value
+                    if step.status and step.status.status_type != "CUSTOM"
+                    else step.status.status_name if step.status else None
+                ),
+                "total_time_in_seconds": step.total_time_in_seconds,
+                "started_at": step.started_at,
+                "updated_at": step.updated_at,
+                "data_model": step.data_model,
+                "has_children": step.has_children,
+                "workspace": step.workspace,
+                "keywords": step.keywords,
+                "data.text": step.data.text,
+            }
+
+            restructured_step.update(
                 {f"properties.{key}": value for key, value in step.properties.items()}
                 if step.properties
                 else {}
             )
-            inputs = (
+
+            restructured_step.update(
                 {f"inputs.{item.name}": item.value for item in step.inputs}
                 if step.inputs
                 else {}
             )
-            outputs = (
+
+            restructured_step.update(
                 {f"outputs.{item.name}": item.value for item in step.outputs}
                 if step.outputs
                 else {}
             )
-            if not (step.data and step.data.parameters):
-                continue
 
-            filtered_parameters = []
-            for measurement in step.data.parameters:
-                if all(
-                    hasattr(measurement, key) and getattr(measurement, key) is not None
-                    for key in measurement_keys
-                ):
-                    filtered_parameters.append(measurement)
+            if step.data and step.data.parameters:
+                filtered_parameters = [
+                    {
+                        f"data.parameters.{key}": value
+                        for key, value in measurement.dict().items()
+                    }
+                    for measurement in step.data.parameters
+                    if all(
+                        hasattr(measurement, key)
+                        and getattr(measurement, key) is not None
+                        for key in measurement_keys
+                    )
+                ]
+            else:
+                filtered_parameters = []
 
-            for parametric_data in filtered_parameters:
-                parameter_data = {
-                    f"data.parameters.{key}": value
-                    for key, value in parametric_data.dict().items()
-                }
-
-                restructured_step = {
-                    "name": step.name,
-                    "step_type": step.step_type,
-                    "step_id": step.step_id,
-                    "parent_id": step.parent_id,
-                    "result_id": step.result_id,
-                    "path": step.path,
-                    "path_ids": step.path_ids,
-                    "status": (
-                        step.status.status_type.value
-                        if step.status and step.status.status_type != "CUSTOM"
-                        else step.status.status_name if step.status else None
-                    ),
-                    "total_time_in_seconds": step.total_time_in_seconds,
-                    "started_at": step.started_at,
-                    "updated_at": step.updated_at,
-                    "data_model": step.data_model,
-                    "has_children": step.has_children,
-                    "workspace": step.workspace,
-                    "keywords": step.keywords,
-                    **inputs,
-                    **outputs,
-                    "data.text": step.data.text,
-                    **parameter_data,
-                    **properties,
-                }
+            if not filtered_parameters:
                 restructured_mock_steps.append(restructured_step)
-        expected_dataframe = pd.DataFrame(restructured_mock_steps)
+            else:
+                for param_data in filtered_parameters:
+                    step_with_params = restructured_step.copy()
+                    step_with_params.update(param_data)
+                    restructured_mock_steps.append(step_with_params)
+
+        steps_dataframe = pd.DataFrame(restructured_mock_steps)
         data_parameter_columns = [
-            col
-            for col in expected_dataframe.columns
-            if col.startswith("data.parameters.")
+            col for col in steps_dataframe.columns if col.startswith("data.parameters.")
         ]
         expected_column_order = [
             "name",
@@ -510,4 +548,4 @@ class TestTestmonitorDataframeUtilities:
             "properties.property22",
         ]
 
-        return expected_dataframe.reindex(columns=expected_column_order, copy=False)
+        return steps_dataframe.reindex(columns=expected_column_order, copy=False)
