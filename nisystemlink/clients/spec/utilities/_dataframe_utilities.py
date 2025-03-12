@@ -44,11 +44,54 @@ def summarize_conditions_as_a_string(
     ]
 
 
+def normalize_conditions_per_column(
+    conditions: List[Condition],
+) -> List[Dict[str, Any]]:
+    """Convert conditions into list of dictionaries where dictionary key will be condition name
+    and dictionary value will be condition value.
+
+    Args:
+        conditions: List of all conditions in a spec.
+
+    Returns:
+        Conditions as a list of dictionary. The key will be
+        the condition name and the value will be the condition value which is
+        either Numeric Condition Value, String Condition Value or None.
+    """
+    return [
+        {
+            f"{DataFrameHeaders.CONDITION_COLUMN_HEADER_PREFIX}{condition.name}": condition.value
+            for condition in conditions
+            if condition.name and condition.value
+        }
+    ]
+
+
+def normalize_conditions_per_row(
+    conditions: List[Condition],
+) -> List[Dict[str, Any]]:
+    """Convert conditions into list of dictionaries where dictionary keys will be 'condition.name'
+    and 'condition.value' and dictionary values will be condition name and condition value.
+
+    Args:
+        conditions: List of all conditions in a spec.
+
+    Returns:
+        Conditions as a list of dictionary. The keys will be
+        the 'condition.name' and 'condition.values' and the values will be the condition name and
+        condition value which is either Numeric Condition Value, String Condition Value or None.
+    """
+    return [
+        {"condition.name": condition.name, "condition.value": condition.value}
+        for condition in conditions
+    ]
+
+
 def convert_specs_to_dataframe(
     specs: List[Specification],
     condition_format: Optional[
         Callable[[List[Condition]], List[Dict[str, Any]]]
-    ] = None,
+    ] = normalize_conditions_per_column,
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the specs.
 
@@ -63,12 +106,15 @@ def convert_specs_to_dataframe(
                           row and other spec column data will be duplicated.  Keys will be used as the dataframe
                           column header and values will be used as the row cells for the
                           respective column header.
-                          If not passed or None is passed, condition column header will be condition name and
+                          If not passed, condition column header will be condition name and
                           corresponding row value will be condition value.
                           For all the condition columns to be grouped together in the dataframe,
                           the dictionary key should have the prefix "condition_".
+                          If condition is needed as condition per row, the public method `normalize_conditions_per_row`
+                          can be provided as the callback function.
                           If condition value is needed as a string summary of condition data, the public method
                           `summarize_conditions_as_a_string` can be provided as this callback function.
+                          If None is passed, conditions will not be included in the dataframe.
 
     Returns:
         A Pandas DataFrame with the each spec fields having a separate column.
@@ -78,13 +124,13 @@ def convert_specs_to_dataframe(
             - Properties: All the unique properties across all specs will be split into separate columns.
             For example, properties.property1, properties.property2, etc.
     """
-    condition_format = condition_format or __default_condition_formatting
-
     specs_dict = [
         __convert_spec_to_dict(spec=spec, condition=condition)
         for spec in specs
         for condition in (
-            condition_format(spec.conditions) if spec.conditions else [{}]
+            condition_format(spec.conditions)
+            if (spec.conditions and condition_format)
+            else [{}]
         )
     ]
 
@@ -117,29 +163,6 @@ def __convert_spec_to_dict(
         **(__serialize_limits(spec.limit) if spec.limit else {}),
         **{key: value for key, value in condition.items()},
     }
-
-
-def __default_condition_formatting(
-    conditions: List[Condition],
-) -> List[Dict[str, Any]]:
-    """Convert conditions into list of dictionaries where dictionary key will be condition name
-    and dictionary value will be condition value.
-
-    Args:
-        conditions: List of all conditions in a spec.
-
-    Returns:
-        Conditions as a list of dictionary. The key will be
-        the condition name and the value will be the condition value which is
-        either Numeric Condition Value, String Condition Value or None.
-    """
-    return [
-        {
-            condition.name: condition.value
-            for condition in conditions
-            if condition.name and condition.value
-        }
-    ]
 
 
 def __serialize_limits(limit: SpecificationLimit) -> Dict[str, str]:
@@ -267,7 +290,7 @@ def __generate_condition_column_header(condition: Condition) -> str:
         else ""
     )
 
-    return f"condition_{name}{unit}"
+    return f"{DataFrameHeaders.CONDITION_COLUMN_HEADER_PREFIX}{name}{unit}"
 
 
 def __serialize_condition_value(condition: Condition) -> List[str]:

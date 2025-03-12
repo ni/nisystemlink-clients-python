@@ -18,6 +18,8 @@ from nisystemlink.clients.spec.models._specification import (
 )
 from nisystemlink.clients.spec.utilities import convert_specs_to_dataframe
 from nisystemlink.clients.spec.utilities._dataframe_utilities import (
+    normalize_conditions_per_column,
+    normalize_conditions_per_row,
     summarize_conditions_as_a_string,
 )
 
@@ -118,7 +120,9 @@ def specs() -> List[Specification]:
 @pytest.mark.enterprise
 @pytest.mark.unit
 class TestSpecDataframeUtilities:
-    def test__convert_specs_to_dataframe__returns_specs_dataframe(self, specs):
+    def test__convert_specs_to_dataframe_with_summarize_conditions__returns_specs_dataframe_with_string_conditions(
+        self, specs
+    ):
         conditions_dict = [
             [
                 {
@@ -267,13 +271,13 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
-    def test__convert_specs_to_dataframe_when_condtion_format_none__returns_dataframe_with_default_condition_format(
+    def test__convert_specs_to_dataframe_with_condition_per_column__returns_dataframe_with_condition_per_column(
         self, specs
     ):
         conditions_dict = [
             [
                 {
-                    "Temperature": NumericConditionValue(
+                    "condition_Temperature": NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
@@ -281,16 +285,16 @@ class TestSpecDataframeUtilities:
                         discrete=[1.3, 1.5, 1.7],
                         unit="C",
                     ),
-                    "Package": StringConditionValue(
+                    "condition_Package": StringConditionValue(
                         condition_type=ConditionType.STRING,
                         discrete=["D", "QFIN"],
                     ),
-                    "Supply Voltage": None,
+                    "condition_Supply Voltage": None,
                 }
             ],
             [
                 {
-                    "Temperature": NumericConditionValue(
+                    "condition_Temperature": NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
@@ -298,8 +302,8 @@ class TestSpecDataframeUtilities:
                         ],
                         unit="C",
                     ),
-                    "Package": None,
-                    "Supply Voltage": NumericConditionValue(
+                    "condition_Package": None,
+                    "condition_Supply Voltage": NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
                         discrete=[1.3, 1.5, 1.7],
                         unit="mV",
@@ -308,9 +312,9 @@ class TestSpecDataframeUtilities:
             ],
             [
                 {
-                    "Temperature": None,
-                    "Package": None,
-                    "Supply Voltage(mV)": None,
+                    "condition_Temperature": None,
+                    "condition_Package": None,
+                    "condition_Supply Voltage(mV)": None,
                 }
             ],
         ]
@@ -334,6 +338,117 @@ class TestSpecDataframeUtilities:
             keywords_dict=keywords_dict,
         )
 
+        specs_df = convert_specs_to_dataframe(
+            specs=specs, condition_format=normalize_conditions_per_column
+        )
+
+        assert not specs_df.empty
+        assert len(specs_df) == 3
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["keywords"].dtype == "object"
+        assert isinstance(specs_df["keywords"].iloc[0], List)
+
+    def test__convert_specs_to_dataframe_with_condition_per_row__returns_dataframe_with_condition_per_row(
+        self, specs
+    ):
+        conditions_dict = [
+            [
+                {
+                    "condition.name": "Temperature",
+                    "condition.value": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                        ],
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="C",
+                    ),
+                },
+                {
+                    "condition.name": "Package",
+                    "condition.value": StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["D", "QFIN"],
+                    ),
+                },
+            ],
+            [
+                {
+                    "condition.name": "Temperature",
+                    "condition.value": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                            ConditionRange(min=-10, step=10),
+                        ],
+                        unit="C",
+                    ),
+                },
+                {
+                    "condition.name": "Supply Voltage",
+                    "condition.value": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="mV",
+                    ),
+                },
+            ],
+            [],
+        ]
+        properties_dict = [
+            {
+                "properties.Comments": "comma separated with unicode",
+                "properties.input": None,
+            },
+            {"properties.Comments": None, "properties.input": None},
+            {"properties.Comments": "comma separated", "properties.input": "voltage"},
+        ]
+        keywords_dict = [
+            {"keywords": ["Test specification only", "First"]},
+            {"keywords": None},
+            {"keywords": None},
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(
+            specs=specs,
+            conditions_dict=conditions_dict,
+            properties_dict=properties_dict,
+            keywords_dict=keywords_dict,
+        )
+
+        specs_df = convert_specs_to_dataframe(
+            specs=specs, condition_format=normalize_conditions_per_row
+        )
+
+        assert not specs_df.empty
+        assert len(specs_df) == 5
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["keywords"].dtype == "object"
+        assert isinstance(specs_df["keywords"].iloc[0], List)
+
+    def test__convert_specs_to_dataframe_when_condition_format_none__returns_dataframe_without_condition(
+        self, specs
+    ):
+        properties_dict = [
+            {
+                "properties.Comments": "comma separated with unicode",
+                "properties.input": None,
+            },
+            {"properties.Comments": None, "properties.input": None},
+            {"properties.Comments": "comma separated", "properties.input": "voltage"},
+        ]
+        keywords_dict = [
+            {"keywords": ["Test specification only", "First"]},
+            {"keywords": None},
+            {"keywords": None},
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(
+            specs=specs, properties_dict=properties_dict, keywords_dict=keywords_dict
+        )
+
         specs_df = convert_specs_to_dataframe(specs=specs, condition_format=None)
 
         assert not specs_df.empty
@@ -344,7 +459,7 @@ class TestSpecDataframeUtilities:
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
-    def test__serialize_conditions_to_string__returns_only_conditions_with_value_in_string_format(
+    def test__summarize_conditions_to_string__returns_only_conditions_with_value_in_string_format(
         self, specs
     ):
         expected_conditions_dict = [
@@ -364,6 +479,108 @@ class TestSpecDataframeUtilities:
 
         conditions_dict = [
             summarize_conditions_as_a_string(spec.conditions)
+            for spec in specs
+            if spec.conditions
+        ]
+
+        assert conditions_dict == expected_conditions_dict
+
+    def test__normalize_conditions_per_column__returns_only_conditions_in_conditions_per_column_format(
+        self, specs
+    ):
+        expected_conditions_dict = [
+            [
+                {
+                    "condition_Temperature": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                        ],
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="C",
+                    ),
+                    "condition_Package": StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["D", "QFIN"],
+                    ),
+                }
+            ],
+            [
+                {
+                    "condition_Temperature": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                            ConditionRange(min=-10, step=10),
+                        ],
+                        unit="C",
+                    ),
+                    "condition_Supply Voltage": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="mV",
+                    ),
+                }
+            ],
+        ]
+
+        conditions_dict = [
+            normalize_conditions_per_column(spec.conditions)
+            for spec in specs
+            if spec.conditions
+        ]
+
+        assert conditions_dict == expected_conditions_dict
+
+    def test__normalize_conditions_per_row__returns_only_conditions_in_conditions_per_row_format(
+        self, specs
+    ):
+        expected_conditions_dict = [
+            [
+                {
+                    "condition.name": "Temperature",
+                    "condition.value": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                        ],
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="C",
+                    ),
+                },
+                {
+                    "condition.name": "Package",
+                    "condition.value": StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["D", "QFIN"],
+                    ),
+                },
+            ],
+            [
+                {
+                    "condition.name": "Temperature",
+                    "condition.value": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        range=[
+                            ConditionRange(min=-25, step=20, max=85),
+                            ConditionRange(min=-10, step=10),
+                        ],
+                        unit="C",
+                    ),
+                },
+                {
+                    "condition.name": "Supply Voltage",
+                    "condition.value": NumericConditionValue(
+                        condition_type=ConditionType.NUMERIC,
+                        discrete=[1.3, 1.5, 1.7],
+                        unit="mV",
+                    ),
+                },
+            ],
+        ]
+
+        conditions_dict = [
+            normalize_conditions_per_row(spec.conditions)
             for spec in specs
             if spec.conditions
         ]
