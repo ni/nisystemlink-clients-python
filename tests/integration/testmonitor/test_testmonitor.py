@@ -6,8 +6,8 @@ from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.product._product_client import ProductClient
 from nisystemlink.clients.product.models._query_products_request import (
-    ProductProjection,
-    QueryProductsRequest,
+    ProductField,
+    QueryProductValuesRequest
 )
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
@@ -45,7 +45,7 @@ def client(enterprise_config: HttpConfiguration) -> TestMonitorClient:
 
 @pytest.fixture(scope="class")
 def product_client(enterprise_config: HttpConfiguration) -> ProductClient:
-    """Fixture to create a TestMonitorClient instance."""
+    """Fixture to create a ProductClient instance."""
     return ProductClient(enterprise_config)
 
 
@@ -75,20 +75,18 @@ def create_results(client: TestMonitorClient, product_client: ProductClient):
         if response.results:
             created_results = created_results + response.results
 
-    part_number_of_created_product = created_results[0].part_number
+    part_numbers_of_created_products = list(set(result.part_number for result in created_results))
 
     client.delete_results(ids=[str(result.id) for result in created_results])
 
-    product = product_client.query_products_paged(
-        QueryProductsRequest(
-            filter=f'partNumber="{part_number_of_created_product}"',
-            projection=[ProductProjection.ID],
-            take=1,
+    filter_string = " or ".join([f'partNumber="{part_number}"' for part_number in part_numbers_of_created_products])
+    created_product_ids = product_client.query_product_values(
+        QueryProductValuesRequest(
+            filter=filter_string, field=ProductField.ID
         )
     )
 
-    if product.products[0].id:
-        product_client.delete_product(id=product.products[0].id)
+    product_client.delete_products(ids=created_product_ids)
 
 
 @pytest.fixture
@@ -161,16 +159,16 @@ class TestTestMonitor:
         assert created_result.serial_number == serial_number
 
     def test__create_multiple_results__multiple_creates_succeed(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
         program_name = "Test Program"
         status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status
+                part_number=uuid.uuid1().hex, program_name=program_name, status=status
             ),
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status
+                part_number=uuid.uuid1().hex, program_name=program_name, status=status
             ),
         ]
 
