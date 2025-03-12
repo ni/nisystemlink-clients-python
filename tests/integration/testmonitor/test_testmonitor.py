@@ -5,7 +5,10 @@ import pytest
 from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.product._product_client import ProductClient
-from nisystemlink.clients.product.models._query_products_request import ProductProjection, QueryProductsRequest
+from nisystemlink.clients.product.models._query_products_request import (
+    ProductProjection,
+    QueryProductsRequest,
+)
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
@@ -76,9 +79,16 @@ def create_results(client: TestMonitorClient, product_client: ProductClient):
 
     client.delete_results(ids=[str(result.id) for result in created_results])
 
-    product = product_client.query_products_paged(QueryProductsRequest(
-        filter=f'partNumber="{part_number_of_created_product}"', projection=[ProductProjection.ID], take=1))
-    product_client.delete_product(product.products[0].id)
+    product = product_client.query_products_paged(
+        QueryProductsRequest(
+            filter=f'partNumber="{part_number_of_created_product}"',
+            projection=[ProductProjection.ID],
+            take=1,
+        )
+    )
+
+    if product.products[0].id:
+        product_client.delete_product(id=product.products[0].id)
 
 
 @pytest.fixture
