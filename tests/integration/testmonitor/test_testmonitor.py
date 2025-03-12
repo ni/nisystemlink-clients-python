@@ -75,20 +75,20 @@ def create_results(client: TestMonitorClient, product_client: ProductClient):
         if response.results:
             created_results = created_results + response.results
 
-    part_numbers_of_created_products = list(
-        set(result.part_number for result in created_results)
+    part_numbers_of_created_products = set(
+        result.part_number for result in created_results
     )
 
     client.delete_results(ids=[str(result.id) for result in created_results])
 
-    filter_string = " or ".join(
+    product_filter_string = " or ".join(
         [
             f'partNumber="{part_number}"'
             for part_number in part_numbers_of_created_products
         ]
     )
     created_product_ids = product_client.query_product_values(
-        QueryProductValuesRequest(filter=filter_string, field=ProductField.ID)
+        QueryProductValuesRequest(filter=product_filter_string, field=ProductField.ID)
     )
 
     product_client.delete_products(ids=created_product_ids)
