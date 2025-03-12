@@ -5,8 +5,8 @@ from nisystemlink.clients.testmonitor.models import Result, Step, StepProjection
 from nisystemlink.clients.testmonitor.utilities.constants import DataFrameHeaders
 
 
-def is_default_measurement_data_parameter(measurement_data: Dict[str, Any]) -> bool:
-    """Checks if a measurement is valid by ensuring it has both 'name' and 'measurement' fields.
+def is_step_data_with_name_and_measurement(data: Dict[str, Any]) -> bool:
+    """Checks if a measurement is required by ensuring it has both 'name' and 'measurement' fields.
 
     Args:
         measurement: A dictionary containing measurement data.
@@ -14,8 +14,8 @@ def is_default_measurement_data_parameter(measurement_data: Dict[str, Any]) -> b
     Returns:
         bool: True if the measurement has both 'name' and 'measurement' fields, False otherwise.
     """
-    allowed_measurement_keys = ["name", "measurement"]
-    return all(key in measurement_data for key in allowed_measurement_keys)
+    required_measurement_fields = ["name", "measurement"]
+    return set(required_measurement_fields).issubset(set(data.keys()))
 
 
 def convert_results_to_dataframe(
@@ -55,17 +55,20 @@ def convert_steps_to_dataframe(
     steps: List[Step],
     is_measurement_data_parameter: Optional[
         Callable[[Dict[str, Any]], bool]
-    ] = is_default_measurement_data_parameter,
+    ] = is_step_data_with_name_and_measurement,
 ) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
 
     Args:
         steps: A list of steps.
-        is_measurement_data_parameter: Optional function to check if a measurement is valid. The method takes
-            a dictionary as input and returns a boolean value. If the function is not provided, the
-            default behavior is to keep only those measurements that have both 'name' and 'measurement' fields.
-            If none of the measurement data have the desired fields, the data.parameters will not
+        is_measurement_data_parameter: Optional callback function that checks if a step data parameter is a
+            required measurement so that only those are included in the resultant dataframe. The method takes
+            a dictionary as input and returns a boolean value.
+            The default behavior is to consider only parameters that have both 'name' and 'measurement'
+            fields as measurement parameters.
+            If none of the step data parameters have the required fields, the data.parameters will not
             appear in the dataframe.
+            If the callback function is set to None, all step data parameters will be included in the dataframe.
 
     Returns:
         DataFrame:
@@ -180,12 +183,14 @@ def __is_property_header(header: str) -> bool:
 
 def __convert_steps_to_dict(
     steps: List[Step],
-    is_measurement_data_parameter: Optional[Callable[[Dict[str, Any]], bool]] = None,
+    is_measurement_data_parameter: Optional[Callable[[Dict[str, Any]], bool]],
 ) -> List[Dict[str, Any]]:
     """Converts a list of steps to dictionaries, excluding None values.
 
     Args:
         steps: A list of steps.
+        is_measurement_data_parameter: Optional callback function to check if a step
+            data parameter has the required fields.
 
     Returns:
         List[Dict[str, Any]]: A list of dictionaries containing step information.
@@ -194,42 +199,43 @@ def __convert_steps_to_dict(
     for step in steps:
         single_step_dict = step.dict(exclude_none=True)
 
-        if (
-            is_measurement_data_parameter is not None
-            and step.data is not None
-            and step.data.parameters is not None
-        ):
-            single_step_dict["data"]["parameters"] = __get_measurement_data_parameters(
-                single_step_dict, is_measurement_data_parameter
-            )
-
+        __filter_data_parameters(single_step_dict, step, is_measurement_data_parameter)
         __normalize_inputs_outputs(single_step_dict, step)
         __normalize_step_status(single_step_dict)
         steps_dict.append(single_step_dict)
     return steps_dict
 
 
-def __get_measurement_data_parameters(
+def __filter_data_parameters(
     step_dict: Dict[str, Any],
-    is_measurement_data_parameter: Optional[Callable[[Dict[str, Any]], bool]] = None,
-) -> List[Dict[str, Any]]:
-    """Gets valid measurement data parameters from the step dictionary.
+    step: Step,
+    is_measurement_data_parameter: Optional[Callable[[Dict[str, Any]], bool]],
+) -> None:
+    """Gets data parameters from the step dictionary and filters it based on the callback function.
 
     Args:
         step_dict: A dictionary with step information.
+        step: A Step object containing data parameters.
         is_measurement_data_parameter: Optional callback function to check if a measurement is valid. The method takes
-            a dictionary as input and returns a boolean value. If the function is not provided, the
-            default behavior is to keep only those measurements that have both 'name' and 'measurement' fields.
+            a dictionary as input and returns a boolean value. The default behavior is to consider only parameters
+            that have both 'name' and 'measurement' fields as measurement parameters.
 
     Returns:
-        List[Dict[str, Any]]: A list of dictionaries containing valid measurement data.
+        None: The function modifies step_dict in place with the filtered step data parameters.
     """
     valid_measurement_parameters = []
-    for parameter in step_dict["data"]["parameters"]:
-        if is_measurement_data_parameter and is_measurement_data_parameter(parameter):
-            valid_measurement_parameters.append(parameter)
+    if (
+        is_measurement_data_parameter is not None
+        and step.data is not None
+        and step.data.parameters is not None
+    ):
+        for parameter in step_dict["data"]["parameters"]:
+            if is_measurement_data_parameter and is_measurement_data_parameter(
+                parameter
+            ):
+                valid_measurement_parameters.append(parameter)
 
-    return valid_measurement_parameters
+        step_dict["data"]["parameters"] = valid_measurement_parameters
 
 
 def __normalize_inputs_outputs(
@@ -243,7 +249,7 @@ def __normalize_inputs_outputs(
         step: A Step object containing inputs and outputs.
 
     Returns:
-        None: The function modifies step_dict in place.
+        None: The function modifies step_dict in place with normalized inputs and outputs.
     """
     STEP_INPUTS = StepProjection.INPUTS.lower()
     STEP_OUTPUTS = StepProjection.OUTPUTS.lower()
@@ -258,6 +264,15 @@ def __normalize_inputs_outputs(
 
 
 def __normalize_step_status(step_dict: Dict[str, Any]) -> None:
+    """Normalizes the step status field. If status_type is "CUSTOM",
+    then status.status_name is used, else status.status_type.value is assigned.
+
+    Args:
+        step_dict: A dictionary with step information.
+
+    Returns:
+        None: The function modifies step_dict in place with the normalized step
+    """
     step_status = step_dict.get("status", {})
     step_dict["status"] = (
         step_status.get("status_name", None)
@@ -314,19 +329,24 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
         StepProjection.DATA,
         StepProjection.PROPERTIES,
     ]
-    grouped_columns: Dict[str, List[str]] = {category: [] for category in CATEGORY_KEYS}
+    category_keys_lower = [category.lower() for category in CATEGORY_KEYS]
+    grouped_columns: Dict[str, List[str]] = {
+        category: [] for category in category_keys_lower
+    }
     for column in dataframe_columns:
         column_lower = column.lower()
         key = next(
             (
                 category
-                for category in CATEGORY_KEYS[1:]
-                if column_lower.startswith(category.lower())
+                for category in category_keys_lower[1:]
+                if column_lower.startswith(category)
                 and column != StepProjection.DATA_MODEL.lower()
             ),
             GENERAL_CATEGORIES,
         )
         grouped_columns[key].append(column)
     return [
-        column for category in CATEGORY_KEYS for column in grouped_columns[category]
+        column
+        for category_key in category_keys_lower
+        for column in grouped_columns[category_key]
     ]

@@ -352,25 +352,23 @@ class TestTestmonitorDataframeUtilities:
             steps_dataframe, expected_steps_dataframe, check_dtype=True
         )
 
-    def test__convert_steps_to_dataframe_with_is_callback__returns_dataframe_with_valid_measurement(
+    def test__convert_steps_to_dataframe_with_callback__returns_dataframe_with_valid_measurement(
         self, mock_steps_data: List[Step]
     ):
         """Test if the function returns a dataframe of steps with valid measurement."""
 
         def is_measurement_data_parameter(step_dict: Dict[str, Any]) -> bool:
-            return all(key in step_dict for key in desired_measurement_keys)
+            return set(required_measurement_fields).issubset(set(step_dict.keys()))
 
-        desired_measurement_keys = ["name", "temperature"]
+        required_measurement_fields = ["name", "temperature"]
         expected_steps_dataframe = self.__get_expected_steps_dataframe(
-            mock_steps_data, desired_measurement_keys
+            mock_steps_data, required_measurement_fields
         )
 
         steps_dataframe = convert_steps_to_dataframe(
             mock_steps_data, is_measurement_data_parameter
         )
 
-        # import pdb
-        # pdb.set_trace()
         assert not steps_dataframe.empty
         assert (
             steps_dataframe.columns.to_list()
@@ -444,7 +442,7 @@ class TestTestmonitorDataframeUtilities:
     def __get_expected_steps_dataframe(
         self,
         mock_steps_data: List[Step],
-        measurement_keys: Optional[List[str]] = ["name", "measurement"],
+        measurement_fields: Optional[List[str]] = ["name", "measurement"],
     ) -> pd.DataFrame:
         restructured_mock_steps = []
         for step in mock_steps_data:
@@ -499,7 +497,7 @@ class TestTestmonitorDataframeUtilities:
                     if all(
                         hasattr(measurement, key)
                         and getattr(measurement, key) is not None
-                        for key in (measurement_keys or [])
+                        for key in (measurement_fields or [])
                     )
                 ]
             else:
