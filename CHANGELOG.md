@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.5.1 (2025-03-13)
+
+### Fix
+
+* Delete product created during result client test fixture ([#104](https://github.com/ni/nisystemlink-clients-python/issues/104)) ([`86b0759`](https://github.com/ni/nisystemlink-clients-python/commit/86b07594d64ad92da85e1e8d91e711071eb24ded))
+
 ## v2.5.0 (2025-03-13)
 
 ### Feature
