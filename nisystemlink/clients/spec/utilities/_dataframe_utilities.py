@@ -56,7 +56,8 @@ def normalize_conditions_per_column(
     Returns:
         Conditions as a list of dictionary. The key will be
         the condition name and the value will be the condition value which is
-        either Numeric Condition Value, String Condition Value or None.
+        either Numeric Condition Value, String Condition Value or None. If the condition doesn't
+        have a name and value, it will be skipped.
     """
     return [
         {
@@ -71,7 +72,7 @@ def normalize_conditions_per_row(
     conditions: List[Condition],
 ) -> List[Dict[str, Any]]:
     """Convert conditions into list of dictionaries where dictionary keys will be 'condition.name'
-    and 'condition.value' and dictionary values will be condition name and condition value.
+    and 'condition.value' and dictionary values will be condition name and condition value respectively.
 
     Args:
         conditions: List of all conditions in a spec.
@@ -80,10 +81,14 @@ def normalize_conditions_per_row(
         Conditions as a list of dictionary. The keys will be
         the 'condition.name' and 'condition.values' and the values will be the condition name and
         condition value which is either Numeric Condition Value, String Condition Value or None.
+        If the condition doesn't have a name and value, it will be skipped.
+        Each condition data will be logged as separate dictionary entry in the list which translates to
+        separate row in the dataframe.
     """
     return [
         {"condition.name": condition.name, "condition.value": condition.value}
         for condition in conditions
+        if condition.name and condition.value
     ]
 
 
