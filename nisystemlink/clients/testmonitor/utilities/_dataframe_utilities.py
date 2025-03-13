@@ -6,7 +6,8 @@ from nisystemlink.clients.testmonitor.utilities.constants import DataFrameHeader
 
 
 def is_step_data_with_name_and_measurement(data: Dict[str, Any]) -> bool:
-    """Checks if a measurement is required by ensuring it has both 'name' and 'measurement' fields.
+    """Checks if a step data parameter is a measurement data by ensuring it 
+    has both 'name' and 'measurement' fields.
 
     Args:
         measurement: A dictionary containing measurement data.
@@ -62,7 +63,7 @@ def convert_steps_to_dataframe(
     Args:
         steps: A list of steps.
         is_measurement_data_parameter: Optional callback function that checks if a step data parameter is a
-            required measurement so that only those are included in the resultant dataframe. The method takes
+            measurement so that only those are included in the returned dataframe. The method takes
             a dictionary as input and returns a boolean value.
             The default behavior is to consider only parameters that have both 'name' and 'measurement'
             fields as measurement parameters.
@@ -324,21 +325,20 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
     GENERAL_CATEGORIES = "general"
     CATEGORY_KEYS = [
         GENERAL_CATEGORIES,
-        StepProjection.INPUTS,
-        StepProjection.OUTPUTS,
-        StepProjection.DATA,
-        StepProjection.PROPERTIES,
+        StepProjection.INPUTS.lower(),
+        StepProjection.OUTPUTS.lower(),
+        StepProjection.DATA.lower(),
+        StepProjection.PROPERTIES.lower(),
     ]
-    category_keys_lower = [category.lower() for category in CATEGORY_KEYS]
     grouped_columns: Dict[str, List[str]] = {
-        category: [] for category in category_keys_lower
+        category: [] for category in CATEGORY_KEYS
     }
     for column in dataframe_columns:
         column_lower = column.lower()
         key = next(
             (
                 category
-                for category in category_keys_lower[1:]
+                for category in CATEGORY_KEYS[1:]
                 if column_lower.startswith(category)
                 and column != StepProjection.DATA_MODEL.lower()
             ),
@@ -347,6 +347,6 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
         grouped_columns[key].append(column)
     return [
         column
-        for category_key in category_keys_lower
+        for category_key in CATEGORY_KEYS
         for column in grouped_columns[category_key]
     ]
