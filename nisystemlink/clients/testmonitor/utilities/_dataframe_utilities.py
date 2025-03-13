@@ -12,9 +12,8 @@ def convert_results_to_dataframe(
 
     Args:
         results: The list of results to be included in the dataframe.
-        set_id_as_index: If true, result id will be set as index for the dataframe.
+        set_id_as_index: If true (default value), result id will be set as index for the dataframe.
                          If false, index will not be set.
-                         Default value is false.
 
     Returns:
         A Pandas DataFrame with the each result fields having a separate column.
