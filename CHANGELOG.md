@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.5.0 (2025-03-13)
+
+### Feature
+
+* Export Specs as Dataframe ([#98](https://github.com/ni/nisystemlink-clients-python/issues/98)) ([`ae1b608`](https://github.com/ni/nisystemlink-clients-python/commit/ae1b608e02ccf349d9e0bcf3ccf036383395759b))
+
 ## v2.4.0 (2025-03-11)
 
 ### Feature
