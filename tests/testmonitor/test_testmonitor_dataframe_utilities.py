@@ -1,10 +1,11 @@
 import datetime
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import List
 
 import pandas as pd
 import pytest
 from nisystemlink.clients.testmonitor.models import (
+    Measurement,
     NamedValue,
     Result,
     Status,
@@ -114,15 +115,15 @@ def mock_steps_data() -> List[Step]:
         data=StepData(
             text="data1",
             parameters=[
-                {
-                    "name": "parameter_11",
-                    "units": "A",
-                    "status": "Passed",
-                    "lowLimit": "6.0",
-                    "highLimit": "21.0",
-                    "measurement": "11.0",
-                    "comparisonType": "GTLT",
-                }
+                Measurement(
+                    name="parameter_11",
+                    units="A",
+                    status="Passed",
+                    lowLimit="6.0",
+                    highLimit="21.0",
+                    measurement="11.0",
+                    comparisonType="GTLT",
+                )
             ],
         ),
         has_children=False,
@@ -159,24 +160,24 @@ def mock_steps_data() -> List[Step]:
         data=StepData(
             text="data2",
             parameters=[
-                {
-                    "name": "parameter_21",
-                    "temperature": "A",
-                    "units": "A",
-                    "status": "Passed",
-                    "lowLimit": "6.0",
-                    "highLimit": "21.0",
-                    "measurement": "11.0",
-                    "comparisonType": "GTLT",
-                },
-                {
-                    "name": "parameter_22",
-                    "units": "C",
-                    "status": "Passed",
-                    "lowLimit": "7.0",
-                    "highLimit": "22.0",
-                    "comparisonType": "GTLT",
-                },
+                Measurement(
+                    name="parameter_21",
+                    units="A",
+                    status="Passed",
+                    lowLimit="6.0",
+                    highLimit="21.0",
+                    measurement="11.0",
+                    comparisonType="GTLT",
+                    additional_data="additional_data_value",
+                ),
+                Measurement(
+                    name="parameter_22",
+                    units="C",
+                    status="Passed",
+                    lowLimit="7.0",
+                    highLimit="22.0",
+                    comparisonType="GTLT",
+                ),
             ],
         ),
         has_children=True,
@@ -284,7 +285,34 @@ class TestTestmonitorDataframeUtilities:
         self, mock_steps_data: List[Step]
     ):
         """Test normal case with valid step data."""
-        expected_steps_dataframe = self.__get_expected_steps_dataframe(mock_steps_data)
+        expected_data_parameter_columns = [
+            [
+                {
+                    "data.parameters.name": "parameter_11",
+                    "data.parameters.status": "Passed",
+                    "data.parameters.measurement": "11.0",
+                    "data.parameters.lowLimit": "6.0",
+                    "data.parameters.highLimit": "21.0",
+                    "data.parameters.units": "A",
+                    "data.parameters.comparisonType": "GTLT",
+                }
+            ],
+            [
+                {
+                    "data.parameters.name": "parameter_21",
+                    "data.parameters.status": "Passed",
+                    "data.parameters.measurement": "11.0",
+                    "data.parameters.lowLimit": "6.0",
+                    "data.parameters.highLimit": "21.0",
+                    "data.parameters.units": "A",
+                    "data.parameters.comparisonType": "GTLT",
+                    "data.parameters.additional_data": "additional_data_value",
+                }
+            ],
+        ]
+        expected_steps_dataframe = self.__get_expected_steps_dataframe(
+            mock_steps_data, expected_data_parameter_columns
+        )
 
         steps_dataframe = convert_steps_to_dataframe(mock_steps_data)
 
@@ -323,14 +351,6 @@ class TestTestmonitorDataframeUtilities:
         expected_steps_dataframe = expected_steps_dataframe.drop(
             columns=[
                 "path_ids",
-                "data.parameters.name",
-                "data.parameters.units",
-                "data.parameters.status",
-                "data.parameters.lowLimit",
-                "data.parameters.highLimit",
-                "data.parameters.measurement",
-                "data.parameters.temperature",
-                "data.parameters.comparisonType",
                 "data.text",
                 "inputs.Input00",
                 "inputs.Input11",
@@ -343,6 +363,7 @@ class TestTestmonitorDataframeUtilities:
             subset=["step_id", "result_id"], ignore_index=True
         )
         steps_dataframe = convert_steps_to_dataframe(steps)
+
         assert not steps_dataframe.empty
         assert (
             steps_dataframe.columns.to_list()
@@ -357,12 +378,28 @@ class TestTestmonitorDataframeUtilities:
     ):
         """Test if the function returns a dataframe of steps with valid measurement."""
 
-        def is_measurement_data_parameter(step_dict: Dict[str, Any]) -> bool:
-            return set(required_measurement_fields).issubset(set(step_dict.keys()))
+        def is_measurement_data_parameter(measurement: Measurement) -> bool:
+            return measurement.name is not None and hasattr(
+                measurement, "additional_data"
+            )
 
-        required_measurement_fields = ["name", "temperature"]
+        expected_data_parameter_columns = [
+            [{}],
+            [
+                {
+                    "data.parameters.name": "parameter_21",
+                    "data.parameters.status": "Passed",
+                    "data.parameters.measurement": "11.0",
+                    "data.parameters.lowLimit": "6.0",
+                    "data.parameters.highLimit": "21.0",
+                    "data.parameters.units": "A",
+                    "data.parameters.comparisonType": "GTLT",
+                    "data.parameters.additional_data": "additional_data_value",
+                }
+            ],
+        ]
         expected_steps_dataframe = self.__get_expected_steps_dataframe(
-            mock_steps_data, required_measurement_fields
+            mock_steps_data, expected_data_parameter_columns
         )
 
         steps_dataframe = convert_steps_to_dataframe(
@@ -374,6 +411,143 @@ class TestTestmonitorDataframeUtilities:
             steps_dataframe.columns.to_list()
             == expected_steps_dataframe.columns.to_list()
         )
+        assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["path_ids"].dtype == "object"
+        assert isinstance(steps_dataframe["path_ids"].iloc[0], List)
+        assert steps_dataframe["keywords"].dtype == "object"
+        assert isinstance(steps_dataframe["keywords"].iloc[0], List)
+        pd.testing.assert_frame_equal(
+            steps_dataframe, expected_steps_dataframe, check_dtype=True
+        )
+
+    def test__convert_steps_to_dataframe_with_invalid_data_parameters__returns_only_step_data_without_measurement(
+        self,
+    ):
+        """Test if the function returns a dataframe of steps with no measurement."""
+        step_data = Step(
+            name="step_name",
+            step_type="StepType",
+            step_id="5ffb2bf6771fa11e877838dd6",
+            parent_id="5ffb2bf6771fa11e877838dd7",
+            result_id="5ffb2bf6771fa11e877838dd8",
+            path="Path",
+            path_ids=["path_id_21", "path_id_22"],
+            status=Status(status_type=StatusType.CUSTOM, status_name="newstatus"),
+            total_time_in_seconds=5,
+            started_at=datetime.datetime(
+                2023, 3, 27, 18, 39, 49, tzinfo=datetime.timezone.utc
+            ),
+            updated_at=datetime.datetime(
+                2024, 2, 2, 14, 22, 4, 625255, tzinfo=datetime.timezone.utc
+            ),
+            inputs=[
+                NamedValue(name="Input11", value="input_value_123"),
+            ],
+            outputs=[
+                NamedValue(name="Output11", value="output_value_123"),
+            ],
+            data_model="STDF",
+            data=StepData(
+                text="data2",
+                parameters=[Measurement(name="parameter_123", status="Passed")],
+            ),
+            has_children=True,
+            workspace="846e294a-a007-47ac-9fc2-fac07eab240z",
+            keywords=["keyword11", "keyword123"],
+            properties={"property11": "property123"},
+        )
+        expected_column_order = [
+            "name",
+            "step_type",
+            "step_id",
+            "parent_id",
+            "result_id",
+            "path",
+            "path_ids",
+            "status",
+            "total_time_in_seconds",
+            "started_at",
+            "updated_at",
+            "data_model",
+            "has_children",
+            "workspace",
+            "keywords",
+            "inputs.Input11",
+            "outputs.Output11",
+            "data.text",
+            "properties.property11",
+        ]
+        expected_steps_dataframe = self.__get_expected_steps_dataframe(
+            [step_data], expected_column_order=expected_column_order
+        )
+
+        steps_dataframe = convert_steps_to_dataframe([step_data])
+
+        assert not steps_dataframe.empty
+        assert (
+            steps_dataframe.columns.to_list()
+            == expected_steps_dataframe.columns.to_list()
+        )
+        assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["path_ids"].dtype == "object"
+        assert isinstance(steps_dataframe["path_ids"].iloc[0], List)
+        assert steps_dataframe["keywords"].dtype == "object"
+        assert isinstance(steps_dataframe["keywords"].iloc[0], List)
+        pd.testing.assert_frame_equal(
+            steps_dataframe, expected_steps_dataframe, check_dtype=True
+        )
+
+    def test__convert_steps_to_dataframe_with_None_callback__returns_step_with_all_data_parameters(
+        self, mock_steps_data: List[Step]
+    ):
+        """Test normal case with valid step data."""
+        expected_data_parameter = [
+            [
+                {
+                    "data.parameters.name": "parameter_11",
+                    "data.parameters.status": "Passed",
+                    "data.parameters.measurement": "11.0",
+                    "data.parameters.lowLimit": "6.0",
+                    "data.parameters.highLimit": "21.0",
+                    "data.parameters.units": "A",
+                    "data.parameters.comparisonType": "GTLT",
+                }
+            ],
+            [
+                {
+                    "data.parameters.name": "parameter_21",
+                    "data.parameters.status": "Passed",
+                    "data.parameters.measurement": "11.0",
+                    "data.parameters.lowLimit": "6.0",
+                    "data.parameters.highLimit": "21.0",
+                    "data.parameters.units": "A",
+                    "data.parameters.comparisonType": "GTLT",
+                    "data.parameters.additional_data": "additional_data_value",
+                },
+                {
+                    "data.parameters.name": "parameter_22",
+                    "data.parameters.status": "Passed",
+                    "data.parameters.lowLimit": "7.0",
+                    "data.parameters.highLimit": "22.0",
+                    "data.parameters.units": "C",
+                    "data.parameters.comparisonType": "GTLT",
+                },
+            ],
+        ]
+        expected_steps_dataframe = self.__get_expected_steps_dataframe(
+            mock_steps_data, data_parameter_columns=expected_data_parameter
+        )
+
+        steps_dataframe = convert_steps_to_dataframe(mock_steps_data, None)
+
+        assert not steps_dataframe.empty
+        assert (
+            steps_dataframe.columns.to_list()
+            == expected_steps_dataframe.columns.to_list()
+        )
+
         assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
         assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
         assert steps_dataframe["path_ids"].dtype == "object"
@@ -442,80 +616,69 @@ class TestTestmonitorDataframeUtilities:
     def __get_expected_steps_dataframe(
         self,
         mock_steps_data: List[Step],
-        measurement_fields: Optional[List[str]] = ["name", "measurement"],
+        data_parameter_columns=None,
+        expected_column_order=None,
     ) -> pd.DataFrame:
         restructured_mock_steps = []
+        index = 0
         for step in mock_steps_data:
-            restructured_step = {
-                "name": step.name,
-                "step_type": step.step_type,
-                "step_id": step.step_id,
-                "parent_id": step.parent_id,
-                "result_id": step.result_id,
-                "path": step.path,
-                "path_ids": step.path_ids,
-                "status": (
-                    step.status.status_type.value
-                    if step.status and step.status.status_type != "CUSTOM"
-                    else step.status.status_name if step.status else None
-                ),
-                "total_time_in_seconds": step.total_time_in_seconds,
-                "started_at": step.started_at,
-                "updated_at": step.updated_at,
-                "data_model": step.data_model,
-                "has_children": step.has_children,
-                "workspace": step.workspace,
-                "keywords": step.keywords,
-                "data.text": step.data.text if step.data else None,
-            }
-
-            restructured_step.update(
-                {f"properties.{key}": value for key, value in step.properties.items()}
-                if step.properties
-                else {}
-            )
-
-            restructured_step.update(
-                {f"inputs.{item.name}": item.value for item in step.inputs}
-                if step.inputs
-                else {}
-            )
-
-            restructured_step.update(
-                {f"outputs.{item.name}": item.value for item in step.outputs}
-                if step.outputs
-                else {}
-            )
-
-            if step.data and step.data.parameters:
-                filtered_parameters = [
+            for parameter in (
+                data_parameter_columns[index]
+                if (data_parameter_columns and data_parameter_columns[index])
+                else [{}]
+            ):
+                restructured_step = {
+                    "name": step.name,
+                    "step_type": step.step_type,
+                    "step_id": step.step_id,
+                    "parent_id": step.parent_id,
+                    "result_id": step.result_id,
+                    "path": step.path,
+                    "path_ids": step.path_ids,
+                    "status": (
+                        step.status.status_type.value
+                        if step.status and step.status.status_type != "CUSTOM"
+                        else step.status.status_name if step.status else None
+                    ),
+                    "total_time_in_seconds": step.total_time_in_seconds,
+                    "started_at": step.started_at,
+                    "updated_at": step.updated_at,
+                    "data_model": step.data_model,
+                    "has_children": step.has_children,
+                    "workspace": step.workspace,
+                    "keywords": step.keywords,
+                    "data.text": step.data.text if step.data else None,
+                    **{key: value for key, value in (parameter.items() or {})},
+                }
+                restructured_step.update(
                     {
-                        f"data.parameters.{key}": value
-                        for key, value in measurement.dict().items()
+                        f"properties.{key}": value
+                        for key, value in step.properties.items()
                     }
-                    for measurement in step.data.parameters
-                    if all(
-                        hasattr(measurement, key)
-                        and getattr(measurement, key) is not None
-                        for key in (measurement_fields or [])
-                    )
-                ]
-            else:
-                filtered_parameters = []
+                    if step.properties
+                    else {}
+                )
 
-            if not filtered_parameters:
+                restructured_step.update(
+                    {f"inputs.{item.name}": item.value for item in step.inputs}
+                    if step.inputs
+                    else {}
+                )
+
+                restructured_step.update(
+                    {f"outputs.{item.name}": item.value for item in step.outputs}
+                    if step.outputs
+                    else {}
+                )
                 restructured_mock_steps.append(restructured_step)
-            else:
-                for param_data in filtered_parameters:
-                    step_with_params = restructured_step.copy()
-                    step_with_params.update(param_data)
-                    restructured_mock_steps.append(step_with_params)
+            index += 1
 
         steps_dataframe = pd.DataFrame(restructured_mock_steps)
+
         data_parameter_columns = [
             col for col in steps_dataframe.columns if col.startswith("data.parameters.")
         ]
-        expected_column_order = [
+        default_column_order = [
             "name",
             "step_type",
             "step_id",
@@ -547,5 +710,6 @@ class TestTestmonitorDataframeUtilities:
             "properties.property21",
             "properties.property22",
         ]
-
-        return steps_dataframe.reindex(columns=expected_column_order, copy=False)
+        return steps_dataframe.reindex(
+            columns=expected_column_order or default_column_order, copy=False
+        )
