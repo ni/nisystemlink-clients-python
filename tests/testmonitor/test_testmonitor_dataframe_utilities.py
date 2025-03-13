@@ -124,9 +124,7 @@ def mock_steps_data() -> List[Step]:
                     measurement="11.0",
                     comparisonType="GTLT",
                 ),
-                Measurement(
-                    nitmParameterType="additional_results", additionalProp="myValue"
-                ),
+                Measurement(additionalProp="myValue"),
             ],
         ),
         has_children=False,
@@ -171,7 +169,7 @@ def mock_steps_data() -> List[Step]:
                     highLimit="21.0",
                     measurement="11.0",
                     comparisonType="GTLT",
-                    additional_data="additional_data_value",
+                    additionalData="additional_data_value",
                 ),
                 Measurement(
                     name="parameter_22",
@@ -309,7 +307,7 @@ class TestTestmonitorDataframeUtilities:
                     "data.parameters.highLimit": "21.0",
                     "data.parameters.units": "A",
                     "data.parameters.comparisonType": "GTLT",
-                    "data.parameters.additional_data": "additional_data_value",
+                    "data.parameters.additionalData": "additional_data_value",
                 }
             ],
         ]
@@ -383,7 +381,7 @@ class TestTestmonitorDataframeUtilities:
 
         def is_measurement_data_parameter(measurement: Measurement) -> bool:
             return measurement.name is not None and hasattr(
-                measurement, "additional_data"
+                measurement, "additionalData"
             )
 
         expected_data_parameters = [
@@ -397,7 +395,7 @@ class TestTestmonitorDataframeUtilities:
                     "data.parameters.highLimit": "21.0",
                     "data.parameters.units": "A",
                     "data.parameters.comparisonType": "GTLT",
-                    "data.parameters.additional_data": "additional_data_value",
+                    "data.parameters.additionalData": "additional_data_value",
                 }
             ],
         ]
@@ -477,7 +475,6 @@ class TestTestmonitorDataframeUtilities:
                 },
                 {
                     "data.parameters.additionalProp": "myValue",
-                    "data.parameters.nitmParameterType": "additional_results",
                 },
             ],
             [
@@ -489,7 +486,7 @@ class TestTestmonitorDataframeUtilities:
                     "data.parameters.highLimit": "21.0",
                     "data.parameters.units": "A",
                     "data.parameters.comparisonType": "GTLT",
-                    "data.parameters.additional_data": "additional_data_value",
+                    "data.parameters.additionalData": "additional_data_value",
                 },
                 {
                     "data.parameters.name": "parameter_22",
@@ -502,7 +499,8 @@ class TestTestmonitorDataframeUtilities:
             ],
         ]
         expected_steps_dataframe = self.__get_expected_steps_dataframe(
-            mock_steps_data, expected_data_parameters=expected_data_parameters
+            mock_steps_data,
+            expected_data_parameters=expected_data_parameters,
         )
 
         steps_dataframe = convert_steps_to_dataframe(mock_steps_data, None)

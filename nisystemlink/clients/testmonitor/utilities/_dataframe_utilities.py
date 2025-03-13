@@ -70,7 +70,7 @@ def convert_steps_to_dataframe(
             valid measurement so that only those are included in the returned dataframe. The method takes
             a measurement as input and returns a boolean value.
             The default behavior is to consider only measurement data that have both 'name' and 'measurement'
-            fields with values as valid measurement.
+            fields with values as valid measurements.
             If none of the measurements have the required fields, the data.parameters will not
             appear in the dataframe.
             If the callback function is set to None, all step data parameters will be included in the dataframe.
@@ -221,7 +221,7 @@ def __filter_invalid_measurements(
         step: A Step object containing data parameters.
         is_valid_measurement: Optional callback function to check if a measurement is valid. The method takes
             a dictionary as input and returns a boolean value. The default behavior is to consider only parameters
-            that have both 'name' and 'measurement' fields with values as valid measurement.
+            that have both 'name' and 'measurement' fields with values as valid measurements.
 
     Returns:
         None: The function modifies step parameters in place with filtered data parameters.
