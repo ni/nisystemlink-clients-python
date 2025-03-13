@@ -11,7 +11,8 @@ from nisystemlink.clients.testmonitor.utilities.constants import DataFrameHeader
 
 
 def is_step_data_with_name_and_measurement(measurement: Measurement) -> bool:
-    """Checks if a measurement data has both 'name' and 'measurement' fields.
+    """Checks if a step data parameter is measurement data by ensuring it has both
+    'name' and 'measurement' fields.
 
     Args:
         measurement: A measurement data object
