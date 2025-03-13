@@ -4,6 +4,11 @@ from typing import Dict, List, Optional
 import pytest
 from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
+from nisystemlink.clients.product._product_client import ProductClient
+from nisystemlink.clients.product.models._query_products_request import (
+    ProductField,
+    QueryProductValuesRequest,
+)
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
@@ -28,6 +33,7 @@ from nisystemlink.clients.testmonitor.models._query_results_request import (
     QueryResultsRequest,
     QueryResultValuesRequest,
     ResultField,
+    ResultProjection,
 )
 from nisystemlink.clients.testmonitor.models._step_data import Measurement, StepData
 
@@ -38,6 +44,12 @@ def client(enterprise_config: HttpConfiguration) -> TestMonitorClient:
     return TestMonitorClient(enterprise_config)
 
 
+@pytest.fixture(scope="class")
+def product_client(enterprise_config: HttpConfiguration) -> ProductClient:
+    """Fixture to create a ProductClient instance."""
+    return ProductClient(enterprise_config)
+
+
 @pytest.fixture
 def unique_identifier() -> str:
     """Unique result/step id for this test."""
@@ -46,7 +58,7 @@ def unique_identifier() -> str:
 
 
 @pytest.fixture
-def create_results(client: TestMonitorClient):
+def create_results(client: TestMonitorClient, product_client: ProductClient):
     """Fixture to return a factory that creates results."""
     responses: List[CreateResultsPartialSuccess] = []
 
@@ -63,7 +75,24 @@ def create_results(client: TestMonitorClient):
     for response in responses:
         if response.results:
             created_results = created_results + response.results
+
+    part_numbers_of_created_products = set(
+        result.part_number for result in created_results
+    )
+
     client.delete_results(ids=[str(result.id) for result in created_results])
+
+    product_filter_string = " or ".join(
+        [
+            f'partNumber="{part_number}"'
+            for part_number in part_numbers_of_created_products
+        ]
+    )
+    created_product_ids = product_client.query_product_values(
+        QueryProductValuesRequest(filter=product_filter_string, field=ProductField.ID)
+    )
+
+    product_client.delete_products(ids=created_product_ids)
 
 
 @pytest.fixture
@@ -100,12 +129,12 @@ class TestTestMonitor:
         assert len(response.dict()) != 0
 
     def test__create_single_result__one_result_created_with_right_field_values(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
-        part_number = unique_identifier
+        part_number = "Python Client Testing"
         keywords = ["testing"]
         properties = {"test_property": "yes"}
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         host_name = "Test Host"
         system_id = "Test System"
@@ -138,7 +167,7 @@ class TestTestMonitor:
     def test__create_multiple_results__multiple_creates_succeed(
         self, client: TestMonitorClient, create_results
     ):
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         results = [
             CreateResultRequest(
@@ -155,13 +184,13 @@ class TestTestMonitor:
         assert len(response.results) == 2
 
     def test__create_single_result_and_get_results__at_least_one_result_exists(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
+                part_number="Python Client Testing",
                 program_name=program_name,
                 status=status,
                 properties={"test": None},
@@ -175,16 +204,20 @@ class TestTestMonitor:
         assert len(get_response.results) >= 1
 
     def test__create_multiple_results_and_get_results_with_take__only_take_returned(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status
+                part_number="Python Client Testing",
+                program_name=program_name,
+                status=status,
             ),
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status
+                part_number="Python Client Testing",
+                program_name=program_name,
+                status=status,
             ),
         ]
         create_results(results)
@@ -195,16 +228,20 @@ class TestTestMonitor:
         assert len(get_response.results) == 1
 
     def test__create_multiple_results_and_get_results_with_count_at_least_one_count(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status
+                part_number="Python Client Testing",
+                program_name=program_name,
+                status=status,
             ),
             CreateResultRequest(
-                part_number=unique_identifier, program_name=program_name, status=status
+                part_number="Python Client Testing",
+                program_name=program_name,
+                status=status,
             ),
         ]
         create_results(results)
@@ -215,10 +252,10 @@ class TestTestMonitor:
         assert get_response.total_count is not None and get_response.total_count >= 2
 
     def test__get_result_by_id__result_matches_expected(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
-        part_number = unique_identifier
-        program_name = "Test Program"
+        part_number = "Python Client Testing"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         results = [
             CreateResultRequest(
@@ -236,63 +273,76 @@ class TestTestMonitor:
         assert result.program_name == program_name
         assert result.status == status
 
-    def test__query_result_by_part_number__matches_expected(
+    def test__query_result_by_part_number_and_serial_number_with_projection__results_with_only_projected_fields(
         self, client: TestMonitorClient, create_results, unique_identifier
     ):
-        part_number = unique_identifier
-        program_name = "Test Program"
-        status = Status.PASSED()
         results = [
             CreateResultRequest(
-                part_number=part_number, program_name=program_name, status=status
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
+                serial_number=unique_identifier,
+                status=Status.PASSED(),
+            )
+        ]
+        create_response: CreateResultsPartialSuccess = create_results(results)
+        assert create_response is not None
+
+        query_request = QueryResultsRequest(
+            filter=f'partNumber="{results[0].part_number}" and serialNumber="{results[0].serial_number}"',
+            projection=[
+                ResultProjection.ID,
+                ResultProjection.PART_NUMBER,
+                ResultProjection.SERIAL_NUMBER,
+            ],
+            return_count=True,
+        )
+        query_response: PagedResults = client.query_results(query_request)
+
+        assert query_response.total_count == 1
+        assert len(query_response.results) == 1
+        assert query_response.results[0].part_number == results[0].part_number
+        assert query_response.results[0].serial_number == results[0].serial_number
+        assert set(query_response.results[0].__fields_set__) == {
+            "id",
+            "part_number",
+            "serial_number",
+        }
+
+    def test__query_result_values_for_program_name__name_matches(
+        self, client: TestMonitorClient, create_results, unique_identifier
+    ):
+        results = [
+            CreateResultRequest(
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
+                serial_number=unique_identifier,
+                status=Status.PASSED(),
             )
         ]
 
         create_response: CreateResultsPartialSuccess = create_results(results)
-
-        assert create_response is not None
-        query_request = QueryResultsRequest(
-            filter=f'partNumber="{part_number}"', return_count=True
-        )
-        query_response: PagedResults = client.query_results(query_request)
-        assert query_response.total_count == 1
-        assert query_response.results[0].part_number == part_number
-
-    def test__query_result_values_for_name__name_matches(
-        self, client: TestMonitorClient, create_results, unique_identifier
-    ):
-        part_number = unique_identifier
-        program_name = "Test Program"
-        status = Status.PASSED()
-
-        create_response: CreateResultsPartialSuccess = create_results(
-            [
-                CreateResultRequest(
-                    part_number=part_number, program_name=program_name, status=status
-                )
-            ]
-        )
         assert create_response is not None
         query_request = QueryResultValuesRequest(
-            filter=f'partNumber="{part_number}"', field=ResultField.PROGRAM_NAME
+            filter=f'partNumber="{results[0].part_number}" and serialNumber="{results[0].serial_number}"',
+            field=ResultField.PROGRAM_NAME,
         )
         query_response: List[str] = client.query_result_values(query_request)
 
         assert query_response is not None
         assert len(query_response) == 1
-        assert query_response[0] == program_name
+        assert query_response[0] == results[0].program_name
 
     def test__update_keywords_with_replace__keywords_replaced(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
         original_keyword = "originalKeyword"
         updated_keyword = "updatedKeyword"
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
-                    part_number=unique_identifier,
+                    part_number="Python Client Testing",
                     keywords=[original_keyword],
                     program_name=program_name,
                     status=status,
@@ -317,16 +367,16 @@ class TestTestMonitor:
         assert original_keyword not in update_response.results[0].keywords
 
     def test__update_keywords_no_replace__keywords_appended(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
         original_keyword = "originalKeyword"
         additional_keyword = "additionalKeyword"
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
-                    part_number=unique_identifier,
+                    part_number="Python Client Testing",
                     keywords=[original_keyword],
                     program_name=program_name,
                     status=status,
@@ -354,17 +404,17 @@ class TestTestMonitor:
         )
 
     def test__update_properties_with_replace__properties_replaced(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
         new_key = "newKey"
         original_properties = {"originalKey": "originalValue"}
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
-                    part_number=unique_identifier,
+                    part_number="Python Client Testing",
                     properties=original_properties,
                     program_name=program_name,
                     status=status,
@@ -390,18 +440,18 @@ class TestTestMonitor:
         assert update_response.results[0].properties[new_key] == new_properties[new_key]
 
     def test__update_properties_append__properties_appended(
-        self, client: TestMonitorClient, create_results, unique_identifier
+        self, client: TestMonitorClient, create_results
     ):
         original_key = "originalKey"
         new_key = "newKey"
         original_properties = {original_key: "originalValue"}
-        program_name = "Test Program"
+        program_name = "Python Client Test Program"
         status = Status.PASSED()
         new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
-                    part_number=unique_identifier,
+                    part_number="Python Client Testing",
                     properties=original_properties,
                     program_name=program_name,
                     status=status,
@@ -444,8 +494,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -485,12 +535,12 @@ class TestTestMonitor:
         assert not created_step.outputs
 
     def test__create_multiple_steps__multiple_creation_succeed(
-        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -515,12 +565,12 @@ class TestTestMonitor:
         assert len(response.steps) == 2
 
     def test__create_multiple_steps_with_children__multiple_creation_succeed(
-        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -555,8 +605,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -581,8 +631,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -612,8 +662,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -643,8 +693,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -666,8 +716,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -700,8 +750,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -730,8 +780,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -838,8 +888,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -886,8 +936,8 @@ class TestTestMonitor:
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
@@ -922,12 +972,12 @@ class TestTestMonitor:
             )
 
     def test__delete_multiple_steps__deletion_succeed(
-        self, client: TestMonitorClient, create_results, create_steps, unique_identifier
+        self, client: TestMonitorClient, create_results, create_steps
     ):
         results = [
             CreateResultRequest(
-                part_number=unique_identifier,
-                program_name="Test Program",
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
                 status=Status.PASSED(),
             )
         ]
