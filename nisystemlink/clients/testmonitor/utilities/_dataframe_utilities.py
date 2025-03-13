@@ -10,7 +10,7 @@ from nisystemlink.clients.testmonitor.models import (
 from nisystemlink.clients.testmonitor.utilities.constants import DataFrameHeaders
 
 
-def is_valid_measurement(measurement: Measurement) -> bool:
+def is_step_data_with_name_and_measurement(measurement: Measurement) -> bool:
     """Checks if a step data parameter is measurement data by ensuring it has both
     'name' and 'measurement' fields.
 
@@ -60,7 +60,7 @@ def convert_steps_to_dataframe(
     steps: List[Step],
     is_valid_measurement: Optional[
         Callable[[Measurement], bool]
-    ] = is_valid_measurement,
+    ] = is_step_data_with_name_and_measurement,
 ) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
 
