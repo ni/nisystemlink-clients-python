@@ -71,7 +71,7 @@ def convert_steps_to_dataframe(
             a measurement as input and returns a boolean value.
             The default behavior is to consider only measurement data that have both 'name' and 'measurement'
             fields with values as valid measurements.
-            If none of the measurements have the required fields, the data.parameters will not
+            If none of the measurements have the required fields, the step data parameters will not
             appear in the dataframe.
             If the callback function is set to None, all step data parameters will be included in the dataframe.
 
@@ -83,8 +83,9 @@ def convert_steps_to_dataframe(
             columns would be named in the format `properties.property_name`.
             - A new column would be created for unique `Inputs` and `Outputs` across all steps. The columns
             would be named in the format `inputs.input_name` and `outputs.output_name` respectively.
-            - For each `parameter` entry in `data`, a new row is added in the dataframe, with data for
-            all other step fields are duplicated.
+            - The column headers for the step data parameters would differ based on the callback function. If
+            the None is passed for the callback function, the column would be prefixed with `data.parameters.`.
+            If the callback function is set, the column would be prefixed with `data.measurement.`.
     """
     DATA_PARAMETERS_PREFIX = (
         "data.parameters" if is_valid_measurement is None else "data.measurement"
@@ -224,7 +225,7 @@ def __filter_invalid_measurements(
         step_dict: A dictionary with step information.
         step: A Step object containing data parameters.
         is_valid_measurement: Optional callback function to check if a measurement is valid. The method takes
-            a dictionary as input and returns a boolean value. The default behavior is to consider only parameters
+            a Measurement as input and returns a boolean value. The default behavior is to consider only parameters
             that have both 'name' and 'measurement' fields with values as valid measurements.
 
     Returns:
@@ -309,7 +310,7 @@ def __explode_and_normalize(
         normalized_dataframe = pd.json_normalize(
             exploded_dataframe.pop(column)
         ).add_prefix(prefix)
-        return pd.concat([exploded_dataframe, normalized_dataframe], axis=1)
+        return pd.concat([exploded_dataframe, normalized_dataframe], axis=1, copy=False)
     return dataframe
 
 
@@ -325,13 +326,7 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
         List[str]: A list containing grouped and ordered columns.
     """
     GENERAL_CATEGORIES = "general"
-    CATEGORY_KEYS = [
-        GENERAL_CATEGORIES,
-        "inputs",
-        "outputs",
-        "data",
-        "properties",
-    ]
+    CATEGORY_KEYS = DataFrameHeaders.CATEGORY_COLUMN_HEADERS
     grouped_columns: Dict[str, List[str]] = {category: [] for category in CATEGORY_KEYS}
     for column in dataframe_columns:
         column_lower = column.lower()
