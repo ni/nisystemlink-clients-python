@@ -10,7 +10,7 @@ from nisystemlink.clients.testmonitor.models import (
 from nisystemlink.clients.testmonitor.utilities.constants import DataFrameHeaders
 
 
-def is_step_data_with_name_and_measurement(measurement: Measurement) -> bool:
+def has_name_and_measurement(measurement: Measurement) -> bool:
     """Checks if a step data parameter is measurement data by ensuring it has both
     'name' and 'measurement' fields.
 
@@ -60,7 +60,7 @@ def convert_steps_to_dataframe(
     steps: List[Step],
     is_valid_measurement: Optional[
         Callable[[Measurement], bool]
-    ] = is_step_data_with_name_and_measurement,
+    ] = has_name_and_measurement,
 ) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
 
@@ -86,11 +86,13 @@ def convert_steps_to_dataframe(
             - For each `parameter` entry in `data`, a new row is added in the dataframe, with data for
             all other step fields are duplicated.
     """
-    DATA_PARAMETERS = "data.parameters"
+    DATA_PARAMETERS_PREFIX = (
+        "data.parameters" if is_valid_measurement is None else "data.measurement"
+    )
     step_dicts = __convert_steps_to_dict(steps, is_valid_measurement)
     steps_dataframe = pd.json_normalize(step_dicts, sep=".")
     steps_dataframe = __explode_and_normalize(
-        steps_dataframe, DATA_PARAMETERS, f"{DATA_PARAMETERS}."
+        steps_dataframe, "data.parameters", f"{DATA_PARAMETERS_PREFIX}."
     )
     grouped_columns = __group_step_columns(steps_dataframe.columns)
     return steps_dataframe.reindex(columns=grouped_columns, copy=False)
@@ -202,9 +204,9 @@ def __convert_steps_to_dict(
     """
     steps_dict = []
     for step in steps:
-        __filter_invalid_measurements(step, is_valid_measurement)
 
         single_step_dict = step.dict(exclude_none=True)
+        __filter_invalid_measurements(single_step_dict, step, is_valid_measurement)
         __normalize_inputs_outputs(single_step_dict, step)
         __normalize_step_status(single_step_dict)
         steps_dict.append(single_step_dict)
@@ -212,6 +214,7 @@ def __convert_steps_to_dict(
 
 
 def __filter_invalid_measurements(
+    step_dict: Dict[str, Any],
     step: Step,
     is_valid_measurement: Optional[Callable[[Measurement], bool]],
 ) -> None:
@@ -232,7 +235,9 @@ def __filter_invalid_measurements(
             if is_valid_measurement and is_valid_measurement(measurement):
                 valid_measurement_parameters.append(measurement)
 
-        step.data.parameters = valid_measurement_parameters
+        step_dict["data"]["parameters"] = [
+            measurement.dict() for measurement in valid_measurement_parameters
+        ]
 
 
 def __normalize_inputs_outputs(
@@ -321,10 +326,10 @@ def __group_step_columns(dataframe_columns: List[str]) -> List[str]:
     GENERAL_CATEGORIES = "general"
     CATEGORY_KEYS = [
         GENERAL_CATEGORIES,
-        StepProjection.INPUTS.lower(),
-        StepProjection.OUTPUTS.lower(),
-        StepProjection.DATA.lower(),
-        StepProjection.PROPERTIES.lower(),
+        "inputs",
+        "outputs",
+        "data",
+        "properties",
     ]
     grouped_columns: Dict[str, List[str]] = {category: [] for category in CATEGORY_KEYS}
     for column in dataframe_columns:

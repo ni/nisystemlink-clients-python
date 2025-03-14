@@ -289,25 +289,25 @@ class TestTestmonitorDataframeUtilities:
         expected_data_parameters = [
             [
                 {
-                    "data.parameters.name": "parameter_11",
-                    "data.parameters.status": "Passed",
-                    "data.parameters.measurement": "11.0",
-                    "data.parameters.lowLimit": "6.0",
-                    "data.parameters.highLimit": "21.0",
-                    "data.parameters.units": "A",
-                    "data.parameters.comparisonType": "GTLT",
+                    "data.measurement.name": "parameter_11",
+                    "data.measurement.status": "Passed",
+                    "data.measurement.measurement": "11.0",
+                    "data.measurement.lowLimit": "6.0",
+                    "data.measurement.highLimit": "21.0",
+                    "data.measurement.units": "A",
+                    "data.measurement.comparisonType": "GTLT",
                 }
             ],
             [
                 {
-                    "data.parameters.name": "parameter_21",
-                    "data.parameters.status": "Passed",
-                    "data.parameters.measurement": "11.0",
-                    "data.parameters.lowLimit": "6.0",
-                    "data.parameters.highLimit": "21.0",
-                    "data.parameters.units": "A",
-                    "data.parameters.comparisonType": "GTLT",
-                    "data.parameters.additionalData": "additional_data_value",
+                    "data.measurement.name": "parameter_21",
+                    "data.measurement.status": "Passed",
+                    "data.measurement.measurement": "11.0",
+                    "data.measurement.lowLimit": "6.0",
+                    "data.measurement.highLimit": "21.0",
+                    "data.measurement.units": "A",
+                    "data.measurement.comparisonType": "GTLT",
+                    "data.measurement.additionalData": "additional_data_value",
                 }
             ],
         ]
@@ -388,14 +388,14 @@ class TestTestmonitorDataframeUtilities:
             [{}],
             [
                 {
-                    "data.parameters.name": "parameter_21",
-                    "data.parameters.status": "Passed",
-                    "data.parameters.measurement": "11.0",
-                    "data.parameters.lowLimit": "6.0",
-                    "data.parameters.highLimit": "21.0",
-                    "data.parameters.units": "A",
-                    "data.parameters.comparisonType": "GTLT",
-                    "data.parameters.additionalData": "additional_data_value",
+                    "data.measurement.name": "parameter_21",
+                    "data.measurement.status": "Passed",
+                    "data.measurement.measurement": "11.0",
+                    "data.measurement.lowLimit": "6.0",
+                    "data.measurement.highLimit": "21.0",
+                    "data.measurement.units": "A",
+                    "data.measurement.comparisonType": "GTLT",
+                    "data.measurement.additionalData": "additional_data_value",
                 }
             ],
         ]
@@ -458,7 +458,7 @@ class TestTestmonitorDataframeUtilities:
             steps_dataframe, expected_steps_dataframe, check_dtype=True
         )
 
-    def test__convert_steps_to_dataframe_with_None_callback__returns_step_with_all_data_parameters(
+    def test__convert_steps_to_dataframe_with_none_callback__returns_step_with_all_data_parameters(
         self, mock_steps_data: List[Step]
     ):
         """Test normal case with valid step data."""
@@ -501,6 +501,7 @@ class TestTestmonitorDataframeUtilities:
         expected_steps_dataframe = self.__get_expected_steps_dataframe(
             mock_steps_data,
             expected_data_parameters=expected_data_parameters,
+            data_parameters_prefix="data.parameters",
         )
 
         steps_dataframe = convert_steps_to_dataframe(mock_steps_data, None)
@@ -581,6 +582,7 @@ class TestTestmonitorDataframeUtilities:
         mock_steps_data: List[Step],
         expected_data_parameters=None,
         expected_column_order=None,
+        data_parameters_prefix="data.measurement",
     ) -> pd.DataFrame:
         steps_with_measurement_per_row = []
         index = 0
@@ -638,7 +640,9 @@ class TestTestmonitorDataframeUtilities:
         steps_dataframe = pd.DataFrame(steps_with_measurement_per_row)
 
         dataframe_columns = [
-            col for col in steps_dataframe.columns if col.startswith("data.parameters.")
+            col
+            for col in steps_dataframe.columns
+            if col.startswith(data_parameters_prefix)
         ]
         default_column_order = [
             "name",
