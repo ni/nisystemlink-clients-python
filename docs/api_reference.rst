@@ -14,6 +14,7 @@ API Reference
    api_reference/dataframe
    api_reference/spec
    api_reference/file
+   api_reference/notebook
    api_reference/feeds
 
 Indices and tables
