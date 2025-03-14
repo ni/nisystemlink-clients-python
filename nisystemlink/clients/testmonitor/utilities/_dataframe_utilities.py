@@ -221,13 +221,14 @@ def __filter_invalid_measurements(
     """Gets data parameters from the step dictionary and filters it based on the callback function.
 
     Args:
+        step_dict: A dictionary with step information.
         step: A Step object containing data parameters.
         is_valid_measurement: Optional callback function to check if a measurement is valid. The method takes
             a dictionary as input and returns a boolean value. The default behavior is to consider only parameters
             that have both 'name' and 'measurement' fields with values as valid measurements.
 
     Returns:
-        None: The function modifies step parameters in place with filtered data parameters.
+        None: The function modifies step dictionary in place with filtered data parameters.
     """
     if step.data and step.data.parameters and is_valid_measurement is not None:
         valid_measurement_parameters = []
