@@ -40,6 +40,17 @@ def post(
     return decorator
 
 
+def put(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
+    """Annotation for a PUT request with a JSON request body. If args is not
+    specified, defaults to a single argument that represents the request body.
+    """
+
+    def decorator(func: F) -> F:
+        return json(commands.put(path, args=args or (Body,))(func))  # type: ignore
+
+    return decorator
+
+
 def patch(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
     """Annotation for a PATCH request with a JSON request body."""
 

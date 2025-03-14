@@ -186,6 +186,7 @@ Update and Delete Specifications
    :language: python
    :linenos:
 
+
 File API
 -------
 
@@ -212,78 +213,30 @@ Get the metadata of a File using its Id and download it.
    :language: python
    :linenos:
 
-Upload a File from disk or memory to SystemLink
 
-.. literalinclude:: ../examples/file/upload_file.py
-
-Feeds API
+Notebook API
 -------
 
 Overview
 ~~~~~~~~
 
-The :class:`.FeedsClient` class is the primary entry point of the Feeds API.
+The :class:`.NotebookClient` class is the primary entry point of the Notebook API.
 
-When constructing a :class:`.FeedsClient`, you can pass an
+When constructing a :class:`.NotebookClient`, you can pass an
 :class:`.HttpConfiguration` (like one retrieved from the
-:class:`.HttpConfigurationManager`), or let :class:`.FeedsClient` use the
+:class:`.HttpConfigurationManager`), or let :class:`.NotebookClient` use the
 default connection. The default connection depends on your environment.
 
-With a :class:`.FeedsClient` object, you can:
+With a :class:`.NotebookClient` object, you can:
 
-* Get the list of feeds, create feed, upload package to feed and delete feed.
+* Create, update, query, and delete Notebooks
+* Create, get and query Notebook Executions
 
 Examples
 ~~~~~~~~
 
-Create a new feed.
+Create, query, update, and delete some notebooks.
 
-.. literalinclude:: ../examples/feeds/create_feed.py
-   :language: python
-   :linenos:
-
-Query feeds and upload a package to feed.
-
-.. literalinclude:: ../examples/feeds/query_and_upload_feeds.py
-   :language: python
-   :linenos:
-
-Delete a feed.
-
-.. literalinclude:: ../examples/feeds/delete_feed.py
-   :language: python
-   :linenos:
-
-TestMonitor API (Results)
--------
-
-Overview
-~~~~~~~~
-
-The :class:`.TestMonitorClient` class is the primary entry point of the Test Monitor API
-used to interact with test results (Results) and test steps (Steps).
-
-When constructing a :class:`.TestMonitorClient`, you can pass an
-:class:`.HttpConfiguration` (like one retrieved from the
-:class:`.HttpConfigurationManager`), or let :class:`.TestMonitorClient` use the
-default connection. The default connection depends on your environment.
-
-With a :class:`.TestMonitorClient` object, you can:
-
-* Create, update, query, and delete results
-* Create, update, query, and delete steps
-
-Examples
-~~~~~~~~
-
-Create, query, update, and delete some results
-
-.. literalinclude:: ../examples/testmonitor/results.py
-   :language: python
-   :linenos:
-
-Create, update, query, and delete steps
-
-.. literalinclude:: ../examples/testmonitor/steps.py
+.. literalinclude:: ../examples/notebook/notebooks.py
    :language: python
    :linenos:
