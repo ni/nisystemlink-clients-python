@@ -254,7 +254,7 @@ Delete a feed.
    :language: python
    :linenos:
 
-TestMonitor API (Results)
+TestMonitor API (Results and Steps)
 -------
 
 Overview
