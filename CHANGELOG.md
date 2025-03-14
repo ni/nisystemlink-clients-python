@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.6.0 (2025-03-14)
+
+### Feature
+
+* Export steps as dataframe ([#103](https://github.com/ni/nisystemlink-clients-python/issues/103)) ([`5535a89`](https://github.com/ni/nisystemlink-clients-python/commit/5535a8949bf9203b2947f109b8dc54e01fd7535d))
+
 ## v2.5.1 (2025-03-13)
 
 ### Fix
