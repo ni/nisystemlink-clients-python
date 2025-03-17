@@ -314,3 +314,9 @@ Create, query, update, and delete some notebooks.
 .. literalinclude:: ../examples/notebook/notebooks.py
    :language: python
    :linenos:
+
+Create, query, update, and delete notebook executions.
+
+.. literalinclude:: ../examples/notebook/notebook_execution.py
+   :language: python
+   :linenos:
