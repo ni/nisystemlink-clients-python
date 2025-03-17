@@ -69,9 +69,6 @@ class QueryExecutionResponse(JsonModel):
     result: Optional[Dict[str, Optional[str]]] = None
     """Result of the execution. This is used only when status is SUCCEEDED."""
 
-    source: Optional[Source] = None
-    """An object that defines properties set by routine service"""
-
     priority: Optional[ExecutionPriority] = None
     """Execution priority. Can be one of Low, Medium or High."""
 

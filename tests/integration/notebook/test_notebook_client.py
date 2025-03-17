@@ -209,7 +209,7 @@ class TestNotebookClient:
 
         request = QueryNotebookRequest(filter=f'id="{notebook.id}"')
         print(request)
-        response = client.query_notebooks_paged(request)
+        response = client.query_notebooks(request)
 
         assert response.notebooks is not None
         assert len(response.notebooks) == 1
@@ -219,7 +219,7 @@ class TestNotebookClient:
 
     def test__query_notebook_by_invalid_id__returns_empty_list(self, client):
         request = QueryNotebookRequest(filter='id="invalid_id"')
-        response = client.query_notebooks_paged(request)
+        response = client.query_notebooks(request)
 
         assert len(response.notebooks) == 0
         assert response.continuation_token is None
@@ -231,7 +231,7 @@ class TestNotebookClient:
         notebook = create_notebook(metadata=metadata)
 
         request = QueryNotebookRequest(filter=f'name.StartsWith("{random_filename}")')
-        response = client.query_notebooks_paged(request)
+        response = client.query_notebooks(request)
 
         assert len(response.notebooks) == 1
         assert response.continuation_token is None
@@ -240,14 +240,14 @@ class TestNotebookClient:
 
     def test__query_notebook_by_invalid_name__returns_empty_list(self, client):
         request = QueryNotebookRequest(filter='name="invalid_name"')
-        response = client.query_notebooks_paged(request)
+        response = client.query_notebooks(request)
 
         assert len(response.notebooks) == 0
         assert response.continuation_token is None
 
     def test__query_by_taking_3_notebooks__returns_3_notebooks(self, client):
         request = QueryNotebookRequest(take=3)
-        response = client.query_notebooks_paged(request)
+        response = client.query_notebooks(request)
 
         assert len(response.notebooks) == 3
         assert response.continuation_token is not None
@@ -256,13 +256,13 @@ class TestNotebookClient:
         self, client
     ):
         request = QueryNotebookRequest(take=3)
-        response = client.query_notebooks_paged(request)
+        response = client.query_notebooks(request)
 
         assert len(response.notebooks) == 3
         assert response.continuation_token is not None
 
         request.continuation_token = response.continuation_token
-        response = client.query_notebooks_paged(request)
+        response = client.query_notebooks(request)
 
         assert len(response.notebooks) != 0
         assert response.continuation_token is not None
@@ -627,11 +627,11 @@ class TestNotebookClient:
                 "status": "IN_PROGRESS",
             },
             {
-                "id": "execution_id_1",
+                "id": "execution_id_2",
                 "status": "TIMED_OUT",
             },
             {
-                "id": "execution_id_1",
+                "id": "execution_id_3",
                 "status": "FAILED",
             },
         ]

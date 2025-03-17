@@ -34,9 +34,6 @@ class CreateExecutionRequest(JsonModel):
     A value of 0 means do not reuse results from any previous executions. A value of -1 means always reuse results if
     possible and return an error if not possible. This prevents actual execution of a notebook."""
 
-    source: Optional[Source] = None
-    """An object that defines properties set by routine service"""
-
     report_settings: Optional[ReportSettings] = None
     """Settings of the Report"""
 
@@ -49,3 +46,4 @@ class CreateExecutionRequest(JsonModel):
     """Execution priority. Can be one of Low, Medium or High."""
 
     resource_profile: Optional[ExecutionResourceProfile] = None
+    """Resource profile of the execution."""

@@ -184,9 +184,9 @@ class NotebookClient(BaseClient):
         )
 
     @post("ninotebook/v1/notebook/query")
-    def query_notebooks_paged(
+    def query_notebooks(
         self, query: models.QueryNotebookRequest
-    ) -> models.QueryNotebookResponse:
+    ) -> models.PagedNotebooks:
         """Queries notebooks.
 
         Args:

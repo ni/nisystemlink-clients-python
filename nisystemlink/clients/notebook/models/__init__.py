@@ -1,6 +1,6 @@
 from ._notebook_metadata import NotebookMetadata
 from ._query_notebook_request import QueryNotebookRequest
-from ._query_notebook_response import QueryNotebookResponse
+from ._query_notebook_response import PagedNotebooks
 from ._query_execution_request import (
     ExecutionField,
     ExecutionSortField,
@@ -14,7 +14,7 @@ from ._create_execution_request import (
     CreateExecutionRequest,
 )
 from ._create_execution_response import (
-    CreatedExecutionModal,
+    CreatedExecution,
     CreateExecutionsResponse,
 )
 from ._execution import (

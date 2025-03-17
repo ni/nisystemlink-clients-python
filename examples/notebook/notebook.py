@@ -41,20 +41,20 @@ notebook_content = client.get_notebook_content("your_notebook_id")
 
 # Query notebook by name
 query_request = QueryNotebookRequest(
-    filter="name='Example Notebook'",
+    filter='name="Example Notebook"',
 )
 
-query_response = client.query_notebooks_paged(query_request)
+query_response = client.query_notebooks(query_request)
 
 # Query notebooks by take
 query_request = QueryNotebookRequest(take=2)
-query_response = client.query_notebooks_paged(query_request)
+query_response = client.query_notebooks(query_request)
 
 query_request = QueryNotebookRequest(
     continuation_token=query_response.continuation_token,
     take=1,
 )
-query_response = client.query_notebooks_paged(query_request)
+query_response = client.query_notebooks(query_request)
 
 # Delete the notebook by ID
 client.delete_notebook("your_notebook_id")

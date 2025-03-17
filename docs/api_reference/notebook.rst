@@ -11,7 +11,7 @@ nisystemlink.clients.notebook
    .. automethod:: update_notebook
    .. automethod:: delete_notebook
    .. automethod:: create_notebook
-   .. automethod:: query_notebooks_paged
+   .. automethod:: query_notebooks
    .. automethod:: get_notebook_content
    .. automethod:: create_executions
    .. automethod:: get_execution_by_id
