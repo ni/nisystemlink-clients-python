@@ -149,7 +149,7 @@ class Execution(JsonModel):
     last_updated_timestamp: datetime
     """Timestamp of when the notebook execution was last updated."""
 
-    last_updated_by: str
+    last_updated_by: Optional[str] = None
     """"The user ID of the user who last updated the execution."""
 
     retry_count: int
@@ -167,7 +167,7 @@ class Execution(JsonModel):
     report_settings: ReportSettings
     """Settings of the Report"""
 
-    result: Optional[Dict[str, Optional[str]]] = None
+    result: Optional[Dict[str, Optional[object]]] = None
     """Result of the execution. This is used only when status is SUCCEEDED."""
 
     source: Source

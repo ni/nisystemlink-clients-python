@@ -55,3 +55,12 @@ query_request = QueryExecutionsRequest(
 )
 
 query_executions_response = client.query_executions(query_request)
+
+# Cancel execution
+cancel_execution_response = client.cancel_executions(["your_execution_id"])
+
+# Retry execution
+retry_execution_response = client.retry_executions(["your_execution_id"])
+
+# Create execution from existing one
+run_new = client.create_executions_from_existing(["your_execution_id"])

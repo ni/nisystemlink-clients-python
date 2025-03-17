@@ -304,7 +304,7 @@ class NotebookClient(BaseClient):
 
     @response_handler(_simple_response_handler)
     @post("ninbexecution/v1/retry-executions")
-    def retry_executions(self, ids: List[str]) -> None:
+    def retry_executions(self, ids: List[str]) -> dict:
         """Retries existing executions based on failed, canceled or timed-out executions.
 
         Args:
@@ -321,7 +321,7 @@ class NotebookClient(BaseClient):
 
     @response_handler(_simple_response_handler)
     @post("ninbexecution/v1/cancel-executions")
-    def cancel_executions(self, ids: List[str]) -> None:
+    def cancel_executions(self, ids: List[str]) -> dict:
         """Cancel queued and in-progress executions.
 
         Args:
