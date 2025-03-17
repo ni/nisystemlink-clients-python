@@ -103,6 +103,10 @@ class ExecutionErrorCode(str, Enum):
 
     UNKNOWN_ERROR = "UNKNOWN_ERROR"
 
+    DEAD_KERNEL_ERROR = "DEAD_KERNEL_ERROR"
+
+    EXECUTION_COULD_NOT_BE_RETRIED = "EXECUTION_COULD_NOT_BE_RETRIED"
+
 
 class Execution(JsonModel):
     """Information about an execution of a Jupyter notebook that has the cachedResult field added."""
