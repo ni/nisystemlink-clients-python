@@ -144,10 +144,10 @@ class Execution(JsonModel):
 
     last_updated_timestamp: datetime
     """Timestamp of when the notebook execution was last updated."""
-    
+
     last_updated_by: str
     """"The user ID of the user who last updated the execution."""
-    
+
     retry_count: int
     """The number of manually retried attempts of the notebook execution."""
 

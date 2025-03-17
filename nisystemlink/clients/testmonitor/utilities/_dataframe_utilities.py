@@ -39,7 +39,7 @@ def convert_results_to_dataframe(
 
 
 def __normalize_results_status(
-    results_dict: List[Dict[str, Any]]
+    results_dict: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
     """Gets dictionary of results data and modifies the status object.
 

@@ -739,9 +739,7 @@ class TestNotebookClient:
         assert response[2].status == ExecutionStatus.IN_PROGRESS
 
     @responses.activate
-    def test__cancel_executions__return_inner_errors(
-        self, client: NotebookClient
-    ):
+    def test__cancel_executions__return_inner_errors(self, client: NotebookClient):
         return_value = {
             "innerErrors": ["Error1", "Error2"],
         }
@@ -757,11 +755,9 @@ class TestNotebookClient:
 
         print(response)
         assert response["innerErrors"] == ["Error1", "Error2"]
-        
+
     @responses.activate
-    def test__retry_executions__return_inner_errors(
-        self, client: NotebookClient
-    ):
+    def test__retry_executions__return_inner_errors(self, client: NotebookClient):
         return_value = {
             "innerErrors": ["Error1", "Error2"],
         }
@@ -777,7 +773,7 @@ class TestNotebookClient:
 
         print(response)
         assert response["innerErrors"] == ["Error1", "Error2"]
-        
+
     @responses.activate
     def test__create_executions_from_existing__return_inner_errors(
         self, client: NotebookClient

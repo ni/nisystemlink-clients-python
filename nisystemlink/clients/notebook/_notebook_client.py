@@ -28,11 +28,13 @@ def _query_executions_response_handler(response: Response) -> List[models.Execut
 
     return executions
 
+
 def _simple_response_handler(response: Response) -> dict:
     if response is None:
         return dict()
 
     return response.json()
+
 
 class NotebookClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
@@ -300,7 +302,6 @@ class NotebookClient(BaseClient):
 
         return self._query_executions(query=query_request)
 
-
     @response_handler(_simple_response_handler)
     @post("ninbexecution/v1/retry-executions")
     def retry_executions(self, ids: List[str]) -> None:
@@ -337,7 +338,9 @@ class NotebookClient(BaseClient):
 
     @response_handler(_simple_response_handler)
     @post("ninbexecution/v1/create-executions-from-existing")
-    def create_executions_from_existing(self, ids: List[str]) -> models.CreateExecutionsResponse:
+    def create_executions_from_existing(
+        self, ids: List[str]
+    ) -> models.CreateExecutionsResponse:
         """Create new executions based on already existing succeeded executions.
 
         Args:

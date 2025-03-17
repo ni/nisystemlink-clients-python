@@ -345,7 +345,7 @@ def __serialize_numeric_condition_range(value: NumericConditionValue) -> List[st
 
 
 def __serialize_condition_discrete_values(
-    value: Union[NumericConditionValue, StringConditionValue]
+    value: Union[NumericConditionValue, StringConditionValue],
 ) -> List[str]:
     """Serialize discrete values of a value.
 
