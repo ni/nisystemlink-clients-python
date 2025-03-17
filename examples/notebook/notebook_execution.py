@@ -10,7 +10,6 @@ from nisystemlink.clients.notebook.models import (
     QueryExecutionsRequest,
     ReportSettings,
     ReportType,
-    SourceType,
 )
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
