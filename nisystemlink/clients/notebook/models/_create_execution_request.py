@@ -7,7 +7,6 @@ from ._execution import (
     ExecutionPriority,
     ExecutionResourceProfile,
     ReportSettings,
-    Source,
 )
 
 
