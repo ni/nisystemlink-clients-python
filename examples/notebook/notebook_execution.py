@@ -10,7 +10,6 @@ from nisystemlink.clients.notebook.models import (
     QueryExecutionsRequest,
     ReportSettings,
     ReportType,
-    Source,
     SourceType,
 )
 
@@ -29,11 +28,6 @@ execution_request = CreateExecutionRequest(
     workspace_id="your_workspace_id",
     timeout=300,
     result_cache_period=3600,
-    source=Source(
-        type=SourceType.MANUAL,
-        routine_service="your_routine_service",
-        routine_name="your_routine_name",
-    ),
     report_settings=ReportSettings(
         format=ReportType.HTML,
         exclude_code=False,
