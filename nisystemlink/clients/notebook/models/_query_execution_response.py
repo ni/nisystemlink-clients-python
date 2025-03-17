@@ -9,7 +9,6 @@ from ._execution import (
     ExecutionResourceProfile,
     ExecutionStatus,
     ReportSettings,
-    Source,
 )
 
 

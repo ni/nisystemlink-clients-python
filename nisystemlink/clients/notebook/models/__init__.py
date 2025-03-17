@@ -20,7 +20,6 @@ from ._create_execution_response import (
 from ._execution import (
     Execution,
     SourceType,
-    Source,
     ReportType,
     ReportSettings,
     ExecutionPriority,
