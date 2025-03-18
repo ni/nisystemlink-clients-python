@@ -7,9 +7,6 @@ from ._query_execution_request import (
     _QueryExecutionsRequest,
     QueryExecutionsRequest,
 )
-from ._query_execution_response import (
-    QueryExecutionResponse,
-)
 from ._create_execution_request import (
     CreateExecutionRequest,
 )
