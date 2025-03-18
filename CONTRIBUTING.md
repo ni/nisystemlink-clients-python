@@ -15,7 +15,7 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 for more details.
 
 **Important:** Commit titles and messages should adhere to the
-[Angular style](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits)
+[Conventional Commits style](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 to ensure proper semantic versioning.
 
 ## Getting Started
