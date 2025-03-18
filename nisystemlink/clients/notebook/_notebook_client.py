@@ -15,7 +15,7 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
 from requests.models import Response
-from uplink import Part, Path
+from uplink import Part, Path, retry
 
 from . import models
 
@@ -36,6 +36,7 @@ def _simple_response_handler(response: Response) -> dict:
     return response.json()
 
 
+@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class NotebookClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
         """Initialize an instance.
