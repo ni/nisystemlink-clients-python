@@ -20,7 +20,7 @@ from uplink import Part, Path
 from . import models
 
 
-def _query_executions_response_handler(response: Response) -> List[models.Execution]:
+def __query_executions_response_handler(response: Response) -> List[models.Execution]:
     if response is None:
         return []
 
@@ -70,7 +70,7 @@ class NotebookClient(BaseClient):
         ...
 
     @put("ninotebook/v1/notebook/{id}")
-    def _update_notebook(
+    def __update_notebook(
         self,
         id: Path,
         metadata: Part = None,
@@ -117,7 +117,7 @@ class NotebookClient(BaseClient):
             metadata_str = metadata.json()
             metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
 
-        return self._update_notebook(
+        return self.__update_notebook(
             id=id,
             metadata=metadata_io,
             content=content,
@@ -252,9 +252,9 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @response_handler(_query_executions_response_handler)
+    @response_handler(__query_executions_response_handler)
     @post("ninbexecution/v1/query-executions")
-    def _query_executions(
+    def __query_executions(
         self, query: models._QueryExecutionsRequest
     ) -> List[models.QueryExecutionResponse]:
         """Query executions of Jupyter notebooks.
@@ -300,7 +300,7 @@ class NotebookClient(BaseClient):
 
         query_request = models._QueryExecutionsRequest(**query_params)
 
-        return self._query_executions(query=query_request)
+        return self.__query_executions(query=query_request)
 
     @response_handler(_simple_response_handler)
     @post("ninbexecution/v1/retry-executions")

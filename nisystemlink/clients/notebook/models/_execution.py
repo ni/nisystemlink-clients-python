@@ -111,33 +111,33 @@ class ExecutionErrorCode(str, Enum):
 class Execution(JsonModel):
     """Information about an execution of a Jupyter notebook that has the cachedResult field added."""
 
-    id: str
+    id: Optional[str] = None
     """The ID of the execution."""
 
-    notebook_id: str
+    notebook_id: Optional[str] = None
     """The ID of the executed notebook."""
 
-    organization_id: str = Field(alias="orgId")
+    organization_id: Optional[str] = Field(alias="orgId")
     """The org ID of the user creating the request."""
 
-    user_id: str
+    user_id: Optional[str] = None
     """The user ID of the user creating the request."""
 
     parameters: Optional[Dict[str, Any]] = None
     """The input parameters for this execution of the notebook. The keys are strings and the values can be of any
     valid JSON type."""
 
-    workspace_id: str
+    workspace_id: Optional[str] = None
     """The ID of the workspace this execution belongs to."""
 
-    timeout: int
+    timeout: Optional[int] = None
     """The number of seconds the execution runs before it aborts if uncompleted. The timer starts once status is
     IN_PROGRESS. 0 means infinite."""
 
-    status: ExecutionStatus
+    status: Optional[ExecutionStatus] = None
     """Status of an execution."""
 
-    queued_at: datetime
+    queued_at: Optional[datetime] = None
     """Timestamp of when the notebook execution was queued."""
 
     started_at: Optional[datetime] = None
@@ -146,35 +146,35 @@ class Execution(JsonModel):
     completed_at: Optional[datetime] = None
     """Timestamp of when the notebook execution was completed."""
 
-    last_updated_timestamp: datetime
+    last_updated_timestamp: Optional[datetime] = None
     """Timestamp of when the notebook execution was last updated."""
 
     last_updated_by: Optional[str] = None
     """"The user ID of the user who last updated the execution."""
 
-    retry_count: int
+    retry_count: Optional[int]
     """The number of manually retried attempts of the notebook execution."""
 
     exception: Optional[str] = None
     """Exception that occured during the execution. This is used only when status is FAILED."""
 
-    error_code: ExecutionErrorCode
+    error_code: Optional[ExecutionErrorCode] = None
     """Execution error code."""
 
     report_id: Optional[str] = None
     """The ID of the report this execution generates."""
 
-    report_settings: ReportSettings
+    report_settings: Optional[ReportSettings] = None
     """Settings of the Report"""
 
     result: Optional[Dict[str, Optional[object]]] = None
     """Result of the execution. This is used only when status is SUCCEEDED."""
 
-    source: Source
+    source: Optional[Source] = None
     """An object that defines properties set by routine service"""
 
-    priority: ExecutionPriority
+    priority: Optional[ExecutionPriority] = None
     """Execution priority. Can be one of Low, Medium or High."""
 
-    resource_profile: ExecutionResourceProfile
+    resource_profile: Optional[ExecutionResourceProfile] = None
     """Resource profile of the execution."""
