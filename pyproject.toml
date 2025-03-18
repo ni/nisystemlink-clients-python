@@ -4,9 +4,9 @@ version = "2.6.0"
 description = "NI-SystemLink Python API"
 authors = ["National Instruments"]
 maintainers = [
-    "Carson Moore <carson.moore@ni.com>",
-    "Paul Spangler <paul.spangler@ni.com>",
-    "Cameron Waterman <cameron.waterman@ni.com>",
+    "Richard Bell <richard.bell@emerson.com>",
+    "Paul Spangler <paul.spangler@emerson.com>",
+    "Cameron Waterman <cameron.waterman@emerson.com>",
 ]
 keywords = ["nisystemlink", "systemlink"]
 license = "MIT"
@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: System :: Hardware",
