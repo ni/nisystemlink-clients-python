@@ -106,7 +106,6 @@ Create, query, update, and delete some products
 
 DataFrame API
 -------
-
 Overview
 ~~~~~~~~
 
@@ -185,6 +184,7 @@ Update and Delete Specifications
 .. literalinclude:: ../examples/spec/update_and_delete_specs.py
    :language: python
    :linenos:
+
 
 File API
 -------
@@ -285,5 +285,38 @@ Create, query, update, and delete some results
 Create, update, query, and delete steps
 
 .. literalinclude:: ../examples/testmonitor/steps.py
+   :language: python
+   :linenos
+
+Notebook API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.NotebookClient` class is the primary entry point of the Notebook API.
+
+When constructing a :class:`.NotebookClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.NotebookClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.NotebookClient` object, you can:
+
+* Create, update, query, and delete Notebooks
+* Create, get and query Notebook Executions
+
+Examples
+~~~~~~~~
+
+Create, query, update, and delete some notebooks.
+
+.. literalinclude:: ../examples/notebook/notebook.py
+   :language: python
+   :linenos:
+
+Create, query, retry, and cancel notebook executions.
+
+.. literalinclude:: ../examples/notebook/notebook_execution.py
    :language: python
    :linenos:
