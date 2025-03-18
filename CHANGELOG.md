@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.7.0 (2025-03-18)
+
+### Feature
+
+* Add client for Notebook & Notebook Execution APIs ([#105](https://github.com/ni/nisystemlink-clients-python/issues/105)) ([`9e2d348`](https://github.com/ni/nisystemlink-clients-python/commit/9e2d348b73850a6b6ff2bf0e4814058d4f0cde1f))
+
 ## v2.6.0 (2025-03-14)
 
 ### Feature
