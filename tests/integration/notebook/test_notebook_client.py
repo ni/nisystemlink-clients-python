@@ -17,7 +17,7 @@ from nisystemlink.clients.notebook.models import (
 
 TEST_FILE_DATA = b"This is a test notebook binary content."
 PREFIX = "Notebook Client Tests-"
-BASE_URL = "https://dev-api.lifecyclesolutions.ni.com"
+BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
 
 
 @pytest.fixture(scope="class")
