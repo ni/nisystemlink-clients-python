@@ -20,7 +20,7 @@ from uplink import Part, Path
 from . import models
 
 
-def __query_executions_response_handler(response: Response) -> List[models.Execution]:
+def _query_executions_response_handler(response: Response) -> List[models.Execution]:
     if response is None:
         return []
 
@@ -252,7 +252,7 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @response_handler(__query_executions_response_handler)
+    @response_handler(_query_executions_response_handler)
     @post("ninbexecution/v1/query-executions")
     def __query_executions(
         self, query: models._QueryExecutionsRequest
