@@ -311,11 +311,11 @@ Examples
 
 Create, query, update, and delete some notebooks.
 
-.. literalinclude:: ../examples/notebook/notebooks.py
+.. literalinclude:: ../examples/notebook/notebook.py
    :language: python
    :linenos:
 
-Create, query, update, and delete notebook executions.
+Create, query, retry, and cancel notebook executions.
 
 .. literalinclude:: ../examples/notebook/notebook_execution.py
    :language: python
