@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.7.1 (2025-03-19)
+
+### Fix
+
+* Add 429 retries to notebook client ([#109](https://github.com/ni/nisystemlink-clients-python/issues/109)) ([`00e529a`](https://github.com/ni/nisystemlink-clients-python/commit/00e529a25d3fad535c2e54421c98d98b839f85fa))
+
 ## v2.7.0 (2025-03-18)
 
 ### Feature
