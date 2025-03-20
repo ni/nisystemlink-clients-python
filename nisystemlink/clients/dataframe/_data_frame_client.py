@@ -19,7 +19,7 @@ from . import models
 
 
 @retry(
-    when=retry.when.status([429, 500, 502, 503, 504]),
+    when=retry.when.status([429, 502, 503, 504]),
     stop=retry.stop.after_attempt(5),
     on_exception=retry.CONNECTION_ERROR,
 )
