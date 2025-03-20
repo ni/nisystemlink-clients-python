@@ -77,21 +77,7 @@ def results() -> List[Result]:
             file_ids=[uuid.uuid1().hex],
             status_type_summary={StatusType.PASSED: 0, StatusType.FAILED: 1},
             workspace=uuid.uuid1().hex,
-        ),
-        Result(
-            status=None,
-            started_at=datetime.datetime(
-                2018, 5, 7, 18, 58, 5, 219692, tzinfo=datetime.timezone.utc
-            ),
-            updated_at=datetime.datetime(
-                2018, 5, 7, 18, 58, 5, 219692, tzinfo=datetime.timezone.utc
-            ),
-            program_name="My Program Name",
-            id=uuid.uuid1().hex,
-            file_ids=[uuid.uuid1().hex],
-            status_type_summary={StatusType.PASSED: 0, StatusType.FAILED: 1},
-            workspace=uuid.uuid1().hex,
-        ),
+        )
     ]
 
     return results
@@ -242,6 +228,23 @@ class TestTestmonitorDataframeUtilities:
         self, results
     ):
         results = results[1:]
+        results.append(
+            Result(
+                status=None,
+                started_at=datetime.datetime(
+                    2018, 5, 7, 18, 58, 5, 219692, tzinfo=datetime.timezone.utc
+                ),
+                updated_at=datetime.datetime(
+                    2018, 5, 7, 18, 58, 5, 219692, tzinfo=datetime.timezone.utc
+                ),
+                program_name="My Program Name",
+                id=uuid.uuid1().hex,
+                file_ids=[uuid.uuid1().hex],
+                status_type_summary={StatusType.PASSED: 0, StatusType.FAILED: 1},
+                workspace=uuid.uuid1().hex,
+            )
+        )
+        
         expected_results_dataframe = self.__get_expected_results_dataframe(
             results=results
         )

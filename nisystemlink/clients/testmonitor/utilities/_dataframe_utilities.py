@@ -41,8 +41,12 @@ def convert_results_to_dataframe(
             - Properties: All the properties will be split into separate columns. For example,
             properties.property1, properties.property2, etc.
     """
-    results_dict = [result.dict(exclude_none=True) for result in results]
-    [__normalize_status(result) for result in results_dict]
+    results_dict = []
+    for result in results:
+        data = result.dict(exclude_none=True)  # Convert to dictionary
+        __normalize_status(data)  # Modify in place
+        results_dict.append(data)
+
     normalized_dataframe = pd.json_normalize(
         results_dict, sep="."
     )
