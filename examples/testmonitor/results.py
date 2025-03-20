@@ -37,7 +37,7 @@ def create_some_results():
     return create_response
 
 
-# Server configuration is not required when used with Systemlink Client or run throught Jupyter on SLE
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
 server_configuration = None
 
 # # Example of setting up the server configuration to point to your instance of SystemLink Enterprise
