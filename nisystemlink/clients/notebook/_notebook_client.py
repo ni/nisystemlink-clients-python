@@ -117,7 +117,7 @@ class NotebookClient(BaseClient):
         metadata_io = None
         if metadata is not None:
             metadata_str = metadata.json(by_alias=True, exclude_unset=True)
-            metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
+            metadata_io = io.BytesIO(metadata_str.encode("ascii"))
 
         return self.__update_notebook(
             id=id,
@@ -180,7 +180,7 @@ class NotebookClient(BaseClient):
         """
         metadata_str = metadata.json(by_alias=True, exclude_unset=True)
 
-        metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
+        metadata_io = io.BytesIO(metadata_str.encode("ascii"))
         return self.__create_notebook(
             metadata=metadata_io,
             content=content,
