@@ -42,9 +42,9 @@ def convert_results_to_dataframe(
             properties.property1, properties.property2, etc.
     """
     results_dict = [result.dict(exclude_none=True) for result in results]
-    results_dict_with_normalized_status = [__normalize_status(result) for result in results_dict]
+    [__normalize_status(result) for result in results_dict]
     normalized_dataframe = pd.json_normalize(
-        results_dict_with_normalized_status, sep="."
+        results_dict, sep="."
     )
     normalized_dataframe = __format_results_columns(
         results_dataframe=normalized_dataframe
@@ -99,9 +99,9 @@ def convert_steps_to_dataframe(
 
 
 def __normalize_status(
-    data: List[Dict[str, Any]],
+    data: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Normalizes the status field for a list of data entries.
+    """Normalizes the status field for a data entries.
 
     Args:
         data: Dictionaries containing status information.
@@ -115,8 +115,6 @@ def __normalize_status(
         data["status"] = status.get("status_name", None)
     else:
         data["status"] = getattr(status.get("status_type", None), "value", None)
-
-    return data
 
 
 def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:

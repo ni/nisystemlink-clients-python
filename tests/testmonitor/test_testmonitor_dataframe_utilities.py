@@ -78,6 +78,20 @@ def results() -> List[Result]:
             status_type_summary={StatusType.PASSED: 0, StatusType.FAILED: 1},
             workspace=uuid.uuid1().hex,
         ),
+        Result(
+            status=None,
+            started_at=datetime.datetime(
+                2018, 5, 7, 18, 58, 5, 219692, tzinfo=datetime.timezone.utc
+            ),
+            updated_at=datetime.datetime(
+                2018, 5, 7, 18, 58, 5, 219692, tzinfo=datetime.timezone.utc
+            ),
+            program_name="My Program Name",
+            id=uuid.uuid1().hex,
+            file_ids=[uuid.uuid1().hex],
+            status_type_summary={StatusType.PASSED: 0, StatusType.FAILED: 1},
+            workspace=uuid.uuid1().hex,
+        ),
     ]
 
     return results
@@ -373,40 +387,6 @@ class TestTestmonitorDataframeUtilities:
         pd.testing.assert_frame_equal(
             steps_dataframe, expected_steps_dataframe, check_dtype=True
         )
-    
-    def test__convert_results_with_empty_status_to_dataframe__handles_empty_status_correctly(self):
-        results = [
-            Result(
-                status=None,  # Empty status
-                started_at=datetime.datetime(
-                    2022, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc
-                ),
-                updated_at=datetime.datetime(
-                    2022, 1, 1, 12, 5, 0, tzinfo=datetime.timezone.utc
-                ),
-                program_name="Test Program",
-                id=uuid.uuid1().hex,
-                system_id=uuid.uuid1().hex,
-                host_name="test-host",
-                part_number=uuid.uuid1().hex,
-                serial_number=uuid.uuid1().hex,
-                total_time_in_seconds=10.5,
-                keywords=["test"],
-                properties={},
-                file_ids=[],
-                status_type_summary={},
-                workspace=uuid.uuid1().hex,
-            )
-        ]
-
-        results_dataframe = convert_results_to_dataframe(
-            results=results, set_id_as_index=False
-        )
-
-        assert not results_dataframe.empty
-        assert "status" in results_dataframe.columns
-        assert results_dataframe["status"].isna().all() or (results_dataframe["status"] == "").all()
-
     def test__convert_steps_to_dataframe_with_callback__returns_dataframe_with_valid_measurement(
         self, mock_steps_data: List[Step]
     ):
