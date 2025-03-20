@@ -1,5 +1,5 @@
-import string
 import logging
+import string
 from random import choices
 
 import pytest
