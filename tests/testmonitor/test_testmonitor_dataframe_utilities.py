@@ -244,7 +244,7 @@ class TestTestmonitorDataframeUtilities:
                 workspace=uuid.uuid1().hex,
             )
         )
-        
+
         expected_results_dataframe = self.__get_expected_results_dataframe(
             results=results
         )

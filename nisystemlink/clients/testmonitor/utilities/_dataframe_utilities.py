@@ -47,9 +47,7 @@ def convert_results_to_dataframe(
         __normalize_status(data)
         results_dict.append(data)
 
-    normalized_dataframe = pd.json_normalize(
-        results_dict, sep="."
-    )
+    normalized_dataframe = pd.json_normalize(results_dict, sep=".")
     normalized_dataframe = __format_results_columns(
         results_dataframe=normalized_dataframe
     )
@@ -105,7 +103,7 @@ def convert_steps_to_dataframe(
 def __normalize_status(
     data: Dict[str, Any],
 ) -> None:
-    """Normalizes the status field for a data entries.
+    """Normalizes the status object into a string.
 
     Args:
         data: Dictionary containing status information.
