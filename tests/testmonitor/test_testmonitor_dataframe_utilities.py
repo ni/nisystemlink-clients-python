@@ -430,7 +430,6 @@ class TestTestmonitorDataframeUtilities:
             name="step_name",
             step_id="5ffb2bf6771fa11e877838dd6",
             result_id="5ffb2bf6771fa11e877838dd8",
-            status=Status.PASSED(),
             data=StepData(
                 text="data1",
                 parameters=[Measurement(name="parameter_123", status="Passed")],

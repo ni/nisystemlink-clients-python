@@ -113,9 +113,9 @@ def __normalize_results_status(
     for result in results_dict:
         status = result.get("status", {})
         if status.get("status_type") == "CUSTOM":
-            result["status"] = status["status_name"]
+            result["status"] = status.get("status_name", None)
         else:
-            result["status"] = status["status_type"].value
+            result["status"] = getattr(status.get("status_type", None), "value", None)
 
     return results_dict
 
@@ -280,7 +280,7 @@ def __normalize_step_status(step_dict: Dict[str, Any]) -> None:
     step_dict["status"] = (
         step_status.get("status_name", None)
         if step_status.get("status_type") == "CUSTOM"
-        else step_status.get("status_type", None).value
+        else getattr(step_status.get("status_type", None), "value", None)
     )
 
 
