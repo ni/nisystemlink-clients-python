@@ -1,6 +1,6 @@
 import string
-from random import choices
 import logging
+from random import choices
 
 import pytest
 import responses
