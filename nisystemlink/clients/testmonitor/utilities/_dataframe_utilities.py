@@ -42,7 +42,7 @@ def convert_results_to_dataframe(
             properties.property1, properties.property2, etc.
     """
     results_dict = [result.dict(exclude_none=True) for result in results]
-    results_dict_with_normalized_status = __normalize_results_status(results_dict)
+    results_dict_with_normalized_status = [__normalize_status(result) for result in results_dict]
     normalized_dataframe = pd.json_normalize(
         results_dict_with_normalized_status, sep="."
     )
@@ -98,26 +98,25 @@ def convert_steps_to_dataframe(
     return steps_dataframe.reindex(columns=grouped_columns, copy=False)
 
 
-def __normalize_results_status(
-    results_dict: List[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
-    """Gets dictionary of results data and modifies the status object.
+def __normalize_status(
+    data: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Normalizes the status field for a list of data entries.
 
     Args:
-        results: List of results.
+        data: Dictionaries containing status information.
 
     Returns:
-        A list of result fields as dictionary. If status.status_type is "CUSTOM"
-            the status field takes the value of "status_name", else value of "status_type" is used.
+        Dictionaries with the status field modified. If status.status_type is "CUSTOM",
+        the status field takes the value of "status_name", otherwise, it takes the value of "status_type".
     """
-    for result in results_dict:
-        status = result.get("status", {})
-        if status.get("status_type") == "CUSTOM":
-            result["status"] = status.get("status_name", None)
-        else:
-            result["status"] = getattr(status.get("status_type", None), "value", None)
+    status = data.get("status", {})
+    if status.get("status_type") == "CUSTOM":
+        data["status"] = status.get("status_name", None)
+    else:
+        data["status"] = getattr(status.get("status_type", None), "value", None)
 
-    return results_dict
+    return data
 
 
 def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -208,7 +207,7 @@ def __convert_steps_to_dict(
         single_step_dict = step.dict(exclude_none=True)
         __filter_invalid_measurements(single_step_dict, step, is_valid_measurement)
         __normalize_inputs_outputs(single_step_dict, step)
-        __normalize_step_status(single_step_dict)
+        __normalize_status(single_step_dict)
         steps_dict.append(single_step_dict)
     return steps_dict
 
@@ -264,24 +263,6 @@ def __normalize_inputs_outputs(
         step_dict[STEP_OUTPUTS] = (
             {item.name: item.value for item in step.outputs} if step.outputs else {}
         )
-
-
-def __normalize_step_status(step_dict: Dict[str, Any]) -> None:
-    """Normalizes the step status field. If status_type is "CUSTOM",
-    then status.status_name is used, else status.status_type.value is assigned.
-
-    Args:
-        step_dict: A dictionary with step information.
-
-    Returns:
-        None: The function modifies step_dict in place with the normalized step
-    """
-    step_status = step_dict.get("status", {})
-    step_dict["status"] = (
-        step_status.get("status_name", None)
-        if step_status.get("status_type") == "CUSTOM"
-        else getattr(step_status.get("status_type", None), "value", None)
-    )
 
 
 def __explode_and_normalize(
