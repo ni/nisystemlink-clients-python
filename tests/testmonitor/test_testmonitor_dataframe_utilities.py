@@ -77,7 +77,7 @@ def results() -> List[Result]:
             file_ids=[uuid.uuid1().hex],
             status_type_summary={StatusType.PASSED: 0, StatusType.FAILED: 1},
             workspace=uuid.uuid1().hex,
-        )
+        ),
     ]
 
     return results
@@ -390,6 +390,7 @@ class TestTestmonitorDataframeUtilities:
         pd.testing.assert_frame_equal(
             steps_dataframe, expected_steps_dataframe, check_dtype=True
         )
+
     def test__convert_steps_to_dataframe_with_callback__returns_dataframe_with_valid_measurement(
         self, mock_steps_data: List[Step]
     ):

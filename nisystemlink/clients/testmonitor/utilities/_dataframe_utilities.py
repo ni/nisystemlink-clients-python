@@ -108,7 +108,7 @@ def __normalize_status(
     """Normalizes the status field for a data entries.
 
     Args:
-        data: Dictionaries containing status information.
+        data: Dictionary containing status information.
 
     """
     status = data.get("status", {})
