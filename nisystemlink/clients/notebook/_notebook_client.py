@@ -15,7 +15,7 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
 from requests.models import Response
-from uplink import Part, Path, retry
+from uplink import Part, Path, multipart, retry
 
 from . import models
 
@@ -70,6 +70,7 @@ class NotebookClient(BaseClient):
         """
         ...
 
+    @multipart
     @put("ninotebook/v1/notebook/{id}")
     def __update_notebook(
         self,
@@ -137,6 +138,7 @@ class NotebookClient(BaseClient):
         """
         ...
 
+    @multipart
     @post("ninotebook/v1/notebook")
     def __create_notebook(
         self,
