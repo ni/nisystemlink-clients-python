@@ -70,7 +70,6 @@ def empty_products_data() -> List:
     return []
 
 
-@pytest.mark.enterprise
 @pytest.mark.unit
 class TestProductDataframeUtilities:
     def test__convert_products_to_dataframe__with_complete_data(
