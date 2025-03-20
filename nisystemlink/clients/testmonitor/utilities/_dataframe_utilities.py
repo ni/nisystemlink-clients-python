@@ -100,15 +100,12 @@ def convert_steps_to_dataframe(
 
 def __normalize_status(
     data: Dict[str, Any],
-) -> Dict[str, Any]:
+) -> None:
     """Normalizes the status field for a data entries.
 
     Args:
         data: Dictionaries containing status information.
 
-    Returns:
-        Dictionaries with the status field modified. If status.status_type is "CUSTOM",
-        the status field takes the value of "status_name", otherwise, it takes the value of "status_type".
     """
     status = data.get("status", {})
     if status.get("status_type") == "CUSTOM":
