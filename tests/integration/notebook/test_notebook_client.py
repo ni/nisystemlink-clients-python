@@ -1,5 +1,6 @@
 import string
 from random import choices
+import logging
 
 import pytest
 import responses
@@ -31,7 +32,9 @@ def random_filename() -> str:
     """Generate a random filename for each test in test class."""
     rand_file_name = "".join(choices(string.ascii_letters + string.digits, k=10))
 
-    return f"{PREFIX}{rand_file_name}.ipynb"
+    name = f"{PREFIX}{rand_file_name}.ipynb"
+    logging.info(f"Random filename: {name}")
+    return name
 
 
 @pytest.fixture()

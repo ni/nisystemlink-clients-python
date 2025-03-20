@@ -73,6 +73,7 @@ markers = [
     "slow: mark a test as a slow test",
     "focus: focus a specific test during development",
 ]
+log_cli = "True"
 
 [tool.black]
 exclude = ".*\\.pyi"
