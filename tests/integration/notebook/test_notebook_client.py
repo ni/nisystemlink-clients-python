@@ -52,7 +52,7 @@ def create_notebook(client: NotebookClient):
             try:
                 notebook_response = client.create_notebook(metadata=metadata, content=file)
             except ApiException as e:
-                logging.warning(f"Error creating notebook: {metadata}")
+                logging.warning(f"Error creating notebook: {metadata.json(by_alias=True, exclude_unset=True)}")
                 raise
         if cleanup:
             notebook_ids.append(notebook_response.id)
@@ -78,7 +78,8 @@ def update_notebook(client: NotebookClient):
         try:
             notebook_response = client.update_notebook(id=id, metadata=metadata, content=content)
         except ApiException as e:
-            logging.warning(f"Error updating notebook {id}: {metadata}")
+            if (metadata is not None):
+                logging.warning(f"Error updating notebook {id}: {metadata.json(by_alias=True, exclude_unset=True)}")
             raise
 
         return notebook_response
