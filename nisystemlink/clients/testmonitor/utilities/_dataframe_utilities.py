@@ -43,8 +43,8 @@ def convert_results_to_dataframe(
     """
     results_dict = []
     for result in results:
-        data = result.dict(exclude_none=True)  # Convert to dictionary
-        __normalize_status(data)  # Modify in place
+        data = result.dict(exclude_none=True)
+        __normalize_status(data)
         results_dict.append(data)
 
     normalized_dataframe = pd.json_normalize(
