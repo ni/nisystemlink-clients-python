@@ -115,7 +115,7 @@ class NotebookClient(BaseClient):
         """
         metadata_io = None
         if metadata is not None:
-            metadata_str = metadata.json()
+            metadata_str = metadata.json(by_alias=True, exclude_unset=True)
             metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
 
         return self.__update_notebook(
@@ -176,7 +176,7 @@ class NotebookClient(BaseClient):
             ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
-        metadata_str = metadata.json()
+        metadata_str = metadata.json(by_alias=True, exclude_unset=True)
 
         metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
         return self.__create_notebook(
