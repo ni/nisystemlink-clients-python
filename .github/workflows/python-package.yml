@@ -49,7 +49,7 @@ jobs:
           --enterprise-uri "https://test-api.lifecyclesolutions.ni.com" --enterprise-api-key "${{ secrets.ENTERPRISE_API_KEY }}"
   release:
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build-lint-unit-test, integration-test]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
     steps:
       - uses: actions/checkout@v3
