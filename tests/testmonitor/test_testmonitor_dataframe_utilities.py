@@ -472,10 +472,9 @@ class TestTestmonitorDataframeUtilities:
             steps_dataframe, expected_steps_dataframe, check_dtype=True
         )
 
-    def test__convert_steps_to_dataframe_with_only_required_measurements__returns_valid_steps(
+    def test__convert_steps_to_dataframe_with_many_unset_measurement_fields__not_returns_unset_measurements_fields(
         self,
     ):
-        """Test if the function returns a dataframe of steps with required measurement parameters."""
         step_data = Step(
             name="step_name",
             step_id="5ffb2bf6771fa11e877838dd6",

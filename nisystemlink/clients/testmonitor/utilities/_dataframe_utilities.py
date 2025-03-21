@@ -231,7 +231,7 @@ def __filter_invalid_measurements(
         valid_measurement_parameters = []
         for measurement in step.data.parameters:
             if (
-                measurement is not None
+                measurement
                 and is_valid_measurement
                 and is_valid_measurement(measurement)
             ):
