@@ -195,7 +195,6 @@ def empty_steps_data() -> List:
     return []
 
 
-@pytest.mark.enterprise
 @pytest.mark.unit
 class TestTestmonitorDataframeUtilities:
     def test__convert_results_with_all_fields_to_dataframe__returns_whole_results_dataframe(
