@@ -6,6 +6,7 @@ from nisystemlink.clients.testmonitor.models import (
     ResultField,
     Status,
     StatusType,
+    UpdateResultRequest,
 )
 
 program_name = "Example Name"
@@ -70,9 +71,12 @@ response = client.query_results(query_request)
 
 # Update the first result that you just created and replace the keywords
 updated_result = create_response.results[0]
-updated_result.keywords = ["new keyword"]
-updated_result.properties = {"new property key": "new value"}
-update_response = client.update_results([create_response.results[0]], replace=True)
+updated_result = UpdateResultRequest(
+    id=create_response.results[0].id,
+    keywords=["new keyword"],
+    properties={"new property key": "new value"},
+)
+update_response = client.update_results([updated_result], replace=True)
 
 # Query for just the ids of results that match the family
 values_query = QueryResultValuesRequest(

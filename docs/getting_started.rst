@@ -286,7 +286,7 @@ Create, update, query, and delete steps
 
 .. literalinclude:: ../examples/testmonitor/steps.py
    :language: python
-   :linenos
+   :linenos:
 
 Notebook API
 -------
