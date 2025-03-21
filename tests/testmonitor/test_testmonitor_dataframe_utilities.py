@@ -475,7 +475,7 @@ class TestTestmonitorDataframeUtilities:
     def test__convert_steps_to_dataframe_with_only_required_measurements__returns_valid_steps(
         self,
     ):
-        """Test if the function returns a dataframe of steps with required measurements."""
+        """Test if the function returns a dataframe of steps with required measurement parameters."""
         step_data = Step(
             name="step_name",
             step_id="5ffb2bf6771fa11e877838dd6",
