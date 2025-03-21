@@ -110,10 +110,11 @@ def __normalize_status(
 
     """
     status = data.get("status", {})
-    if status.get("status_type") == "CUSTOM":
-        data["status"] = status.get("status_name", None)
-    else:
-        data["status"] = getattr(status.get("status_type", None), "value", None)
+    if status:
+        if status.get("status_type") == "CUSTOM":
+            data["status"] = status.get("status_name", None)
+        else:
+            data["status"] = getattr(status.get("status_type", None), "value", None)
 
 
 def __format_results_columns(results_dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -229,11 +230,16 @@ def __filter_invalid_measurements(
     if step.data and step.data.parameters and is_valid_measurement is not None:
         valid_measurement_parameters = []
         for measurement in step.data.parameters:
-            if is_valid_measurement and is_valid_measurement(measurement):
+            if (
+                measurement
+                and is_valid_measurement
+                and is_valid_measurement(measurement)
+            ):
                 valid_measurement_parameters.append(measurement)
 
         step_dict["data"]["parameters"] = [
-            measurement.dict() for measurement in valid_measurement_parameters
+            measurement.dict(exclude_none=True)
+            for measurement in valid_measurement_parameters
         ]
 
 
