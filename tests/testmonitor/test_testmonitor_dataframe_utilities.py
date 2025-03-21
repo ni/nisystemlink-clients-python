@@ -456,7 +456,6 @@ class TestTestmonitorDataframeUtilities:
             "name",
             "step_id",
             "result_id",
-            "status",
             "data.text",
         ]
         expected_steps_dataframe = self.__get_expected_steps_dataframe(
