@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.7.2 (2025-03-21)
+
+### Fix
+
+* Error in converting results/steps to dataframe when status is none ([#115](https://github.com/ni/nisystemlink-clients-python/issues/115)) ([`e67d935`](https://github.com/ni/nisystemlink-clients-python/commit/e67d935586f7d2e58c49b865bd8cc3c0d74ead08))
+
 ## v2.7.1 (2025-03-19)
 
 ### Fix

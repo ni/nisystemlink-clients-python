@@ -117,7 +117,6 @@ def specs() -> List[Specification]:
     return specs
 
 
-@pytest.mark.enterprise
 @pytest.mark.unit
 class TestSpecDataframeUtilities:
     def test__convert_specs_to_dataframe_with_summarize_conditions__returns_specs_dataframe_with_string_conditions(
