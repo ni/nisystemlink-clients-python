@@ -42,7 +42,7 @@ jobs:
           cache: "poetry"
       - run: poetry install
       - run: >
-          poetry run pytest
+          poetry run pytest -vv
           -m integration
           --cloud-api-key "${{ secrets.CLOUD_API_KEY }}"
           --enterprise-uri "https://test-api.lifecyclesolutions.ni.com" --enterprise-api-key "${{ secrets.ENTERPRISE_API_KEY }}"

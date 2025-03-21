@@ -1,5 +1,7 @@
+import logging
 import string
 from random import choices
+import typing
 
 import pytest
 import responses
@@ -31,7 +33,9 @@ def random_filename() -> str:
     """Generate a random filename for each test in test class."""
     rand_file_name = "".join(choices(string.ascii_letters + string.digits, k=10))
 
-    return f"{PREFIX}{rand_file_name}.ipynb"
+    name = f"{PREFIX}{rand_file_name}.ipynb"
+    logging.info(f"Random filename: {name}")
+    return name
 
 
 @pytest.fixture()
@@ -45,7 +49,11 @@ def create_notebook(client: NotebookClient):
 
         # file_bytes = file.read()  # Read file as bytes
         with open("tests/integration/notebook/sample_file.ipynb", "rb") as file:
-            notebook_response = client.create_notebook(metadata=metadata, content=file)
+            try:
+                notebook_response = client.create_notebook(metadata=metadata, content=file)
+            except ApiException as e:
+                logging.warning(f"Error creating notebook: {metadata.json(by_alias=True, exclude_unset=True)}")
+                raise
         if cleanup:
             notebook_ids.append(notebook_response.id)
 
@@ -56,6 +64,27 @@ def create_notebook(client: NotebookClient):
     if notebook_ids:
         for notebook_id in filter(None, notebook_ids):
             client.delete_notebook(id=notebook_id)
+
+
+@pytest.fixture()
+def update_notebook(client: NotebookClient):
+    """Fixture to return a factory that updates a notebook."""
+    def _update_notebook(
+        id: str,
+        metadata: NotebookMetadata = None,
+        content: typing.BinaryIO = None,
+    ) -> NotebookMetadata:
+
+        try:
+            notebook_response = client.update_notebook(id=id, metadata=metadata, content=content)
+        except ApiException as e:
+            if (metadata is not None):
+                logging.warning(f"Error updating notebook {id}: {metadata.json(by_alias=True, exclude_unset=True)}")
+            raise
+
+        return notebook_response
+
+    return _update_notebook
 
 
 @pytest.mark.enterprise
@@ -117,7 +146,7 @@ class TestNotebookClient:
             client.get_notebook(id="invalid_id")
 
     def test__update_existing_notebook_metadata__update_notebook_metadata_succeeds(
-        self, client: NotebookClient, create_notebook, random_filename
+        self, client: NotebookClient, create_notebook, update_notebook, random_filename
     ):
         metadata = NotebookMetadata(name=random_filename)
         notebook = create_notebook(metadata=metadata)
@@ -127,7 +156,7 @@ class TestNotebookClient:
         notebook.name = new_name
         notebook.properties = {"key": "value"}
 
-        response = client.update_notebook(id=notebook.id, metadata=notebook)
+        response = update_notebook(id=notebook.id, metadata=notebook)
 
         assert response.id == notebook.id
         assert response.name != random_filename
@@ -135,13 +164,13 @@ class TestNotebookClient:
         assert response.properties == notebook.properties
 
     def test__update_existing_notebook_content__update_notebook_content_succeeds(
-        self, client: NotebookClient, create_notebook, random_filename
+        self, client: NotebookClient, create_notebook, update_notebook, random_filename
     ):
         metadata = NotebookMetadata(name=random_filename)
         notebook = create_notebook(metadata=metadata)
 
         with open("tests/integration/notebook/sample_file.ipynb", "rb") as file:
-            response = client.update_notebook(id=notebook.id, content=file)
+            response = update_notebook(id=notebook.id, content=file)
 
         assert response.id == notebook.id
 
@@ -153,17 +182,17 @@ class TestNotebookClient:
             client.update_notebook(id="invalid_id", metadata=metadata)
 
     def test__update_notebook_content_with_invalid_file__raises_ApiException_BadRequest(
-        self, client: NotebookClient, create_notebook, random_filename
+        self, client: NotebookClient, create_notebook, update_notebook, random_filename
     ):
         metadata = NotebookMetadata(name=random_filename)
         notebook = create_notebook(metadata=metadata)
 
         with open("tests/integration/notebook/test_notebook_client.py", "rb") as file:
             with pytest.raises(ApiException, match="Bad Request"):
-                client.update_notebook(id=notebook.id, content=file)
+                update_notebook(id=notebook.id, content=file)
 
     def test__update_notebook_content_with_duplicate_file_name__raises_ApiException_BadRequest(
-        self, client: NotebookClient, create_notebook, random_filename
+        self, client: NotebookClient, create_notebook, update_notebook, random_filename
     ):
         metadata = NotebookMetadata(name=random_filename)
         notebook = create_notebook(metadata=metadata)
@@ -172,17 +201,17 @@ class TestNotebookClient:
         create_notebook(metadata=metadata)
 
         with pytest.raises(ApiException, match="409 Conflict"):
-            client.update_notebook(id=notebook.id, metadata=notebook)
+            update_notebook(id=notebook.id, metadata=notebook)
 
     def test__update_notebook_with_invalid_workspace__raises_ApiException_BadRequest(
-        self, client: NotebookClient, create_notebook, random_filename
+        self, client: NotebookClient, create_notebook, update_notebook, random_filename
     ):
         metadata = NotebookMetadata(name=random_filename)
         notebook = create_notebook(metadata=metadata)
 
         metadata.workspace = "invalid_workspace"
         with pytest.raises(ApiException, match="Bad Request"):
-            client.update_notebook(id=notebook.id, metadata=metadata)
+            update_notebook(id=notebook.id, metadata=metadata)
 
     def test__delete_notebook_with_valid_id__notebook_should_delete_successfully(
         self, client: NotebookClient, create_notebook, random_filename
