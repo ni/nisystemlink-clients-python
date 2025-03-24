@@ -297,3 +297,34 @@ class TestSpec:
         assert len(spec_columns) == 2
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
+
+    def test_query_spec_projection_condition_columns_no_condition_type_returns_columns(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            projection=[
+                SpecificationProjection.CONDITION_NAME,
+                SpecificationProjection.CONDITION_UNIT,
+            ],
+        )
+
+        response = client.query_specs(request)
+        specs = [vars(spec) for spec in response.specs or []]
+        condition_columns = ["name", "unit", "range", "discrete", "condition_type"]
+
+        spec_columns = {
+            f"condition_{column}"
+            for spec in specs
+            if "conditions" in spec
+            for condition in spec["conditions"]
+            for column in condition_columns
+            if getattr(condition.value if column != "name" else condition, column, None)
+            is not None
+        }
+
+        assert len(response.specs) == 3
+        assert len(spec_columns) == 2
+        assert "condition_name" in spec_columns
+        assert "condition_unit" in spec_columns
+        assert "condition_type" not in spec_columns
