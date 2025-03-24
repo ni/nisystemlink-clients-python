@@ -11,7 +11,9 @@ from . import models
 
 
 @retry(
-    when=retry.when.status([408, 429, 502, 503, 504]), stop=retry.stop.after_attempt(5)
+    when=retry.when.status([408, 429, 502, 503, 504]),
+    stop=retry.stop.after_attempt(5),
+    on_exception=retry.CONNECTION_ERROR,
 )
 class SpecClient(BaseClient):
     def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
