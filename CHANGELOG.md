@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.7.3 (2025-03-24)
+
+### Fix
+
+* Make testmonitor step examples show up in docs and fix `update_results` example ([#120](https://github.com/ni/nisystemlink-clients-python/issues/120)) ([`dacfdfb`](https://github.com/ni/nisystemlink-clients-python/commit/dacfdfb6864473fd935986edc8d2562df1e28f9a))
+
 ## v2.7.2 (2025-03-21)
 
 ### Fix
