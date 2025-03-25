@@ -5,6 +5,7 @@ class DataFrameHeaders:
 
     CATEGORY_COLUMN_HEADERS = [
         "general",
+        "inputs",
         "outputs",
         "data",
         "properties",

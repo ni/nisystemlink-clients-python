@@ -455,11 +455,68 @@ class TestTestmonitorDataframeUtilities:
             "name",
             "step_id",
             "result_id",
-            "status",
             "data.text",
         ]
         expected_steps_dataframe = self.__get_expected_steps_dataframe(
             [step_data], expected_column_order=expected_column_order
+        )
+
+        steps_dataframe = convert_steps_to_dataframe([step_data])
+
+        assert not steps_dataframe.empty
+        assert (
+            steps_dataframe.columns.to_list()
+            == expected_steps_dataframe.columns.to_list()
+        )
+        pd.testing.assert_frame_equal(
+            steps_dataframe, expected_steps_dataframe, check_dtype=True
+        )
+
+    def test__convert_steps_to_dataframe_with_many_unset_measurement_fields__not_returns_unset_measurements_fields(
+        self,
+    ):
+        step_data = Step(
+            name="step_name",
+            step_id="5ffb2bf6771fa11e877838dd6",
+            result_id="5ffb2bf6771fa11e877838dd8",
+            data=StepData(
+                text="data1",
+                parameters=[
+                    Measurement(
+                        name="parameter_11",
+                        measurement="11.0",
+                    ),
+                    Measurement(
+                        name="parameter_21",
+                        measurement="11.3",
+                    ),
+                ],
+            ),
+        )
+        expected_column_order = [
+            "name",
+            "step_id",
+            "result_id",
+            "data.text",
+            "data.measurement.name",
+            "data.measurement.measurement",
+        ]
+        expected_data_parameters = [
+            [
+                {
+                    "data.measurement.name": "parameter_11",
+                    "data.measurement.measurement": "11.0",
+                },
+                {
+                    "data.measurement.name": "parameter_21",
+                    "data.measurement.measurement": "11.3",
+                },
+            ]
+        ]
+        expected_steps_dataframe = self.__get_expected_steps_dataframe(
+            [step_data],
+            expected_column_order=expected_column_order,
+            expected_data_parameters=expected_data_parameters,
         )
 
         steps_dataframe = convert_steps_to_dataframe([step_data])
