@@ -298,7 +298,7 @@ class TestSpec:
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
 
-    def test_query_spec_projection_condition_columns_no_condition_type_returns_columns(
+    def test_query_specs_without_condition_type_projection_condition_type_field_is_unset(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
         request = QuerySpecificationsRequest(
