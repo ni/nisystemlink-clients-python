@@ -534,6 +534,45 @@ class TestTestMonitor:
         assert created_step.inputs == inputs
         assert not created_step.outputs
 
+    def test__create_step_without_step_id__creation_succeed(
+        self,
+        client: TestMonitorClient,
+        create_results,
+        create_steps,
+    ):
+        results = [
+            CreateResultRequest(
+                part_number="Python Client Testing",
+                program_name="Python Client Test Program",
+                status=Status.PASSED(),
+            )
+        ]
+        created_result = create_results(results)
+        result_id = created_result.results[0].id
+        name = "Test Step 1"
+        data = StepData(
+            text="This is a test step",
+            parameters=[Measurement(name="param1", measurement="10")],
+        )
+        properties = {"property1": "value1", "property2": "value2"}
+        keywords = ["keyword1", "keyword2"]
+        inputs = [NamedValue(name="input1", value="inputValue1")]
+        step = CreateStepRequest(
+            result_id=result_id,
+            name=name,
+            data=data,
+            properties=properties,
+            keywords=keywords,
+            inputs=inputs,
+        )
+
+        response: CreateStepsPartialSuccess = create_steps(steps=[step])
+
+        assert response is not None
+        assert len(response.steps) == 1
+        created_step = response.steps[0]
+        assert created_step.step_id is not None
+
     def test__create_multiple_steps__multiple_creation_succeed(
         self, client: TestMonitorClient, create_results, create_steps
     ):
