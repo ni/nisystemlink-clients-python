@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.7.4 (2025-03-25)
+
+### Fix
+
+* Handle none values and column grouping in results/steps dataframe utility ([#119](https://github.com/ni/nisystemlink-clients-python/issues/119)) ([`9eb2087`](https://github.com/ni/nisystemlink-clients-python/commit/9eb20876ffc4bfc02ce5b4712b65a56085b70029))
+
 ## v2.7.3 (2025-03-24)
 
 ### Fix
