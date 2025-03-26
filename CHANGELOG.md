@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.8.0 (2025-03-26)
+
+### Feature
+
+* Update TestMonitorClient, ProductClient, and SpecsClient with retry handling ([#124](https://github.com/ni/nisystemlink-clients-python/issues/124)) ([`4714ec1`](https://github.com/ni/nisystemlink-clients-python/commit/4714ec139fbc224263c392286383895100c86583))
+
+### Fix
+
+* Make condition type optional while querying specs ([#123](https://github.com/ni/nisystemlink-clients-python/issues/123)) ([`9d0d923`](https://github.com/ni/nisystemlink-clients-python/commit/9d0d9239bc769801590ba8a507c0e3cd5f87e12d))
+
 ## v2.7.4 (2025-03-25)
 
 ### Fix
