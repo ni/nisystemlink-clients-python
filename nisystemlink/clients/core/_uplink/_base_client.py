@@ -3,6 +3,7 @@
 from json import loads
 from typing import Any, Callable, Dict, get_origin, Optional, Type, Union
 
+import requests
 from nisystemlink.clients import core
 from pydantic import parse_obj_as
 from requests import JSONDecodeError, Response
@@ -79,10 +80,14 @@ class BaseClient(Consumer):
             configuration: Defines the web server to connect to and information about how to connect.
             base_path: The base path for all API calls.
         """
+        session = requests.Session()
+        session.verify = configuration.verify
+
         super().__init__(
             base_url=configuration.server_uri + base_path,
             converter=_JsonModelConverter(),
             hooks=[_handle_http_status],
+            client=session,
         )
         if configuration.api_keys:
             self.session.headers.update(configuration.api_keys)

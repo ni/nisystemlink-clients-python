@@ -23,6 +23,7 @@ class HttpConfiguration:
         password: Optional[str] = None,
         cert_path: Optional[pathlib.Path] = None,
         workspace: Optional[str] = None,
+        verify: bool = True,
     ) -> None:
         """Initialize a configuration.
 
@@ -40,6 +41,7 @@ class HttpConfiguration:
             password: The user's password to use when authorization is required.
             cert_path: Local path to an SSL certificate file.
             workspace: ID of workspace to use for client operations.
+            verify: Verify the security certificate for connection
 
         Raises:
             ValueError: if ``server_uri`` is missing scheme or host information.
@@ -72,6 +74,17 @@ class HttpConfiguration:
         self._timeout_ms = self.DEFAULT_TIMEOUT_MILLISECONDS
 
         self._workspace = workspace
+
+        self._verify = verify
+
+    @property
+    def verify(self) -> bool:
+        """Verify the security certificate for connection."""
+        return self._verify
+
+    @verify.setter
+    def verify(self, value: bool) -> None:
+        self._verify = value
 
     @property
     def timeout_milliseconds(self) -> int:  # noqa: D401
