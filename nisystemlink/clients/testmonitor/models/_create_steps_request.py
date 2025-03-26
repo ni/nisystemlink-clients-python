@@ -8,7 +8,7 @@ from nisystemlink.clients.testmonitor.models._step_data import StepData
 
 
 class BaseStepRequest(JsonModel):
-    step_id: str
+    step_id: Optional[str]
     """Step ID."""
 
     result_id: str
