@@ -41,7 +41,7 @@ class HttpConfiguration:
             password: The user's password to use when authorization is required.
             cert_path: Local path to an SSL certificate file.
             workspace: ID of workspace to use for client operations.
-            verify: Verify the securicty certificate for connection
+            verify: Verify the security certificate for connection
 
         Raises:
             ValueError: if ``server_uri`` is missing scheme or host information.
