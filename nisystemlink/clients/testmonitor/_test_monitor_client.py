@@ -15,7 +15,9 @@ from . import models
 
 
 @retry(
-    when=retry.when.status([408, 429, 502, 503, 504]), stop=retry.stop.after_attempt(5)
+    when=retry.when.status([408, 429, 502, 503, 504]),
+    stop=retry.stop.after_attempt(5),
+    on_exception=retry.CONNECTION_ERROR,
 )
 class TestMonitorClient(BaseClient):
     # prevent pytest from thinking this is a test class

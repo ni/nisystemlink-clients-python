@@ -2,6 +2,34 @@
 
 <!--next-version-placeholder-->
 
+## v2.8.0 (2025-03-26)
+
+### Feature
+
+* Update TestMonitorClient, ProductClient, and SpecsClient with retry handling ([#124](https://github.com/ni/nisystemlink-clients-python/issues/124)) ([`4714ec1`](https://github.com/ni/nisystemlink-clients-python/commit/4714ec139fbc224263c392286383895100c86583))
+
+### Fix
+
+* Make condition type optional while querying specs ([#123](https://github.com/ni/nisystemlink-clients-python/issues/123)) ([`9d0d923`](https://github.com/ni/nisystemlink-clients-python/commit/9d0d9239bc769801590ba8a507c0e3cd5f87e12d))
+
+## v2.7.4 (2025-03-25)
+
+### Fix
+
+* Handle none values and column grouping in results/steps dataframe utility ([#119](https://github.com/ni/nisystemlink-clients-python/issues/119)) ([`9eb2087`](https://github.com/ni/nisystemlink-clients-python/commit/9eb20876ffc4bfc02ce5b4712b65a56085b70029))
+
+## v2.7.3 (2025-03-24)
+
+### Fix
+
+* Make testmonitor step examples show up in docs and fix `update_results` example ([#120](https://github.com/ni/nisystemlink-clients-python/issues/120)) ([`dacfdfb`](https://github.com/ni/nisystemlink-clients-python/commit/dacfdfb6864473fd935986edc8d2562df1e28f9a))
+
+## v2.7.2 (2025-03-21)
+
+### Fix
+
+* Error in converting results/steps to dataframe when status is none ([#115](https://github.com/ni/nisystemlink-clients-python/issues/115)) ([`e67d935`](https://github.com/ni/nisystemlink-clients-python/commit/e67d935586f7d2e58c49b865bd8cc3c0d74ead08))
+
 ## v2.7.1 (2025-03-19)
 
 ### Fix
