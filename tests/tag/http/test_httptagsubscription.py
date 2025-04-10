@@ -150,7 +150,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
 
         updates = (
             {}
-        )  # type: Dict[str, Tuple[tbase.TagData, Optional[tbase.TagValueReader]]]
+        )
         uut = HttpTagSubscription.create(
             self._client, [], timer, ManualResetTimer.null_timer
         )
@@ -350,7 +350,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
 
         updates = (
             {}
-        )  # type: Dict[str, Tuple[tbase.TagData, Optional[tbase.TagValueReader]]]
+        )
         uut = HttpTagSubscription.create(
             self._client, [], timer, ManualResetTimer.null_timer
         )
@@ -420,7 +420,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
 
         updates = (
             {}
-        )  # type: Dict[str, Tuple[tbase.TagData, Optional[tbase.TagValueReader]]]
+        )
         uut = HttpTagSubscription.create(
             self._client, [], timer, ManualResetTimer.null_timer
         )

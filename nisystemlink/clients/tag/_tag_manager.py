@@ -595,7 +595,7 @@ class TagManager(tbase.ITagReader):
         self._perform_delete(validated_paths)
 
     def delete_async(
-        self, tags: Iterable[Union[tbase.TagData, str]] = None
+        self, tags: Iterable[Union[tbase.TagData, str]]
     ) -> Awaitable[None]:
         """Asynchronously delete one or more tags from the server.
 
