@@ -77,7 +77,7 @@ def random_filename_extension() -> str:
 class TestFileClient:
     def test__api_info__returns(self, client: FileClient):
         api_info = client.api_info()
-        assert len(api_info.dict()) != 0
+        assert len(api_info.model_dump()) != 0
 
     def test__upload_get_delete_files__succeeds(
         self, client: FileClient, test_file, random_filename_extension
