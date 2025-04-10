@@ -558,6 +558,7 @@ class TestTestMonitor:
         keywords = ["keyword1", "keyword2"]
         inputs = [NamedValue(name="input1", value="inputValue1")]
         step = CreateStepRequest(
+            step_id='step1',
             result_id=result_id,
             name=name,
             data=data,
@@ -571,7 +572,7 @@ class TestTestMonitor:
         assert response is not None
         assert len(response.steps) == 1
         created_step = response.steps[0]
-        assert created_step.step_id is not None
+        assert created_step.step_id == step.step_id
 
     def test__create_multiple_steps__multiple_creation_succeed(
         self, client: TestMonitorClient, create_results, create_steps
