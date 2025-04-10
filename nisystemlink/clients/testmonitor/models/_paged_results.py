@@ -10,5 +10,5 @@ class PagedResults(WithPaging):
     results: List[Result]
     """A list of all the results in this page."""
 
-    total_count: Optional[int]
+    total_count: Optional[int] = None
     """The total number of results that match the query."""

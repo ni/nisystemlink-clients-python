@@ -1,7 +1,7 @@
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Extra
+from pydantic import ConfigDict, Field
 
 
 class Measurement(JsonModel):
@@ -12,16 +12,8 @@ class Measurement(JsonModel):
     highLimit: Optional[str] = None
     units: Optional[str] = None
     comparisonType: Optional[str] = None
-
-    class Config:
-        extra = Extra.allow
-
-    def __init__(self, **data: Any) -> None:
-        # Convert all extra fields to str while keeping known fields unchanged
-        processed_data = {
-            k: str(v) if k not in self.__fields__ else v for k, v in data.items()
-        }
-        super().__init__(**processed_data)
+    model_config = ConfigDict(extra="allow")
+    __pydantic_extra__: Dict[str, str] = Field(init=False)
 
 
 class StepData(JsonModel):

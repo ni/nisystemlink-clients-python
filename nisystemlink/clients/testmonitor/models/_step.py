@@ -32,7 +32,7 @@ class Step(JsonModel):
     status: Optional[Status] = None
     """The status of the step."""
 
-    total_time_in_seconds: Optional[int] = None
+    total_time_in_seconds: Optional[float] = None
     """The total time in seconds the step took to execute."""
 
     started_at: Optional[datetime] = None

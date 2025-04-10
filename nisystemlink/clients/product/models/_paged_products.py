@@ -12,5 +12,5 @@ class PagedProducts(WithPaging):
     products: List[Product]
     """A list of all the products in this page."""
 
-    total_count: Optional[int]
+    total_count: Optional[int] = None
     """The total number of products that match the query."""
