@@ -63,7 +63,7 @@ class _JsonModelConverter(converters.Factory):
     def create_response_body_converter(
         self, _class: Type, _: commands.RequestDefinition
     ) -> Optional[Callable[[Response], Any]]:
-        def decoder(response: Response | Any) -> Any:
+        def decoder(response: Union[Response, Any]) -> Any:
             if response is None:
                 return None
 
