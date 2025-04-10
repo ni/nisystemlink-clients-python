@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 from unittest import mock
 
 import events
@@ -148,9 +148,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
             )
         )
 
-        updates = (
-            {}
-        )  # type: Dict[str, Tuple[tbase.TagData, Optional[tbase.TagValueReader]]]
+        updates = {}
         uut = HttpTagSubscription.create(
             self._client, [], timer, ManualResetTimer.null_timer
         )
@@ -348,9 +346,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
             assert tag.path not in updates
             updates[tag.path] = (tag, value)
 
-        updates = (
-            {}
-        )  # type: Dict[str, Tuple[tbase.TagData, Optional[tbase.TagValueReader]]]
+        updates = {}
         uut = HttpTagSubscription.create(
             self._client, [], timer, ManualResetTimer.null_timer
         )
@@ -418,9 +414,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
             assert tag.path not in updates
             updates[tag.path] = (tag, reader)
 
-        updates = (
-            {}
-        )  # type: Dict[str, Tuple[tbase.TagData, Optional[tbase.TagValueReader]]]
+        updates = {}
         uut = HttpTagSubscription.create(
             self._client, [], timer, ManualResetTimer.null_timer
         )

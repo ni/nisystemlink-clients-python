@@ -10,13 +10,13 @@ class CreateProductsPartialSuccess(JsonModel):
     products: List[Product]
     """The list of products that were successfully created."""
 
-    failed: Optional[List[CreateProductRequest]]
+    failed: Optional[List[CreateProductRequest]] = None
     """The list of products that were not created.
 
     If this is `None`, then all products were successfully created.
     """
 
-    error: Optional[ApiError]
+    error: Optional[ApiError] = None
     """Error messages for products that were not created.
 
     If this is `None`, then all products were successfully created.

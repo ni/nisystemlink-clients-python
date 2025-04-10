@@ -30,8 +30,8 @@ class HttpConfigurationManager:
     _SALT_GRAINS_WORKSPACE_KEY = "systemlink_workspace"
     """Key of Workspace ID stored in the salt grains config file."""
 
-    _configs = None
-    _virtual_configs = None
+    _configs: Optional[Dict[str, core.HttpConfiguration]] = None
+    _virtual_configs: Optional[Dict[str, core.HttpConfiguration]] = None
 
     @classmethod
     def get_configuration(

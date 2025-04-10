@@ -2,6 +2,7 @@ import io
 from typing import List, Optional
 
 from nisystemlink.clients import core
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._file_like_response import (
     file_like_response_handler,
@@ -14,26 +15,9 @@ from nisystemlink.clients.core._uplink._methods import (
     response_handler,
 )
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
-from requests.models import Response
 from uplink import Part, Path, retry
 
 from . import models
-
-
-def _query_executions_response_handler(response: Response) -> List[models.Execution]:
-    if response is None:
-        return []
-
-    executions = response.json()
-
-    return executions
-
-
-def _simple_response_handler(response: Response) -> dict:
-    if response is None:
-        return dict()
-
-    return response.json()
 
 
 @retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
@@ -115,7 +99,7 @@ class NotebookClient(BaseClient):
         """
         metadata_io = None
         if metadata is not None:
-            metadata_str = metadata.json()
+            metadata_str = metadata.model_dump_json(by_alias=True, exclude_unset=True)
             metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
 
         return self.__update_notebook(
@@ -176,7 +160,7 @@ class NotebookClient(BaseClient):
             ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
-        metadata_str = metadata.json()
+        metadata_str = metadata.model_dump_json()
 
         metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
         return self.__create_notebook(
@@ -253,7 +237,6 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @response_handler(_query_executions_response_handler)
     @post("ninbexecution/v1/query-executions")
     def __query_executions(
         self, query: models._QueryExecutionsRequest
@@ -303,16 +286,16 @@ class NotebookClient(BaseClient):
 
         return self.__query_executions(query=query_request)
 
-    @response_handler(_simple_response_handler)
-    @post("ninbexecution/v1/retry-executions")
-    def retry_executions(self, ids: List[str]) -> dict:
+    @post("ninbexecution/v1/retry-executions", return_key="error")
+    def retry_executions(self, ids: List[str]) -> Optional[ApiError]:
         """Retries existing executions based on failed, canceled or timed-out executions.
 
         Args:
             ids: List of execution IDs to retry.
 
         Returns:
-            None
+            An ApiError object if executions could not be retried.
+            None if executions were retried successfully.
 
         Raises:
             ApiException: if unable to communicate with the ``/ninbexecution`` Service
@@ -320,16 +303,16 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @response_handler(_simple_response_handler)
-    @post("ninbexecution/v1/cancel-executions")
-    def cancel_executions(self, ids: List[str]) -> dict:
+    @post("ninbexecution/v1/cancel-executions", return_key="error")
+    def cancel_executions(self, ids: List[str]) -> Optional[ApiError]:
         """Cancel queued and in-progress executions.
 
         Args:
             ids: List of execution IDs to cancel.
 
         Returns:
-            None
+            An ApiError object if executions could not be canceled.
+            None if executions were canceled successfully.
 
         Raises:
             ApiException: if unable to communicate with the ``/ninbexecution`` Service
@@ -337,7 +320,6 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @response_handler(_simple_response_handler)
     @post("ninbexecution/v1/create-executions-from-existing")
     def create_executions_from_existing(
         self, ids: List[str]

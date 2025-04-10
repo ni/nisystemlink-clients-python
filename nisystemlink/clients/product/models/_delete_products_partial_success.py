@@ -10,8 +10,8 @@ class DeleteProductsPartialSuccess(JsonModel):
     ids: List[str]
     """The IDs of the products that were successfully deleted."""
 
-    failed: Optional[List[str]]
+    failed: Optional[List[str]] = None
     """The IDs of the products that could not be deleted."""
 
-    error: Optional[ApiError]
+    error: Optional[ApiError] = None
     """The error that occurred when deleting the products."""

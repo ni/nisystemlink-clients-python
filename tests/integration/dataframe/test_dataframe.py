@@ -90,7 +90,7 @@ class TestDataFrame:
     def test__api_info__returns(self, client):
         response = client.api_info()
 
-        assert len(response.dict()) != 0
+        assert len(response.model_dump()) != 0
 
     def test__create_table__metadata_is_correct(
         self, client: DataFrameClient, test_tables: List[str]

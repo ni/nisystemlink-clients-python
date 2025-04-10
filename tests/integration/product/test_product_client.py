@@ -40,7 +40,7 @@ def create_update_product_request():
     def _create_update_product_request(
         product_response: Product,
     ) -> UpdateProductRequest:
-        product_data = product_response.dict()
+        product_data = product_response.model_dump()
 
         product_data.pop("updated_at", None)
         product_data.pop("part_number", None)

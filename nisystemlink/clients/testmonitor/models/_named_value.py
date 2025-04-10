@@ -7,5 +7,5 @@ class NamedValue(JsonModel):
     name: str
     """The name of the value."""
 
-    value: Any
+    value: Any = None
     """The value."""
