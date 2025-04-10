@@ -1,7 +1,6 @@
 # mypy: disable-error-code = misc
 
-from json import loads
-from typing import Any, Callable, Dict, List, get_origin, Optional, Type, Union
+from typing import Any, Callable, Dict, get_origin, Optional, Type, Union
 
 import requests
 from nisystemlink.clients import core
