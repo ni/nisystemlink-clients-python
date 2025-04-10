@@ -9,9 +9,10 @@ def _camelcase(s: str) -> str:
 
 class JsonModel(BaseModel):
     """Base class for models that are serialized to and from JSON."""
+
     model_config = ConfigDict(
         alias_generator=_camelcase,
         validate_by_name=True,
         validate_by_alias=True,
-        extra="ignore"
+        extra="ignore",
     )

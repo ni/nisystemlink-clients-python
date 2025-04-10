@@ -40,10 +40,13 @@ def _handle_http_status(response: Response) -> Optional[Response]:
             msg += ":\n\n" + response.text
         raise core.ApiException(msg, http_status_code=response.status_code)
 
+
 _type_adapters: Dict[Type, TypeAdapter] = dict()
+
 
 class _JsonModelConverter(converters.Factory):
     """A converter that converts between JSON and Pydantic models."""
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -51,7 +54,7 @@ class _JsonModelConverter(converters.Factory):
         self, _class: Type, _: commands.RequestDefinition
     ) -> Optional[Callable[[JsonModel], Dict]]:
         def encoder(model: JsonModel) -> Dict:
-            return model.model_dump(mode='json', by_alias=True, exclude_unset=True)
+            return model.model_dump(mode="json", by_alias=True, exclude_unset=True)
 
         if utils.is_subclass(_class, JsonModel):
             return encoder

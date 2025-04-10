@@ -486,7 +486,9 @@ class TestTestMonitor:
     def __map_result_to_update_result_request(
         self, result: Result
     ) -> UpdateResultRequest:
-        result_model_dump = result.model_dump(exclude={"status_type_summary", "updated_at"})
+        result_model_dump = result.model_dump(
+            exclude={"status_type_summary", "updated_at"}
+        )
         return UpdateResultRequest(**result_model_dump)
 
     def test__create_single_step__creation_succeed(
@@ -558,7 +560,7 @@ class TestTestMonitor:
         keywords = ["keyword1", "keyword2"]
         inputs = [NamedValue(name="input1", value="inputValue1")]
         step = CreateStepRequest(
-            step_id='step1',
+            step_id="step1",
             result_id=result_id,
             name=name,
             data=data,
@@ -915,9 +917,9 @@ class TestTestMonitor:
             updated_measurement.comparisonType
             == updated_data.parameters[0].comparisonType
         )
-        assert updated_measurement.model_dump().get("specId") == updated_data.parameters[
-            0
-        ].model_dump().get("specId")
+        assert updated_measurement.model_dump().get(
+            "specId"
+        ) == updated_data.parameters[0].model_dump().get("specId")
 
     def test__update_step_with_replace_true__replace_keywords_and_properties(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier

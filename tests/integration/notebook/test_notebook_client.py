@@ -572,26 +572,28 @@ class TestNotebookClient:
         self,
         client: NotebookClient,
     ):
-        return_value = [{
-            "id": "execution_id",
-            "notebookId": "fa479189-d26a-4521-a751-173355a811ce",
-            "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
-            "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
-            "parameters": {},
-            "workspaceId": "846e294a-a007-47ac-9fc2-fac07eab240e",
-            "timeout": 3600,
-            "status": "FAILED",
-            "queuedAt": "2024-12-12T02:46:20.193Z",
-            "startedAt": "2024-12-12T02:46:20.202Z",
-            "completedAt": "2024-12-12T02:46:50.506Z",
-            "lastUpdatedTimestamp": "2024-12-12T02:46:50.506Z",
-            "exception": "An error occurred while executing the notebook.",
-            "errorCode": "NOTEBOOK_ERROR",
-            "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
-            "source": {"type": "MANUAL"},
-            "priority": "MEDIUM",
-            "resourceProfile": "DEFAULT",
-        }]
+        return_value = [
+            {
+                "id": "execution_id",
+                "notebookId": "fa479189-d26a-4521-a751-173355a811ce",
+                "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+                "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+                "parameters": {},
+                "workspaceId": "846e294a-a007-47ac-9fc2-fac07eab240e",
+                "timeout": 3600,
+                "status": "FAILED",
+                "queuedAt": "2024-12-12T02:46:20.193Z",
+                "startedAt": "2024-12-12T02:46:20.202Z",
+                "completedAt": "2024-12-12T02:46:50.506Z",
+                "lastUpdatedTimestamp": "2024-12-12T02:46:50.506Z",
+                "exception": "An error occurred while executing the notebook.",
+                "errorCode": "NOTEBOOK_ERROR",
+                "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+                "source": {"type": "MANUAL"},
+                "priority": "MEDIUM",
+                "resourceProfile": "DEFAULT",
+            }
+        ]
 
         responses.add(
             responses.POST,
@@ -837,7 +839,9 @@ class TestNotebookClient:
             status=200,
         )
 
-        response = client.create_executions_from_existing(["execution_id_1", "execution_id_2"])
+        response = client.create_executions_from_existing(
+            ["execution_id_1", "execution_id_2"]
+        )
 
         assert response is not None
         assert response.error is not None

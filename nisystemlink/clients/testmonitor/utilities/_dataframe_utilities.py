@@ -230,10 +230,7 @@ def __filter_invalid_measurements(
     if step.data and step.data.parameters and is_valid_measurement is not None:
         valid_measurement_parameters = []
         for measurement in step.data.parameters:
-            if (
-                measurement
-                and is_valid_measurement(measurement)
-            ):
+            if measurement and is_valid_measurement(measurement):
                 valid_measurement_parameters.append(measurement)
 
         step_dict["data"]["parameters"] = [
