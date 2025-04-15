@@ -94,7 +94,7 @@ class BaseClient(Consumer):
 
         Args:
             configuration: Defines the web server to connect to and information about how to connect.
-            base_path: The base path for all API calls. 
+            base_path: The base path for all API calls.
         """
         session = requests.Session()
         session.verify = configuration.verify
