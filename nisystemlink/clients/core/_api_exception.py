@@ -45,7 +45,7 @@ class ApiException(Exception):
         if self._error is None:
             return None
         else:
-            return self._error.copy()
+            return self._error.model_copy()
 
     @property
     def http_status_code(self) -> Optional[int]:  # noqa: D401

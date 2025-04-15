@@ -88,4 +88,4 @@ def enterprise_config(pytestconfig):
 @pytest.fixture(scope="session", autouse=True)
 def pydantic_forbid_extra_fields():
     """Fixture to disable allowing extra fields in our Pydantic models."""
-    JsonModel.Config.extra = Extra.forbid
+    JsonModel.model_config.update(extra='forbid')

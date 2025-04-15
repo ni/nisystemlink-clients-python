@@ -3,7 +3,7 @@ from pydantic import Field
 
 
 class Link(JsonModel):
-    href: str = Field(..., example="/nifile/v1/service-groups")
+    href: str = Field(..., examples=["/nifile/v1/service-groups"])
     """
     URI of the link
     """

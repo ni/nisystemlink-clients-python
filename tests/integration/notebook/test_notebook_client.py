@@ -566,31 +566,34 @@ class TestNotebookClient:
         with pytest.raises(ApiException, match="Not Found"):
             client.get_execution_by_id(id="InvalidExecutionId")
 
+    @pytest.mark.focus
     @responses.activate
     def test__filter_executions_by_status__returns_executions_matches_status(
         self,
         client: NotebookClient,
     ):
-        return_value = {
-            "id": "execution_id",
-            "notebookId": "fa479189-d26a-4521-a751-173355a811ce",
-            "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
-            "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
-            "parameters": {},
-            "workspaceId": "846e294a-a007-47ac-9fc2-fac07eab240e",
-            "timeout": 3600,
-            "status": "FAILED",
-            "queuedAt": "2024-12-12T02:46:20.193Z",
-            "startedAt": "2024-12-12T02:46:20.202Z",
-            "completedAt": "2024-12-12T02:46:50.506Z",
-            "lastUpdatedTimestamp": "2024-12-12T02:46:50.506Z",
-            "exception": "An error occurred while executing the notebook.",
-            "errorCode": "NOTEBOOK_ERROR",
-            "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
-            "source": {"type": "MANUAL"},
-            "priority": "MEDIUM",
-            "resourceProfile": "DEFAULT",
-        }
+        return_value = [
+            {
+                "id": "execution_id",
+                "notebookId": "fa479189-d26a-4521-a751-173355a811ce",
+                "orgId": "f8a1fa16-a180-4a00-b90d-225c0a966848",
+                "userId": "7aac74e0-10f7-4a07-93df-d7304a1ed177",
+                "parameters": {},
+                "workspaceId": "846e294a-a007-47ac-9fc2-fac07eab240e",
+                "timeout": 3600,
+                "status": "FAILED",
+                "queuedAt": "2024-12-12T02:46:20.193Z",
+                "startedAt": "2024-12-12T02:46:20.202Z",
+                "completedAt": "2024-12-12T02:46:50.506Z",
+                "lastUpdatedTimestamp": "2024-12-12T02:46:50.506Z",
+                "exception": "An error occurred while executing the notebook.",
+                "errorCode": "NOTEBOOK_ERROR",
+                "reportSettings": {"format": "NO_REPORT", "excludeCode": False},
+                "source": {"type": "MANUAL"},
+                "priority": "MEDIUM",
+                "resourceProfile": "DEFAULT",
+            }
+        ]
 
         responses.add(
             responses.POST,
@@ -741,7 +744,22 @@ class TestNotebookClient:
     @responses.activate
     def test__cancel_executions__return_inner_errors(self, client: NotebookClient):
         return_value = {
-            "innerErrors": ["Error1", "Error2"],
+            "error": {
+                "name": "Skyline.OneOrMoreErrorsOccurred",
+                "code": -251041,
+                "message": "One or more errors occurred. See the contained list for details of each error.",
+                "args": [],
+                "innerErrors": [
+                    {
+                        "name": "SkylineWebServices.Unauthorized",
+                        "code": -252229,
+                        "message": "User is not authorized.",
+                        "resourceId": "SomeResourceId",
+                        "args": [],
+                        "innerErrors": [],
+                    }
+                ],
+            },
         }
 
         responses.add(
@@ -753,13 +771,29 @@ class TestNotebookClient:
 
         response = client.cancel_executions(["execution_id_1", "execution_id_2"])
 
-        print(response)
-        assert response["innerErrors"] == ["Error1", "Error2"]
+        assert response is not None
+        assert response.name == "Skyline.OneOrMoreErrorsOccurred"
+        assert response.inner_errors[0].name == "SkylineWebServices.Unauthorized"
 
     @responses.activate
     def test__retry_executions__return_inner_errors(self, client: NotebookClient):
         return_value = {
-            "innerErrors": ["Error1", "Error2"],
+            "error": {
+                "name": "Skyline.OneOrMoreErrorsOccurred",
+                "code": -251041,
+                "message": "One or more errors occurred. See the contained list for details of each error.",
+                "args": [],
+                "innerErrors": [
+                    {
+                        "name": "SkylineWebServices.Unauthorized",
+                        "code": -252229,
+                        "message": "User is not authorized.",
+                        "resourceId": "SomeResourceId",
+                        "args": [],
+                        "innerErrors": [],
+                    }
+                ],
+            },
         }
 
         responses.add(
@@ -771,25 +805,45 @@ class TestNotebookClient:
 
         response = client.retry_executions(["execution_id_1", "execution_id_2"])
 
-        print(response)
-        assert response["innerErrors"] == ["Error1", "Error2"]
+        assert response is not None
+        assert response.name == "Skyline.OneOrMoreErrorsOccurred"
+        assert response.inner_errors[0].name == "SkylineWebServices.Unauthorized"
 
     @responses.activate
     def test__create_executions_from_existing__return_inner_errors(
         self, client: NotebookClient
     ):
         return_value = {
-            "innerErrors": ["Error1", "Error2"],
+            "error": {
+                "name": "Skyline.OneOrMoreErrorsOccurred",
+                "code": -251041,
+                "message": "One or more errors occurred. See the contained list for details of each error.",
+                "args": [],
+                "innerErrors": [
+                    {
+                        "name": "SkylineWebServices.Unauthorized",
+                        "code": -252229,
+                        "message": "User is not authorized.",
+                        "resourceId": "SomeResourceId",
+                        "args": [],
+                        "innerErrors": [],
+                    }
+                ],
+            },
         }
 
         responses.add(
             responses.POST,
-            f"{BASE_URL}/ninbexecution/v1/retry-executions",
+            f"{BASE_URL}/ninbexecution/v1/create-executions-from-existing",
             json=return_value,
             status=200,
         )
 
-        response = client.retry_executions(["execution_id_1", "execution_id_2"])
+        response = client.create_executions_from_existing(
+            ["execution_id_1", "execution_id_2"]
+        )
 
-        print(response)
-        assert response["innerErrors"] == ["Error1", "Error2"]
+        assert response is not None
+        assert response.error is not None
+        assert response.error.name == "Skyline.OneOrMoreErrorsOccurred"
+        assert response.error.inner_errors[0].name == "SkylineWebServices.Unauthorized"

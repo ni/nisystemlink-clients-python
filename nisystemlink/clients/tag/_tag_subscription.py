@@ -214,12 +214,12 @@ class TagSubscription(events.Events, abc.ABC):
         exc_type: Optional[Type[BaseException]],
         exc_val: Optional[BaseException],
         exc_tb: Optional[TracebackType],
-    ) -> bool:
+    ) -> Optional[bool]:
         """Close server resources associated with the subscription.
 
         Further tag writes will not trigger new events.
         """
-        suppress = False
+        suppress: Optional[bool] = False
         try:
             self.close()
         finally:
@@ -231,12 +231,12 @@ class TagSubscription(events.Events, abc.ABC):
         exc_type: Optional[Type[BaseException]],
         exc_val: Optional[BaseException],
         exc_tb: Optional[TracebackType],
-    ) -> bool:
+    ) -> Optional[bool]:
         """Asynchronously close server resources associated with the subscription.
 
         Further tag writes will not trigger new events.
         """
-        suppress = False
+        suppress: Optional[bool] = False
         try:
             await self.close_async()
         finally:

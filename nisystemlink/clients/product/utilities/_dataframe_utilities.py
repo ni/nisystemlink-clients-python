@@ -19,7 +19,7 @@ def convert_products_to_dataframe(products: List[Product]) -> DataFrame:
             columns would be named in the format `properties.property_name`.
     """
     products_dict_representation = [
-        product.dict(exclude_none=True) for product in products
+        product.model_dump(exclude_none=True) for product in products
     ]
     normalized_products_dataframe = pd.json_normalize(
         products_dict_representation, sep="."
