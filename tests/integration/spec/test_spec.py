@@ -313,8 +313,18 @@ class TestSpec:
 
         assert response.specs
         assert len(response.specs) == 3
-        assert isinstance(response.specs[1].conditions[0].value, NumericConditionValue)
-        assert isinstance(response.specs[1].conditions[1].value, StringConditionValue)
+        condition_1 = (
+            response.specs[1].conditions[0].value
+            if response.specs[1].conditions
+            else None
+        )
+        condition_2 = (
+            response.specs[1].conditions[1].value
+            if response.specs[1].conditions
+            else None
+        )
+        assert isinstance(condition_1, NumericConditionValue)
+        assert isinstance(condition_2, StringConditionValue)
 
     def test__without_condition_type_projection__query_specs__condition_type_field_is_unset(
         self, client: SpecClient, create_specs, create_specs_for_query, product
