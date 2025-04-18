@@ -17,6 +17,7 @@ from nisystemlink.clients.spec.models import (
     SpecificationLimit,
     SpecificationProjection,
     SpecificationType,
+    StringConditionValue,
     UpdateSpecificationsRequest,
     UpdateSpecificationsRequestObject,
 )
@@ -88,10 +89,9 @@ def create_specs_for_query(create_specs, product):
                 ),
                 Condition(
                     name="Supply Voltage",
-                    value=NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
-                        discrete=[1.3, 1.5, 1.7],
-                        unit="mV",
+                    value=StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["1.3", "1.5", "1.7"],
                     ),
                 ),
             ],
@@ -297,6 +297,24 @@ class TestSpec:
         assert len(spec_columns) == 2
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
+
+    def test__query_specs__returns_condition_value_type_correctly(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            projection=[
+                SpecificationProjection.CONDITION_NAME,
+                SpecificationProjection.CONDITION_UNIT,
+            ],
+        )
+
+        response = client.query_specs(request)
+
+        assert response.specs
+        assert len(response.specs) == 3
+        assert isinstance(response.specs[1].conditions[0].value, NumericConditionValue)
+        assert isinstance(response.specs[1].conditions[1].value, StringConditionValue)
 
     def test__without_condition_type_projection__query_specs__condition_type_field_is_unset(
         self, client: SpecClient, create_specs, create_specs_for_query, product
