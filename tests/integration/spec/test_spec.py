@@ -84,6 +84,7 @@ def create_specs_for_query(create_specs, product):
                     value=NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
                         range=[ConditionRange(min=-25, step=20, max=85)],
+                        discrete=[2, 1.5, 21],
                         unit="C",
                     ),
                 ),
