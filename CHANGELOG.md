@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.9.0 (2025-04-22)
+
+### Feature
+
+* Make TLS/SSL certificate verification optional ([#126](https://github.com/ni/nisystemlink-clients-python/issues/126)) ([`f8063f9`](https://github.com/ni/nisystemlink-clients-python/commit/f8063f9da81b57298ae0d48aee2f11e59f497b19))
+
+### Fix
+
+* Ignore extra fields in Json Model ([#131](https://github.com/ni/nisystemlink-clients-python/issues/131)) ([`4e835bb`](https://github.com/ni/nisystemlink-clients-python/commit/4e835bbbb8bd5c286acee6757d844f03957e5f05))
+
 ## v2.8.0 (2025-03-26)
 
 ### Feature
