@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import StrictStr
+from pydantic import StrictFloat, StrictInt, StrictStr
 
 
 class ConditionType(Enum):
@@ -44,7 +44,10 @@ class NumericConditionValue(ConditionValueBase):
     range: Optional[List[ConditionRange]] = None
     """List of condition range values."""
 
-    discrete: Optional[List[float]] = None
+    # StrictFloat and StrictInt are used here because discrete is a common property for
+    # NumericConditionValue and StringConditionValue.
+    # And pydantic converts string of number into float/int by default if just float/int is used
+    discrete: Optional[List[Union[StrictFloat, StrictInt]]] = None
     """List of condition discrete values."""
 
     unit: Optional[str] = None
@@ -57,6 +60,9 @@ class StringConditionValue(ConditionValueBase):
     String conditions may only contain discrete lists of values.
     """
 
+    # StrictStr is used here because discrete is a common property for
+    # NumericConditionValue and StringConditionValue.
+    # And pydantic converts any datatype into string by default if just str is used.
     discrete: Optional[List[StrictStr]] = None
     """List of condition discrete values."""
 
@@ -67,5 +73,5 @@ class Condition(JsonModel):
     name: Optional[str] = None
     """Name of the condition."""
 
-    value: Optional[Union[StringConditionValue, NumericConditionValue]] = None
+    value: Optional[Union[NumericConditionValue, StringConditionValue]] = None
     """Value of the condition."""

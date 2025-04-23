@@ -307,6 +307,7 @@ class TestSpec:
             projection=[
                 SpecificationProjection.CONDITION_NAME,
                 SpecificationProjection.CONDITION_UNIT,
+                SpecificationProjection.CONDITION_VALUES,
             ],
         )
 
