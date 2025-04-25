@@ -325,14 +325,20 @@ class TestSpec:
             if response.specs[1].conditions
             else None
         )
+        condition_1_discrete_values = (
+            [discrete for discrete in condition_1.discrete or []] if condition_1 else []
+        )
+        condition_2_discrete_values = (
+            [discrete for discrete in condition_2.discrete or []] if condition_2 else []
+        )
         assert isinstance(condition_1, NumericConditionValue)
         assert isinstance(condition_2, StringConditionValue)
-        assert isinstance(condition_1.discrete[0], int)
-        assert isinstance(condition_1.discrete[1], float)
-        assert isinstance(condition_1.discrete[2], int)
-        assert isinstance(condition_2.discrete[0], str)
-        assert isinstance(condition_2.discrete[1], str)
-        assert isinstance(condition_2.discrete[2], str)
+        assert isinstance(condition_1_discrete_values[0], int)
+        assert isinstance(condition_1_discrete_values[1], float)
+        assert isinstance(condition_1_discrete_values[2], int)
+        assert isinstance(condition_2_discrete_values[0], str)
+        assert isinstance(condition_2_discrete_values[1], str)
+        assert isinstance(condition_2_discrete_values[2], str)
 
     def test__without_condition_type_projection__query_specs__condition_type_field_is_unset(
         self, client: SpecClient, create_specs, create_specs_for_query, product
