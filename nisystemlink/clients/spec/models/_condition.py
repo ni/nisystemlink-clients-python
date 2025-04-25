@@ -46,7 +46,8 @@ class NumericConditionValue(ConditionValueBase):
 
     # StrictFloat and StrictInt are used here because discrete is a common property for
     # NumericConditionValue and StringConditionValue.
-    # And pydantic converts string of number into float/int by default if just float/int is used
+    # If float/int is used, pydantic converts string of number into float/int by default
+    # when deserializing a StringCondition JSON and misinterprets it as NumericConditionValue type.
     discrete: Optional[List[Union[StrictFloat, StrictInt]]] = None
     """List of condition discrete values."""
 
@@ -62,7 +63,8 @@ class StringConditionValue(ConditionValueBase):
 
     # StrictStr is used here because discrete is a common property for
     # NumericConditionValue and StringConditionValue.
-    # And pydantic converts any datatype into string by default if just str is used.
+    # If str is used, pydantic converts any datatype into string by default when deserializing a
+    # NumericCondition JSON and misinterprets it as StringConditionValue type.
     discrete: Optional[List[StrictStr]] = None
     """List of condition discrete values."""
 
@@ -73,5 +75,8 @@ class Condition(JsonModel):
     name: Optional[str] = None
     """Name of the condition."""
 
+    # Ideal approach is to set the dtype here as ConditionValue and use pydantic discriminator to
+    # deserialize/serialize the JSON into correct ConditionValue sub types. But Union of dtypes is
+    # used here as the discriminator field could be none when projection is used in query API.
     value: Optional[Union[NumericConditionValue, StringConditionValue]] = None
     """Value of the condition."""
