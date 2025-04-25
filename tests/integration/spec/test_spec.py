@@ -327,6 +327,12 @@ class TestSpec:
         )
         assert isinstance(condition_1, NumericConditionValue)
         assert isinstance(condition_2, StringConditionValue)
+        assert isinstance(condition_1.discrete[0], int)
+        assert isinstance(condition_1.discrete[1], float)
+        assert isinstance(condition_1.discrete[2], int)
+        assert isinstance(condition_2.discrete[0], str)
+        assert isinstance(condition_2.discrete[1], str)
+        assert isinstance(condition_2.discrete[2], str)
 
     def test__without_condition_type_projection__query_specs__condition_type_field_is_unset(
         self, client: SpecClient, create_specs, create_specs_for_query, product
