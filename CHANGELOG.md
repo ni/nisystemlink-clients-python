@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v2.9.1 (2025-04-30)
+
+### Fix
+
+* Bump h11 from 0.14.0 to 0.16.0 ([#132](https://github.com/ni/nisystemlink-clients-python/issues/132)) ([`2e918d6`](https://github.com/ni/nisystemlink-clients-python/commit/2e918d6b8c6daaa7ca1956bff72f0dc41d8be989))
+* Prevent string discrete values which are string of numbers from passing as numeric condition values. ([#130](https://github.com/ni/nisystemlink-clients-python/issues/130)) ([`40b68af`](https://github.com/ni/nisystemlink-clients-python/commit/40b68af4f60d779f90748e50c88366c7d6501b63))
+
 ## v2.9.0 (2025-04-22)
 
 ### Feature
