@@ -17,6 +17,7 @@ from nisystemlink.clients.spec.models import (
     SpecificationLimit,
     SpecificationProjection,
     SpecificationType,
+    StringConditionValue,
     UpdateSpecificationsRequest,
     UpdateSpecificationsRequestObject,
 )
@@ -83,15 +84,15 @@ def create_specs_for_query(create_specs, product):
                     value=NumericConditionValue(
                         condition_type=ConditionType.NUMERIC,
                         range=[ConditionRange(min=-25, step=20, max=85)],
+                        discrete=[2, 1.5, 21],
                         unit="C",
                     ),
                 ),
                 Condition(
                     name="Supply Voltage",
-                    value=NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
-                        discrete=[1.3, 1.5, 1.7],
-                        unit="mV",
+                    value=StringConditionValue(
+                        condition_type=ConditionType.STRING,
+                        discrete=["1.3", "1.5", "1.7"],
                     ),
                 ),
             ],
@@ -297,6 +298,47 @@ class TestSpec:
         assert len(spec_columns) == 2
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
+
+    def test__query_specs__returns_condition_value_type_correctly(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            projection=[
+                SpecificationProjection.CONDITION_NAME,
+                SpecificationProjection.CONDITION_UNIT,
+                SpecificationProjection.CONDITION_VALUES,
+            ],
+        )
+
+        response = client.query_specs(request)
+
+        assert response.specs
+        assert len(response.specs) == 3
+        condition_1 = (
+            response.specs[1].conditions[0].value
+            if response.specs[1].conditions
+            else None
+        )
+        condition_2 = (
+            response.specs[1].conditions[1].value
+            if response.specs[1].conditions
+            else None
+        )
+        condition_1_discrete_values = (
+            [discrete for discrete in condition_1.discrete or []] if condition_1 else []
+        )
+        condition_2_discrete_values = (
+            [discrete for discrete in condition_2.discrete or []] if condition_2 else []
+        )
+        assert isinstance(condition_1, NumericConditionValue)
+        assert isinstance(condition_2, StringConditionValue)
+        assert isinstance(condition_1_discrete_values[0], int)
+        assert isinstance(condition_1_discrete_values[1], float)
+        assert isinstance(condition_1_discrete_values[2], int)
+        assert isinstance(condition_2_discrete_values[0], str)
+        assert isinstance(condition_2_discrete_values[1], str)
+        assert isinstance(condition_2_discrete_values[2], str)
 
     def test__without_condition_type_projection__query_specs__condition_type_field_is_unset(
         self, client: SpecClient, create_specs, create_specs_for_query, product
