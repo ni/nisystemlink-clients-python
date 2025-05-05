@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, ConfigDict
 
 
 def _camelcase(s: str) -> str:
@@ -10,7 +10,9 @@ def _camelcase(s: str) -> str:
 class JsonModel(BaseModel):
     """Base class for models that are serialized to and from JSON."""
 
-    class Config:
-        alias_generator = _camelcase
-        allow_population_by_field_name = True
-        extra = Extra.ignore.value
+    model_config = ConfigDict(
+        alias_generator=_camelcase,
+        validate_by_name=True,
+        validate_by_alias=True,
+        extra="ignore",
+    )

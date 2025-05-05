@@ -11,41 +11,41 @@ class CreateResultRequest(JsonModel):
     status: Status
     """The status of the result."""
 
-    started_at: Optional[datetime]
+    started_at: Optional[datetime] = None
     """The time that the result started."""
 
     program_name: str
     """The name of the program that generated this result."""
 
-    system_id: Optional[str]
+    system_id: Optional[str] = None
     """The id of the system that generated this result."""
 
-    host_name: Optional[str]
+    host_name: Optional[str] = None
     """The name of the host that generated this result."""
 
-    part_number: Optional[str]
+    part_number: Optional[str] = None
     """The part number is the unique identifier of a product within a single org."""
 
-    serial_number: Optional[str]
+    serial_number: Optional[str] = None
     """The serial number of the system that generated this result."""
 
-    total_time_in_seconds: Optional[float]
+    total_time_in_seconds: Optional[float] = None
     """The total time that the result took to run in seconds."""
 
-    keywords: Optional[List[str]]
+    keywords: Optional[List[str]] = None
     """A list of keywords that categorize this result."""
 
-    properties: Optional[Dict[str, Optional[str]]]
+    properties: Optional[Dict[str, Optional[str]]] = None
     """A list of custom properties for this result."""
 
-    operator: Optional[str]
+    operator: Optional[str] = None
     """The operator that ran the result."""
 
-    file_ids: Optional[List[str]]
+    file_ids: Optional[List[str]] = None
     """A list of file ids that are attached to this result."""
 
-    data_table_ids: Optional[List[str]]
+    data_table_ids: Optional[List[str]] = None
     """A list of data table ids that are attached to this result."""
 
-    workspace: Optional[str]
+    workspace: Optional[str] = None
     """The id of the workspace that this product belongs to."""

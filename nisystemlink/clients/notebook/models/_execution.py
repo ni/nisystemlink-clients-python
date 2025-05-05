@@ -117,7 +117,7 @@ class Execution(JsonModel):
     notebook_id: Optional[str] = None
     """The ID of the executed notebook."""
 
-    organization_id: Optional[str] = Field(alias="orgId")
+    organization_id: Optional[str] = Field(None, alias="orgId")
     """The org ID of the user creating the request."""
 
     user_id: Optional[str] = None
@@ -152,7 +152,7 @@ class Execution(JsonModel):
     last_updated_by: Optional[str] = None
     """"The user ID of the user who last updated the execution."""
 
-    retry_count: Optional[int]
+    retry_count: Optional[int] = None
     """The number of manually retried attempts of the notebook execution."""
 
     exception: Optional[str] = None

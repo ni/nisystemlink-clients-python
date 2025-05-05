@@ -43,7 +43,7 @@ def convert_results_to_dataframe(
     """
     results_dict = []
     for result in results:
-        data = result.dict(exclude_none=True)
+        data = result.model_dump(exclude_none=True)
         __normalize_status(data)
         results_dict.append(data)
 
@@ -202,7 +202,7 @@ def __convert_steps_to_dict(
     steps_dict = []
     for step in steps:
 
-        single_step_dict = step.dict(exclude_none=True)
+        single_step_dict = step.model_dump(exclude_none=True)
         __filter_invalid_measurements(single_step_dict, step, is_valid_measurement)
         __normalize_inputs_outputs(single_step_dict, step)
         __normalize_status(single_step_dict)
@@ -230,15 +230,11 @@ def __filter_invalid_measurements(
     if step.data and step.data.parameters and is_valid_measurement is not None:
         valid_measurement_parameters = []
         for measurement in step.data.parameters:
-            if (
-                measurement
-                and is_valid_measurement
-                and is_valid_measurement(measurement)
-            ):
+            if measurement and is_valid_measurement(measurement):
                 valid_measurement_parameters.append(measurement)
 
         step_dict["data"]["parameters"] = [
-            measurement.dict(exclude_none=True)
+            measurement.model_dump(exclude_none=True)
             for measurement in valid_measurement_parameters
         ]
 

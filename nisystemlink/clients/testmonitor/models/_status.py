@@ -26,7 +26,7 @@ class Status(JsonModel):
     status_type: StatusType
     """The type of status."""
 
-    status_name: Optional[str]
+    status_name: Optional[str] = None
     """The name of the status."""
 
     @staticmethod

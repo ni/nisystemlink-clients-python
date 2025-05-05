@@ -113,7 +113,7 @@ def create_specs_for_query(create_specs, product):
 class TestSpec:
     def test__api_info__returns(self, client: SpecClient):
         response = client.api_info()
-        assert len(response.dict()) != 0
+        assert len(response.model_dump()) != 0
 
     def test__create_single_spec__one_created_with_right_field_values(
         self, client: SpecClient, create_specs, product

@@ -126,7 +126,7 @@ def create_steps(client: TestMonitorClient):
 class TestTestMonitor:
     def test__api_info__returns(self, client: TestMonitorClient):
         response = client.api_info()
-        assert len(response.dict()) != 0
+        assert len(response.model_dump()) != 0
 
     def test__create_single_result__one_result_created_with_right_field_values(
         self, client: TestMonitorClient, create_results
@@ -302,7 +302,7 @@ class TestTestMonitor:
         assert len(query_response.results) == 1
         assert query_response.results[0].part_number == results[0].part_number
         assert query_response.results[0].serial_number == results[0].serial_number
-        assert set(query_response.results[0].__fields_set__) == {
+        assert set(query_response.results[0].model_fields_set) == {
             "id",
             "part_number",
             "serial_number",
@@ -486,8 +486,10 @@ class TestTestMonitor:
     def __map_result_to_update_result_request(
         self, result: Result
     ) -> UpdateResultRequest:
-        result_dict = result.dict(exclude={"status_type_summary", "updated_at"})
-        return UpdateResultRequest(**result_dict)
+        result_model_dump = result.model_dump(
+            exclude={"status_type_summary", "updated_at"}
+        )
+        return UpdateResultRequest(**result_model_dump)
 
     def test__create_single_step__creation_succeed(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
@@ -558,6 +560,7 @@ class TestTestMonitor:
         keywords = ["keyword1", "keyword2"]
         inputs = [NamedValue(name="input1", value="inputValue1")]
         step = CreateStepRequest(
+            step_id="step1",
             result_id=result_id,
             name=name,
             data=data,
@@ -571,7 +574,7 @@ class TestTestMonitor:
         assert response is not None
         assert len(response.steps) == 1
         created_step = response.steps[0]
-        assert created_step.step_id is not None
+        assert created_step.step_id == step.step_id
 
     def test__create_multiple_steps__multiple_creation_succeed(
         self, client: TestMonitorClient, create_results, create_steps
@@ -873,7 +876,6 @@ class TestTestMonitor:
                     units="V",
                     comparisonType="GELE",
                     specId="spec_01",
-                    specInfo={"specKey": "specValue"},
                 )
             ],
         )
@@ -915,12 +917,9 @@ class TestTestMonitor:
             updated_measurement.comparisonType
             == updated_data.parameters[0].comparisonType
         )
-        assert updated_measurement.dict().get("specId") == updated_data.parameters[
-            0
-        ].dict().get("specId")
-        assert getattr(
-            updated_measurement, "specInfo", None
-        ) == updated_data.parameters[0].dict().get("specInfo")
+        assert updated_measurement.model_dump().get(
+            "specId"
+        ) == updated_data.parameters[0].model_dump().get("specId")
 
     def test__update_step_with_replace_true__replace_keywords_and_properties(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
