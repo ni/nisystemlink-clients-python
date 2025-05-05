@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.10.0 (2025-05-05)
+
+### Feature
+
+* Upgrade to Pydantic 2.11 ([#129](https://github.com/ni/nisystemlink-clients-python/issues/129)) ([`66eada6`](https://github.com/ni/nisystemlink-clients-python/commit/66eada66ff6d05bdca1e777e288a96a7b89af9ed))
+
+### Fix
+
+* Correct missing None default value for spec condition_type ([#133](https://github.com/ni/nisystemlink-clients-python/issues/133)) ([`be48c7d`](https://github.com/ni/nisystemlink-clients-python/commit/be48c7d90322bc41a74456490d7a6f1b9c96d35e))
+
 ## v2.9.1 (2025-04-30)
 
 ### Fix
