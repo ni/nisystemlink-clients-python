@@ -31,7 +31,7 @@ class ConditionRange(JsonModel):
 class ConditionValueBase(JsonModel):
     """The base type for conditions that can be represented in several styles."""
 
-    condition_type: Optional[ConditionType]
+    condition_type: Optional[ConditionType] = None
     """Type of the Condition."""
 
 

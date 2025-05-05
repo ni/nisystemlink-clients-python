@@ -566,7 +566,6 @@ class TestNotebookClient:
         with pytest.raises(ApiException, match="Not Found"):
             client.get_execution_by_id(id="InvalidExecutionId")
 
-    @pytest.mark.focus
     @responses.activate
     def test__filter_executions_by_status__returns_executions_matches_status(
         self,
