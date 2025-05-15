@@ -337,12 +337,12 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.AssetManagementClient` object, you can:
 
-* Get the list of assets.
+* Create assest and Get the list of assets.
 
 Examples
 ~~~~~~~~
 
-query asset
+create and query asset
 
 .. literalinclude:: ../examples/assetmanagement/assets.py
    :language: python
