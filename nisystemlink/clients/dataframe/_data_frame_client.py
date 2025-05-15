@@ -18,7 +18,7 @@ from uplink import Body, Field, Path, Query, retry
 from . import models
 
 
-# retry for common status codes and any Connection error 
+# retry for common http status codes and any Connection error 
 @retry(
     when=retry.when.status([429, 502, 503, 504]),
     stop=retry.stop.after_attempt(5),
