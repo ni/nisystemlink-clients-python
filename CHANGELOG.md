@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.11.0 (2025-05-15)
+
+### Feature
+
+* Add retry handling to DataFrameClient ([#116](https://github.com/ni/nisystemlink-clients-python/issues/116)) ([`5f8e096`](https://github.com/ni/nisystemlink-clients-python/commit/5f8e096bf735aab97c9927ab71920b5d770e891f))
+
 ## v2.10.0 (2025-05-05)
 
 ### Feature
