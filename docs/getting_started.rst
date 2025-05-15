@@ -320,3 +320,30 @@ Create, query, retry, and cancel notebook executions.
 .. literalinclude:: ../examples/notebook/notebook_execution.py
    :language: python
    :linenos:
+
+
+Asset Management API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.AssetManagementClient` class is the primary entry point of the Asset Management API.
+
+When constructing a :class:`.AssetManagementClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.AssetManagementClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.AssetManagementClient` object, you can:
+
+* Get the list of assets.
+
+Examples
+~~~~~~~~
+
+query asset
+
+.. literalinclude:: ../examples/assetmanagement/assets.py
+   :language: python
+   :linenos:
