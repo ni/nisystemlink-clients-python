@@ -3,19 +3,17 @@ from typing import List
 import pytest
 from nisystemlink.clients.assetmanagement import AssetManagementClient
 from nisystemlink.clients.assetmanagement.models import (
-    AssetCreateRequest,
-    AssetsCreatePartialSuccessResponse,
-    AssetsResponse,
-    QueryAssetRequest,
-)
-from nisystemlink.clients.assetmanagement.models._asset import (
     AssetBusType,
+    AssetCreateRequest,
     AssetDiscoveryType,
     AssetLocation,
     AssetPresence,
     AssetPresenceWithSystemConnection,
+    AssetsCreatePartialSuccessResponse,
+    AssetsResponse,
     AssetType,
     ExternalCalibration,
+    QueryAssetRequest,
     SelfCalibration,
     TemperatureSensor,
 )
