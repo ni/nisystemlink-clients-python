@@ -1,4 +1,4 @@
-from enum import auto, Enum
+from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -7,7 +7,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class OrderBy(Enum):
     """Field by which assets can be ordered/sorted. If OrderBy is not specified, no sorting will applied."""
 
-    LAST_UPDATED_TIMESTAMP = auto()
+    LAST_UPDATED_TIMESTAMP = "LAST_UPDATED_TIMESTAMP"
 
 
 class QueryAssetsRequest(JsonModel):

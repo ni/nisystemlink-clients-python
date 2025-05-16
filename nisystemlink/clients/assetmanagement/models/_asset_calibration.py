@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import auto, Enum
+from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -10,10 +10,10 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class CalibrationStatus(Enum):
     """Calibration category the asset belongs to based on the next due calibration date."""
 
-    OK = auto()
-    APPROACHING_RECOMMENDED_DUE_DATE = auto()
-    PAST_RECOMMENDED_DUE_DATE = auto()
-    OUT_FOR_CALIBRATION = auto()
+    OK = "OK"
+    APPROACHING_RECOMMENDED_DUE_DATE = "APPROACHING_RECOMMENDED_DUE_DATE"
+    PAST_RECOMMENDED_DUE_DATE = "PAST_RECOMMENDED_DUE_DATE"
+    OUT_FOR_CALIBRATION = "OUT_FOR_CALIBRATION"
 
 
 class TemperatureSensor(JsonModel):
@@ -40,8 +40,8 @@ class SelfCalibration(JsonModel):
 class CalibrationMode(Enum):
     """Whether SystemLink automatically discovered the calibration data for an asset or if it was manually entered."""
 
-    AUTOMATIC = auto()
-    MANUAL = auto()
+    AUTOMATIC = "AUTOMATIC"
+    MANUAL = "MANUAL"
 
 
 class ExternalCalibration(JsonModel):

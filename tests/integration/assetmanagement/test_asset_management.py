@@ -87,7 +87,7 @@ class TestAssetManagement:
         client: AssetManagementClient,
         create_assets_request: List[AssetCreateRequest],
     ):
-        create_assets_request[0].model_number = 1001
+        create_assets_request[0].model_number = 101
         create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
             assets=create_assets_request
         )
@@ -109,9 +109,11 @@ class TestAssetManagement:
         assert asset_id is not None
 
     def test__delete_asset__returns_deleted_asset(
-        self, client: AssetManagementClient, create_assets_request: List[AssetCreateRequest]
+        self,
+        client: AssetManagementClient,
+        create_assets_request: List[AssetCreateRequest],
     ):
-        create_assets_request[0].model_number = 1002
+        create_assets_request[0].model_number = 102
         create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
             assets=create_assets_request
         )
@@ -131,9 +133,11 @@ class TestAssetManagement:
         assert delete_response.ids[0] == asset_id
 
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
-        self, client: AssetManagementClient, create_assets_request: List[AssetCreateRequest]
+        self,
+        client: AssetManagementClient,
+        create_assets_request: List[AssetCreateRequest],
     ):
-        create_assets_request[0].model_number = 1003
+        create_assets_request[0].model_number = 103
         create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
             assets=create_assets_request
         )
