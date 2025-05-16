@@ -14,40 +14,40 @@ class Dashboard(JsonModel):
     variables: Optional[Dict[str, str]] = None
     """Variables for the dashboard"""
 
-class CreateTestPlanRequestBodyContent:
+class CreateTestPlanRequestBodyContent(JsonModel):
     """Represents the request body content for creating a test plan."""
 
     name: str
     """The name of the test plan."""
 
-    templateId: Optional[str]
+    templateId: Optional[str] = None
     """The ID of the template to use for the test plan."""
 
     state: str
     """The state of the test plan."""
 
-    description: Optional[str]
+    description: Optional[str] = None
     """A description of the test plan."""
 
-    assignedTo: Optional[str]
+    assignedTo: Optional[str] = None
     """The user or group assigned to the test plan."""
 
-    workOrderId: Optional[str]
+    workOrderId: Optional[str] = None
     """The work order ID associated with the test plan."""
 
-    estimatedDurationInSeconds: Optional[int]
+    estimatedDurationInSeconds: Optional[int] = None
     """The estimated duration of the test plan in seconds."""
 
     properties: Optional[Dict[str, str]] = None
     """Additional properties for the test plan."""
 
-    partNumber: str = ""
+    partNumber: str
     """The part number associated with the test plan."""
 
     dutId: Optional[str] = None
     """The Device Under Test (DUT) ID."""
 
-    testProgram: str = ""
+    testProgram: Optional[str] = None
     """The test program associated with the test plan."""
 
     systemFilter: Optional[str] = None
@@ -59,16 +59,13 @@ class CreateTestPlanRequestBodyContent:
     fileIdsFromTemplate: Optional[List[str]] = None
     """List of file IDs from the template."""
 
-    dashboardReference: Optional[Dashboard] = None
-    """Reference to a dashboard."""
-
     dashboard: Optional[Dashboard] = None
     """The dashboard associated with the test plan."""
 
     executionActions: Optional[List[ExecutionDefinition]] = None
     """List of execution actions for the test plan."""
 
-class CreateTestPlansRequest:
+class CreateTestPlansRequest(JsonModel):
     """Represents the request body for creating multiple test plans."""
 
     testPlans: List[CreateTestPlanRequestBodyContent]
@@ -77,7 +74,7 @@ class CreateTestPlansRequest:
     the content required to create an individual test plan.
     """
 
-class CreateTestPlansResponse:
+class CreateTestPlansResponse(JsonModel):
     """
     Represents the response from creating test plans, including successfully created,
     failed test plans, and any associated errors.

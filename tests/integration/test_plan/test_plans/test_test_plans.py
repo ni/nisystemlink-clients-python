@@ -14,16 +14,18 @@ def test_plan_create() -> CreateTestPlansRequest:
     """Fixture to create create test plan object."""
 
     testPlan = CreateTestPlansRequest(
-        testPlans = List[CreateTestPlanRequestBodyContent(
-            name="Sample Test Plan",
-            state="NEW",
-            partNumber="px40482"
-        )]
+        testPlans=[
+            CreateTestPlanRequestBodyContent(
+                name="Sample Test Plan",
+                state="NEW",
+                partNumber="px40482"
+            )
+        ]
     )
 
     return testPlan
 
-@pytest.fixtures(scope="class")
+@pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> TestPlansClient:
     """Fixture to create a TestPlansClient instance"""
     return TestPlansClient(enterprise_config)

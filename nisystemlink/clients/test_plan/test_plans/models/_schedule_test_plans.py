@@ -34,7 +34,7 @@ class ScheduleTestPlanRequestBodyContent(JsonModel):
 class ScheduleTestPlansRequest(JsonModel):
     """Represents the request body for scheduling multiple test plans."""
 
-    test_plans: List['ScheduleTestPlanRequestBodyContent']
+    test_plans: List[ScheduleTestPlanRequestBodyContent]
     """List of test plan scheduling content objects."""
 
     replace: Optional[bool] = None

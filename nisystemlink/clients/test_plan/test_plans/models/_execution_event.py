@@ -1,6 +1,7 @@
 from typing import List, Literal, Union
+from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-class ExecutionEventBase:
+class ExecutionEventBase(JsonModel):
     action: str
     """Base class for execution events, containing common attributes such as action."""
 

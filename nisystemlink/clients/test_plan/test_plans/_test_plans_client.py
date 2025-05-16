@@ -1,5 +1,7 @@
 from uplink import Field
+from typing import Optional
 from nisystemlink.clients.core._uplink._base_client import BaseClient
+from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._methods import get, post
 from nisystemlink.clients import core
 from .models import (
@@ -17,7 +19,7 @@ from .models import (
 )
 
 class TestPlansClient(BaseClient):
-    def __init__(self, client):
+    def __init__(self, configuration: Optional[HttpConfiguration] = None):
         """Initialize an instance.
 
         Args:
@@ -31,6 +33,7 @@ class TestPlansClient(BaseClient):
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
+
         super().__init__(configuration, base_path="/niworkorder/v1/")
 
     @get("testplans/{test_plan_id}")
