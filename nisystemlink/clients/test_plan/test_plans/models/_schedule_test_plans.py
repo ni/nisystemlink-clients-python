@@ -31,7 +31,7 @@ class ScheduleTestPlanRequestBodyContent(JsonModel):
     fixture_ids: Optional[List[str]] = None
     """(Optional) List of fixture identifiers associated with the test plan."""
 
-class ScheduleTestPlansRequestBody(JsonModel):
+class ScheduleTestPlansRequest(JsonModel):
     """Represents the request body for scheduling multiple test plans."""
 
     test_plans: List['ScheduleTestPlanRequestBodyContent']

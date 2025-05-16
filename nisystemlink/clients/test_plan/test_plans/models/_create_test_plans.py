@@ -68,7 +68,7 @@ class CreateTestPlanRequestBodyContent:
     executionActions: Optional[List[ExecutionDefinition]] = None
     """List of execution actions for the test plan."""
 
-class CreateTestPlansRequestBody:
+class CreateTestPlansRequest:
     """Represents the request body for creating multiple test plans."""
 
     testPlans: List[CreateTestPlanRequestBodyContent]

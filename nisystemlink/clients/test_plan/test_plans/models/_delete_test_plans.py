@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core import ApiError
 
-class DeleteTestPlansRequestBody:
+class DeleteTestPlansRequest:
     """Represents a request to delete one or more test plans."""
 
     ids: List[str]

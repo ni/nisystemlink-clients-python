@@ -3,7 +3,7 @@ from typing import List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from ._test_plan import TestPlan
 
-class QueryTestPlansRequestBody(JsonModel):
+class QueryTestPlansRequest(JsonModel):
     """
     Represents the request body for querying test plans.
     Allows filtering, sorting, and pagination of test plan results.

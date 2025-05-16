@@ -4,16 +4,16 @@ from nisystemlink.clients.core._uplink._methods import get, post
 from nisystemlink.clients import core
 from .models import (
     TestPlan,
-    CreateTestPlansRequestBody,
+    CreateTestPlansRequest,
     CreateTestPlansResponse,
-    ScheduleTestPlansRequestBody,
+    ScheduleTestPlansRequest,
     ScheduleTestPlansResponse,
-    QueryTestPlansRequestBody,
+    QueryTestPlansRequest,
     QueryTestPlansResponse,
-    UpdateTestPlansRequestBody,
+    UpdateTestPlansRequest,
     UpdateTestPlansResponse,
     DeleteTestPlansResponse,
-    DeleteTestPlansRequestBody
+    DeleteTestPlansRequest
 )
 
 class TestPlansClient(BaseClient):
@@ -46,7 +46,7 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("testplans", args=[Field("test_plan")])
-    def create_test_plan(self, test_plan: CreateTestPlansRequestBody) -> CreateTestPlansResponse:
+    def create_test_plan(self, test_plan: CreateTestPlansRequest) -> CreateTestPlansResponse:
         """Create a new test plan.
 
         Args:
@@ -58,7 +58,7 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("delete-testplans", args=[Field("test_plan_ids")])
-    def delete_test_plans(self, test_plan_ids: DeleteTestPlansRequestBody) -> DeleteTestPlansResponse:
+    def delete_test_plans(self, test_plan_ids: DeleteTestPlansRequest) -> DeleteTestPlansResponse:
         """Delete test plans by IDs.
 
         Args:
@@ -70,7 +70,7 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("query-testplans", args=[Field("query")])
-    def query_test_plans(self, query: QueryTestPlansRequestBody) -> QueryTestPlansResponse:
+    def query_test_plans(self, query: QueryTestPlansRequest) -> QueryTestPlansResponse:
         """Query test plans.
 
         Args:
@@ -82,7 +82,7 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("schedule-testplans", args=[Field("schedule")])
-    def schedule_test_plan(self, schedule: ScheduleTestPlansRequestBody) -> ScheduleTestPlansResponse:
+    def schedule_test_plan(self, schedule: ScheduleTestPlansRequest) -> ScheduleTestPlansResponse:
         """Schedule a test plan.
 
         Args:
@@ -94,7 +94,7 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("update-testplans", args=[Field("test_plans")])
-    def update_test_plan(self, test_plans: UpdateTestPlansRequestBody) -> UpdateTestPlansResponse:
+    def update_test_plan(self, test_plans: UpdateTestPlansRequest) -> UpdateTestPlansResponse:
         """Update a test plan.
 
         Args:

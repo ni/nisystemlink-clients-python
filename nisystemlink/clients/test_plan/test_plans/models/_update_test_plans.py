@@ -44,7 +44,7 @@ class UpdateTestPlanRequestBodyContent(JsonModel):
     """List of file IDs from the template to associate with the test plan."""
 
 
-class UpdateTestPlansRequestBody(JsonModel):
+class UpdateTestPlansRequest(JsonModel):
     """Represents the request body for updating multiple test plans."""
 
     test_plans: List[UpdateTestPlanRequestBodyContent]
