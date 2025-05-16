@@ -11,8 +11,9 @@ from ._asset import (
     SelfCalibration,
     TemperatureSensor,
 )
-from ._asset_create import AssetCreateRequest, AssetsCreatePartialSuccessResponse
-from ._asset_delete import DeleteAssetsResponse
-from ._query_assets import QueryAssetRequest
+from ._asset_create_request import AssetCreateRequest
+from ._asset_create_partial_success_response import AssetsCreatePartialSuccessResponse
+from ._asset_delete_response import DeleteAssetsResponse
+from ._query_assets_request import QueryAssetRequest
 
 # flake8: noqa

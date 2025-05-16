@@ -21,8 +21,8 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
 @pytest.fixture(scope="class")
-def asset_create() -> List[AssetCreateRequest]:
-    """Fixture to create asset create object."""
+def create_assets_request() -> List[AssetCreateRequest]:
+    """Fixture to create an AssetCreateRequest object."""
     assets = [
         AssetCreateRequest(
             model_name="NI PXIe-6368",
@@ -65,7 +65,7 @@ def asset_create() -> List[AssetCreateRequest]:
             file_ids=["608a5684800e325b48837c2a"],
             supports_self_test=True,
             supports_reset=True,
-            partNumber="A1234 B5",
+            part_number="A1234 B5",
         )
     ]
 
@@ -83,11 +83,11 @@ def client(enterprise_config: HttpConfiguration) -> AssetManagementClient:
 class TestAssetManagement:
 
     def test__create_asset__returns_created_asset(
-        self, client: AssetManagementClient, asset_create: List[AssetCreateRequest]
+        self, client: AssetManagementClient, create_assets_request: List[AssetCreateRequest]
     ):
-        asset_create[0].model_number = 1001
+        create_assets_request[0].model_number = 1001
         create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
-            assets=asset_create
+            assets=create_assets_request
         )
         asset_id = (
             create_response.assets[0].id
@@ -106,11 +106,11 @@ class TestAssetManagement:
         assert asset_id is not None
 
     def test__delete_asset__returns_deleted_asset(
-        self, client: AssetManagementClient, asset_create: List[AssetCreateRequest]
+        self, client: AssetManagementClient, create_assets_request: List[AssetCreateRequest]
     ):
-        asset_create[0].model_number = 1002
+        create_assets_request[0].model_number = 1002
         create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
-            assets=asset_create
+            assets=create_assets_request
         )
         asset_id = (
             create_response.assets[0].id
@@ -128,11 +128,11 @@ class TestAssetManagement:
         assert delete_response.ids[0] == asset_id
 
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
-        self, client: AssetManagementClient, asset_create: List[AssetCreateRequest]
+        self, client: AssetManagementClient, create_assets_request: List[AssetCreateRequest]
     ):
-        asset_create[0].model_number = 1003
+        create_assets_request[0].model_number = 1003
         create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
-            assets=asset_create
+            assets=create_assets_request
         )
         asset_id = (
             create_response.assets[0].id
