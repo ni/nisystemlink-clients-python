@@ -87,7 +87,7 @@ class TestAssetManagement:
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
         self, client: AssetManagementClient, asset_create: List[AssetCreateRequest]
     ):
-        asset_create[0].model_number = 2005
+        asset_create[0].model_number = 1001
         create_assets_response: AssetsCreatePartialSuccessResponse = (
             client.create_assets(assets=asset_create)
         )
@@ -98,6 +98,8 @@ class TestAssetManagement:
         )
 
         response: AssetsResponse = client.query_assets(query=query_assets_request)
+
+        client.delete_assets(ids=[asset_id])
 
         assert response is not None
         if response.assets:
