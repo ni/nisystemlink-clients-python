@@ -66,10 +66,13 @@ class AssetManagementClient(BaseClient):
     @post("delete-assets", args=[Field("ids")])
     def delete_assets(self, ids: List[str]) -> models.DeleteAssetsResponse:
         """Delete Assets.
+
         Args:
             assets: an arry of IDs of the assets to delete all information for.
+
         Returns:
             Response object containing the ids of the assets which were deleted.
+
         Raises:
             ApiException: if unable to communicate with the `nispec` service or if there are invalid
             arguments.

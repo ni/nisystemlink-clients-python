@@ -255,7 +255,7 @@ class Asset(JsonModel):
     self_calibration: Optional[SelfCalibration] = None
     """Gets or sets the last self-calibration of the asset."""
 
-    is_ni_asset: bool
+    is_n_i_asset: bool
     """Gets or sets whether this asset is an NI asset (true) or a third-party asset (false)."""
 
     id: Optional[str] = None
@@ -288,10 +288,10 @@ class Asset(JsonModel):
     file_ids: Optional[List[str]] = None
     """Gets or sets all files linked to the asset."""
 
-    supports_self_test: bool
+    supports_self_test: Optional[bool] = None
     """Gets or sets whether the asset supports self-test."""
 
-    supports_reset: bool
+    supports_reset: Optional[bool] = None
     """Gets or sets whether the asset supports reset."""
 
     part_number: Optional[str] = None

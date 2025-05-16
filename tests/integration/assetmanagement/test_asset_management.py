@@ -84,24 +84,78 @@ def client(enterprise_config: HttpConfiguration) -> AssetManagementClient:
 @pytest.mark.enterprise
 class TestAssetManagement:
 
-    def test__query_assets_with_take_value__returns_specific_number_of_assets(
+    def test__create_asset__returns_created_asset(
         self, client: AssetManagementClient, asset_create: List[AssetCreateRequest]
     ):
         asset_create[0].model_number = 1001
-        create_assets_response: AssetsCreatePartialSuccessResponse = (
-            client.create_assets(assets=asset_create)
+        create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
+            assets=asset_create
         )
-        if create_assets_response.assets and create_assets_response.assets[0].id:
-            asset_id = create_assets_response.assets[0].id
-        query_assets_request = QueryAssetRequest(
-            ids=[asset_id], skip=0, take=1, descending=False, calibratable_only=False, returnCount=False
+        asset_id = (
+            create_response.assets[0].id
+            if create_response.assets and create_response.assets[0].id
+            else None
         )
 
-        response: AssetsResponse = client.query_assets(query=query_assets_request)
+        assert asset_id is not None
+
+        client.delete_assets(ids=[asset_id])
+
+        assert create_response is not None
+        assets = create_response.assets or []
+        assert len(assets) == 1
+        asset_id = assets[0].id
+        assert asset_id is not None
+
+    def test__delete_asset__returns_deleted_asset(
+        self, client: AssetManagementClient, asset_create: List[AssetCreateRequest]
+    ):
+        asset_create[0].model_number = 1002
+        create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
+            assets=asset_create
+        )
+        asset_id = (
+            create_response.assets[0].id
+            if create_response.assets and create_response.assets[0].id
+            else None
+        )
+
+        assert asset_id is not None
+
+        delete_response = client.delete_assets(ids=[asset_id])
+
+        assert delete_response is not None
+        assert delete_response.ids is not None
+        assert len(delete_response.ids) == 1
+        assert delete_response.ids[0] == asset_id
+
+    def test__query_assets_with_take_value__returns_specific_number_of_assets(
+        self, client: AssetManagementClient, asset_create: List[AssetCreateRequest]
+    ):
+        asset_create[0].model_number = 1003
+        create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
+            assets=asset_create
+        )
+        asset_id = (
+            create_response.assets[0].id
+            if create_response.assets and create_response.assets[0].id
+            else None
+        )
+
+        assert asset_id is not None
+
+        query_request = QueryAssetRequest(
+            ids=[asset_id],
+            skip=0,
+            take=1,
+            descending=False,
+            calibratable_only=False,
+            returnCount=True,
+        )
+        response: AssetsResponse = client.query_assets(query=query_request)
 
         client.delete_assets(ids=[asset_id])
 
         assert response is not None
-        if response.assets:
-            assert len(response.assets) == 1
+        assert response.assets is not None and len(response.assets) == 1
         assert response.total_count >= 1
