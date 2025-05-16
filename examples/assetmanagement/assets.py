@@ -8,7 +8,7 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetPresenceWithSystemConnection,
     AssetType,
     ExternalCalibration,
-    QueryAssetRequest,
+    QueryAssetsRequest,
     SelfCalibration,
     TemperatureSensor,
 )
@@ -71,10 +71,12 @@ create_assets_request = [
 # Create an asset.
 create_assets_response = client.create_assets(assets=create_assets_request)
 
-created_asset_id = create_assets_response.assets[0].id
+created_asset_id = None
+if create_assets_response.assets and len(create_assets_response.assets) > 0:
+    created_asset_id = str(create_assets_response.assets[0].id)
 
 # Query assets using id.
-query_asset_request = QueryAssetRequest(
+query_asset_request = QueryAssetsRequest(
     ids=[created_asset_id],
     skip=0,
     take=1,
@@ -82,7 +84,7 @@ query_asset_request = QueryAssetRequest(
     calibratable_only=False,
     returnCount=False,
 )
-query_response = client.query_assets(query_asset_request)
 
 # Delete the created asset.
-client.delete_assets(ids=[created_asset_id])
+if created_asset_id is not None:
+    client.delete_assets(ids=[created_asset_id])

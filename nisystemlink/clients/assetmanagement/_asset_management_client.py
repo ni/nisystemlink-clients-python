@@ -48,14 +48,17 @@ class AssetManagementClient(BaseClient):
         ...
 
     @post("query-assets")
-    def query_assets(self, query: models.QueryAssetRequest) -> models.AssetsResponse:
+    def query_assets(
+        self, query: models.QueryAssetsRequest
+    ) -> models.QueryAssetsResponse:
         """Query Assets.
 
         Args:
             query: Object containing filters to apply when retrieving assets.
 
         Returns:
-            AssetsResponse: Assets Response containing the assets satisfying the query and the total count of matching assets.
+            AssetsResponse: Assets Response containing the assets satisfying the query and
+            the total count of matching assets.
 
         Raises:
             ApiException: If unable to communicate with the `nispec` service or if there are invalid

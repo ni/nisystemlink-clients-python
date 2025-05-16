@@ -1,8 +1,7 @@
-from enum import Enum
+from enum import auto, Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from enum import auto
 
 
 class OrderBy(Enum):
@@ -11,7 +10,7 @@ class OrderBy(Enum):
     LAST_UPDATED_TIMESTAMP = auto()
 
 
-class QueryAssetRequest(JsonModel):
+class QueryAssetsRequest(JsonModel):
     """Model for object containing filters to apply when retrieving assets."""
 
     ids: Optional[List[str]] = None

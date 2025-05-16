@@ -2,7 +2,9 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from . import Asset, AssetCreateRequest
+
+from ._asset import Asset
+from ._asset_create_request import AssetCreateRequest
 
 
 class AssetsCreatePartialSuccessResponse(JsonModel):
