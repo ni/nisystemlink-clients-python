@@ -6,6 +6,7 @@ from ._workflow_definition import WorkflowDefinition
 from ._execution_event import ExecutionEvent
 from ...models._execution_definition import ExecutionDefinition
 
+
 class TestPlan(JsonModel):
     """Contains information about a test plan."""
 
@@ -14,7 +15,7 @@ class TestPlan(JsonModel):
 
     templateId: Optional[str] = None
     """The identifier of the template used to create the test plan."""
-    
+
     name: str
     """The name of the test plan."""
 

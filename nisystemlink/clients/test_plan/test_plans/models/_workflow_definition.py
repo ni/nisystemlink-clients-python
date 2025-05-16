@@ -2,6 +2,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from ._state import State
 from ...models._execution_definition import ExecutionDefinition
 
+
 class ActionTransitionDefinition(JsonModel):
     """Represents a transition between workflow states triggered by a specific action."""
 
@@ -17,6 +18,7 @@ class ActionTransitionDefinition(JsonModel):
     showInUI: bool
     """Indicates whether this transition should be visible in the user interface."""
 
+
 class SubstateDefinition(JsonModel):
     """Represents a substate within a workflow definition."""
 
@@ -28,6 +30,7 @@ class SubstateDefinition(JsonModel):
 
     availableActions: list[ActionTransitionDefinition]
     """List of actions that can be performed from this substate."""
+
 
 class StateDefinition(JsonModel):
     """Represents the definition of a workflow state within a test plan."""
@@ -44,6 +47,7 @@ class StateDefinition(JsonModel):
     substates: list[SubstateDefinition]
     """A list of substates defined for this state."""
 
+
 class ActionDefinition(JsonModel):
     """Represents the definition of an action within a workflow."""
 
@@ -55,6 +59,7 @@ class ActionDefinition(JsonModel):
 
     executionAction: ExecutionDefinition
     """The execution details associated with the action."""
+
 
 class WorkflowDefinition(JsonModel):
     """Contains information about a workflow definition."""

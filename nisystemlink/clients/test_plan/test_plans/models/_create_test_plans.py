@@ -5,6 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from ...models._execution_definition import ExecutionDefinition
 from ._test_plan import TestPlan
 
+
 class Dashboard(JsonModel):
     """Represents a dashboard reference."""
 
@@ -13,6 +14,7 @@ class Dashboard(JsonModel):
 
     variables: Optional[Dict[str, str]] = None
     """Variables for the dashboard"""
+
 
 class CreateTestPlanRequestBodyContent(JsonModel):
     """Represents the request body content for creating a test plan."""
@@ -65,6 +67,7 @@ class CreateTestPlanRequestBodyContent(JsonModel):
     executionActions: Optional[List[ExecutionDefinition]] = None
     """List of execution actions for the test plan."""
 
+
 class CreateTestPlansRequest(JsonModel):
     """Represents the request body for creating multiple test plans."""
 
@@ -73,6 +76,7 @@ class CreateTestPlansRequest(JsonModel):
     A list of test plan creation request bodies. Each item in the list contains 
     the content required to create an individual test plan.
     """
+
 
 class CreateTestPlansResponse(JsonModel):
     """

@@ -3,6 +3,7 @@ from typing import List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from ._test_plan import TestPlan
 
+
 class QueryTestPlansRequest(JsonModel):
     """
     Represents the request body for querying test plans.
@@ -26,6 +27,7 @@ class QueryTestPlansRequest(JsonModel):
 
     continuation_token: Optional[str] = None
     """A token to retrieve the next page of results for paginated queries."""
+
 
 class QueryTestPlansResponse(JsonModel):
     """

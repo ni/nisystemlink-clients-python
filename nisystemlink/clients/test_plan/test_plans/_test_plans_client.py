@@ -15,8 +15,9 @@ from .models import (
     UpdateTestPlansRequest,
     UpdateTestPlansResponse,
     DeleteTestPlansResponse,
-    DeleteTestPlansRequest
+    DeleteTestPlansRequest,
 )
+
 
 class TestPlansClient(BaseClient):
     def __init__(self, configuration: Optional[HttpConfiguration] = None):
@@ -48,8 +49,10 @@ class TestPlansClient(BaseClient):
         """
         ...
 
-    @post("testplans", args=[Field("testplans")])
-    def create_test_plans(self, testplans: CreateTestPlansRequest) -> CreateTestPlansResponse:
+    @post("testplans")
+    def create_test_plans(
+        self, testplans: CreateTestPlansRequest
+    ) -> CreateTestPlansResponse:
         """Create a new test plan.
 
         Args:
@@ -85,7 +88,9 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("schedule-testplans", args=[Field("schedule")])
-    def schedule_test_plan(self, schedule: ScheduleTestPlansRequest) -> ScheduleTestPlansResponse:
+    def schedule_test_plan(
+        self, schedule: ScheduleTestPlansRequest
+    ) -> ScheduleTestPlansResponse:
         """Schedule a test plan.
 
         Args:
@@ -97,7 +102,9 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("update-testplans", args=[Field("test_plans")])
-    def update_test_plan(self, test_plans: UpdateTestPlansRequest) -> UpdateTestPlansResponse:
+    def update_test_plan(
+        self, test_plans: UpdateTestPlansRequest
+    ) -> UpdateTestPlansResponse:
         """Update a test plan.
 
         Args:

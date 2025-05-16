@@ -4,6 +4,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core import ApiError
 from . import TestPlan
 
+
 class UpdateTestPlanRequestBodyContent(JsonModel):
     """Represents the content for updating a single test plan."""
 

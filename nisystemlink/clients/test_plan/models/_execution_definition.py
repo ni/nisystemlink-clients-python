@@ -1,10 +1,13 @@
-from typing import Union
+from typing import Union, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+
 class Job(JsonModel):
     """
     Represents a job to be executed, including its functions, arguments, and metadata.
     """
+
     functions: list[str]
     """List of function names to execute"""
 
@@ -14,14 +17,16 @@ class Job(JsonModel):
     metadata: dict[str, object]
     """Additional metadata for the job"""
 
+
 class NotebookExecutionDefinition(JsonModel):
     """
     Defines the execution of a notebook.
     """
+
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: str = 'NOTEBOOK'
+    type: str = "NOTEBOOK"
     """Type of execution, default is 'NOTEBOOK'"""
 
     notebookId: str
@@ -32,26 +37,29 @@ class ManualExecutionDefinition(JsonModel):
     """
     Represents a manual execution definition.
     """
+
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: str = 'MANUAL'
+    type: str = "MANUAL"
     """Type of execution, default is 'MANUAL'"""
+
 
 class JobExecutionDefinition(JsonModel):
     """
     Defines the execution of one or more jobs.
     """
+
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: str = 'JOB'
+    type: str = "JOB"
     """Type of execution, default is 'JOB'"""
 
     jobs: list[Job]
     """List of jobs to execute"""
 
-    systemId: str | None = None
+    systemId:  Optional[str] = None
     """Optional system ID where jobs will run"""
 
 
@@ -59,10 +67,11 @@ class ScheduleExecutionDefinition(JsonModel):
     """
     Represents a scheduled execution definition.
     """
+
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: str = 'SCHEDULE'
+    type: str = "SCHEDULE"
     """Type of execution, default is 'SCHEDULE'"""
 
 
@@ -70,21 +79,25 @@ class UnscheduleExecutionDefinition(JsonModel):
     """
     Represents an unscheduled execution definition.
     """
+
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: str = 'UNSCHEDULE'
+    type: Optional[str] = "UNSCHEDULE"
     """Type of execution, default is 'UNSCHEDULE'"""
+
 
 class NoneExecutionDefinition(JsonModel):
     """
     Represents a definition where no execution is specified.
     """
+
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: str = 'None'
+    type: Optional[str] = "None"
     """Type of execution, default is 'None'"""
+
 
 ExecutionDefinition = Union[
     NotebookExecutionDefinition,
@@ -92,5 +105,5 @@ ExecutionDefinition = Union[
     JobExecutionDefinition,
     NoneExecutionDefinition,
     ScheduleExecutionDefinition,
-    UnscheduleExecutionDefinition
+    UnscheduleExecutionDefinition,
 ]
