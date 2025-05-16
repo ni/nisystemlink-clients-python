@@ -48,20 +48,20 @@ class TestPlansClient(BaseClient):
         """
         ...
 
-    @post("testplans", args=[Field("test_plan")])
-    def create_test_plan(self, test_plan: CreateTestPlansRequest) -> CreateTestPlansResponse:
+    @post("testplans", args=[Field("testplans")])
+    def create_test_plans(self, testplans: CreateTestPlansRequest) -> CreateTestPlansResponse:
         """Create a new test plan.
 
         Args:
-            test_plan: The test plan to create.
+            test_plan: The test plans to create.
 
         Returns:
             The created test plan object.
         """
         ...
 
-    @post("delete-testplans", args=[Field("test_plan_ids")])
-    def delete_test_plans(self, test_plan_ids: DeleteTestPlansRequest) -> DeleteTestPlansResponse:
+    @post("delete-testplans", args=[Field("ids")])
+    def delete_test_plans(self, ids: DeleteTestPlansRequest) -> DeleteTestPlansResponse:
         """Delete test plans by IDs.
 
         Args:

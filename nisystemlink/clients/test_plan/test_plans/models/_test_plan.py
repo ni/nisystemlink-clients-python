@@ -12,7 +12,7 @@ class TestPlan(JsonModel):
     id: str
     """The unique identifier of the test plan."""
 
-    templateId: Optional[str]
+    templateId: Optional[str] = None
     """The identifier of the template used to create the test plan."""
     
     name: str
@@ -21,19 +21,19 @@ class TestPlan(JsonModel):
     state: State
     """The current state of the test plan."""
 
-    substate: Optional[str]
+    substate: Optional[str] = None
     """The substate of the test plan, if any."""
 
-    description: Optional[str]
+    description: Optional[str] = None
     """The description of the test plan."""
 
-    assignedTo: Optional[str]
+    assignedTo: Optional[str] = None
     """The user or group assigned to the test plan."""
 
-    workOrderId: Optional[str]
+    workOrderId: Optional[str] = None
     """The identifier of the associated work order."""
 
-    workOrderName: Optional[str]
+    workOrderName: Optional[str] = None
     """The name of the associated work order."""
 
     workspace: str
@@ -57,43 +57,43 @@ class TestPlan(JsonModel):
     partNumber: str
     """The part number associated with the test plan."""
 
-    dutId: Optional[str]
+    dutId: Optional[str] = None
     """The identifier of the device under test (DUT)."""
 
-    testProgram: Optional[str]
+    testProgram: Optional[str] = None
     """The test program associated with the test plan."""
 
-    systemId: Optional[str]
+    systemId: Optional[str] = None
     """The identifier of the system used for the test plan."""
 
-    fixtureIds: List[str]
+    fixtureIds: List[str] = None
     """The list of fixture identifiers associated with the test plan."""
 
-    systemFilter: Optional[str]
+    systemFilter: Optional[str] = None
     """The filter used to select systems for the test plan."""
 
-    plannedStartDateTime: Optional[str]
+    plannedStartDateTime: Optional[str] = None
     """The planned start date and time for the test plan."""
 
-    estimatedEndDateTime: Optional[str]
+    estimatedEndDateTime: Optional[str] = None
     """The estimated end date and time for the test plan."""
 
-    estimatedDurationInSeconds: Optional[float]
+    estimatedDurationInSeconds: Optional[float] = None
     """The estimated duration of the test plan in seconds."""
 
     fileIdsFromTemplate: List[str]
     """The list of file identifiers inherited from the template."""
 
-    executionActions: Optional[ExecutionDefinition]
+    executionActions: Optional[ExecutionDefinition] = None
     """The execution actions defined for the test plan."""
 
-    executionHistory: Optional[ExecutionEvent]
+    executionHistory: Optional[ExecutionEvent] = None
     """The execution history of the test plan."""
 
-    dashboardUrl: Optional[Dict[str, str]]
+    dashboardUrl: Optional[Dict[str, str]] = None
     """The URLs for dashboards related to the test plan."""
 
-    dashboard: Optional[Dict[str, str]]
+    dashboard: Optional[Dict[str, str]] = None
     """The dashboard data related to the test plan."""
 
     workflow: WorkflowDefinition
