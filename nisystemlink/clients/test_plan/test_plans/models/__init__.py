@@ -1,4 +1,4 @@
-from ._create_test_plans import CreateTestPlansRequest, CreateTestPlansResponse
+from ._create_test_plans import CreateTestPlansRequest, CreateTestPlanRequestBodyContent, CreateTestPlansResponse
 from ._delete_test_plans import DeleteTestPlansRequest, DeleteTestPlansResponse
 from ._execution_event import ExecutionEvent
 from ._query_test_plans import QueryTestPlansRequest, QueryTestPlansResponse

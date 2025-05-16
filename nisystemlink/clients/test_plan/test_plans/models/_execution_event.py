@@ -12,7 +12,7 @@ class ExecutionEventBase:
 
 
 class NotebookExecutionEvent(ExecutionEventBase):
-    type: Literal['NOTEBOOK']
+    type: str = 'NOTEBOOK'
     """Represents an execution event triggered by a notebook."""
 
     executionId: str
@@ -20,7 +20,7 @@ class NotebookExecutionEvent(ExecutionEventBase):
 
 
 class JobExecutionEvent(ExecutionEventBase):
-    type: Literal['JOB']
+    type: str = 'JOB'
     """Represents an execution event triggered by a job."""
 
     jobIds: List[str]
@@ -28,7 +28,7 @@ class JobExecutionEvent(ExecutionEventBase):
 
 
 class ManualExecutionEvent(ExecutionEventBase):
-    type: Literal['MANUAL']
+    type: str = 'MANUAL'
     """Represents an execution event triggered manually. Includes only the type identifier."""
 
 ExecutionEvent = Union[NotebookExecutionEvent, ManualExecutionEvent, JobExecutionEvent]
