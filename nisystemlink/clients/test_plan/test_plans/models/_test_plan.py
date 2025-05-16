@@ -85,10 +85,10 @@ class TestPlan(JsonModel):
     fileIdsFromTemplate: List[str]
     """The list of file identifiers inherited from the template."""
 
-    executionActions: Optional[ExecutionDefinition] = None
+    # executionActions: Optional[ExecutionDefinition] = None
     """The execution actions defined for the test plan."""
 
-    executionHistory: Optional[ExecutionEvent] = None
+    # executionHistory: Optional[ExecutionEvent] = None
     """The execution history of the test plan."""
 
     dashboardUrl: Optional[Dict[str, str]] = None

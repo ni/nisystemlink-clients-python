@@ -63,7 +63,7 @@ class TestPlansClient(BaseClient):
         """
         ...
 
-    @post("delete-testplans", args=[Field("ids")])
+    @post("delete-testplans")
     def delete_test_plans(self, ids: DeleteTestPlansRequest) -> DeleteTestPlansResponse:
         """Delete test plans by IDs.
 
@@ -87,7 +87,7 @@ class TestPlansClient(BaseClient):
         """
         ...
 
-    @post("schedule-testplans", args=[Field("schedule")])
+    @post("schedule-testplans")
     def schedule_test_plan(
         self, schedule: ScheduleTestPlansRequest
     ) -> ScheduleTestPlansResponse:
@@ -101,7 +101,7 @@ class TestPlansClient(BaseClient):
         """
         ...
 
-    @post("update-testplans", args=[Field("test_plans")])
+    @post("update-testplans")
     def update_test_plan(
         self, test_plans: UpdateTestPlansRequest
     ) -> UpdateTestPlansResponse:

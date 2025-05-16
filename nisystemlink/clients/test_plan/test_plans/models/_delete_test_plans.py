@@ -1,9 +1,11 @@
 from typing import List, Optional
 
+from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 from nisystemlink.clients.core import ApiError
 
 
-class DeleteTestPlansRequest:
+class DeleteTestPlansRequest(JsonModel):
     """Represents a request to delete one or more test plans."""
 
     ids: List[str]
