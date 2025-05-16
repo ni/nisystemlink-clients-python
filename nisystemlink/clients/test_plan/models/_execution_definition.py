@@ -1,14 +1,14 @@
-from typing import Union
+from typing import List, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 class Job(JsonModel):
     """
     Represents a job to be executed, including its functions, arguments, and metadata.
     """
-    functions: list[str]
+    functions: List[str]
     """List of function names to execute"""
 
-    arguments: list[list[object]]
+    arguments: List[List[object]]
     """List of argument lists for each function"""
 
     metadata: dict[str, object]
@@ -48,7 +48,7 @@ class JobExecutionDefinition(JsonModel):
     type: str = 'JOB'
     """Type of execution, default is 'JOB'"""
 
-    jobs: list[Job]
+    jobs: List[Job]
     """List of jobs to execute"""
 
     systemId: str | None = None
