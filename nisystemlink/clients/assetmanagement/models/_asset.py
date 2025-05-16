@@ -3,64 +3,45 @@ from enum import Enum
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from enum import auto
 
 
 class AssetBusType(Enum):
     """All supported bus types for an asset."""
 
-    BUILT_IN_SYSTEM = "BUILT_IN_SYSTEM"
-
-    PCI_PXI = "PCI_PXI"
-
-    USB = "USB"
-
-    GPIB = "GPIB"
-
-    VXI = "VXI"
-
-    SERIAL = "SERIAL"
-
-    TCP_IP = "TCP_IP"
-
-    CRIO = "CRIO"
-
-    SCXI = "SCXI"
-
-    CDAQ = "CDAQ"
-
-    SWITCH_BLOCK = "SWITCH_BLOCK"
-
-    SCC = "SCC"
-
-    FIRE_WIRE = "FIRE_WIRE"
-
-    ACCESSORY = "ACCESSORY"
-
-    CAN = "CAN"
-
-    SWITCH_BLOCK_DEVICE = "SWITCH_BLOCK_DEVICE"
-
-    SLSC = "SLSC"
+    BUILT_IN_SYSTEM = auto()
+    PCI_PXI = auto()
+    USB = auto()
+    GPIB = auto()
+    VXI = auto()
+    SERIAL = auto()
+    TCP_IP = auto()
+    CRIO = auto()
+    SCXI = auto()
+    CDAQ = auto()
+    SWITCH_BLOCK = auto()
+    SCC = auto()
+    FIRE_WIRE = auto()
+    ACCESSORY = auto()
+    CAN = auto()
+    SWITCH_BLOCK_DEVICE = auto()
+    SLSC = auto()
 
 
 class AssetType(Enum):
     """All supported asset types."""
 
-    GENERIC = "GENERIC"
-
-    DEVICE_UNDER_TEST = "DEVICE_UNDER_TEST"
-
-    FIXTURE = "FIXTURE"
-
-    SYSTEM = "SYSTEM"
+    GENERIC = auto()
+    DEVICE_UNDER_TEST = auto()
+    FIXTURE = auto()
+    SYSTEM = auto()
 
 
 class AssetDiscoveryType(Enum):
     """All discovery types."""
 
-    MANUAL = "MANUAL"
-
-    AUTOMATIC = "AUTOMATIC"
+    MANUAL = auto()
+    AUTOMATIC = auto()
 
 
 class TemperatureSensor(JsonModel):
@@ -76,13 +57,10 @@ class TemperatureSensor(JsonModel):
 class AssetPresence(Enum):
     """Status of an asset's presence in a system."""
 
-    INITIALIZING = "INITIALIZING"
-
-    UNKNOWN = "UNKNOWN"
-
-    NOT_PRESENT = "NOT_PRESENT"
-
-    PRESENT = "PRESENT"
+    INITIALIZING = auto()
+    UNKNOWN = auto()
+    NOT_PRESENT = auto()
+    PRESENT = auto()
 
 
 class SystemConnection(Enum):
@@ -92,21 +70,14 @@ class SystemConnection(Enum):
     [CONNECTED_UPDATE_PENDING, CONNECTED_UPDATE_SUCCESSFUL, CONNECTED_UPDATE_FAILED] are equivalent to CONNECTED.
     """
 
-    APPROVED = "APPROVED"
-
-    DISCONNECTED = "DISCONNECTED"
-
-    CONNECTED_UPDATE_PENDING = "CONNECTED_UPDATE_PENDING"
-
-    CONNECTED = "CONNECTED"
-
-    CONNECTED_UPDATE_FAILED = "CONNECTED_UPDATE_FAILED"
-
-    UNSUPPORTED = "UNSUPPORTED"
-
-    ACTIVATED = "ACTIVATED"
-
-    CONNECTED_UPDATE_SUCCESSFUL = "CONNECTED_UPDATE_SUCCESSFUL"
+    APPROVED = auto()
+    DISCONNECTED = auto()
+    CONNECTED_UPDATE_PENDING = auto()
+    CONNECTED = auto()
+    CONNECTED_UPDATE_FAILED = auto()
+    UNSUPPORTED = auto()
+    ACTIVATED = auto()
+    CONNECTED_UPDATE_SUCCESSFUL = auto()
 
 
 class AssetPresenceWithSystemConnection(JsonModel):
@@ -155,21 +126,17 @@ class SelfCalibration(JsonModel):
 class CalibrationStatus(Enum):
     """Calibration category the asset belongs to based on the next due calibration date."""
 
-    OK = "OK"
-
-    APPROACHING_RECOMMENDED_DUE_DATE = "APPROACHING_RECOMMENDED_DUE_DATE"
-
-    PAST_RECOMMENDED_DUE_DATE = "PAST_RECOMMENDED_DUE_DATE"
-
-    OUT_FOR_CALIBRATION = "OUT_FOR_CALIBRATION"
+    OK = auto()
+    APPROACHING_RECOMMENDED_DUE_DATE = auto()
+    PAST_RECOMMENDED_DUE_DATE = auto()
+    OUT_FOR_CALIBRATION = auto()
 
 
 class CalibrationMode(Enum):
     """Whether SystemLink automatically discovered the calibration data for an asset or if it was manually entered."""
 
-    AUTOMATIC = "AUTOMATIC"
-
-    MANUAL = "MANUAL"
+    AUTOMATIC = auto()
+    MANUAL = auto()
 
 
 class ExternalCalibration(JsonModel):

@@ -15,6 +15,12 @@ from nisystemlink.clients.assetmanagement.models import (
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
+server_configuration = HttpConfiguration(
+    server_uri="https://yourserver.yourcompany.com",
+    api_key="YourAPIKeyGeneratedFromSystemLink",
+)
+client = AssetManagementClient(configuration=server_configuration)
+
 def create_an_asset():
     """Create an example asset in your server."""
     assets = [
@@ -67,26 +73,21 @@ def create_an_asset():
     response = client.create_assets(assets=assets)
     return response
 
-
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
-client = AssetManagementClient(configuration=server_configuration)
-
 # Create an asset.
-createAssetResponse = create_an_asset()
+create_assets_request = create_an_asset()
+
+created_asset_id = create_assets_request.assets[0].id
 
 # Query assets using id.
-queryRequest = QueryAssetRequest(
-    ids=[createAssetResponse.assets[0].id],
+query_asset_request = QueryAssetRequest(
+    ids=[created_asset_id],
     skip=0,
     take=1,
     descending=False,
     calibratable_only=False,
     returnCount=False,
 )
-queryResponse = client.query_assets(queryRequest)
+query_response = client.query_assets(query_asset_request)
 
 # Delete the created asset.
-client.delete_assets(ids=[createAssetResponse.assets[0].id])
+client.delete_assets(ids=[created_asset_id])

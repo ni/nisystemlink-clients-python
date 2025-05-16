@@ -2,12 +2,13 @@ from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from enum import auto
 
 
 class OrderBy(Enum):
     """Field by which assets can be ordered/sorted. If OrderBy is not specified, no sorting will applied."""
 
-    LAST_UPDATED_TIMESTAMP = "LAST_UPDATED_TIMESTAMP"
+    LAST_UPDATED_TIMESTAMP = auto()
 
 
 class QueryAssetRequest(JsonModel):
@@ -22,10 +23,10 @@ class QueryAssetRequest(JsonModel):
     all properties will be returned.
     """
 
-    skip: int
+    skip: Optional[int] = None
     """Gets or sets the number of resources to skip in the result when paging."""
 
-    take: int
+    take: Optional[int] = None
     """Gets or sets how many resources to return in the result, or -1 to use a default defined by the service."""
 
     order_by: Optional[OrderBy] = None
@@ -34,10 +35,10 @@ class QueryAssetRequest(JsonModel):
     descending: Optional[bool] = None
     """Whether to return the assets in the descending order. If OrderBy is not specified, this property is ignored."""
 
-    calibratable_only: bool
+    calibratable_only: Optional[bool] = None
     """Gets or sets whether to generate a report with calibrated asset specific columns:"""
 
-    returnCount: bool
+    returnCount: Optional[bool] = None
     """
     Gets or sets Whether to return the total number of assets which match the provided filter,
     disregarding the take value.

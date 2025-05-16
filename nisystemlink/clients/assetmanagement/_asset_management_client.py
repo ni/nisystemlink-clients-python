@@ -39,7 +39,7 @@ class AssetManagementClient(BaseClient):
             assets: an array of assets that should be created.
 
         Returns:
-            Response object with array of created assets and array of failed assets.
+            AssetsCreatePartialSuccessResponse: Array of created assets and array of failed.
 
         Raises:
             ApiException: if unable to communicate with the `nispec` service or if there are invalid
