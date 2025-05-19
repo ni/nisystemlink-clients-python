@@ -5,7 +5,7 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan.models._execution_definition import ManualExecutionDefinition
 from nisystemlink.clients.test_plan.test_plan_templates._test_plan_templates_client import TestPlanTemplateClient
 from nisystemlink.clients.test_plan.test_plan_templates.models._create_test_plan_templates import CreateTestPlanTemplateResponse
-from nisystemlink.clients.test_plan.test_plan_templates.models._delete_test_plan_templates import DeleteTestPlanTemplates, DeleteTestPlanTemplatesResponseSuccess
+from nisystemlink.clients.test_plan.test_plan_templates.models._delete_test_plan_templates import DeleteTestPlanTemplates, DeleteTestPlanTemplatesPartialSuccess
 from nisystemlink.clients.test_plan.test_plan_templates.models._query_test_plan_templates import QueryTestPlanTemplatesRequestBody, QueryTestPlanTemplatesResponse
 from nisystemlink.clients.test_plan.test_plan_templates.models._test_plan_templates import TestPlanTemplateBase
 
@@ -54,7 +54,7 @@ class TestTestPlanTemplate:
 
         assert template_id is not None
 
-        client.delete_test_plan_templates(
+        delete_response: DeleteTestPlanTemplatesPartialSuccess = client.delete_test_plan_templates(
             Ids=DeleteTestPlanTemplates(
                 ids=[template_id]
             )

@@ -8,7 +8,14 @@ class DeleteTestPlanTemplates(JsonModel):
     ids: List[str]
     """ List of test plan template IDs to delete """
 
-class DeleteTestPlanTemplatesResponseSuccess(JsonModel):
+class DeleteTestPlanTemplatesPartialSuccess(JsonModel):
+    """The result of deleting multiple test plan templates when one or more test plan templates could not be deleted."""
+
     deletedTestPlanTemplateIds: List[str]
+    """The IDs of the test plan template that could not be deleted."""
+
     failedTestPlanTemplateIds: Optional[List[str]] = None
+    """The IDs of the test plan template that could not be deleted."""
+
     error: Optional[ApiError] = None
+    """The error that occurred when deleting the test plan template."""

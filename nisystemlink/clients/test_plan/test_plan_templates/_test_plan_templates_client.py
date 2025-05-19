@@ -26,7 +26,7 @@ class TestPlanTemplateClient(BaseClient):
                 is used to obtain the configuration.
 
         Raises:
-            ApiException: if unable to communicate with the Workorder Service.
+            ApiException: if unable to communicate with the `/niworkorder` Service.
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
@@ -39,12 +39,12 @@ class TestPlanTemplateClient(BaseClient):
         """Creates one or more test plan template and return errors for failed creations.
 
         Args:
-            products: A list of test plan templates to attempt to create.
+            testPlanTempaltes: A list of test plan templates to attempt to create.
 
         Returns: A list of created test plan templates, test plan templates that failed to create, and errors for
                  failures.
 
-        Raises: ApiException: if unable to communicate with the ``/niworkorder`` service of provided invalid
+        Raises: ApiException: if unable to communicate with the `/niworkorder` service of provided invalid
                 arguments.
         """
         ...
@@ -53,10 +53,26 @@ class TestPlanTemplateClient(BaseClient):
     def query_test_plan_templates(
         self, queryTestPlanTemplates: models.QueryTestPlanTemplatesRequestBody
     ) -> models.QueryTestPlanTemplatesResponse:
+        """Queries one or more test plan templates and return errors for failed queries.
+
+        Returns: A list of test plan templates, based on the query and errors for the wrong query.
+
+        Raises: ApiException: if unable to communicate with the `/niworkorder` service of provided invalid
+                arguments.
+        """
         ...
 
     @post("delete-testplan-templates")
     def delete_test_plan_templates(
         self, Ids: models.DeleteTestPlanTemplates
-    ) -> Optional[models.DeleteTestPlanTemplatesResponseSuccess]:
+    ) -> Optional[models.DeleteTestPlanTemplatesPartialSuccess]:
+        """Deletes one or more test plan templates and return errors for failed deletion.
+
+        Returns:
+            A partial success if any test plan templates failed to delete, or None if all
+            test plan templates were deleted successfully.
+
+        Raises: ApiException: if unable to communicate with the `/niworkorder` service of provided invalid
+            arguments.
+        """
         ...

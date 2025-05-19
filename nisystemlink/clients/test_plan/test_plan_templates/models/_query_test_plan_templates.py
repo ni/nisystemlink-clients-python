@@ -45,10 +45,13 @@ class QueryTestPlanTemplatesRequestBody(QueryTestPlanTemplateBase):
 
     take: Optional[int] = None
     """The maximum number of test plan templates to return."""
+
     orderBy: Optional[TestPlanTemplateOrderBy] = None
     """Field by which test plan templates can be ordered/sorted."""
+
     descending: Optional[bool] = None
     """Whether to return the test plan templates in the descending order. By default, test plan templates are sorted in the ascending order."""
+
     continuationToken: Optional[str] = None
     """Allows users to continue the query at the next test plan templates that matches the given criteria.
 
@@ -62,6 +65,7 @@ class QueryTestPlanTemplatesResponse(JsonModel):
 
     testPlanTemplates: List[TestPlanTemplateResponse]
     """Queried test plan templates."""
+
     continuationToken: Optional[str] = None
     """Allows users to continue the query at the next test plan templates that matches the given criteria.
 

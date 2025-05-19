@@ -15,7 +15,16 @@ class CreateTestPlanTemplate(JsonModel):
 class CreateTestPlanTemplateResponse(JsonModel):
 
     createdTestPlanTemplates: Optional[List[TestPlanTemplateResponse]] = None
+    """The list of test plan templates that were successfully created."""
 
     failedTestPlanTemplates: Optional[List[TestPlanTemplateResponse]] = None
+    """The list of test plan templates that were not created.
+
+    If this is `None`, then all test plan templates were successfully created.
+    """
 
     error: Optional[ApiError] = None
+    """Error messages for products that were not created.
+
+    If this is `None`, then all products were successfully created.
+    """
