@@ -53,7 +53,7 @@ class AssetManagementClient(BaseClient):
 
     @post("query-assets")
     def query_assets(
-        self, query: models.QueryAssetsRequest
+        self, query: models.QueryAssetRequest
     ) -> models.QueryAssetsResponse:
         """Query Assets.
 

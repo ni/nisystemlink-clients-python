@@ -1,4 +1,5 @@
-from nisystemlink.clients.assetmanagement.models._query_assets import AssetField
+from nisystemlink.clients.assetmanagement.models._asset_location import AssetPresence, AssetPresenceWithSystemConnection
+from nisystemlink.clients.assetmanagement.models._query_assets_request import AssetField
 import responses
 from typing import List
 
@@ -8,21 +9,16 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
     AssetCreateRequest,
     AssetsCreatePartialSuccessResponse,
-    AssetsResponse,
     QueryAssetRequest,
+    QueryAssetsResponse
 )
 from nisystemlink.clients.assetmanagement.models._asset import (
     Asset,
     AssetBusType,
     AssetDiscoveryType,
     AssetLocation,
-    AssetPresence,
-    AssetPresenceWithSystemConnection,
-    AssetsCreatePartialSuccessResponse,
     AssetType,
     ExternalCalibration,
-    QueryAssetsRequest,
-    QueryAssetsResponse,
     SelfCalibration,
     TemperatureSensor,
 )
@@ -115,12 +111,11 @@ class TestAssetManagement:
     def test__create_asset__returns_created_asset(
         self,
         client: AssetManagementClient,
+        create_asset,
         create_assets_request: List[AssetCreateRequest],
     ):
         create_assets_request[0].model_number = 101
-        create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
-            assets=create_assets_request
-        )
+        create_response = create_asset(create_assets_request)
 
         asset_id = (
             create_response.assets[0].id
@@ -129,8 +124,6 @@ class TestAssetManagement:
         )
 
         assert asset_id is not None
-
-        client.delete_assets(ids=[asset_id])
 
         assert create_response is not None
         assets = create_response.assets or []
@@ -163,10 +156,10 @@ class TestAssetManagement:
         assert delete_response.ids[0] == asset_id
 
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
-        self, client: AssetManagementClient, create_asset, asset_create: List[AssetCreateRequest]
+        self, client: AssetManagementClient, create_asset, create_assets_request: List[AssetCreateRequest]
     ):
-        asset_create[0].model_number = 1001
-        create_assets_response = create_asset(asset_create)
+        create_assets_request[0].model_number = 1001
+        create_assets_response = create_asset(create_assets_request)
 
         assert create_assets_response is not None
         assert len(create_assets_response.assets) == 1
@@ -181,7 +174,7 @@ class TestAssetManagement:
             ids=[asset_id], skip=0, take=1, returnCount=True
         )
 
-        response: AssetsResponse = client.query_assets(query=query_assets_request)
+        response: QueryAssetsResponse = client.query_assets(query=query_assets_request)
 
         assert response is not None
         assert response.assets is not None and len(response.assets) == 1
