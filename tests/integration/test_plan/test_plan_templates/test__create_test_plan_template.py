@@ -1,5 +1,3 @@
-
-import json
 from typing import List
 import pytest
 
@@ -54,15 +52,9 @@ class TestTestPlanTemplate:
             else None
         )
 
-        template_name = (
-            create_response.createdTestPlanTemplates[0].name
-            if create_response.createdTestPlanTemplates and create_response.createdTestPlanTemplates[0].name
-            else None
-        )
-
         assert template_id is not None
 
-        delete_response: DeleteTestPlanTemplatesResponseSuccess = client.delete_test_plan_templates(
+        client.delete_test_plan_templates(
             Ids=DeleteTestPlanTemplates(
                 ids=[template_id]
             )
@@ -75,4 +67,65 @@ class TestTestPlanTemplate:
             )
         )
 
-        assert len(query_deleted_test_plan_template_response.testPlanTemplates) == 0, query_deleted_test_plan_template_response
+        assert len(query_deleted_test_plan_template_response.testPlanTemplates) == 0
+
+    def test__query_test_plan_template__returns_queried_test_plan_template(
+            self, client: TestPlanTemplateClient, create_test_plan_template: List[TestPlanTemplateBase]
+    ):
+        create_response: CreateTestPlanTemplateResponse = client.create_testPlanTemplates(
+            testPlanTemplates=create_test_plan_template
+        )
+
+        template_id = (
+            create_response.createdTestPlanTemplates[0].id
+            if create_response.createdTestPlanTemplates and create_response.createdTestPlanTemplates[0].id
+            else None
+        )
+
+        assert template_id is not None
+
+        query_test_plan_template_response: QueryTestPlanTemplatesResponse = client.query_test_plan_templates(
+            queryTestPlanTemplates=QueryTestPlanTemplatesRequestBody(
+                filter=f'id="{template_id}"',
+                take=1
+            )
+        )
+
+        assert len(query_test_plan_template_response.testPlanTemplates) == 1
+        assert query_test_plan_template_response.testPlanTemplates[0].name == create_test_plan_template[0].name
+
+        client.delete_test_plan_templates(
+            Ids=DeleteTestPlanTemplates(
+                ids=[template_id]
+            )
+        )
+
+    def test__delete_test_plan_template(
+            self, client: TestPlanTemplateClient, create_test_plan_template: List[TestPlanTemplateBase]
+    ):
+        create_response: CreateTestPlanTemplateResponse = client.create_testPlanTemplates(
+            testPlanTemplates=create_test_plan_template
+        )
+
+        template_id = (
+            create_response.createdTestPlanTemplates[0].id
+            if create_response.createdTestPlanTemplates and create_response.createdTestPlanTemplates[0].id
+            else None
+        )
+
+        assert template_id is not None
+
+        client.delete_test_plan_templates(
+            Ids=DeleteTestPlanTemplates(
+                ids=[template_id]
+            )
+        )
+
+        query_deleted_test_plan_template_response: QueryTestPlanTemplatesResponse = client.query_test_plan_templates(
+            queryTestPlanTemplates=QueryTestPlanTemplatesRequestBody(
+                filter=f'id="{template_id}"',
+                take=1
+            )
+        )
+
+        assert len(query_deleted_test_plan_template_response.testPlanTemplates) == 0
