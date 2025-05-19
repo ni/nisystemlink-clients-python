@@ -26,7 +26,7 @@ class AssetManagementClient(BaseClient):
                 is used to obtain the configuration.
 
         Raises:
-            ApiException: if unable to communicate with the AssetManagement Service.
+            ApiException: If unable to communicate with the AssetManagement Service.
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
@@ -40,29 +40,32 @@ class AssetManagementClient(BaseClient):
         """Create Assets.
 
         Args:
-            assets: an array of assets that should be created.
+            assets: Array of assets that should be created.
 
         Returns:
-            Response object with array of created assets and array of failed assets.
+            AssetsCreatePartialSuccessResponse: Array of created assets and array of failed.
 
         Raises:
-            ApiException: if unable to communicate with the `asset management` service or if there are invalid
+            ApiException: If unable to communicate with the `asset management` service or if there are invalid
             arguments.
         """
         ...
 
     @post("query-assets")
-    def query_assets(self, query: models.QueryAssetRequest) -> models.AssetsResponse:
+    def query_assets(
+        self, query: models.QueryAssetsRequest
+    ) -> models.QueryAssetsResponse:
         """Query Assets.
 
         Args:
-            query: an object containing filters to apply when retrieving assets.
+            query: Object containing filters to apply when retrieving assets.
 
         Returns:
-            Assets Response containing the assets satisfying the query and the total count of matching assets.
+            AssetsResponse: Assets Response containing the assets satisfying the query and
+            the total count of matching assets.
 
         Raises:
-            ApiException: if unable to communicate with the `asset management` service or if there are invalid
+            ApiException: If unable to communicate with the `asset management` service or if there are invalid
             arguments.
         """
         ...
@@ -70,12 +73,15 @@ class AssetManagementClient(BaseClient):
     @post("delete-assets", args=[Field("ids")])
     def delete_assets(self, ids: List[str]) -> models.DeleteAssetsResponse:
         """Delete Assets.
+
         Args:
-            assets: an arry of IDs of the assets to delete all information for.
+            assets: Arry of IDs of the assets to delete all information for.
+
         Returns:
-            Response object containing the ids of the assets which were deleted.
+            DeleteAssetsResponse: Response Object containing the ids of the assets which were deleted.
+
         Raises:
-            ApiException: if unable to communicate with the `asset management` service or if there are invalid
+            ApiException: If unable to communicate with the `asset management` service or if there are invalid
             arguments.
         """
         ...
