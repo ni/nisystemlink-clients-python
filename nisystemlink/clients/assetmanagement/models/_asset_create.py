@@ -33,7 +33,7 @@ class AssetCreateRequest(JsonModel):
     vendor_number: Optional[int] = None
     """Gets or sets vendor number of the asset."""
 
-    bus_type: AssetBusType
+    bus_type: Optional[AssetBusType] = None
     """Gets or sets all supported bus types for an asset."""
 
     name: Optional[str] = None

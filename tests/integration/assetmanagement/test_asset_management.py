@@ -32,7 +32,7 @@ def asset_create() -> List[AssetCreateRequest]:
             vendor_name="NI",
             vendor_number="4244",
             bus_type=AssetBusType.ACCESSORY,
-            name="PCISlot2",
+            name="Python Integration Tests",
             asset_type=AssetType.DEVICE_UNDER_TEST,
             firmware_version="A1",
             hardware_version="12A",

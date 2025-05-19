@@ -9,8 +9,6 @@ from ._asset import Asset
 class AssetsResponse(JsonModel):
     """Model for assets Response containing the assets satisfying the query and the total count of matching assets."""
 
-    error: Optional[ApiError] = None
-
     assets: Optional[List[Asset]] = None
     """Gets or sets array of assets."""
 

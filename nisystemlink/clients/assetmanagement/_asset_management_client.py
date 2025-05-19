@@ -6,11 +6,15 @@ from nisystemlink.clients import core
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import post
-from uplink import Field
+from uplink import Field, retry
 
 from . import models
 
-
+@retry(
+    when=retry.when.status(408, 429, 502, 503, 504),
+    stop=retry.stop.after_attempt(5),
+    on_exception=retry.CONNECTION_ERROR,
+)
 class AssetManagementClient(BaseClient):
     def __init__(self, configuration: Optional[HttpConfiguration] = None):
         """Initialize an instance.
