@@ -24,7 +24,7 @@ class CreateTestPlanTemplateResponse(JsonModel):
     """
 
     error: Optional[ApiError] = None
-    """Error messages for products that were not created.
+    """Error messages for test plan templates that were not created.
 
-    If this is `None`, then all products were successfully created.
+    If this is `None`, then all test plan templates were successfully created.
     """
