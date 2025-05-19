@@ -12,5 +12,5 @@ class AssetsResponse(JsonModel):
     assets: Optional[List[Asset]] = None
     """Gets or sets array of assets."""
 
-    total_count: int
+    total_count: Optional[int] = None
     """Gets or sets the total number of Assets which match the query."""

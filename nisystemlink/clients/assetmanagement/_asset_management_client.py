@@ -46,7 +46,7 @@ class AssetManagementClient(BaseClient):
             Response object with array of created assets and array of failed assets.
 
         Raises:
-            ApiException: if unable to communicate with the `nispec` service or if there are invalid
+            ApiException: if unable to communicate with the `asset management` service or if there are invalid
             arguments.
         """
         ...
@@ -62,7 +62,7 @@ class AssetManagementClient(BaseClient):
             Assets Response containing the assets satisfying the query and the total count of matching assets.
 
         Raises:
-            ApiException: if unable to communicate with the `nispec` service or if there are invalid
+            ApiException: if unable to communicate with the `asset management` service or if there are invalid
             arguments.
         """
         ...
@@ -75,7 +75,7 @@ class AssetManagementClient(BaseClient):
         Returns:
             Response object containing the ids of the assets which were deleted.
         Raises:
-            ApiException: if unable to communicate with the `nispec` service or if there are invalid
+            ApiException: if unable to communicate with the `asset management` service or if there are invalid
             arguments.
         """
         ...

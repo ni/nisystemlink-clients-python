@@ -66,7 +66,7 @@ class AssetCreateRequest(JsonModel):
     self_calibration: Optional[SelfCalibration] = None
     """Gets or sets the last self-calibration of the asset."""
 
-    is_ni_asset: Optional[bool] = None
+    is_NI_asset: Optional[bool] = None
     """Gets or sets whether this asset is an NI asset (true) or a third-party asset (false)."""
 
     workspace: Optional[str] = None
