@@ -32,7 +32,8 @@ def create_test_plan_template() -> List[TestPlanTemplateBase]:
 
 @pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> TestPlanTemplateClient:
-    """Fixture to create a TestPlanTemplateClient instance"""
+    """Fixture to create a TestPlanTemplateClient instance."""
+
     return TestPlanTemplateClient(enterprise_config)
 
 @pytest.mark.integration

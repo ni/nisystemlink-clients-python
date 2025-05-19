@@ -11,7 +11,7 @@ class Dashboard(JsonModel):
     variables: Dict[str, str]
     """Dictionary of variables set on the dashboard.
     These will be appended to the URL as query parameters.
-    Each key will be prefixed with "var-" and the value will be the value of the variable
+    Each key will be prefixed with "var-" and the value will be the value of the variable.
     """
 
 class TestPlanTemplateBase(JsonModel):

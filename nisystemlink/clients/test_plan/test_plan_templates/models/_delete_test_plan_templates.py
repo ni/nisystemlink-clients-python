@@ -6,7 +6,7 @@ class DeleteTestPlanTemplates(JsonModel):
     """Deletes one or more test plan templates identified by their IDs."""
 
     ids: List[str]
-    """ List of test plan template IDs to delete """
+    """List of test plan template IDs to delete."""
 
 class DeleteTestPlanTemplatesPartialSuccess(JsonModel):
     """The result of deleting multiple test plan templates when one or more test plan templates could not be deleted."""
