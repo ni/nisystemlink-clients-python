@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
