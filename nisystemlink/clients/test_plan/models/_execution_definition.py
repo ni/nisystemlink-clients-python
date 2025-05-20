@@ -1,6 +1,8 @@
 from typing import List, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+
 class Job(JsonModel):
     """Represents a job to be executed, including its functions, arguments, and metadata."""
 
@@ -78,6 +80,7 @@ class NoneExecution(JsonModel):
 
     type: str = 'None'
     """Type of execution, default is 'None'."""
+
 
 ExecutionDefinition = Union[
     NotebookExecution,
