@@ -51,7 +51,7 @@ class ExternalCalibration(JsonModel):
     is_limited: Optional[bool] = None
     """Gets or sets whether the last external calibration of the asset was a limited calibration."""
 
-    date: str
+    date: datetime
     """Gets or sets ISO-8601 formatted timestamp specifying the last date the asset was externally calibrated."""
 
     recommended_interval: int

@@ -10,6 +10,7 @@ from uplink import Field, retry
 
 from . import models
 
+
 @retry(
     when=retry.when.status(408, 429, 502, 503, 504),
     stop=retry.stop.after_attempt(5),
@@ -35,8 +36,8 @@ class AssetManagementClient(BaseClient):
 
     @post("assets", args=[Field("assets")])
     def create_assets(
-        self, assets: List[models.AssetCreateRequest]
-    ) -> models.AssetsCreatePartialSuccessResponse:
+        self, assets: List[models.CreateAssetRequest]
+    ) -> models.CreateAssetsPartialSuccessResponse:
         """Create Assets.
 
         Args:
@@ -53,7 +54,7 @@ class AssetManagementClient(BaseClient):
 
     @post("query-assets")
     def query_assets(
-        self, query: models.QueryAssetRequest
+        self, query: models.QueryAssetsRequest
     ) -> models.QueryAssetsResponse:
         """Query Assets.
 

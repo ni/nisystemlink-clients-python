@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -39,7 +40,7 @@ class Asset(JsonModel):
     asset_type: Optional[AssetType] = None
     """Gets or sets all supported asset types."""
 
-    discovery_type:Optional[AssetDiscoveryType] = None
+    discovery_type: Optional[AssetDiscoveryType] = None
     """Gets or sets the discovery type."""
 
     firmware_version: Optional[str] = None
@@ -93,7 +94,7 @@ class Asset(JsonModel):
     keywords: Optional[List[str]] = None
     """Gets or sets words or phrases associated with an asset."""
 
-    last_updated_timestamp: Optional[str] = None
+    last_updated_timestamp: Optional[datetime] = None
     """Gets or sets ISO-8601 formatted timestamp specifying the last date that the asset has had a property update."""
 
     file_ids: Optional[List[str]] = None

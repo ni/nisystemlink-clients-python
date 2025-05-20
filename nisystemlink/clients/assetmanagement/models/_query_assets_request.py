@@ -77,7 +77,8 @@ class AssetField(str, Enum):
 
     OUT_FOR_CALIBRATION = "outForCalibration"
 
-class QueryAssetRequest(JsonModel):
+
+class QueryAssetsRequest(JsonModel):
     """Model for object containing filters to apply when retrieving assets."""
 
     ids: Optional[List[str]] = None
@@ -112,6 +113,7 @@ class QueryAssetRequest(JsonModel):
 
     filter: Optional[str] = None
     """Gets or sets the filter criteria for assets. Consists of a string of queries composed using AND/OR operators."""
+
 
 class _QueryAssetRequest(JsonModel):
     """Model for object containing filters to apply when retrieving assets."""

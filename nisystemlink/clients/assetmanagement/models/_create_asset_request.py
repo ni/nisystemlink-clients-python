@@ -13,7 +13,7 @@ from ._asset import (
 )
 
 
-class AssetCreateRequest(JsonModel):
+class CreateAssetRequest(JsonModel):
     """Model for an object describing the properties for creating an asset."""
 
     model_name: Optional[str] = None

@@ -1,36 +1,33 @@
-from nisystemlink.clients.assetmanagement.models._asset_location import AssetPresence, AssetPresenceWithSystemConnection
-from nisystemlink.clients.assetmanagement.models._query_assets_request import AssetField
-import responses
 from typing import List
 
 import pytest
+import responses
 from nisystemlink.clients.assetmanagement import AssetManagementClient
 from nisystemlink.clients.assetmanagement.models import (
-    AssetBusType,
-    AssetCreateRequest,
-    AssetsCreatePartialSuccessResponse,
-    QueryAssetRequest,
-    QueryAssetsResponse
-)
-from nisystemlink.clients.assetmanagement.models._asset import (
     Asset,
     AssetBusType,
     AssetDiscoveryType,
+    AssetField,
     AssetLocation,
+    AssetPresence,
+    AssetPresenceWithSystemConnection,
     AssetType,
+    CreateAssetRequest,
+    CreateAssetsPartialSuccessResponse,
     ExternalCalibration,
+    QueryAssetsRequest,
+    QueryAssetsResponse,
     SelfCalibration,
     TemperatureSensor,
 )
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from tests.integration.notebook.test_notebook_client import BASE_URL
 
 
 @pytest.fixture(scope="class")
-def create_assets_request() -> List[AssetCreateRequest]:
-    """Fixture to create an AssetCreateRequest object."""
+def create_assets_request() -> List[CreateAssetRequest]:
+    """Fixture to create an CreateAssetRequest object."""
     assets = [
-        AssetCreateRequest(
+        CreateAssetRequest(
             model_name="python integration test 1",
             serial_number="01BB8",
             vendor_name="NI",
@@ -71,20 +68,21 @@ def create_assets_request() -> List[AssetCreateRequest]:
             file_ids=["608a5684800e325b48837c2a"],
             supports_self_test=True,
             supports_reset=True,
-            partNumber="A1234"
+            partNumber="A1234",
         )
     ]
 
     return assets
 
+
 @pytest.fixture
 def create_asset(client: AssetManagementClient):
     """Fixture to return a factory that creates assets."""
-    responses: List[AssetsCreatePartialSuccessResponse] = []
+    responses: List[CreateAssetsPartialSuccessResponse] = []
 
     def _create_assets(
-            new_assets: AssetCreateRequest
-    ) -> AssetsCreatePartialSuccessResponse:
+        new_assets: CreateAssetRequest,
+    ) -> CreateAssetsPartialSuccessResponse:
         response = client.create_assets(new_assets)
         responses.append(response)
         return response
@@ -112,7 +110,7 @@ class TestAssetManagement:
         self,
         client: AssetManagementClient,
         create_asset,
-        create_assets_request: List[AssetCreateRequest],
+        create_assets_request: List[CreateAssetRequest],
     ):
         create_assets_request[0].model_number = 101
         create_response = create_asset(create_assets_request)
@@ -134,10 +132,10 @@ class TestAssetManagement:
     def test__delete_asset__returns_deleted_asset(
         self,
         client: AssetManagementClient,
-        create_assets_request: List[AssetCreateRequest],
+        create_assets_request: List[CreateAssetRequest],
     ):
         create_assets_request[0].model_number = 102
-        create_response: AssetsCreatePartialSuccessResponse = client.create_assets(
+        create_response: CreateAssetsPartialSuccessResponse = client.create_assets(
             assets=create_assets_request
         )
         asset_id = (
@@ -156,9 +154,12 @@ class TestAssetManagement:
         assert delete_response.ids[0] == asset_id
 
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
-        self, client: AssetManagementClient, create_asset, create_assets_request: List[AssetCreateRequest]
+        self,
+        client: AssetManagementClient,
+        create_asset,
+        create_assets_request: List[CreateAssetRequest],
     ):
-        create_assets_request[0].model_number = 1001
+        create_assets_request[0].model_number = 103
         create_assets_response = create_asset(create_assets_request)
 
         assert create_assets_response is not None
@@ -170,7 +171,7 @@ class TestAssetManagement:
             else None
         )
 
-        query_assets_request = QueryAssetRequest(
+        query_assets_request = QueryAssetsRequest(
             ids=[asset_id], skip=0, take=1, returnCount=True
         )
 
@@ -182,31 +183,33 @@ class TestAssetManagement:
 
     @responses.activate
     def test_query_assets_with_projections__returns_the_assets_with_projected_properties(
-            self, client: AssetManagementClient
+        self, client: AssetManagementClient
     ):
-        return_value = {"assets": [
-            {
-                "id": "py_test_1",
-                "name": "python_integration_1",
-            },
-            {
-                "id": "py_test_2",
-                "name": "python_integration_2",
-            },
-            {
-                "id": "py_test_3",
-                "name": "python_integration_3",
-            }
-        ]}
+        return_value = {
+            "assets": [
+                {
+                    "id": "py_test_1",
+                    "name": "python_integration_1",
+                },
+                {
+                    "id": "py_test_2",
+                    "name": "python_integration_2",
+                },
+                {
+                    "id": "py_test_3",
+                    "name": "python_integration_3",
+                },
+            ]
+        }
 
         responses.add(
             responses.POST,
-            "https://dev-api.lifecyclesolutions.ni.com/niapm/v1/query-assets",
+            f"{client.session.base_url}/niapm/v1/query-assets",
             json=return_value,
             status=200,
         )
 
-        query_asset = QueryAssetRequest(
+        query_asset = QueryAssetsRequest(
             projection=[AssetField.ID, AssetField.NAME],
         )
         response = client.query_assets(query=query_asset)

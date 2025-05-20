@@ -1,12 +1,12 @@
 from nisystemlink.clients.assetmanagement import AssetManagementClient
 from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
-    AssetCreateRequest,
     AssetDiscoveryType,
     AssetLocation,
     AssetPresence,
     AssetPresenceWithSystemConnection,
     AssetType,
+    CreateAssetRequest,
     ExternalCalibration,
     QueryAssetsRequest,
     SelfCalibration,
@@ -22,7 +22,7 @@ server_configuration = HttpConfiguration(
 client = AssetManagementClient(configuration=server_configuration)
 
 create_assets_request = [
-    AssetCreateRequest(
+    CreateAssetRequest(
         model_number=4000,
         model_name="NI PXIe-6368",
         serial_number="01BB877A",
@@ -84,6 +84,7 @@ query_asset_request = QueryAssetsRequest(
     calibratable_only=False,
     returnCount=False,
 )
+client.query_assets(query=query_asset_request)
 
 # Delete the created asset.
 if created_asset_id is not None:

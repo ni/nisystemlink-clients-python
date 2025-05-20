@@ -1,9 +1,9 @@
 from ._query_assets_response import QueryAssetsResponse
 from ._asset import Asset
-from ._asset_create_request import AssetCreateRequest
-from ._asset_create_partial_success_response import AssetsCreatePartialSuccessResponse
-from ._asset_delete_response import DeleteAssetsResponse
-from ._query_assets_request import QueryAssetRequest
+from ._create_asset_request import CreateAssetRequest
+from ._create_assets_partial_success_response import CreateAssetsPartialSuccessResponse
+from ._delete_assets_response import DeleteAssetsResponse
+from ._query_assets_request import AssetField, QueryAssetsRequest
 from ._query_assets_response import QueryAssetsResponse
 from ._asset_location import (
     AssetLocation,
