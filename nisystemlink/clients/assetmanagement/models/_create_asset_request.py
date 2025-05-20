@@ -5,12 +5,12 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from ._asset import (
     AssetBusType,
     AssetDiscoveryType,
-    AssetLocation,
     AssetType,
     ExternalCalibration,
     SelfCalibration,
     TemperatureSensor,
 )
+from ._asset_location import AssetLocationForCreate
 
 
 class CreateAssetRequest(JsonModel):
@@ -70,7 +70,7 @@ class CreateAssetRequest(JsonModel):
     workspace: Optional[str] = None
     """Gets or sets the ID of the workspace."""
 
-    location: AssetLocation
+    location: AssetLocationForCreate
     """Model for information about the asset location, presence and the connection status of the system"""
 
     external_calibration: Optional[ExternalCalibration] = None

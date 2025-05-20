@@ -4,7 +4,7 @@ from typing import Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class AssetPresence(Enum):
+class AssetPresenceStatus(Enum):
     """Status of an asset's presence in a system."""
 
     INITIALIZING = "INITIALIZING"
@@ -20,18 +20,31 @@ class SystemConnection(Enum):
     [CONNECTED_UPDATE_PENDING, CONNECTED_UPDATE_SUCCESSFUL, CONNECTED_UPDATE_FAILED] are equivalent to CONNECTED.
     """
 
-    CONNECTED = "CONNECTED"
+    APPROVED = "APPROVED"
     DISCONNECTED = "DISCONNECTED"
+    CONNECTED_UPDATE_PENDING = "CONNECTED_UPDATE_PENDING"
+    CONNECTED = "CONNECTED"
+    CONNECTED_UPDATE_FAILED = "CONNECTED_UPDATE_FAILED"
+    UNSUPPORTED = "UNSUPPORTED"
+    ACTIVATED = "ACTIVATED"
+    CONNECTED_UPDATE_SUCCESSFUL = "CONNECTED_UPDATE_SUCCESSFUL"
 
 
 class AssetPresenceWithSystemConnection(JsonModel):
     """Model for the presence of an asset and the connection of the system in which it resides."""
 
-    asset_presence: AssetPresence
+    asset_presence: AssetPresenceStatus
     """Gets or sets the status of an asset's presence in a system."""
 
     system_connection: Optional[SystemConnection] = None
     """Gets or sets whether or not the minion is connected to the server and has updated the server with its data."""
+
+
+class AssetPresence(JsonModel):
+    """Model for the presence of an asset."""
+
+    asset_presence: AssetPresenceStatus
+    """Gets or sets the status of an asset's presence in a system."""
 
 
 class AssetLocation(JsonModel):
@@ -54,3 +67,8 @@ class AssetLocation(JsonModel):
 
     state: AssetPresenceWithSystemConnection
     """Presence of an asset and the connection of the system in which it resides."""
+
+
+class AssetLocationForCreate(AssetLocation):
+
+    state: AssetPresence

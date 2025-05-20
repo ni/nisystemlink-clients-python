@@ -8,9 +8,9 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
     AssetDiscoveryType,
     AssetField,
-    AssetLocation,
+    AssetLocationForCreate,
     AssetPresence,
-    AssetPresenceWithSystemConnection,
+    AssetPresenceStatus,
     AssetType,
     CreateAssetRequest,
     CreateAssetsPartialSuccessResponse,
@@ -49,10 +49,8 @@ def create_assets_request() -> List[CreateAssetRequest]:
             ),
             is_NI_asset=True,
             workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
-            location=AssetLocation(
-                state=AssetPresenceWithSystemConnection(
-                    asset_presence=AssetPresence.PRESENT
-                )
+            location=AssetLocationForCreate(
+                state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
             ),
             external_calibration=ExternalCalibration(
                 temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
@@ -83,7 +81,7 @@ def create_asset(client: AssetManagementClient):
     def _create_assets(
         new_assets: CreateAssetRequest,
     ) -> CreateAssetsPartialSuccessResponse:
-        response = client.create_assets(assets = new_assets)
+        response = client.create_assets(assets=new_assets)
         responses.append(response)
         return response
 

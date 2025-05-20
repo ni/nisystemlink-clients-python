@@ -7,8 +7,10 @@ from ._query_assets_request import AssetField, QueryAssetsRequest
 from ._query_assets_response import QueryAssetsResponse
 from ._asset_location import (
     AssetLocation,
+    AssetLocationForCreate,
     AssetPresence,
     AssetPresenceWithSystemConnection,
+    AssetPresenceStatus,
 )
 from ._asset_calibration import (
     CalibrationMode,
