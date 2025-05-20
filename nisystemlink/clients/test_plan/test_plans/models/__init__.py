@@ -5,7 +5,7 @@ from ._schedule_test_plans_body_content import ScheduleTestPlanBodyContent
 from ._schedule_test_plans_response import ScheduleTestPlansResponse
 from ._delete_test_plans_request import DeleteTestPlansRequest
 from ._execution_event import ExecutionEvent
-from ._query_test_plans_request import QueryTestPlansRequest
+from ._query_test_plans_request import QueryTestPlansRequest, TestPlanField
 from ._query_test_plans_response import QueryTestPlansResponse
 from ._schedule_test_plans_request import ScheduleTestPlansRequest
 from ._state import State

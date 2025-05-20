@@ -11,6 +11,7 @@ from nisystemlink.clients.test_plan.test_plans.models import (
     ScheduleTestPlansRequest,
     State,
     TestPlan,
+    TestPlanField,
     UpdateTestPlanBodyContent,
     UpdateTestPlansRequest,
 )
@@ -158,3 +159,46 @@ class TestTestPlans:
         assert queried_test_plans_response is not None
         assert queried_test_plans_response.test_plans[0].id == created_test_plan.id
         assert queried_test_plans_response.total_count > 0
+
+    def test__query_test_plans_with_projections__returns_the_test_plans_with_projected_properties(
+        self, client: TestPlansClient, test_plan_create: CreateTestPlansRequest
+    ):
+        query_test_plans_request = QueryTestPlansRequest(
+            projection=[TestPlanField.ID, TestPlanField.NAME]
+        )
+        response = client.query_test_plans(query=query_test_plans_request)
+
+        assert response is not None
+        assert all(
+            test_plan.id is not None
+            and test_plan.name is not None
+            and test_plan.templateId is None
+            and test_plan.state is None
+            and test_plan.substate is None
+            and test_plan.description is None
+            and test_plan.assignedTo is None
+            and test_plan.workOrderId is None
+            and test_plan.workOrderName is None
+            and test_plan.workspace is None
+            and test_plan.createdBy is None
+            and test_plan.updatedBy is None
+            and test_plan.createdAt is None
+            and test_plan.updatedAt is None
+            and test_plan.properties is None
+            and test_plan.partNumber is None
+            and test_plan.dutId is None
+            and test_plan.testProgram is None
+            and test_plan.systemId is None
+            and test_plan.fixtureIds is None
+            and test_plan.systemFilter is None
+            and test_plan.plannedStartDateTime is None
+            and test_plan.estimatedEndDateTime is None
+            and test_plan.estimatedDurationInSeconds is None
+            and test_plan.fileIdsFromTemplate is None
+            and test_plan.executionActions is None
+            and test_plan.executionHistory is None
+            and test_plan.dashboardUrl is None
+            and test_plan.dashboard is None
+            and test_plan.workflow is None
+            for test_plan in response.test_plans
+        )
