@@ -1,12 +1,12 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 from ._test_plan import TestPlan
 
 
 class QueryTestPlansResponse(JsonModel):
-    """
-    Represents the response from querying test plans.
+    """Represents the response from querying test plans.
     Contains a list of test plans, a continuation token for pagination, and the total count.
     """
 

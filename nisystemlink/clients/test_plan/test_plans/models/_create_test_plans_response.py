@@ -2,13 +2,12 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._test_plan import TestPlan
 from ._create_test_plan_body_content import CreateTestPlanBodyContent
+from ._test_plan import TestPlan
 
 
 class CreateTestPlansResponse(JsonModel):
-    """
-    Represents the response from creating test plans, including successfully created,
+    """Represents the response from creating test plans, including successfully created,
     failed test plans, and any associated errors.
     """
 

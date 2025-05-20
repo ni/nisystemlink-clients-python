@@ -10,7 +10,9 @@ from ._query_test_plans_response import QueryTestPlansResponse
 from ._schedule_test_plans_request import ScheduleTestPlansRequest
 from ._state import State
 from ._test_plan import TestPlan
-from ._update_test_plans import UpdateTestPlansRequest, UpdateTestPlansResponse, UpdateTestPlanRequestBodyContent
+from ._update_test_plans_body_content import UpdateTestPlanBodyContent
+from ._update_test_plans_request import UpdateTestPlansRequest
+from ._update_test_plans_response import UpdateTestPlansResponse
 from ._workflow_definition import WorkflowDefinition
 
 # flake8: noqa

@@ -1,15 +1,16 @@
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+
 class ExecutionEventBase(JsonModel):
-    action: str
+    action: Optional[str] = None
     """Base class for execution events, containing common attributes such as action."""
 
-    triggeredAt: str
+    triggeredAt: Optional[str] = None
     """the time the event was triggered."""
 
-    triggeredBy: str = None
+    triggeredBy: Optional[str] = None
     """and the user who triggered it."""
 
 

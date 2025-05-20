@@ -1,11 +1,9 @@
-from typing import List, Optional, Dict, Union
+from typing import Dict, List, Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.core import ApiError
-from . import TestPlan
 
 
-class UpdateTestPlanRequestBodyContent(JsonModel):
+class UpdateTestPlanBodyContent(JsonModel):
     """Represents the content for updating a single test plan."""
 
     id: str
@@ -43,26 +41,3 @@ class UpdateTestPlanRequestBodyContent(JsonModel):
 
     file_ids_from_template: Optional[List[str]] = None
     """List of file IDs from the template to associate with the test plan."""
-
-
-class UpdateTestPlansRequest(JsonModel):
-    """Represents the request body for updating multiple test plans."""
-
-    test_plans: List[UpdateTestPlanRequestBodyContent]
-    """A list of test plans to update."""
-
-    replace: Optional[bool] = None
-    """Whether to replace the existing test plans or update them."""
-
-
-class UpdateTestPlansResponse(JsonModel):
-    """Represents the response after attempting to update test plans."""
-
-    updated_test_plans: Optional[List[TestPlan]] = None
-    """List of successfully updated test plans."""
-
-    failed_test_plans: Optional[List[UpdateTestPlanRequestBodyContent]] = None
-    """List of test plans that failed to update."""
-
-    error: Optional[ApiError] = None
-    """Error information if the update operation failed."""

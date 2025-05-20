@@ -1,9 +1,10 @@
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+from ._execution_event import ExecutionEvent
 from ._state import State
 from ._workflow_definition import WorkflowDefinition
-from ._execution_event import ExecutionEvent
 from ...models._execution_definition import ExecutionDefinition
 
 
@@ -85,16 +86,16 @@ class TestPlan(JsonModel):
     fileIdsFromTemplate: Optional[List[str]] = None
     """The list of file identifiers inherited from the template."""
 
-    # executionActions: Optional[ExecutionDefinition] = None
+    executionActions: Optional[List[ExecutionDefinition]] = None
     """The execution actions defined for the test plan."""
 
-    # executionHistory: Optional[ExecutionEvent] = None
+    executionHistory: Optional[List[ExecutionEvent]] = None
     """The execution history of the test plan."""
 
-    # dashboardUrl: Optional[Dict[str, str]] = None
+    dashboardUrl: Optional[Dict[str, str]] = None
     """The URLs for dashboards related to the test plan."""
 
-    # dashboard: Optional[Dict[str, str]] = None
+    dashboard: Optional[Dict[str, str]] = None
     """The dashboard data related to the test plan."""
 
     workflow: Optional[WorkflowDefinition] = None

@@ -59,7 +59,7 @@ class JobExecutionDefinition(JsonModel):
     jobs: list[Job]
     """List of jobs to execute"""
 
-    systemId:  Optional[str] = None
+    systemId: Optional[str] = None
     """Optional system ID where jobs will run"""
 
 
