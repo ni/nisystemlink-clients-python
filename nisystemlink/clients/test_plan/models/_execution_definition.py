@@ -4,9 +4,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class Job(JsonModel):
-    """
-    Represents a job to be executed, including its functions, arguments, and metadata.
-    """
+    """Represents a job to be executed, including its functions, arguments, and metadata."""
 
     functions: list[str]
     """List of function names to execute"""
@@ -19,9 +17,7 @@ class Job(JsonModel):
 
 
 class NotebookExecutionDefinition(JsonModel):
-    """
-    Defines the execution of a notebook.
-    """
+    """Defines the execution of a notebook."""
 
     action: str
     """User defined action to perform in workflow (user defined)"""
@@ -34,9 +30,7 @@ class NotebookExecutionDefinition(JsonModel):
 
 
 class ManualExecutionDefinition(JsonModel):
-    """
-    Represents a manual execution definition.
-    """
+    """Represents a manual execution definition."""
 
     action: str
     """User defined action to perform in workflow (user defined)"""
@@ -46,9 +40,7 @@ class ManualExecutionDefinition(JsonModel):
 
 
 class JobExecutionDefinition(JsonModel):
-    """
-    Defines the execution of one or more jobs.
-    """
+    """Defines the execution of one or more jobs."""
 
     action: str
     """User defined action to perform in workflow (user defined)"""
@@ -64,9 +56,7 @@ class JobExecutionDefinition(JsonModel):
 
 
 class ScheduleExecutionDefinition(JsonModel):
-    """
-    Represents a scheduled execution definition.
-    """
+    """Represents a scheduled execution definition."""
 
     action: str
     """User defined action to perform in workflow (user defined)"""
@@ -76,26 +66,22 @@ class ScheduleExecutionDefinition(JsonModel):
 
 
 class UnscheduleExecutionDefinition(JsonModel):
-    """
-    Represents an unscheduled execution definition.
-    """
+    """Represents an unscheduled execution definition."""
 
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: Optional[str] = "UNSCHEDULE"
+    type: str = "UNSCHEDULE"
     """Type of execution, default is 'UNSCHEDULE'"""
 
 
 class NoneExecutionDefinition(JsonModel):
-    """
-    Represents a definition where no execution is specified.
-    """
+    """Represents a definition where no execution is specified."""
 
     action: str
     """User defined action to perform in workflow (user defined)"""
 
-    type: Optional[str] = "None"
+    type: str = "None"
     """Type of execution, default is 'None'"""
 
 
