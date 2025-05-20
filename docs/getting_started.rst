@@ -320,3 +320,29 @@ Create, query, retry, and cancel notebook executions.
 .. literalinclude:: ../examples/notebook/notebook_execution.py
    :language: python
    :linenos:
+
+TestPlanTemplate API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.TestPlanTemplateClient` class is the primary entry point of the TestPlanTemplate API.
+
+When constructing a :class:`.TestPlanTemplateClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.TestPlanTemplateClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.TestPlanTemplateClient` object, you can:
+
+* Create, query, and delete TestPlanTemplate
+
+Examples
+~~~~~~~~
+
+Create, query and delete test plan templates.
+
+.. literalinclude:: ../examples/test_plan/test_plan_templates/test_plan_templates.py
+   :language: python
+   :linenos:
