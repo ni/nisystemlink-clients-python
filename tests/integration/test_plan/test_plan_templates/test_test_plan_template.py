@@ -3,6 +3,7 @@ from typing import List
 import pytest
 
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
+
 from nisystemlink.clients.test_plan.models._execution_definition import ManualExecution
 from nisystemlink.clients.test_plan.test_plan_templates import TestPlanTemplateClient
 from nisystemlink.clients.test_plan.test_plan_templates.models import (

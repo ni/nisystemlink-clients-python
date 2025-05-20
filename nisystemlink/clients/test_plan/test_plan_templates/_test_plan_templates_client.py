@@ -3,9 +3,11 @@
 from typing import List, Optional
 
 from nisystemlink.clients import core
+
 from uplink import Field, retry
 
 from nisystemlink.clients.core._uplink._base_client import BaseClient
+
 from nisystemlink.clients.core._uplink._methods import post
 
 from . import models

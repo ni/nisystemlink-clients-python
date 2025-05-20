@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.test_plan.models._execution_definition import (
     ExecutionDefinition,
@@ -47,7 +48,8 @@ class TestPlanTemplateBase(JsonModel):
 
     system_filter: Optional[str] = None
     """The LINQ filter string is used to filter the potential list of 
-    systems capable of executing test plans created from this template."""
+    systems capable of executing test plans created from this template.
+    """
 
     execution_actions: Optional[List[ExecutionDefinition]] = None
     """Defines the executions that will be used for test plan actions created from this template.
