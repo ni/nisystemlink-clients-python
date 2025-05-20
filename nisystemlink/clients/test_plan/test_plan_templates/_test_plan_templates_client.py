@@ -33,9 +33,9 @@ class TestPlanTemplateClient(BaseClient):
         super().__init__(configuration, base_path="/niworkorder/v1/")
 
     @post("testplan-templates", args=[Field("testPlanTemplates")])
-    def create_testPlanTemplates(
-        self, testPlanTemplates: List[models.CreateTestPlanTemplate]
-    ) -> models.CreateTestPlanTemplateResponse:
+    def create_test_plan_templates(
+        self, test_plan_templates: List[models.TestPlanTemplateBase]
+    ) -> models.CreateTestPlanTemplatePartialSuccessResponse:
         """Creates one or more test plan template and return errors for failed creations.
 
         Args:
@@ -51,7 +51,7 @@ class TestPlanTemplateClient(BaseClient):
 
     @post("query-testplan-templates")
     def query_test_plan_templates(
-        self, queryTestPlanTemplates: models.QueryTestPlanTemplatesRequestBody
+        self, query_test_plan_templates: models.QueryTestPlanTemplatesRequest
     ) -> models.QueryTestPlanTemplatesResponse:
         """Queries one or more test plan templates and return errors for failed queries.
 
@@ -62,10 +62,10 @@ class TestPlanTemplateClient(BaseClient):
         """
         ...
 
-    @post("delete-testplan-templates")
+    @post("delete-testplan-templates", args=[Field("ids")])
     def delete_test_plan_templates(
-        self, Ids: models.DeleteTestPlanTemplates
-    ) -> Optional[models.DeleteTestPlanTemplatesPartialSuccess]:
+        self, ids: List[str]
+    ) -> Optional[models.DeleteTestPlanTemplatesPartialSuccessResponse]:
         """Deletes one or more test plan templates and return errors for failed deletion.
 
         Returns:

@@ -20,13 +20,13 @@ class TestPlanTemplateBase(JsonModel):
     name: str
     """Name of the test plan template."""
 
-    templateGroup: str = None
+    template_group: str = None
     """The template group defined by the user."""
 
-    productFamilies: Optional[List[str]] = None
+    product_families: Optional[List[str]] = None
     """Array of product families to which the test plan template belongs."""
 
-    partNumbers: Optional[List[str]] = None
+    part_numbers: Optional[List[str]] = None
     """Array of part numbers of the products to which the test plan template belongs."""
 
     summary: Optional[str] = None
@@ -35,19 +35,19 @@ class TestPlanTemplateBase(JsonModel):
     description: Optional[str] = None
     """Description of the test plan created from this template."""
 
-    testProgram: Optional[str] = None
+    test_program: Optional[str] = None
     """Test program name of the test plan created from this template."""
 
-    estimatedDurationInSeconds: Optional[int] = None
+    estimated_duration_in_seconds: Optional[int] = None
     """The estimated time in seconds for executing the test plan created from this template."""
 
-    systemFilter: Optional[str] = None
+    system_filter: Optional[str] = None
     """The LINQ filter string is used to filter the potential list of systems capable of executing test plans created from this template."""
 
-    executionActions: Optional[List[ExecutionDefinition]] = None
+    execution_actions: Optional[List[ExecutionDefinition]] = None
     """Defines the executions that will be used for test plan actions created from this template."""
 
-    fileIds: Optional[List[str]] = None
+    file_ids: Optional[List[str]] = None
     """Array of file IDs associated with the test plan template."""
 
     workspace: Optional[str] = None

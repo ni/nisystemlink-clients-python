@@ -13,7 +13,7 @@ class Job(JsonModel):
     metadata: dict[str, object]
     """Additional metadata for the job."""
 
-class NotebookExecutionDefinition(JsonModel):
+class NotebookExecution(JsonModel):
     """Defines the execution of a notebook."""
 
     action: str
@@ -26,7 +26,7 @@ class NotebookExecutionDefinition(JsonModel):
     """ID of the notebook to execute."""
 
 
-class ManualExecutionDefinition(JsonModel):
+class ManualExecution(JsonModel):
     """Represents a manual execution definition."""
 
     action: str
@@ -35,7 +35,7 @@ class ManualExecutionDefinition(JsonModel):
     type: str = 'MANUAL'
     """Type of execution, default is 'MANUAL'."""
 
-class JobExecutionDefinition(JsonModel):
+class JobExecution(JsonModel):
     """Defines the execution of one or more jobs."""
 
     action: str
@@ -51,7 +51,7 @@ class JobExecutionDefinition(JsonModel):
     """Optional system ID where jobs will run."""
 
 
-class ScheduleExecutionDefinition(JsonModel):
+class ScheduleExecution(JsonModel):
     """Represents a scheduled execution definition."""
 
     action: str
@@ -61,7 +61,7 @@ class ScheduleExecutionDefinition(JsonModel):
     """Type of execution, default is 'SCHEDULE'."""
 
 
-class UnscheduleExecutionDefinition(JsonModel):
+class UnscheduleExecution(JsonModel):
     """Represents an unscheduled execution definition."""
 
     action: str
@@ -70,7 +70,7 @@ class UnscheduleExecutionDefinition(JsonModel):
     type: str = 'UNSCHEDULE'
     """Type of execution, default is 'UNSCHEDULE'."""
 
-class NoneExecutionDefinition(JsonModel):
+class NoneExecution(JsonModel):
     """Represents a definition where no execution is specified."""
 
     action: str
@@ -80,10 +80,10 @@ class NoneExecutionDefinition(JsonModel):
     """Type of execution, default is 'None'."""
 
 ExecutionDefinition = Union[
-    NotebookExecutionDefinition,
-    ManualExecutionDefinition,
-    JobExecutionDefinition,
-    NoneExecutionDefinition,
-    ScheduleExecutionDefinition,
-    UnscheduleExecutionDefinition
+    NotebookExecution,
+    ManualExecution,
+    JobExecution,
+    NoneExecution,
+    ScheduleExecution,
+    UnscheduleExecution
 ]

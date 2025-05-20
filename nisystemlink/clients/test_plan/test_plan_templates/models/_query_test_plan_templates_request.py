@@ -1,10 +1,21 @@
 from enum import Enum
-from typing import List, Optional
+import enum
+from typing import Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from ._test_plan_templates import TestPlanTemplateResponse
 
-class QueryTestPlanTemplateBase(JsonModel):
+class TestPlanTemplateOrderBy(str, Enum):
+    """An enumeration by which test plan templates can be ordered/sorted."""
+
+    ID = enum.auto()
+    NAME = enum.auto()
+    TEMPLATE_GROUP = enum.auto()
+    CREATED_AT = enum.auto()
+    UPDATED_AT = enum.auto()
+
+class QueryTestPlanTemplatesRequest(JsonModel):
+    """Request information for the query test plan templates API."""
+
     filter: Optional[str] = None
     """The test plan template query filter in dynamic LINQ format.
 
@@ -31,42 +42,16 @@ class QueryTestPlanTemplateBase(JsonModel):
     `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable."""
 
-class TestPlanTemplateOrderBy(str, Enum):
-    """An enumeration by which test plan templates can be ordered/sorted."""
-
-    ID = "ID"
-    NAME = "NAME"
-    TEMPLATE_GROUP = "TEMPLATE_GROUP"
-    CREATED_AT = "CREATED_AT"
-    UPDATED_AT ="UPDATED_AT"
-
-class QueryTestPlanTemplatesRequestBody(QueryTestPlanTemplateBase):
-    """Request information for the query test plan templates API."""
-
     take: Optional[int] = None
     """The maximum number of test plan templates to return."""
 
-    orderBy: Optional[TestPlanTemplateOrderBy] = None
+    order_by: Optional[TestPlanTemplateOrderBy] = None
     """Field by which test plan templates can be ordered/sorted."""
 
     descending: Optional[bool] = None
     """Whether to return the test plan templates in the descending order. By default, test plan templates are sorted in the ascending order."""
 
-    continuationToken: Optional[str] = None
-    """Allows users to continue the query at the next test plan templates that matches the given criteria.
-
-    To retrieve the next page of test plan templates, pass the continuation token from the previous
-    page in the next request. The service responds with the next page of data and provides a new
-    continuation token. To paginate results, continue sending requests with the newest continuation
-    token provided in each response."""
-
-class QueryTestPlanTemplatesResponse(JsonModel):
-    """Response information for the query test plan templates API."""
-
-    testPlanTemplates: List[TestPlanTemplateResponse]
-    """Queried test plan templates."""
-
-    continuationToken: Optional[str] = None
+    continuation_token: Optional[str] = None
     """Allows users to continue the query at the next test plan templates that matches the given criteria.
 
     To retrieve the next page of test plan templates, pass the continuation token from the previous
