@@ -1,11 +1,9 @@
 from typing import List, Optional
 
-from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from ._test_plan import TestPlan
 
 
-class ScheduleTestPlanRequestBodyContent(JsonModel):
+class ScheduleTestPlanBodyContent(JsonModel):
     """Represents the request body content for scheduling a test plan."""
 
     id: str
@@ -31,26 +29,3 @@ class ScheduleTestPlanRequestBodyContent(JsonModel):
 
     fixture_ids: Optional[List[str]] = None
     """(Optional) List of fixture identifiers associated with the test plan."""
-
-
-class ScheduleTestPlansRequest(JsonModel):
-    """Represents the request body for scheduling multiple test plans."""
-
-    test_plans: List[ScheduleTestPlanRequestBodyContent]
-    """List of test plan scheduling content objects."""
-
-    replace: Optional[bool] = None
-    """(Optional) If true, replaces existing scheduled test plans."""
-
-
-class ScheduleTestPlansResponse(JsonModel):
-    """Represents the response returned after attempting to schedule one or more test plans."""
-
-    scheduled_test_plans: Optional[List[TestPlan]] = None
-    """(Optional) List of successfully scheduled test plans."""
-
-    failed_test_plans: Optional[List[ScheduleTestPlanRequestBodyContent]] = None
-    """(Optional) List of test plan requests that failed to schedule."""
-
-    error: Optional[ApiError] = None
-    """(Optional) API error information if scheduling failed."""

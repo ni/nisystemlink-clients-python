@@ -16,10 +16,10 @@ class TestPlan(JsonModel):
     templateId: Optional[str] = None
     """The identifier of the template used to create the test plan."""
 
-    name: str
+    name: Optional[str] = None
     """The name of the test plan."""
 
-    state: State
+    state: Optional[State] = None
     """The current state of the test plan."""
 
     substate: Optional[str] = None
@@ -37,25 +37,25 @@ class TestPlan(JsonModel):
     workOrderName: Optional[str] = None
     """The name of the associated work order."""
 
-    workspace: str
+    workspace: Optional[str] = None
     """The workspace to which the test plan belongs."""
 
-    createdBy: str
+    createdBy: Optional[str] = None
     """The user who created the test plan."""
 
-    updatedBy: str
+    updatedBy: Optional[str] = None
     """The user who last updated the test plan."""
 
-    createdAt: str
+    createdAt: Optional[str] = None
     """The date and time when the test plan was created."""
 
-    updatedAt: str
+    updatedAt: Optional[str] = None
     """The date and time when the test plan was last updated."""
 
-    properties: Dict[str, str]
+    properties: Optional[Dict[str, str]] = None
     """Additional properties associated with the test plan."""
 
-    partNumber: str
+    partNumber: Optional[str] = None
     """The part number associated with the test plan."""
 
     dutId: Optional[str] = None
@@ -67,7 +67,7 @@ class TestPlan(JsonModel):
     systemId: Optional[str] = None
     """The identifier of the system used for the test plan."""
 
-    fixtureIds: List[str] = None
+    fixtureIds: Optional[List[str]] = None
     """The list of fixture identifiers associated with the test plan."""
 
     systemFilter: Optional[str] = None
@@ -82,7 +82,7 @@ class TestPlan(JsonModel):
     estimatedDurationInSeconds: Optional[float] = None
     """The estimated duration of the test plan in seconds."""
 
-    fileIdsFromTemplate: List[str]
+    fileIdsFromTemplate: Optional[List[str]] = None
     """The list of file identifiers inherited from the template."""
 
     # executionActions: Optional[ExecutionDefinition] = None
@@ -91,11 +91,11 @@ class TestPlan(JsonModel):
     # executionHistory: Optional[ExecutionEvent] = None
     """The execution history of the test plan."""
 
-    dashboardUrl: Optional[Dict[str, str]] = None
+    # dashboardUrl: Optional[Dict[str, str]] = None
     """The URLs for dashboards related to the test plan."""
 
-    dashboard: Optional[Dict[str, str]] = None
+    # dashboard: Optional[Dict[str, str]] = None
     """The dashboard data related to the test plan."""
 
-    workflow: WorkflowDefinition
+    workflow: Optional[WorkflowDefinition] = None
     """The workflow definition associated with the test plan."""

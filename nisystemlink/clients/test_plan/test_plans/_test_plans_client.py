@@ -14,7 +14,6 @@ from .models import (
     QueryTestPlansResponse,
     UpdateTestPlansRequest,
     UpdateTestPlansResponse,
-    DeleteTestPlansResponse,
     DeleteTestPlansRequest,
 )
 
@@ -64,7 +63,7 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("delete-testplans")
-    def delete_test_plans(self, ids: DeleteTestPlansRequest) -> DeleteTestPlansResponse:
+    def delete_test_plans(self, ids: DeleteTestPlansRequest) -> None:
         """Delete test plans by IDs.
 
         Args:
@@ -75,7 +74,7 @@ class TestPlansClient(BaseClient):
         """
         ...
 
-    @post("query-testplans", args=[Field("query")])
+    @post("query-testplans")
     def query_test_plans(self, query: QueryTestPlansRequest) -> QueryTestPlansResponse:
         """Query test plans.
 
