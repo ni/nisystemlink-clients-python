@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -51,7 +51,7 @@ class JobExecutionDefinition(JsonModel):
     jobs: list[Job]
     """List of jobs to execute"""
 
-    systemId: str | None = None
+    systemId: Optional[str] = None
     """Optional system ID where jobs will run"""
 
 
