@@ -320,3 +320,29 @@ Create, query, retry, and cancel notebook executions.
 .. literalinclude:: ../examples/notebook/notebook_execution.py
    :language: python
    :linenos:
+
+TestPlans API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.TestPlansClient` class is the primary entry point of the TestPlans API.
+
+When constructing a :class:`.TestPlansClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.TestPlansClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.TestPlansClient` object, you can:
+
+* Create, query, get, update, schedule and delete TestPlans
+
+Examples
+~~~~~~~~
+
+Create, query, get, update, schedule and delete TestPlans
+
+.. literalinclude:: ../examples/test_plan/test_plans/test_plans.py
+   :language: python
+   :linenos:
