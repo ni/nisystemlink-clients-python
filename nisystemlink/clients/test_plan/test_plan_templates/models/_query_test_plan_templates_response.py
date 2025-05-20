@@ -1,6 +1,9 @@
 from typing import List, Optional
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.test_plan.test_plan_templates.models._test_plan_templates import TestPlanTemplateResponse
+from nisystemlink.clients.test_plan.test_plan_templates.models._test_plan_templates import (
+    TestPlanTemplateResponse,
+)
 
 
 class QueryTestPlanTemplatesResponse(JsonModel):

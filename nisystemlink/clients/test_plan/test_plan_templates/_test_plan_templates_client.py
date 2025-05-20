@@ -2,13 +2,14 @@
 
 from typing import List, Optional
 
+from nisystemlink.clients import core
 from uplink import Field, retry
 
-from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import post
 
 from . import models
+
 
 @retry(
     when=retry.when.status(408, 429, 502, 503, 504),
@@ -39,7 +40,7 @@ class TestPlanTemplateClient(BaseClient):
         """Creates one or more test plan template and return errors for failed creations.
 
         Args:
-            testPlanTempaltes: A list of test plan templates to attempt to create.
+            test_plan_templates: A list of test plan templates to attempt to create.
 
         Returns: A list of created test plan templates, test plan templates that failed to create, and errors for
                  failures.

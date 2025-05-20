@@ -15,13 +15,14 @@ class Job(JsonModel):
     metadata: dict[str, object]
     """Additional metadata for the job."""
 
+
 class NotebookExecution(JsonModel):
     """Defines the execution of a notebook."""
 
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = 'NOTEBOOK'
+    type: str = "NOTEBOOK"
     """Type of execution, default is 'NOTEBOOK'."""
 
     notebookId: str
@@ -34,8 +35,9 @@ class ManualExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = 'MANUAL'
+    type: str = "MANUAL"
     """Type of execution, default is 'MANUAL'."""
+
 
 class JobExecution(JsonModel):
     """Defines the execution of one or more jobs."""
@@ -43,7 +45,7 @@ class JobExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = 'JOB'
+    type: str = "JOB"
     """Type of execution, default is 'JOB'."""
 
     jobs: List[Job]
@@ -59,7 +61,7 @@ class ScheduleExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = 'SCHEDULE'
+    type: str = "SCHEDULE"
     """Type of execution, default is 'SCHEDULE'."""
 
 
@@ -69,8 +71,9 @@ class UnscheduleExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = 'UNSCHEDULE'
+    type: str = "UNSCHEDULE"
     """Type of execution, default is 'UNSCHEDULE'."""
+
 
 class NoneExecution(JsonModel):
     """Represents a definition where no execution is specified."""
@@ -78,7 +81,7 @@ class NoneExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = 'None'
+    type: str = "None"
     """Type of execution, default is 'None'."""
 
 
@@ -88,5 +91,5 @@ ExecutionDefinition = Union[
     JobExecution,
     NoneExecution,
     ScheduleExecution,
-    UnscheduleExecution
+    UnscheduleExecution,
 ]
