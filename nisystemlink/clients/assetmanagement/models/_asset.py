@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Field
 
 from ._asset_calibration import (
     CalibrationStatus,
@@ -67,7 +68,7 @@ class Asset(JsonModel):
     self_calibration: Optional[SelfCalibration] = None
     """Gets or sets the last self-calibration of the asset."""
 
-    is_NI_asset: Optional[bool] = None
+    is_NI_asset: Optional[bool] = Field(alias="isNIAsset", default=None)
     """Gets or sets whether this asset is an NI asset (true) or a third-party asset (false)."""
 
     id: Optional[str] = None

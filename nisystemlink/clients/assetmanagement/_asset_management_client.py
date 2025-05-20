@@ -27,7 +27,7 @@ class AssetManagementClient(BaseClient):
                 is used to obtain the configuration.
 
         Raises:
-            ApiException: If unable to communicate with the AssetManagement Service.
+            ApiException: If unable to communicate with the asset management Service.
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
@@ -44,10 +44,10 @@ class AssetManagementClient(BaseClient):
             assets: Array of assets that should be created.
 
         Returns:
-            AssetsCreatePartialSuccessResponse: Array of created assets and array of failed.
+            CreateAssetsPartialSuccessResponse: Array of created assets and array of failed.
 
         Raises:
-            ApiException: If unable to communicate with the `asset management` service or if there are invalid
+            ApiException: If unable to communicate with the asset management service or if there are invalid
             arguments.
         """
         ...
@@ -62,11 +62,11 @@ class AssetManagementClient(BaseClient):
             query: Object containing filters to apply when retrieving assets.
 
         Returns:
-            AssetsResponse: Assets Response containing the assets satisfying the query and
+            QueryAssetsResponse: Assets Response containing the assets satisfying the query and
             the total count of matching assets.
 
         Raises:
-            ApiException: If unable to communicate with the `asset management` service or if there are invalid
+            ApiException: If unable to communicate with the asset management service or if there are invalid
             arguments.
         """
         ...
@@ -76,13 +76,12 @@ class AssetManagementClient(BaseClient):
         """Delete Assets.
 
         Args:
-            assets: Arry of IDs of the assets to delete all information for.
+            ids: List of IDs of the assets to delete.
 
         Returns:
-            DeleteAssetsResponse: Response Object containing the ids of the assets which were deleted.
+            DeleteAssetsResponse: Response containing the IDs of the assets that were deleted.
 
         Raises:
-            ApiException: If unable to communicate with the `asset management` service or if there are invalid
-            arguments.
+            ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
         """
         ...

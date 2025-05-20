@@ -83,7 +83,7 @@ def create_asset(client: AssetManagementClient):
     def _create_assets(
         new_assets: CreateAssetRequest,
     ) -> CreateAssetsPartialSuccessResponse:
-        response = client.create_assets(new_assets)
+        response = client.create_assets(assets = new_assets)
         responses.append(response)
         return response
 

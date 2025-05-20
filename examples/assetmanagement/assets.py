@@ -43,7 +43,7 @@ create_assets_request = [
             is_limited=False,
             date="2022-06-07T18:58:05.000Z",
         ),
-        is_n_i_asset=True,
+        is_NI_asset=True,
         workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
         location=AssetLocation(
             state=AssetPresenceWithSystemConnection(
@@ -60,7 +60,7 @@ create_assets_request = [
         ),
         properties={"Key1": "Value1"},
         keywords=["Keyword1"],
-        discovery_type=AssetDiscoveryType.AUTOMATIC,
+        discovery_type=AssetDiscoveryType.MANUAL,
         file_ids=["608a5684800e325b48837c2a"],
         supports_self_test=True,
         supports_reset=True,
