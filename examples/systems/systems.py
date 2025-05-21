@@ -26,7 +26,7 @@ create_virtual_system_request: CreateVirtualSystemRequest = CreateVirtualSystemR
 
 # Create a virtual system.
 create_virtual_system_response = client.create_virtual_system(
-    create_virtual=create_virtual_system_request
+    create_virtual_system_request=create_virtual_system_request
 )
 
 minion_id = None

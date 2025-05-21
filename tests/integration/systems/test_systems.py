@@ -37,7 +37,7 @@ def create_virtual_systems(client: SystemsClient):
     def _create_virtual_systems(
         new_virtual_systems: CreateVirtualSystemRequest,
     ) -> CreateVirtualSystemResponse:
-        response = client.create_virtual_system(create_virtual=new_virtual_systems)
+        response = client.create_virtual_system(create_virtual_system_request=new_virtual_systems)
         responses.append(response)
         return response
 
@@ -122,7 +122,7 @@ class TestSystemsClient:
         )
 
         create_virtual_system_response: CreateVirtualSystemResponse = (
-            client.create_virtual_system(create_virtual=create_virtual_system_request)
+            client.create_virtual_system(create_virtual_system_request=create_virtual_system_request)
         )
 
         minion_id = (

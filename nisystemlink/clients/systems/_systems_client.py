@@ -36,7 +36,7 @@ class SystemsClient(BaseClient):
 
     @post("virtual")
     def create_virtual_system(
-        self, create_virtual: models.CreateVirtualSystemRequest
+        self, create_virtual_system_request: models.CreateVirtualSystemRequest
     ) -> models.CreateVirtualSystemResponse:
         """Creates a virtual system.
 
