@@ -115,8 +115,8 @@ class TestPlanClient(BaseClient):
         query_params = {
             "filter": query_request.filter,
             "take": query_request.take,
-            "continuationToken": query_request.continuation_token,
-            "orderBy": query_request.order_by,
+            "continuation_token": query_request.continuation_token,
+            "order_by": query_request.order_by,
             "descending": query_request.descending,
             "return_count": query_request.return_count,
             "projection": projection_str,
