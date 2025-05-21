@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import auto, Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -13,69 +13,69 @@ class OrderBy(Enum):
 class AssetField(str, Enum):
     """Model for an object describing an asset with all of its properties."""
 
-    MODEL_NAME = "modelName"
+    MODEL_NAME = auto()
 
-    MODEL_NUMBER = "modelNumber"
+    MODEL_NUMBER = auto()
 
-    SERIAL_NUMBER = "serialNumber"
+    SERIAL_NUMBER = auto()
 
-    VENDOR_NAME = "vendorName"
+    VENDOR_NAME = auto()
 
-    VENDOR_NUMBER = "vendorNumber"
+    VENDOR_NUMBER = auto()
 
-    BUS_TYPE = "busType"
+    BUS_TYPE = auto()
 
-    NAME = "name"
+    NAME = auto()
 
-    ASSET_TYPE = "assetType"
+    ASSET_TYPE = auto()
 
-    DISCOVERY_TYPE = "discoveryType"
+    DISCOVERY_TYPE = auto()
 
-    FIRMWARE_VERSION = "firmwareVersion"
+    FIRMWARE_VERSION = auto()
 
-    HARDWARE_VERSION = "hardwareVersion"
+    HARDWARE_VERSION = auto()
 
-    VISA_RESOURCE_NAME = "visaResourceName"
+    VISA_RESOURCE_NAME = auto()
 
-    TEMPERATURE_SENSORS = "temperatureSensors"
+    TEMPERATURE_SENSORS = auto()
 
-    SUPPORTS_SELF_CALIBRATION = "supportsSelfCalibration"
+    SUPPORTS_SELF_CALIBRATION = auto()
 
-    SUPPORTS_EXTERNAL_CALIBRATION = "supportsExternalCalibration"
+    SUPPORTS_EXTERNAL_CALIBRATION = auto()
 
-    CUSTOM_CALIBRATION_INTERVAL = "customCalibrationInterval"
+    CUSTOM_CALIBRATION_INTERVAL = auto()
 
-    SELF_CALIBRATION = "selfCalibration"
+    SELF_CALIBRATION = auto()
 
-    IS_NI_ASSET = "isNIAsset"
+    IS_NI_ASSET = auto()
 
-    ID = "id"
+    ID = auto()
 
-    LOCATION = "location"
+    LOCATION = auto()
 
-    CALIBRATION_STATUS = "calibrationStatus"
+    CALIBRATION_STATUS = auto()
 
-    IS_SYSTEM_CONTROLLER = "isSystemController"
+    IS_SYSTEM_CONTROLLER = auto()
 
-    EXTERNAL_CALIBRATION = "externalCalibration"
+    EXTERNAL_CALIBRATION = auto()
 
-    WORKSPACE = "workspace"
+    WORKSPACE = auto()
 
-    PROPERTIES = "properties"
+    PROPERTIES = auto()
 
-    KEYWORDS = "keywords"
+    KEYWORDS = auto()
 
-    LAST_UPDATE = "lastUpdatedTimestamp"
+    LAST_UPDATE = auto()
 
-    FILES_IDS = "fileIds"
+    FILES_IDS = auto()
 
-    SUPPORTS_SELF_RESET = "supportsSelfTest"
+    SUPPORTS_SELF_RESET = auto()
 
-    SUPPORTS_RESET = "supportsReset"
+    SUPPORTS_RESET = auto()
 
-    PART_NUMBER = "partNumber"
+    PART_NUMBER = auto()
 
-    OUT_FOR_CALIBRATION = "outForCalibration"
+    OUT_FOR_CALIBRATION = auto()
 
 
 class QueryAssetsRequest(JsonModel):

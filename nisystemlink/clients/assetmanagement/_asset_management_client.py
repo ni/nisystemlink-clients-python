@@ -88,7 +88,8 @@ class AssetManagementClient(BaseClient):
             arguments.
         """
         projection_str = (
-            f"new({', '.join(query.projection)})" if query.projection else None
+            f"new({', '.join(projection.name for projection in query.projection)})"
+            if query.projection else None
         )
         query_params = {
             "filter": query.filter,
@@ -104,6 +105,7 @@ class AssetManagementClient(BaseClient):
 
         query_request = models._QueryAssetRequest(**query_params)
 
+        print(query_request, projection_str, query.projection)
         return self.__query_assets(query=query_request)
 
     @post("delete-assets", args=[Field("ids")])
