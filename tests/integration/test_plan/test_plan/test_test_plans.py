@@ -20,20 +20,6 @@ from nisystemlink.clients.test_plan.test_plan.models import (
 
 
 @pytest.fixture(scope="class")
-def test_plan_create() -> CreateTestPlansRequest:
-    """Fixture to create create test plan object."""
-    testPlan = CreateTestPlansRequest(
-        testPlans=[
-            CreateTestPlanBodyContent(
-                name="Python integration test plan", state="NEW", part_number="px40482"
-            )
-        ]
-    )
-
-    return testPlan
-
-
-@pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> TestPlanClient:
     """Fixture to create a TestPlansClient instance"""
     return TestPlanClient(enterprise_config)
@@ -42,11 +28,21 @@ def client(enterprise_config: HttpConfiguration) -> TestPlanClient:
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestTestPlans:
+
+    _test_plan_create = CreateTestPlansRequest(
+        testPlans=[
+            CreateTestPlanBodyContent(
+                name="Python integration test plan", state="NEW", part_number="px40482"
+            )
+        ]
+    )
+    """create test plan object."""
+
     def test__create_and_delete_test_plan__returns_created_and_deleted_test_plans(
-        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient
     ):
         create_test_plan_response = client.create_test_plans(
-            create_request=test_plan_create
+            create_request=self._test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
 
@@ -62,11 +58,9 @@ class TestTestPlans:
         assert get_test_plan_response is not None
         assert get_test_plan_response.name == "Python integration test plan"
 
-    def test__get_test_plan__returns_get_test_plan(
-        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
-    ):
+    def test__get_test_plan__returns_get_test_plan(self, client: TestPlanClient):
         create_test_plan_response = client.create_test_plans(
-            create_request=test_plan_create
+            create_request=self._test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
 
@@ -81,11 +75,9 @@ class TestTestPlans:
         assert isinstance(get_test_plan_response, TestPlan)
         assert get_test_plan_response.id == created_test_plan.id
 
-    def test__update_test_plan__returns_updated_test_plan(
-        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
-    ):
+    def test__update_test_plan__returns_updated_test_plan(self, client: TestPlanClient):
         create_test_plan_response = client.create_test_plans(
-            create_request=test_plan_create
+            create_request=self._test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
 
@@ -112,10 +104,10 @@ class TestTestPlans:
         assert updated_test_plan.name == "Updated Test Plan"
 
     def test__schedule_test_plan__returns_scheduled_test_plan(
-        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient
     ):
         create_test_plan_response = client.create_test_plans(
-            create_request=test_plan_create
+            create_request=self._test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
 
@@ -148,11 +140,9 @@ class TestTestPlans:
         )
         assert scheduled_test_plan.system_id == "fake-system"
 
-    def test__query_test_plans__return_queried_test_plan(
-        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
-    ):
+    def test__query_test_plans__return_queried_test_plan(self, client: TestPlanClient):
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
-            create_request=test_plan_create
+            create_request=self._test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
 
@@ -171,7 +161,7 @@ class TestTestPlans:
         assert queried_test_plans_response.total_count > 0
 
     def test__query_test_plans_with_projections__returns_the_test_plans_with_projected_properties(
-        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient
     ):
         query_test_plans_request = QueryTestPlansRequest(
             projection=[TestPlanField.ID, TestPlanField.NAME]
