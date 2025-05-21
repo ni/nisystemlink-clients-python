@@ -89,7 +89,8 @@ class AssetManagementClient(BaseClient):
         """
         projection_str = (
             f"new({', '.join(projection.name for projection in query.projection)})"
-            if query.projection else None
+            if query.projection
+            else None
         )
         query_params = {
             "filter": query.filter,

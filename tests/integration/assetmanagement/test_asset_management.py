@@ -22,10 +22,38 @@ from nisystemlink.clients.assetmanagement.models import (
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
+@pytest.fixture
+def create_asset(client: AssetManagementClient):
+    """Fixture to return a factory that creates assets."""
+    responses: List[CreateAssetsPartialSuccessResponse] = []
+
+    def _create_assets(
+        new_assets: CreateAssetRequest,
+    ) -> CreateAssetsPartialSuccessResponse:
+        response = client.create_assets(assets=new_assets)
+        responses.append(response)
+        return response
+
+    yield _create_assets
+
+    created_assets: List[Asset] = []
+    for response in responses:
+        if response.assets:
+            created_assets = created_assets + response.assets
+    client.delete_assets(ids=[asset.id for asset in created_assets])
+
+
 @pytest.fixture(scope="class")
-def create_assets_request() -> List[CreateAssetRequest]:
-    """Fixture to create an CreateAssetRequest object."""
-    assets = [
+def client(enterprise_config: HttpConfiguration) -> AssetManagementClient:
+    """Fixture to create a AssetManagementClient instance"""
+    return AssetManagementClient(enterprise_config)
+
+
+@pytest.mark.integration
+@pytest.mark.enterprise
+class TestAssetManagement:
+
+    _create_assets_request = [
         CreateAssetRequest(
             model_name="python integration test 1",
             serial_number="01BB8",
@@ -68,49 +96,13 @@ def create_assets_request() -> List[CreateAssetRequest]:
             partNumber="A1234",
         )
     ]
-
-    return assets
-
-
-@pytest.fixture
-def create_asset(client: AssetManagementClient):
-    """Fixture to return a factory that creates assets."""
-    responses: List[CreateAssetsPartialSuccessResponse] = []
-
-    def _create_assets(
-        new_assets: CreateAssetRequest,
-    ) -> CreateAssetsPartialSuccessResponse:
-        response = client.create_assets(assets=new_assets)
-        responses.append(response)
-        return response
-
-    yield _create_assets
-
-    created_assets: List[Asset] = []
-    for response in responses:
-        if response.assets:
-            created_assets = created_assets + response.assets
-    client.delete_assets(ids=[asset.id for asset in created_assets])
-
-
-@pytest.fixture(scope="class")
-def client(enterprise_config: HttpConfiguration) -> AssetManagementClient:
-    """Fixture to create a AssetManagementClient instance"""
-    return AssetManagementClient(enterprise_config)
-
-
-@pytest.mark.integration
-@pytest.mark.enterprise
-class TestAssetManagement:
+    """CreateAssetRequest object"""
 
     def test__create_asset__returns_created_asset(
-        self,
-        client: AssetManagementClient,
-        create_asset,
-        create_assets_request: List[CreateAssetRequest],
+        self, client: AssetManagementClient, create_asset
     ):
-        create_assets_request[0].model_number = 101
-        create_response = create_asset(create_assets_request)
+        self._create_assets_request[0].model_number = 101
+        create_response = create_asset(self._create_assets_request)
 
         asset_id = (
             create_response.assets[0].id
@@ -126,14 +118,10 @@ class TestAssetManagement:
         asset_id = assets[0].id
         assert asset_id is not None
 
-    def test__delete_asset__returns_deleted_asset(
-        self,
-        client: AssetManagementClient,
-        create_assets_request: List[CreateAssetRequest],
-    ):
-        create_assets_request[0].model_number = 102
+    def test__delete_asset__returns_deleted_asset(self, client: AssetManagementClient):
+        self._create_assets_request[0].model_number = 102
         create_response: CreateAssetsPartialSuccessResponse = client.create_assets(
-            assets=create_assets_request
+            assets=self._create_assets_request
         )
         asset_id = (
             create_response.assets[0].id
@@ -151,13 +139,10 @@ class TestAssetManagement:
         assert delete_response.ids[0] == asset_id
 
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
-        self,
-        client: AssetManagementClient,
-        create_asset,
-        create_assets_request: List[CreateAssetRequest],
+        self, client: AssetManagementClient, create_asset
     ):
-        create_assets_request[0].model_number = 103
-        create_assets_response = create_asset(create_assets_request)
+        self._create_assets_request[0].model_number = 103
+        create_assets_response = create_asset(self._create_assets_request)
 
         assert create_assets_response is not None
         assert len(create_assets_response.assets) == 1
