@@ -16,21 +16,25 @@ class TestPlanTemplateOrderBy(str, Enum):
 
 
 class TestPlanTemplateField(str, Enum):
-    ID = "id"
-    NAME = "name"
-    TEMPLATE_GROUP = "templateGroup"
-    PRODUCT_FAMILIES = "productFamilies"
-    PART_NUMBERS = "partNumbers"
-    SUMMARY = "summary"
-    DESCRIPTION = "description"
-    TEST_PROGRAM = "testProgram"
-    ESTIMATED_DURATION_IN_SECONDS = "estimatedDurationInSeconds"
-    SYSTEM_FILTER = "systemFilter"
-    EXECUTION_ACTIONS = "executionActions"
-    FILE_IDS = "fileIds"
-    WORKSPACE = "workspace"
-    PROPERTIES = "properties"
-    DASHBOARD = "dashboard"
+    ID = enum.auto()
+    NAME = enum.auto()
+    TEMPLATE_GROUP = enum.auto()
+    PRODUCT_FAMILIES = enum.auto()
+    PART_NUMBERS = enum.auto()
+    SUMMARY = enum.auto()
+    DESCRIPTION = enum.auto()
+    TEST_PROGRAM = enum.auto()
+    ESTIMATED_DURATION_IN_SECONDS = enum.auto()
+    SYSTEM_FILTER = enum.auto()
+    EXECUTION_ACTIONS = enum.auto()
+    FILE_IDS = enum.auto()
+    WORKSPACE = enum.auto()
+    PROPERTIES = enum.auto()
+    DASHBOARD = enum.auto()
+    CREATED_BY = enum.auto()
+    UPDATED_BY = enum.auto()
+    CREATED_AT = enum.auto()
+    UPDATED_AT = enum.auto()
 
 
 class QueryTestPlanTemplatesRequest(JsonModel):
@@ -74,6 +78,14 @@ class QueryTestPlanTemplatesRequest(JsonModel):
 
     order_by: Optional[TestPlanTemplateOrderBy] = None
     """Field by which test plan templates can be ordered/sorted."""
+
+    substitutions: Optional[List[str]] = None
+    """Makes substitutions in the query filter expression
+    using non-negative integers. These integers
+    use the @ symbol as a prefix. The filter
+    expression replaces each substitution
+    with the element at the corresponding
+    index in this list. The index is zero-based."""
 
     descending: Optional[bool] = None
     """Whether to return the test plan templates in the descending order. By default, test plan
@@ -141,6 +153,14 @@ class _QueryTestPlanTemplatesRequest(JsonModel):
     order_by: Optional[TestPlanTemplateOrderBy] = None
     """Field by which test plan templates can be ordered/sorted."""
 
+    substitutions: Optional[List[str]] = None
+    """Makes substitutions in the query filter expression
+    using non-negative integers. These integers
+    use the @ symbol as a prefix. The filter
+    expression replaces each substitution
+    with the element at the corresponding
+    index in this list. The index is zero-based."""
+
     descending: Optional[bool] = None
     """Whether to return the test plan templates in the descending order. By default, test plan
     templates are sorted in the ascending order."""
@@ -149,7 +169,7 @@ class _QueryTestPlanTemplatesRequest(JsonModel):
     """Allows users to continue the query at the next test plan templates that matches the given
     criteria."""
 
-    projection: List[str] = []
+    projection: Optional[List[str]] = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
     all properties will be returned.

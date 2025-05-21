@@ -3,6 +3,7 @@ from nisystemlink.clients.test_plan.test_plan_templates.models._create_test_plan
 )
 from nisystemlink.clients.test_plan.test_plan_templates.models._query_test_plan_templates_request import (
     QueryTestPlanTemplatesRequest,
+    _QueryTestPlanTemplatesRequest,
     TestPlanTemplateField,
 )
 from nisystemlink.clients.test_plan.test_plan_templates.models._query_test_plan_templates_response import (

@@ -22,10 +22,10 @@ class Dashboard(JsonModel):
 class TestPlanTemplateBase(JsonModel):
     """Contains information about a test plan template."""
 
-    name: str
+    name: str | None
     """Name of the test plan template."""
 
-    template_group: str = None
+    template_group: str | None = None
     """The template group defined by the user."""
 
     product_families: Optional[List[str]] = None
@@ -47,7 +47,7 @@ class TestPlanTemplateBase(JsonModel):
     """The estimated time in seconds for executing the test plan created from this template."""
 
     system_filter: Optional[str] = None
-    """The LINQ filter string is used to filter the potential list of 
+    """The LINQ filter string is used to filter the potential list of
     systems capable of executing test plans created from this template.
     """
 
