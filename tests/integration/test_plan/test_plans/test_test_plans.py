@@ -1,7 +1,7 @@
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.test_plan.test_plans import TestPlansClient
-from nisystemlink.clients.test_plan.test_plans.models import (
+from nisystemlink.clients.test_plan.test_plan import TestPlanClient
+from nisystemlink.clients.test_plan.test_plan.models import (
     CreateTestPlanBodyContent,
     CreateTestPlansRequest,
     CreateTestPlansResponse,
@@ -32,19 +32,19 @@ def test_plan_create() -> CreateTestPlansRequest:
 
 
 @pytest.fixture(scope="class")
-def client(enterprise_config: HttpConfiguration) -> TestPlansClient:
+def client(enterprise_config: HttpConfiguration) -> TestPlanClient:
     """Fixture to create a TestPlansClient instance"""
-    return TestPlansClient(enterprise_config)
+    return TestPlanClient(enterprise_config)
 
 
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestTestPlans:
     def test__create_and_delete_test_plan__returns_created_and_deleted_test_plans(
-        self, client: TestPlansClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
-            testplans=test_plan_create
+            create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.createdTestPlans[0]
 
@@ -61,10 +61,10 @@ class TestTestPlans:
         assert get_test_plan_response.name == "Python integration test plan"
 
     def test__get_test_plan__returns_get_test_plan(
-        self, client: TestPlansClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
-            testplans=test_plan_create
+            create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.createdTestPlans[0]
 
@@ -80,14 +80,14 @@ class TestTestPlans:
         assert get_test_plan_response.id == created_test_plan.id
 
     def test__update_test_plan__returns_updated_test_plan(
-        self, client: TestPlansClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
-            testplans=test_plan_create
+            create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.createdTestPlans[0]
 
-        update_request = UpdateTestPlansRequest(
+        update_test_plans_request = UpdateTestPlansRequest(
             testPlans=[
                 UpdateTestPlanBodyContent(
                     id=created_test_plan.id,
@@ -95,27 +95,29 @@ class TestTestPlans:
                 )
             ]
         )
-        update_test_plan_response = client.update_test_plan(test_plans=update_request)
+        update_test_plans_response = client.update_test_plans(
+            update_request=update_test_plans_request
+        )
 
         delete_request = DeleteTestPlansRequest(
             ids=[create_test_plan_response.createdTestPlans[0].id]
         )
         client.delete_test_plans(ids=delete_request)
 
-        assert update_test_plan_response is not None
-        updated_test_plan = update_test_plan_response.updated_test_plans[0]
+        assert update_test_plans_response is not None
+        updated_test_plan = update_test_plans_response.updated_test_plans[0]
         assert updated_test_plan.id == created_test_plan.id
         assert updated_test_plan.name == "Updated Test Plan"
 
     def test__schedule_test_plan__returns_scheduled_test_plan(
-        self, client: TestPlansClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
-            testplans=test_plan_create
+            create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.createdTestPlans[0]
 
-        schedule_request = ScheduleTestPlansRequest(
+        schedule_test_plans_request = ScheduleTestPlansRequest(
             test_plans=[
                 ScheduleTestPlanBodyContent(
                     id=created_test_plan.id,
@@ -125,24 +127,24 @@ class TestTestPlans:
                 )
             ]
         )
-        schedule_test_plan_response = client.schedule_test_plan(
-            schedule=schedule_request
+        schedule_test_plans_response = client.schedule_test_plans(
+            schedule_request=schedule_test_plans_request
         )
 
         delete_request = DeleteTestPlansRequest(ids=[created_test_plan.id])
         client.delete_test_plans(ids=delete_request)
 
-        assert schedule_test_plan_response is not None
-        scheduled_test_plan = schedule_test_plan_response.scheduled_test_plans[0]
+        assert schedule_test_plans_response is not None
+        scheduled_test_plan = schedule_test_plans_response.scheduled_test_plans[0]
         assert scheduled_test_plan.id == created_test_plan.id
         assert scheduled_test_plan.plannedStartDateTime == "2025-05-20T15:07:42.527Z"
         assert scheduled_test_plan.systemId == "fake-system"
 
     def test__query_test_plans__return_queried_test_plan(
-        self, client: TestPlansClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
-            testplans=test_plan_create
+            create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.createdTestPlans[0]
 
@@ -150,7 +152,7 @@ class TestTestPlans:
             filter=f'id = "{created_test_plan.id}"', return_count=True
         )
         queried_test_plans_response = client.query_test_plans(
-            query=query_test_plans_request
+            query_request=query_test_plans_request
         )
 
         delete_request = DeleteTestPlansRequest(ids=[created_test_plan.id])
@@ -161,12 +163,12 @@ class TestTestPlans:
         assert queried_test_plans_response.total_count > 0
 
     def test__query_test_plans_with_projections__returns_the_test_plans_with_projected_properties(
-        self, client: TestPlansClient, test_plan_create: CreateTestPlansRequest
+        self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
         query_test_plans_request = QueryTestPlansRequest(
             projection=[TestPlanField.ID, TestPlanField.NAME]
         )
-        response = client.query_test_plans(query=query_test_plans_request)
+        response = client.query_test_plans(query_request=query_test_plans_request)
 
         assert response is not None
         assert all(

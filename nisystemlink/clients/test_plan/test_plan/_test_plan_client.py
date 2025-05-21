@@ -19,7 +19,7 @@ from .models import (
 )
 
 
-class TestPlansClient(BaseClient):
+class TestPlanClient(BaseClient):
     def __init__(self, configuration: Optional[HttpConfiguration] = None):
         """Initialize an instance.
 
@@ -51,7 +51,7 @@ class TestPlansClient(BaseClient):
 
     @post("testplans")
     def create_test_plans(
-        self, testplans: CreateTestPlansRequest
+        self, create_request: CreateTestPlansRequest
     ) -> CreateTestPlansResponse:
         """Create a new test plan.
 
@@ -76,7 +76,9 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("query-testplans")
-    def query_test_plans(self, query: QueryTestPlansRequest) -> QueryTestPlansResponse:
+    def query_test_plans(
+        self, query_request: QueryTestPlansRequest
+    ) -> QueryTestPlansResponse:
         """Query test plans.
 
         Args:
@@ -88,8 +90,8 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("schedule-testplans")
-    def schedule_test_plan(
-        self, schedule: ScheduleTestPlansRequest
+    def schedule_test_plans(
+        self, schedule_request: ScheduleTestPlansRequest
     ) -> ScheduleTestPlansResponse:
         """Schedule a test plan.
 
@@ -102,8 +104,8 @@ class TestPlansClient(BaseClient):
         ...
 
     @post("update-testplans")
-    def update_test_plan(
-        self, test_plans: UpdateTestPlansRequest
+    def update_test_plans(
+        self, update_request: UpdateTestPlansRequest
     ) -> UpdateTestPlansResponse:
         """Update a test plan.
 

@@ -1,6 +1,6 @@
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.test_plan.test_plans import TestPlansClient
-from nisystemlink.clients.test_plan.test_plans.models import (
+from nisystemlink.clients.test_plan.test_plan import TestPlanClient
+from nisystemlink.clients.test_plan.test_plan.models import (
     CreateTestPlanBodyContent,
     CreateTestPlansRequest,
     QueryTestPlansRequest,
@@ -15,7 +15,7 @@ server_configuration = HttpConfiguration(
     server_uri="https://yourserver.yourcompany.com",
     api_key="YourAPIKeyGeneratedFromSystemLink",
 )
-client = TestPlansClient(configuration=server_configuration)
+client = TestPlanClient(configuration=server_configuration)
 
 create_test_plans_request = CreateTestPlansRequest(
     testPlans=[
@@ -26,26 +26,24 @@ create_test_plans_request = CreateTestPlansRequest(
 )
 
 # create a test plan
-created_test_plans = client.create_test_plans(testplans=create_test_plans_request)
+created_test_plans = client.create_test_plans(create_request=create_test_plans_request)
 
 created_test_plan_id = created_test_plans.createdTestPlans[0].id
 
 # Query test plan using id.
-query_asset_request = QueryTestPlansRequest(
-    ids=[created_test_plan_id],
+query_test_plans_request = QueryTestPlansRequest(
     skip=0,
     take=1,
     descending=False,
-    calibratable_only=False,
     returnCount=False,
 )
-client.query_test_plans(query=query_asset_request)
+client.query_test_plans(query_request=query_test_plans_request)
 
 # Get test plan
 get_test_plan = client.get_test_plan(test_plan_id=created_test_plan_id)
 
 # Update test plan
-update_request = UpdateTestPlansRequest(
+update_test_plans_request = UpdateTestPlansRequest(
     testPlans=[
         UpdateTestPlanBodyContent(
             id=created_test_plan_id,
@@ -53,10 +51,10 @@ update_request = UpdateTestPlansRequest(
         )
     ]
 )
-updated_test_plan = client.update_test_plan(test_plans=update_request)
+updated_test_plan = client.update_test_plan(update_request=update_test_plans_request)
 
 # Schedule the test plan
-schedule_request = ScheduleTestPlansRequest(
+schedule_test_plans_request = ScheduleTestPlansRequest(
     test_plans=[
         ScheduleTestPlanBodyContent(
             id=created_test_plan_id,
@@ -66,7 +64,9 @@ schedule_request = ScheduleTestPlansRequest(
         )
     ]
 )
-schedule_test_plan_response = client.schedule_test_plan(schedule=schedule_request)
+schedule_test_plan_response = client.schedule_test_plan(
+    schedule_request=schedule_test_plans_request
+)
 
 # Delete test plan
 client.delete_test_plans(ids=[created_test_plan_id])
