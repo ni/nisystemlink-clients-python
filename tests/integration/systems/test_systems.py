@@ -51,7 +51,7 @@ def create_virtual_systems(client: SystemsClient):
             ]
         client.remove_systems(
             virtual_system_to_remove=RemoveSystemsRequest(
-                tgt=created_virtual_systems_minion_ids, force=False
+                tgt=created_virtual_systems_minion_ids,
             )
         )
 
@@ -109,6 +109,7 @@ class TestSystemsClient:
             query=QuerySystemsRequest(filter=f'id="{minion_id}"')
         )
 
+        assert query_virtual_system_response.data is not None
         assert query_virtual_system_response.data[0].id == minion_id
 
     def test__remove_sytems(self, client: SystemsClient):
@@ -134,8 +135,8 @@ class TestSystemsClient:
         assert minion_id is not None
 
         remove_system_response: RemoveSystemsResponse = client.remove_systems(
-            virtual_system_to_remove=RemoveSystemsRequest(tgt=[minion_id], force=False)
+            virtual_system_to_remove=RemoveSystemsRequest(tgt=[minion_id])
         )
 
-        assert remove_system_response is not None
+        assert remove_system_response.removed_ids is not None
         assert remove_system_response.removed_ids[0] == minion_id

@@ -72,7 +72,7 @@ class SystemsClient(BaseClient):
     @post("remove-systems")
     def remove_systems(
         self, virtual_system_to_remove: models.RemoveSystemsRequest
-    ) -> Optional[models.RemoveSystemsResponse]:
+    ) -> models.RemoveSystemsResponse:
         """Removes multiple systems.
 
         Args:
