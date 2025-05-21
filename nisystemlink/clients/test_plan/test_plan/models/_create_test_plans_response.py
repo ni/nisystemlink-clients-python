@@ -11,11 +11,11 @@ class CreateTestPlansResponse(JsonModel):
     failed test plans, and any associated errors.
     """
 
-    testPlans: Optional[List[TestPlan]] = None
+    test_plans: Optional[List[TestPlan]] = None
     """List of all test plans involved in the operation."""
 
-    createdTestPlans: Optional[List[TestPlan]] = None
+    created_test_plans: Optional[List[TestPlan]] = None
     """List of test plans that were successfully created."""
 
-    failedTestPlans: Optional[List[CreateTestPlanBodyContent]] = None
+    failed_test_plans: Optional[List[CreateTestPlanBodyContent]] = None
     """List of test plans that failed to be created, with their request body content."""

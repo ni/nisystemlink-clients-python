@@ -14,7 +14,7 @@ class TestPlan(JsonModel):
     id: str
     """The unique identifier of the test plan."""
 
-    templateId: Optional[str] = None
+    template_id: Optional[str] = None
     """The identifier of the template used to create the test plan."""
 
     name: Optional[str] = None
@@ -29,70 +29,70 @@ class TestPlan(JsonModel):
     description: Optional[str] = None
     """The description of the test plan."""
 
-    assignedTo: Optional[str] = None
+    assigned_to: Optional[str] = None
     """The user or group assigned to the test plan."""
 
-    workOrderId: Optional[str] = None
+    work_order_id: Optional[str] = None
     """The identifier of the associated work order."""
 
-    workOrderName: Optional[str] = None
+    work_order_name: Optional[str] = None
     """The name of the associated work order."""
 
     workspace: Optional[str] = None
     """The workspace to which the test plan belongs."""
 
-    createdBy: Optional[str] = None
+    created_by: Optional[str] = None
     """The user who created the test plan."""
 
-    updatedBy: Optional[str] = None
+    updated_by: Optional[str] = None
     """The user who last updated the test plan."""
 
-    createdAt: Optional[str] = None
+    created_At: Optional[str] = None
     """The date and time when the test plan was created."""
 
-    updatedAt: Optional[str] = None
+    updated_at: Optional[str] = None
     """The date and time when the test plan was last updated."""
 
     properties: Optional[Dict[str, str]] = None
     """Additional properties associated with the test plan."""
 
-    partNumber: Optional[str] = None
+    part_number: Optional[str] = None
     """The part number associated with the test plan."""
 
-    dutId: Optional[str] = None
+    dut_id: Optional[str] = None
     """The identifier of the device under test (DUT)."""
 
-    testProgram: Optional[str] = None
+    test_program: Optional[str] = None
     """The test program associated with the test plan."""
 
-    systemId: Optional[str] = None
+    system_id: Optional[str] = None
     """The identifier of the system used for the test plan."""
 
-    fixtureIds: Optional[List[str]] = None
+    fixture_ids: Optional[List[str]] = None
     """The list of fixture identifiers associated with the test plan."""
 
-    systemFilter: Optional[str] = None
+    system_filter: Optional[str] = None
     """The filter used to select systems for the test plan."""
 
-    plannedStartDateTime: Optional[str] = None
+    planned_start_date_time: Optional[str] = None
     """The planned start date and time for the test plan."""
 
-    estimatedEndDateTime: Optional[str] = None
+    estimated_end_date_time: Optional[str] = None
     """The estimated end date and time for the test plan."""
 
-    estimatedDurationInSeconds: Optional[float] = None
+    estimated_duration_in_seconds: Optional[float] = None
     """The estimated duration of the test plan in seconds."""
 
-    fileIdsFromTemplate: Optional[List[str]] = None
+    file_ids_from_template: Optional[List[str]] = None
     """The list of file identifiers inherited from the template."""
 
-    executionActions: Optional[List[ExecutionDefinition]] = None
+    execution_actions: Optional[List[ExecutionDefinition]] = None
     """The execution actions defined for the test plan."""
 
-    executionHistory: Optional[List[ExecutionEvent]] = None
+    execution_history: Optional[List[ExecutionEvent]] = None
     """The execution history of the test plan."""
 
-    dashboardUrl: Optional[Dict[str, str]] = None
+    dashboard_url: Optional[Dict[str, str]] = None
     """The URLs for dashboards related to the test plan."""
 
     dashboard: Optional[Dict[str, str]] = None

@@ -21,7 +21,7 @@ class CreateTestPlanBodyContent(JsonModel):
     name: Optional[str] = None
     """The name of the test plan."""
 
-    templateId: Optional[str] = None
+    template_id: Optional[str] = None
     """The ID of the template to use for the test plan."""
 
     state: Optional[str] = None
@@ -30,38 +30,38 @@ class CreateTestPlanBodyContent(JsonModel):
     description: Optional[str] = None
     """A description of the test plan."""
 
-    assignedTo: Optional[str] = None
+    assigned_to: Optional[str] = None
     """The user or group assigned to the test plan."""
 
-    workOrderId: Optional[str] = None
+    work_order_id: Optional[str] = None
     """The work order ID associated with the test plan."""
 
-    estimatedDurationInSeconds: Optional[int] = None
+    estimated_duration_in_seconds: Optional[int] = None
     """The estimated duration of the test plan in seconds."""
 
     properties: Optional[Dict[str, str]] = None
     """Additional properties for the test plan."""
 
-    partNumber: Optional[str] = None
+    part_number: Optional[str] = None
     """The part number associated with the test plan."""
 
-    dutId: Optional[str] = None
+    dut_id: Optional[str] = None
     """The Device Under Test (DUT) ID."""
 
-    testProgram: Optional[str] = None
+    test_program: Optional[str] = None
     """The test program associated with the test plan."""
 
-    systemFilter: Optional[str] = None
+    systemtest_programfilter: Optional[str] = None
     """The system filter to apply."""
 
     workspace: Optional[str] = None
     """The workspace associated with the test plan."""
 
-    fileIdsFromTemplate: Optional[List[str]] = None
+    file_ids_from_template: Optional[List[str]] = None
     """List of file IDs from the template."""
 
     dashboard: Optional[Dashboard] = None
     """The dashboard associated with the test plan."""
 
-    executionActions: Optional[List[ExecutionDefinition]] = None
+    execution_actions: Optional[List[ExecutionDefinition]] = None
     """List of execution actions for the test plan."""

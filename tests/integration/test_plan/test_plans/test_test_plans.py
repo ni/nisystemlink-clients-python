@@ -23,7 +23,7 @@ def test_plan_create() -> CreateTestPlansRequest:
     testPlan = CreateTestPlansRequest(
         testPlans=[
             CreateTestPlanBodyContent(
-                name="Python integration test plan", state="NEW", partNumber="px40482"
+                name="Python integration test plan", state="NEW", part_number="px40482"
             )
         ]
     )
@@ -46,7 +46,7 @@ class TestTestPlans:
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
             create_request=test_plan_create
         )
-        created_test_plan = create_test_plan_response.createdTestPlans[0]
+        created_test_plan = create_test_plan_response.created_test_plans[0]
 
         get_test_plan_response: TestPlan = client.get_test_plan(created_test_plan.id)
 
@@ -56,7 +56,7 @@ class TestTestPlans:
         assert created_test_plan is not None
         assert created_test_plan.name == "Python integration test plan"
         assert created_test_plan.state == State.New
-        assert created_test_plan.partNumber == "px40482"
+        assert created_test_plan.part_number == "px40482"
         assert get_test_plan_response is not None
         assert get_test_plan_response.name == "Python integration test plan"
 
@@ -66,12 +66,12 @@ class TestTestPlans:
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
             create_request=test_plan_create
         )
-        created_test_plan = create_test_plan_response.createdTestPlans[0]
+        created_test_plan = create_test_plan_response.created_test_plans[0]
 
         get_test_plan_response: TestPlan = client.get_test_plan(created_test_plan.id)
 
         delete_request = DeleteTestPlansRequest(
-            ids=[create_test_plan_response.createdTestPlans[0].id]
+            ids=[create_test_plan_response.created_test_plans[0].id]
         )
         client.delete_test_plans(ids=delete_request)
 
@@ -85,7 +85,7 @@ class TestTestPlans:
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
             create_request=test_plan_create
         )
-        created_test_plan = create_test_plan_response.createdTestPlans[0]
+        created_test_plan = create_test_plan_response.created_test_plans[0]
 
         update_test_plans_request = UpdateTestPlansRequest(
             testPlans=[
@@ -100,7 +100,7 @@ class TestTestPlans:
         )
 
         delete_request = DeleteTestPlansRequest(
-            ids=[create_test_plan_response.createdTestPlans[0].id]
+            ids=[create_test_plan_response.created_test_plans[0].id]
         )
         client.delete_test_plans(ids=delete_request)
 
@@ -115,7 +115,7 @@ class TestTestPlans:
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
             create_request=test_plan_create
         )
-        created_test_plan = create_test_plan_response.createdTestPlans[0]
+        created_test_plan = create_test_plan_response.created_test_plans[0]
 
         schedule_test_plans_request = ScheduleTestPlansRequest(
             test_plans=[
@@ -137,8 +137,8 @@ class TestTestPlans:
         assert schedule_test_plans_response is not None
         scheduled_test_plan = schedule_test_plans_response.scheduled_test_plans[0]
         assert scheduled_test_plan.id == created_test_plan.id
-        assert scheduled_test_plan.plannedStartDateTime == "2025-05-20T15:07:42.527Z"
-        assert scheduled_test_plan.systemId == "fake-system"
+        assert scheduled_test_plan.planned_start_date_time == "2025-05-20T15:07:42.527Z"
+        assert scheduled_test_plan.system_id == "fake-system"
 
     def test__query_test_plans__return_queried_test_plan(
         self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
@@ -146,7 +146,7 @@ class TestTestPlans:
         create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
             create_request=test_plan_create
         )
-        created_test_plan = create_test_plan_response.createdTestPlans[0]
+        created_test_plan = create_test_plan_response.created_test_plans[0]
 
         query_test_plans_request = QueryTestPlansRequest(
             filter=f'id = "{created_test_plan.id}"', return_count=True
@@ -174,32 +174,32 @@ class TestTestPlans:
         assert all(
             test_plan.id is not None
             and test_plan.name is not None
-            and test_plan.templateId is None
+            and test_plan.template_id is None
             and test_plan.state is None
             and test_plan.substate is None
             and test_plan.description is None
-            and test_plan.assignedTo is None
-            and test_plan.workOrderId is None
-            and test_plan.workOrderName is None
+            and test_plan.assigned_to is None
+            and test_plan.work_order_id is None
+            and test_plan.work_order_name is None
             and test_plan.workspace is None
-            and test_plan.createdBy is None
-            and test_plan.updatedBy is None
-            and test_plan.createdAt is None
-            and test_plan.updatedAt is None
+            and test_plan.created_by is None
+            and test_plan.updated_at is None
+            and test_plan.created_At is None
+            and test_plan.updated_by is None
             and test_plan.properties is None
-            and test_plan.partNumber is None
-            and test_plan.dutId is None
-            and test_plan.testProgram is None
-            and test_plan.systemId is None
-            and test_plan.fixtureIds is None
-            and test_plan.systemFilter is None
-            and test_plan.plannedStartDateTime is None
-            and test_plan.estimatedEndDateTime is None
-            and test_plan.estimatedDurationInSeconds is None
-            and test_plan.fileIdsFromTemplate is None
-            and test_plan.executionActions is None
-            and test_plan.executionHistory is None
-            and test_plan.dashboardUrl is None
+            and test_plan.part_number is None
+            and test_plan.dut_id is None
+            and test_plan.test_program is None
+            and test_plan.system_filter is None
+            and test_plan.fixture_ids is None
+            and test_plan.system_id is None
+            and test_plan.planned_start_date_time is None
+            and test_plan.estimated_duration_in_seconds is None
+            and test_plan.estimated_end_date_time is None
+            and test_plan.file_ids_from_template is None
+            and test_plan.execution_actions is None
+            and test_plan.execution_history is None
+            and test_plan.dashboard_url is None
             and test_plan.dashboard is None
             and test_plan.workflow is None
             for test_plan in response.test_plans

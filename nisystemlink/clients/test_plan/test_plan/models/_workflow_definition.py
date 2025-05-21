@@ -10,13 +10,13 @@ class ActionTransitionDefinition(JsonModel):
     action: str
     """The name of the action that triggers the transition."""
 
-    nextState: State
+    next_state: State
     """The state to transition to after the action is performed."""
 
-    nextSubstate: str
+    next_substate: str
     """The substate to transition to within the next state."""
 
-    showInUI: bool
+    show_in_u_i: bool
     """Indicates whether this transition should be visible in the user interface."""
 
 
@@ -29,7 +29,7 @@ class SubstateDefinition(JsonModel):
     label: str
     """The display label for the substate."""
 
-    availableActions: list[ActionTransitionDefinition]
+    available_actions: list[ActionTransitionDefinition]
     """List of actions that can be performed from this substate."""
 
 
@@ -39,10 +39,10 @@ class StateDefinition(JsonModel):
     state: State
     """The state associated with this definition."""
 
-    dashboardAvailable: bool
+    dashboard_available: bool
     """Indicates if the state is available on the dashboard."""
 
-    defaultSubstate: str
+    default_substate: str
     """The name of the default substate for this state."""
 
     substates: list[SubstateDefinition]
@@ -58,7 +58,7 @@ class ActionDefinition(JsonModel):
     label: str
     """The display label for the action."""
 
-    executionAction: ExecutionDefinition
+    execution_action: ExecutionDefinition
     """The execution details associated with the action."""
 
 
