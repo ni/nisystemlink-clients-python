@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -74,10 +75,10 @@ class TestPlan(JsonModel):
     system_filter: Optional[str] = None
     """The filter used to select systems for the test plan."""
 
-    planned_start_date_time: Optional[str] = None
+    planned_start_date_time: Optional[datetime] = None
     """The planned start date and time for the test plan."""
 
-    estimated_end_date_time: Optional[str] = None
+    estimated_end_date_time: Optional[datetime] = None
     """The estimated end date and time for the test plan."""
 
     estimated_duration_in_seconds: Optional[float] = None

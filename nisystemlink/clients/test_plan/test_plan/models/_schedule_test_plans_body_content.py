@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -18,10 +19,10 @@ class ScheduleTestPlanBodyContent(JsonModel):
     system_id: Optional[str] = None
     """(Optional) Identifier for the system where the test plan will run."""
 
-    planned_start_date_time: Optional[str] = None
+    planned_start_date_time: Optional[datetime] = None
     """(Optional) Planned start date and time for the test plan execution (ISO 8601 format)."""
 
-    estimated_end_date_time: Optional[str] = None
+    estimated_end_date_time: Optional[datetime] = None
     """(Optional) Estimated end date and time for the test plan execution (ISO 8601 format)."""
 
     estimated_duration_in_seconds: Optional[int] = None
