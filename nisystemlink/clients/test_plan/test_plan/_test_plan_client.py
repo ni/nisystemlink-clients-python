@@ -7,6 +7,7 @@ from nisystemlink.clients.core._uplink._methods import get, post
 from uplink import retry
 
 from .models import (
+    _QueryTestPlansRequest,
     CreateTestPlansRequest,
     CreateTestPlansResponse,
     DeleteTestPlansRequest,
@@ -82,6 +83,19 @@ class TestPlanClient(BaseClient):
         ...
 
     @post("query-testplans")
+    def __query_test_plans(
+        self, query_request: _QueryTestPlansRequest
+    ) -> QueryTestPlansResponse:
+        """Query test plans.
+
+        Args:
+            query: The query to execute.
+
+        Returns:
+            A QueryTestPlansResponse object containing test plans that match the query.
+        """
+        ...
+
     def query_test_plans(
         self, query_request: QueryTestPlansRequest
     ) -> QueryTestPlansResponse:
@@ -93,7 +107,26 @@ class TestPlanClient(BaseClient):
         Returns:
             A QueryTestPlansResponse object containing test plans that match the query.
         """
-        ...
+        projection_str = (
+            [projection.name for projection in query_request.projection]
+            if query_request.projection
+            else None
+        )
+        query_params = {
+            "filter": query_request.filter,
+            "take": query_request.take,
+            "continuationToken": query_request.continuation_token,
+            "orderBy": query_request.order_by,
+            "descending": query_request.descending,
+            "return_count": query_request.return_count,
+            "projection": projection_str,
+        }
+
+        query_params = {k: v for k, v in query_params.items() if v is not None}
+
+        query_test_plans_request = _QueryTestPlansRequest(**query_params)
+
+        return self.__query_test_plans(query_request=query_test_plans_request)
 
     @post("schedule-testplans")
     def schedule_test_plans(

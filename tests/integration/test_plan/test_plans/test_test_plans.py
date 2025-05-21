@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan.test_plan import TestPlanClient
@@ -43,7 +45,7 @@ class TestTestPlans:
     def test__create_and_delete_test_plan__returns_created_and_deleted_test_plans(
         self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
-        create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
+        create_test_plan_response = client.create_test_plans(
             create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
@@ -63,7 +65,7 @@ class TestTestPlans:
     def test__get_test_plan__returns_get_test_plan(
         self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
-        create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
+        create_test_plan_response = client.create_test_plans(
             create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
@@ -82,7 +84,7 @@ class TestTestPlans:
     def test__update_test_plan__returns_updated_test_plan(
         self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
-        create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
+        create_test_plan_response = client.create_test_plans(
             create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
@@ -112,7 +114,7 @@ class TestTestPlans:
     def test__schedule_test_plan__returns_scheduled_test_plan(
         self, client: TestPlanClient, test_plan_create: CreateTestPlansRequest
     ):
-        create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
+        create_test_plan_response = client.create_test_plans(
             create_request=test_plan_create
         )
         created_test_plan = create_test_plan_response.created_test_plans[0]
@@ -121,8 +123,12 @@ class TestTestPlans:
             test_plans=[
                 ScheduleTestPlanBodyContent(
                     id=created_test_plan.id,
-                    planned_start_date_time="2025-05-20T15:07:42.527Z",
-                    estimated_end_date_time="2025-05-20T15:07:42.527Z",
+                    planned_start_date_time=datetime.strptime(
+                        "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ),
+                    estimated_end_date_time=datetime.strptime(
+                        "2025-05-22T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ),
                     system_id="fake-system",
                 )
             ]
@@ -137,7 +143,9 @@ class TestTestPlans:
         assert schedule_test_plans_response is not None
         scheduled_test_plan = schedule_test_plans_response.scheduled_test_plans[0]
         assert scheduled_test_plan.id == created_test_plan.id
-        assert scheduled_test_plan.planned_start_date_time == "2025-05-20T15:07:42.527Z"
+        assert scheduled_test_plan.planned_start_date_time == datetime.strptime(
+            "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
         assert scheduled_test_plan.system_id == "fake-system"
 
     def test__query_test_plans__return_queried_test_plan(

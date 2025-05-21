@@ -1,42 +1,42 @@
-from enum import Enum
+import enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class TestPlanField(str, Enum):
+class TestPlanField(enum.Enum):
     """Model for an object describing an test plan with all of its properties."""
 
-    ID = "id"
-    TEMPLATE_ID = "templateId"
-    NAME = "name"
-    STATE = "state"
-    SUBSTATE = "substate"
-    DESCRIPTION = "description"
-    ASSIGNED_TO = "assignedTo"
-    WORK_ORDER_ID = "workOrderId"
-    WORK_ORDER_NAME = "workOrderName"
-    WORKSPACE = "workspace"
-    CREATED_BY = "createdBy"
-    UPDATED_BY = "updatedBy"
-    CREATED_AT = "createdAt"
-    UPDATED_AT = "updatedAt"
-    PROPERTIES = "properties"
-    PART_NUMBER = "partNumber"
-    DUT_ID = "dutId"
-    TEST_PROGRAM = "testProgram"
-    SYSTEM_ID = "systemId"
-    FIXTURE_IDS = "fixtureIds"
-    SYSTEM_FILTER = "systemFilter"
-    PLANNED_START_DATE_TIME = "plannedStartDateTime"
-    ESTIMATED_END_DATE_TIME = "estimatedEndDateTime"
-    ESTIMATED_DURATION_IN_SECONDS = "estimatedDurationInSeconds"
-    FILE_IDS_FROM_TEMPLATE = "fileIdsFromTemplate"
-    EXECUTION_ACTIONS = "executionActions"
-    EXECUTION_HISTORY = "executionHistory"
-    DASHBOARD_URL = "dashboardUrl"
-    DASHBOARD = "dashboard"
-    WORKFLOW = "workflow"
+    ID = enum.auto()
+    TEMPLATE_ID = enum.auto()
+    NAME = enum.auto()
+    STATE = enum.auto()
+    SUBSTATE = enum.auto()
+    DESCRIPTION = enum.auto()
+    ASSIGNED_TO = enum.auto()
+    WORK_ORDER_ID = enum.auto()
+    WORK_ORDER_NAME = enum.auto()
+    WORKSPACE = enum.auto()
+    CREATED_BY = enum.auto()
+    UPDATED_BY = enum.auto()
+    CREATED_AT = enum.auto()
+    UPDATED_AT = enum.auto()
+    PROPERTIES = enum.auto()
+    PART_NUMBER = enum.auto()
+    DUT_ID = enum.auto()
+    TEST_PROGRAM = enum.auto()
+    SYSTEM_ID = enum.auto()
+    FIXTURE_IDS = enum.auto()
+    SYSTEM_FILTER = enum.auto()
+    PLANNED_START_DATE_TIME = enum.auto()
+    ESTIMATED_END_DATE_TIME = enum.auto()
+    ESTIMATED_DURATION_IN_SECONDS = enum.auto()
+    FILE_IDS_FROM_TEMPLATE = enum.auto()
+    EXECUTION_ACTIONS = enum.auto()
+    EXECUTION_HISTORY = enum.auto()
+    DASHBOARD_URL = enum.auto()
+    DASHBOARD = enum.auto()
+    WORKFLOW = enum.auto()
 
 
 class QueryTestPlansRequest(JsonModel):
@@ -92,7 +92,7 @@ class _QueryTestPlansRequest(JsonModel):
     continuation_token: Optional[str] = None
     """A token to retrieve the next page of results for paginated queries."""
 
-    projection: Optional[str] = None
+    projection: Optional[List[str]] = None
     """Gets or sets the projection to be used when retrieving the assets. If not specified,
     all properties will be returned.
     """
