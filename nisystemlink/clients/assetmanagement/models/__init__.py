@@ -3,7 +3,7 @@ from ._asset import Asset
 from ._create_asset_request import CreateAssetRequest
 from ._create_assets_partial_success_response import CreateAssetsPartialSuccessResponse
 from ._delete_assets_response import DeleteAssetsResponse
-from ._query_assets_request import AssetField, QueryAssetsRequest
+from ._query_assets_request import AssetField, QueryAssetsRequest, _QueryAssetRequest
 from ._query_assets_response import QueryAssetsResponse
 from ._asset_location import (
     AssetLocation,

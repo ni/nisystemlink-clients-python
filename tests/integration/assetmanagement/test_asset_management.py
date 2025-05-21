@@ -1,7 +1,6 @@
 from typing import List
 
 import pytest
-import responses
 from nisystemlink.clients.assetmanagement import AssetManagementClient
 from nisystemlink.clients.assetmanagement.models import (
     Asset,
@@ -170,7 +169,7 @@ class TestAssetManagement:
         )
 
         query_assets_request = QueryAssetsRequest(
-            ids=[asset_id], skip=0, take=1, returnCount=True
+            skip=0, take=1, return_count=True, filter=f'id = "{asset_id}"'
         )
 
         response: QueryAssetsResponse = client.query_assets(query=query_assets_request)
@@ -179,36 +178,11 @@ class TestAssetManagement:
         assert response.assets is not None and len(response.assets) == 1
         assert response.total_count >= 1
 
-    @responses.activate
     def test_query_assets_with_projections__returns_the_assets_with_projected_properties(
         self, client: AssetManagementClient
     ):
-        return_value = {
-            "assets": [
-                {
-                    "id": "py_test_1",
-                    "name": "python_integration_1",
-                },
-                {
-                    "id": "py_test_2",
-                    "name": "python_integration_2",
-                },
-                {
-                    "id": "py_test_3",
-                    "name": "python_integration_3",
-                },
-            ]
-        }
-
-        responses.add(
-            responses.POST,
-            f"{client.session.base_url}/niapm/v1/query-assets",
-            json=return_value,
-            status=200,
-        )
-
         query_asset = QueryAssetsRequest(
-            projection=[AssetField.ID, AssetField.NAME],
+            projection=[AssetField.ID, AssetField.NAME], take=1
         )
         response = client.query_assets(query=query_asset)
 
@@ -221,12 +195,12 @@ class TestAssetManagement:
             and asset.custom_calibration_interval is None
             and asset.discovery_type is None
             and asset.external_calibration is None
-            and asset.file_ids is None
+            and asset.file_ids == []
             and asset.firmware_version is None
             and asset.hardware_version is None
             and asset.is_NI_asset is None
             and asset.is_system_controller is None
-            and asset.keywords is None
+            and asset.keywords == []
             and asset.last_updated_timestamp is None
             and asset.location is None
             and asset.model_name is None
@@ -234,14 +208,14 @@ class TestAssetManagement:
             and asset.asset_type is None
             and asset.out_for_calibration is None
             and asset.part_number is None
-            and asset.properties is None
+            and asset.properties == {}
             and asset.self_calibration is None
             and asset.serial_number is None
             and asset.supports_external_calibration is None
             and asset.supports_reset is None
             and asset.supports_self_calibration is None
             and asset.supports_self_test is None
-            and asset.temperature_sensors is None
+            and asset.temperature_sensors == []
             and asset.vendor_name is None
             and asset.vendor_number is None
             and asset.visa_resource_name is None

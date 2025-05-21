@@ -53,7 +53,7 @@ class AssetManagementClient(BaseClient):
         ...
 
     @post("query-assets")
-    def query_assets(
+    def __query_assets(
         self, query: models.QueryAssetsRequest
     ) -> models.QueryAssetsResponse:
         """Query Assets.
@@ -70,6 +70,41 @@ class AssetManagementClient(BaseClient):
             arguments.
         """
         ...
+
+    def query_assets(
+        self, query: models.QueryAssetsRequest
+    ) -> models.QueryAssetsResponse:
+        """Query Assets.
+
+        Args:
+            query: Object containing filters to apply when retrieving assets.
+
+        Returns:
+            QueryAssetsResponse: Assets Response containing the assets satisfying the query and
+            the total count of matching assets.
+
+        Raises:
+            ApiException: If unable to communicate with the asset management service or if there are invalid
+            arguments.
+        """
+        projection_str = (
+            f"new({', '.join(query.projection)})" if query.projection else None
+        )
+        query_params = {
+            "filter": query.filter,
+            "take": query.take,
+            "skip": query.skip,
+            "return_count": query.return_count,
+            "order_by": query.order_by,
+            "descending": query.descending,
+            "projection": projection_str,
+        }
+
+        query_params = {k: v for k, v in query_params.items() if v is not None}
+
+        query_request = models._QueryAssetRequest(**query_params)
+
+        return self.__query_assets(query=query_request)
 
     @post("delete-assets", args=[Field("ids")])
     def delete_assets(self, ids: List[str]) -> models.DeleteAssetsResponse:

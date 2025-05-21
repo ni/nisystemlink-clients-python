@@ -70,5 +70,7 @@ class AssetLocation(JsonModel):
 
 
 class AssetLocationForCreate(AssetLocation):
+    """Model for information about the asset presence status of the system, used while create"""
 
     state: AssetPresence
+    """Model for the presence of an asset."""

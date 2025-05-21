@@ -81,10 +81,7 @@ class AssetField(str, Enum):
 class QueryAssetsRequest(JsonModel):
     """Model for object containing filters to apply when retrieving assets."""
 
-    ids: Optional[List[str]] = None
-    """Gets or sets identifiers of the assets to be retrieved."""
-
-    projection: List[AssetField] = []
+    projection: Optional[List[AssetField]] = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
     all properties will be returned.
@@ -102,10 +99,7 @@ class QueryAssetsRequest(JsonModel):
     descending: Optional[bool] = None
     """Whether to return the assets in the descending order. If OrderBy is not specified, this property is ignored."""
 
-    calibratable_only: Optional[bool] = None
-    """Gets or sets whether to generate a report with calibrated asset specific columns:"""
-
-    returnCount: Optional[bool] = None
+    return_count: Optional[bool] = None
     """
     Gets or sets Whether to return the total number of assets which match the provided filter,
     disregarding the take value.
@@ -117,9 +111,6 @@ class QueryAssetsRequest(JsonModel):
 
 class _QueryAssetRequest(JsonModel):
     """Model for object containing filters to apply when retrieving assets."""
-
-    ids: Optional[List[str]] = None
-    """Gets or sets identifiers of the assets to be retrieved."""
 
     projection: Optional[str] = None
     """
@@ -139,10 +130,7 @@ class _QueryAssetRequest(JsonModel):
     descending: Optional[bool] = None
     """Whether to return the assets in the descending order. If OrderBy is not specified, this property is ignored."""
 
-    calibratable_only: Optional[bool] = None
-    """Gets or sets whether to generate a report with calibrated asset specific columns:"""
-
-    returnCount: Optional[bool] = None
+    return_count: Optional[bool] = None
     """
     Gets or sets Whether to return the total number of assets which match the provided filter,
     disregarding the take value.

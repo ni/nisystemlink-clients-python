@@ -57,13 +57,13 @@ class ExternalCalibration(JsonModel):
     recommended_interval: int
     """Gets or sets the manufacturer's recommended calibration interval in months."""
 
-    next_recommended_date: str
+    next_recommended_date: datetime
     """Gets or sets ISO-8601 formatted timestamp specifying the recommended date for the next external calibration."""
 
-    next_custom_due_date: Optional[str] = None
+    next_custom_due_date: Optional[datetime] = None
     """Gets or sets ISO-8601 formatted timestamp specifying the date for the next external calibration."""
 
-    resolved_due_date: Optional[str] = None
+    resolved_due_date: Optional[datetime] = None
     """Gets ISO-8601 formatted timestamp specifying the resolved due date for external calibration."""
 
     comments: Optional[str] = None
