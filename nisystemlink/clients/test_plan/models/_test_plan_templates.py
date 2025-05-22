@@ -2,9 +2,8 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.test_plan.models._execution_definition import (
-    ExecutionDefinition,
-)
+
+from ._execution_definition import ExecutionDefinition
 
 
 class Dashboard(JsonModel):

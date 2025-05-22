@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ...models._execution_definition import ExecutionDefinition
+from ._execution_definition import ExecutionDefinition
 
 
 class Dashboard(JsonModel):

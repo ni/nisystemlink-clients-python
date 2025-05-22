@@ -3,10 +3,10 @@ from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+from ._execution_definition import ExecutionDefinition
 from ._execution_event import ExecutionEvent
 from ._state import State
 from ._workflow_definition import WorkflowDefinition
-from ...models._execution_definition import ExecutionDefinition
 
 
 class TestPlan(JsonModel):

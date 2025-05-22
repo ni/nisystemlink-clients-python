@@ -1,21 +1,17 @@
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.test_plan.models._execution_definition import ManualExecution
-from nisystemlink.clients.test_plan.test_plan_templates._test_plan_templates_client import (
-    TestPlanTemplateClient,
-)
-from nisystemlink.clients.test_plan.test_plan_templates.models._query_test_plan_templates_request import (
+from nisystemlink.clients.test_plan import TestPlanClient
+from nisystemlink.clients.test_plan.models import (
     QueryTestPlanTemplatesRequest,
-)
-from nisystemlink.clients.test_plan.test_plan_templates.models._test_plan_templates import (
     TestPlanTemplateBase,
 )
+
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
 server_configuration = HttpConfiguration(
     server_uri="https://yourserver.yourcompany.com",
     api_key="YourAPIKeyGeneratedFromSystemLink",
 )
-client = TestPlanTemplateClient(configuration=server_configuration)
+client = TestPlanClient(configuration=server_configuration)
 
 # Test plan template request metadata
 create_test_plan_template_request = [
@@ -23,7 +19,6 @@ create_test_plan_template_request = [
         name="Python integration test plan template",
         templateGroup="sample template group",
         workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
-        executionActions=[ManualExecution(action="TEST", type="MANUAl")],
     )
 ]
 

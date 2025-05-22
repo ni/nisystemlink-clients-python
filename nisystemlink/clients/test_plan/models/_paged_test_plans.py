@@ -1,7 +1,8 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from nisystemlink.clients.test_plan.test_plan.models._test_plan import TestPlan
+
+from ._test_plan import TestPlan
 
 
 class PagedTestPlans(WithPaging):

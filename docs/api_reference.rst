@@ -17,7 +17,6 @@ API Reference
    api_reference/notebook
    api_reference/feeds
    api_reference/test_plan
-   api_reference/test_plan_templates
 
 Indices and tables
 ------------------

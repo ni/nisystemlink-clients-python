@@ -1,13 +1,11 @@
-"""Implementation of Test plan template Client"""
-
 from typing import List, Optional
 
 from nisystemlink.clients import core
+from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import post
+from nisystemlink.clients.core._uplink._methods import get, post
+from nisystemlink.clients.test_plan import models
 from uplink import Field, retry
-
-from . import models
 
 
 @retry(
@@ -15,8 +13,8 @@ from . import models
     stop=retry.stop.after_attempt(5),
     on_exception=retry.CONNECTION_ERROR,
 )
-class TestPlanTemplateClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+class TestPlanClient(BaseClient):
+    def __init__(self, configuration: Optional[HttpConfiguration] = None):
         """Initialize an instance.
 
         Args:
@@ -26,11 +24,124 @@ class TestPlanTemplateClient(BaseClient):
                 is used to obtain the configuration.
 
         Raises:
-            ApiException: if unable to communicate with the `/niworkorder` Service.
+            ApiException: if unable to communicate with the WorkOrder Service.
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
+
         super().__init__(configuration, base_path="/niworkorder/v1/")
+
+    @get("testplans/{test_plan_id}")
+    def get_test_plan(self, test_plan_id: str) -> models.TestPlan:
+        """Retrieve a test plan by its ID.
+
+        Args:
+            test_plan_id: The ID of the test plan to retrieve.
+
+        Returns:
+            The TestPlan object corresponding to the given ID.
+        """
+        ...
+
+    @post("testplans")
+    def create_test_plans(
+        self, create_request: models.CreateTestPlansRequest
+    ) -> models.CreateTestPlansResponse:
+        """Create a new test plan.
+
+        Args:
+            test_plan: The test plans to create.
+
+        Returns:
+            The created test plan object.
+        """
+        ...
+
+    @post("delete-testplans")
+    def delete_test_plans(self, ids: models.DeleteTestPlansRequest) -> None:
+        """Delete test plans by IDs.
+
+        Args:
+            test_plan_ids: A list of test plan IDs to delete.
+
+        Returns:
+            None
+        """
+        ...
+
+    @post("query-testplans")
+    def __query_test_plans(
+        self, query_request: models._QueryTestPlansRequest
+    ) -> models.PagedTestPlans:
+        """Query test plans.
+
+        Args:
+            query: The query to execute.
+
+        Returns:
+            A PagedTestPlans object containing test plans that match the query.
+        """
+        ...
+
+    def query_test_plans(
+        self, query_request: models.QueryTestPlansRequest
+    ) -> models.PagedTestPlans:
+        """Query test plans.
+
+        Args:
+            query: The query to execute.
+
+        Returns:
+            A PagedTestPlans object containing test plans that match the query.
+        """
+        projection_str = (
+            [projection.name for projection in query_request.projection]
+            if query_request.projection
+            else None
+        )
+        query_params = {
+            "filter": query_request.filter,
+            "take": query_request.take,
+            "continuation_token": query_request.continuation_token,
+            "order_by": query_request.order_by,
+            "descending": query_request.descending,
+            "return_count": query_request.return_count,
+            "projection": projection_str,
+        }
+
+        query_params = {k: v for k, v in query_params.items() if v is not None}
+
+        query_test_plans_request = models._QueryTestPlansRequest(**query_params)
+
+        return self.__query_test_plans(query_request=query_test_plans_request)
+
+    @post("schedule-testplans")
+    def schedule_test_plans(
+        self, schedule_request: models.ScheduleTestPlansRequest
+    ) -> models.ScheduleTestPlansResponse:
+        """Schedule a test plan.
+
+        Args:
+            schedule: The schedule to apply to the test plan.
+
+        Returns:
+            A ScheduleTestPlansResponse object containing the scheduled test plan.
+        """
+        ...
+
+    @post("update-testplans")
+    def update_test_plans(
+        self, update_request: models.UpdateTestPlansRequest
+    ) -> models.UpdateTestPlansResponse:
+        """Update a test plan.
+
+        Args:
+            test_plan: The test plan to update.
+
+        Returns:
+            The updated test plan object.
+        """
+        ...
 
     @post("testplan-templates", args=[Field("testPlanTemplates")])
     def create_test_plan_templates(

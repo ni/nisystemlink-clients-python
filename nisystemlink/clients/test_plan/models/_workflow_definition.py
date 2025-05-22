@@ -1,7 +1,7 @@
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+from ._execution_definition import ExecutionDefinition
 from ._state import State
-from ...models._execution_definition import ExecutionDefinition
 
 
 class ActionTransitionDefinition(JsonModel):

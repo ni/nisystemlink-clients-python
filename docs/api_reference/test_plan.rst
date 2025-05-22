@@ -1,6 +1,6 @@
 .. _api_tag_page:
 
-nisystemlink.clients.test_plan.test_plan
+nisystemlink.clients.test_plan
 ======================
 
 .. autoclass:: nisystemlink.clients.test_plan.test_plan.TestPlanClient
@@ -13,7 +13,10 @@ nisystemlink.clients.test_plan.test_plan
    .. automethod:: schedule_test_plans
    .. automethod:: update_test_plans
    .. automethod:: get_test_plan
+   .. automethod:: create_test_plan_templates
+   .. automethod:: query_test_plan_templates
+   .. automethod:: delete_test_plan_templates
 
-.. automodule:: nisystemlink.clients.test_plan.test_plan.models
+.. automodule:: nisystemlink.clients.test_plan.models
    :members:
    :imported-members:

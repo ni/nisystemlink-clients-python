@@ -1,8 +1,9 @@
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.test_plan.test_plan import TestPlanClient
-from nisystemlink.clients.test_plan.test_plan.models import (
+from nisystemlink.clients.test_plan import TestPlanClient
+from nisystemlink.clients.test_plan.models import (
     CreateTestPlanRequest,
     CreateTestPlansRequest,
+    DeleteTestPlansRequest,
     QueryTestPlansRequest,
     ScheduleTestPlanRequest,
     ScheduleTestPlansRequest,
@@ -18,7 +19,7 @@ server_configuration = HttpConfiguration(
 client = TestPlanClient(configuration=server_configuration)
 
 create_test_plans_request = CreateTestPlansRequest(
-    testPlans=[
+    test_plans=[
         CreateTestPlanRequest(
             name="Python integration test plan", state="NEW", partNumber="px40482"
         )
@@ -26,9 +27,12 @@ create_test_plans_request = CreateTestPlansRequest(
 )
 
 # create a test plan
-created_test_plans = client.create_test_plans(create_request=create_test_plans_request)
+created_test_plans_response = client.create_test_plans(
+    create_request=create_test_plans_request
+)
 
-created_test_plan_id = created_test_plans.created_test_plans[0].id
+if created_test_plans_response.created_test_plans:
+    created_test_plan_id = created_test_plans_response.created_test_plans[0].id
 
 # Query test plan using id.
 query_test_plans_request = QueryTestPlansRequest(
@@ -44,7 +48,7 @@ get_test_plan = client.get_test_plan(test_plan_id=created_test_plan_id)
 
 # Update test plan
 update_test_plans_request = UpdateTestPlansRequest(
-    testPlans=[
+    test_plans=[
         UpdateTestPlanRequest(
             id=created_test_plan_id,
             name="Updated Test Plan",
@@ -69,4 +73,4 @@ schedule_test_plan_response = client.schedule_test_plans(
 )
 
 # Delete test plan
-client.delete_test_plans(ids=[created_test_plan_id])
+client.delete_test_plans(ids=DeleteTestPlansRequest(ids=[created_test_plan_id]))
