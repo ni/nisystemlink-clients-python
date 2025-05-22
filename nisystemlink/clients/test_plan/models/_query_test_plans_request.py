@@ -1,7 +1,7 @@
 import enum
 from typing import List, Optional
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
 from ._order_by import OrderBy
 
@@ -41,7 +41,7 @@ class TestPlanField(enum.Enum):
     WORKFLOW = enum.auto()
 
 
-class QueryTestPlansRequest(JsonModel):
+class QueryTestPlansRequest(WithPaging):
     """Represents the request body for querying test plans.
     Allows filtering, sorting, and pagination of test plan results.
     """
@@ -61,9 +61,6 @@ class QueryTestPlansRequest(JsonModel):
     return_count: Optional[bool] = None
     """Whether to include the total count of matching test plans in the response."""
 
-    continuation_token: Optional[str] = None
-    """A token to retrieve the next page of results for paginated queries."""
-
     projection: Optional[List[TestPlanField]] = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
@@ -71,7 +68,7 @@ class QueryTestPlansRequest(JsonModel):
     """
 
 
-class _QueryTestPlansRequest(JsonModel):
+class _QueryTestPlansRequest(WithPaging):
     """Represents the request body for querying test plans.
     Allows filtering, sorting, and pagination of test plan results.
     """
@@ -90,9 +87,6 @@ class _QueryTestPlansRequest(JsonModel):
 
     return_count: Optional[bool] = None
     """Whether to include the total count of matching test plans in the response."""
-
-    continuation_token: Optional[str] = None
-    """A token to retrieve the next page of results for paginated queries."""
 
     projection: Optional[List[str]] = None
     """Gets or sets the projection to be used when retrieving the assets. If not specified,

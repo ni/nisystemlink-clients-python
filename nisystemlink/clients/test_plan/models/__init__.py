@@ -60,5 +60,8 @@ from nisystemlink.clients.test_plan.models._query_test_plan_templates_request im
 from nisystemlink.clients.test_plan.models._paged_test_plan_templates import (
     PagedTestPlanTemplates,
 )
+from nisystemlink.clients.test_plan.models._create_test_plan_template_request import (
+    CreateTestPlanTemplateRequest,
+)
 
 # flake8: noqa

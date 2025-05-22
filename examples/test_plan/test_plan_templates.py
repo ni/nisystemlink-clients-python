@@ -1,8 +1,8 @@
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan import TestPlanClient
 from nisystemlink.clients.test_plan.models import (
+    CreateTestPlanTemplateRequest,
     QueryTestPlanTemplatesRequest,
-    TestPlanTemplateBase,
 )
 
 
@@ -15,9 +15,9 @@ client = TestPlanClient(configuration=server_configuration)
 
 # Test plan template request metadata
 create_test_plan_template_request = [
-    TestPlanTemplateBase(
+    CreateTestPlanTemplateRequest(
         name="Python integration test plan template",
-        templateGroup="sample template group",
+        template_group="sample template group",
         workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
     )
 ]

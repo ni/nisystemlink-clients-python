@@ -2,7 +2,7 @@ import enum
 from enum import Enum
 from typing import List, Optional
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
 
 class TestPlanTemplateOrderBy(str, Enum):
@@ -37,7 +37,7 @@ class TestPlanTemplateField(str, Enum):
     UPDATED_AT = enum.auto()
 
 
-class QueryTestPlanTemplatesRequest(JsonModel):
+class QueryTestPlanTemplatesRequest(WithPaging):
     """Request information for the query test plan templates API."""
 
     filter: Optional[str] = None
@@ -91,10 +91,6 @@ class QueryTestPlanTemplatesRequest(JsonModel):
     """Whether to return the test plan templates in the descending order. By default, test plan
     templates are sorted in the ascending order."""
 
-    continuation_token: Optional[str] = None
-    """Allows users to continue the query at the next test plan templates that matches the given
-    criteria."""
-
     projection: Optional[List[TestPlanTemplateField]] = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
@@ -102,7 +98,7 @@ class QueryTestPlanTemplatesRequest(JsonModel):
     """
 
 
-class _QueryTestPlanTemplatesRequest(JsonModel):
+class _QueryTestPlanTemplatesRequest(WithPaging):
     """Request information for the query test plan templates API."""
 
     filter: Optional[str] = None
@@ -157,10 +153,6 @@ class _QueryTestPlanTemplatesRequest(JsonModel):
     descending: Optional[bool] = None
     """Whether to return the test plan templates in the descending order. By default, test plan
     templates are sorted in the ascending order."""
-
-    continuation_token: Optional[str] = None
-    """Allows users to continue the query at the next test plan templates that matches the given
-    criteria."""
 
     projection: Optional[List[str]] = None
     """

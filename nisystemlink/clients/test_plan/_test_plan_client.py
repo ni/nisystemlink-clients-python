@@ -145,7 +145,7 @@ class TestPlanClient(BaseClient):
 
     @post("testplan-templates", args=[Field("testPlanTemplates")])
     def create_test_plan_templates(
-        self, test_plan_templates: List[models.TestPlanTemplateBase]
+        self, test_plan_templates: List[models.CreateTestPlanTemplateRequest]
     ) -> models.CreateTestPlanTemplatePartialSuccessResponse:
         """Creates one or more test plan template and return errors for failed creations.
 

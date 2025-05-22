@@ -7,6 +7,9 @@ from nisystemlink.clients.test_plan import TestPlanClient
 from nisystemlink.clients.test_plan.models._create_test_plan_request import (
     CreateTestPlanRequest,
 )
+from nisystemlink.clients.test_plan.models._create_test_plan_template_request import (
+    CreateTestPlanTemplateRequest,
+)
 from nisystemlink.clients.test_plan.models._create_test_plan_templates_partial_success_response import (
     CreateTestPlanTemplatePartialSuccessResponse,
 )
@@ -40,7 +43,6 @@ from nisystemlink.clients.test_plan.models._state import State
 from nisystemlink.clients.test_plan.models._test_plan import TestPlan
 from nisystemlink.clients.test_plan.models._test_plan_templates import (
     TestPlanTemplate,
-    TestPlanTemplateBase,
 )
 from nisystemlink.clients.test_plan.models._update_test_plan_request import (
     UpdateTestPlanRequest,
@@ -62,7 +64,7 @@ def create_test_plan_templates(client: TestPlanClient):
     responses: List[CreateTestPlanTemplatePartialSuccessResponse] = []
 
     def _create_test_plan_templates(
-        new_test_plan_templates: List[TestPlanTemplateBase],
+        new_test_plan_templates: List[CreateTestPlanTemplateRequest],
     ) -> CreateTestPlanTemplatePartialSuccessResponse:
         response = client.create_test_plan_templates(
             test_plan_templates=new_test_plan_templates
@@ -286,10 +288,10 @@ class TestTestPlanClient:
     def test__create_test_plan_template__returns_created_test_plan_template(
         self, client: TestPlanClient, create_test_plan_templates
     ):
-        create_test_plan_template_request: List[TestPlanTemplateBase] = [
-            TestPlanTemplateBase(
+        create_test_plan_template_request: List[CreateTestPlanTemplateRequest] = [
+            CreateTestPlanTemplateRequest(
                 name="Python integration test plan template",
-                templateGroup="sample template group",
+                template_group="sample template group",
                 workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
             )
         ]
@@ -314,10 +316,10 @@ class TestTestPlanClient:
         self, client: TestPlanClient, create_test_plan_templates
     ):
 
-        create_test_plan_template_request: List[TestPlanTemplateBase] = [
-            TestPlanTemplateBase(
+        create_test_plan_template_request: List[CreateTestPlanTemplateRequest] = [
+            CreateTestPlanTemplateRequest(
                 name="Python integration test plan template",
-                templateGroup="sample template group",
+                template_group="sample template group",
                 workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
             )
         ]
@@ -348,10 +350,10 @@ class TestTestPlanClient:
 
     def test__delete_test_plan_template(self, client: TestPlanClient):
 
-        create_test_plan_template_request: List[TestPlanTemplateBase] = [
-            TestPlanTemplateBase(
+        create_test_plan_template_request: List[CreateTestPlanTemplateRequest] = [
+            CreateTestPlanTemplateRequest(
                 name="Python integration test plan template",
-                templateGroup="sample template group",
+                template_group="sample template group",
                 workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
             )
         ]
