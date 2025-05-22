@@ -17,6 +17,6 @@ class RemoveSystemsResponse(JsonModel):
     """The IDs of the systems that could not be removed."""
 
     error: Optional[ApiError] = None
-    """Represents if there is a error while creating
+    """Represents if there is a error while removing
     virtual system.
     """
