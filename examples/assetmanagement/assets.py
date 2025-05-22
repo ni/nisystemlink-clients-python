@@ -3,6 +3,7 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
     AssetDiscoveryType,
     AssetLocationForCreate,
+    AssetPresence,
     AssetPresenceStatus,
     AssetType,
     CreateAssetRequest,
@@ -45,7 +46,7 @@ create_assets_request = [
         is_NI_asset=True,
         workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
         location=AssetLocationForCreate(
-            state=AssetLocationForCreate(asset_presence=AssetPresenceStatus.PRESENT)
+            state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
         ),
         external_calibration=ExternalCalibration(
             temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],

@@ -78,7 +78,7 @@ class QueryAssetsRequest(JsonModel):
     """Gets or sets the filter criteria for assets. Consists of a string of queries composed using AND/OR operators."""
 
 
-class _QueryAssetRequest(JsonModel):
+class _QueryAssetsRequest(JsonModel):
     """Model for object containing filters to apply when retrieving assets."""
 
     projection: Optional[str] = None

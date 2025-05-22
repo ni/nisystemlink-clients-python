@@ -47,8 +47,8 @@ class AssetPresence(JsonModel):
     """Gets or sets the status of an asset's presence in a system."""
 
 
-class AssetLocation(JsonModel):
-    """Model for information about the asset location, presence and the connection status of the system."""
+class _AssetLocation(JsonModel):
+    """local model for information about the asset location, presence and the connection status of the system."""
 
     minion_id: Optional[str] = None
     """Gets or sets identifier of the minion where the asset is located."""
@@ -65,11 +65,15 @@ class AssetLocation(JsonModel):
     slot_number: Optional[int] = None
     """Gets or sets the number of the slot in which the asset is located."""
 
+
+class AssetLocation(_AssetLocation):
+    """Model for information about the asset location, presence and the connection status of the system."""
+
     state: AssetPresenceWithSystemConnection
     """Presence of an asset and the connection of the system in which it resides."""
 
 
-class AssetLocationForCreate(AssetLocation):
+class AssetLocationForCreate(_AssetLocation):
     """Model for information about the asset presence status of the system, used while create"""
 
     state: AssetPresence

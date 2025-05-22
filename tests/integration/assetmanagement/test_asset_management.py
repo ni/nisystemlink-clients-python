@@ -28,7 +28,7 @@ def create_asset(client: AssetManagementClient):
     responses: List[CreateAssetsPartialSuccessResponse] = []
 
     def _create_assets(
-        new_assets: CreateAssetRequest,
+        new_assets: List[CreateAssetRequest],
     ) -> CreateAssetsPartialSuccessResponse:
         response = client.create_assets(assets=new_assets)
         responses.append(response)
@@ -40,7 +40,9 @@ def create_asset(client: AssetManagementClient):
     for response in responses:
         if response.assets:
             created_assets = created_assets + response.assets
-    client.delete_assets(ids=[asset.id for asset in created_assets])
+    client.delete_assets(
+        ids=[asset.id for asset in created_assets if asset.id is not None]
+    )
 
 
 @pytest.fixture(scope="class")
@@ -161,7 +163,7 @@ class TestAssetManagement:
 
         assert response is not None
         assert response.assets is not None and len(response.assets) == 1
-        assert response.total_count >= 1
+        assert response.total_count is not None and response.total_count >= 1
 
     def test_query_assets_with_projections__returns_the_assets_with_projected_properties(
         self, client: AssetManagementClient
@@ -172,6 +174,7 @@ class TestAssetManagement:
         response = client.query_assets(query=query_asset)
 
         assert response is not None
+        assert response.assets is not None
         assert all(
             asset.id is not None
             and asset.name is not None
