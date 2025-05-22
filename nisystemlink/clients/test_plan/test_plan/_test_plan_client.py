@@ -4,7 +4,11 @@ from nisystemlink.clients import core
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
+from nisystemlink.clients.test_plan.test_plan.models._paged_test_plans import (
+    PagedTestPlans,
+)
 from uplink import retry
+
 
 from .models import (
     _QueryTestPlansRequest,
@@ -12,7 +16,6 @@ from .models import (
     CreateTestPlansResponse,
     DeleteTestPlansRequest,
     QueryTestPlansRequest,
-    QueryTestPlansResponse,
     ScheduleTestPlansRequest,
     ScheduleTestPlansResponse,
     TestPlan,
@@ -85,27 +88,25 @@ class TestPlanClient(BaseClient):
     @post("query-testplans")
     def __query_test_plans(
         self, query_request: _QueryTestPlansRequest
-    ) -> QueryTestPlansResponse:
+    ) -> PagedTestPlans:
         """Query test plans.
 
         Args:
             query: The query to execute.
 
         Returns:
-            A QueryTestPlansResponse object containing test plans that match the query.
+            A PagedTestPlans object containing test plans that match the query.
         """
         ...
 
-    def query_test_plans(
-        self, query_request: QueryTestPlansRequest
-    ) -> QueryTestPlansResponse:
+    def query_test_plans(self, query_request: QueryTestPlansRequest) -> PagedTestPlans:
         """Query test plans.
 
         Args:
             query: The query to execute.
 
         Returns:
-            A QueryTestPlansResponse object containing test plans that match the query.
+            A PagedTestPlans object containing test plans that match the query.
         """
         projection_str = (
             [projection.name for projection in query_request.projection]

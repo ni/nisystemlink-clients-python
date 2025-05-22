@@ -18,4 +18,3 @@ class ScheduleTestPlansResponse(JsonModel):
 
     error: Optional[ApiError] = None
     """The error that occurred when scheduling the test plans."""
-    

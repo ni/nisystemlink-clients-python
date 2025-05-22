@@ -82,8 +82,8 @@ class NoneExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: Literal["None"] = Field(default="None")
-    """Type of execution, default is 'None'."""
+    type: Literal["NONE"] = Field(default="NONE")
+    """Type of execution, default is 'NONE'."""
 
 
 ExecutionDefinition = Annotated[
