@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
@@ -14,3 +15,8 @@ class RemoveSystemsResponse(JsonModel):
 
     failed_ids: Optional[List[str]] = None
     """The IDs of the systems that could not be removed."""
+
+    error: Optional[ApiError] = None
+    """Represents if there is a error while creating
+    virtual system.
+    """

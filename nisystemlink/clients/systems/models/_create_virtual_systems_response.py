@@ -1,5 +1,6 @@
 from typing import Optional
 
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
@@ -8,3 +9,8 @@ class CreateVirtualSystemResponse(JsonModel):
 
     minionId: Optional[str] = None
     """The minion ID of the created virtual system."""
+
+    error: Optional[ApiError] = None
+    """Represents if there is a error while creating
+    virtual system.
+    """
