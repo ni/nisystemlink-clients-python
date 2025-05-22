@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class UpdateTestPlanBodyContent(JsonModel):
+class UpdateTestPlanRequest(JsonModel):
     """Represents the content for updating a single test plan."""
 
     id: str

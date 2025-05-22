@@ -15,7 +15,7 @@ class Dashboard(JsonModel):
     """Variables for the dashboard"""
 
 
-class CreateTestPlanBodyContent(JsonModel):
+class CreateTestPlanRequest(JsonModel):
     """Represents the request body content for creating a test plan."""
 
     name: Optional[str] = None

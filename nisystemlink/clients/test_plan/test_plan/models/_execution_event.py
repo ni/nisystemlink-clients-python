@@ -4,17 +4,21 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class ExecutionEventBase(JsonModel):
-    action: Optional[str] = None
     """Base class for execution events, containing common attributes such as action."""
 
+    action: Optional[str] = None
+    """The user-defined action that initiated the event."""
+
     triggered_at: Optional[str] = None
-    """the time the event was triggered."""
+    """The time the event was triggered."""
 
     triggered_by: Optional[str] = None
-    """and the user who triggered it."""
+    """The user who triggered the event."""
 
 
 class NotebookExecutionEvent(ExecutionEventBase):
+    """Represents an execution event that was triggered by a notebook execution."""
+
     type: Optional[str] = "NOTEBOOK"
     """Represents an execution event triggered by a notebook."""
 
@@ -23,6 +27,8 @@ class NotebookExecutionEvent(ExecutionEventBase):
 
 
 class JobExecutionEvent(ExecutionEventBase):
+    """A concrete execution event that represents an event triggered by a job."""
+
     type: Optional[str] = "JOB"
     """Represents an execution event triggered by a job."""
 
@@ -31,6 +37,8 @@ class JobExecutionEvent(ExecutionEventBase):
 
 
 class ManualExecutionEvent(ExecutionEventBase):
+    """A concrete execution event that represents an event triggered manually."""
+
     type: Optional[str] = "MANUAL"
     """Represents an execution event triggered manually. Includes only the type identifier."""
 

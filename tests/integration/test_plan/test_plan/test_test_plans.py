@@ -4,17 +4,17 @@ import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan.test_plan import TestPlanClient
 from nisystemlink.clients.test_plan.test_plan.models import (
-    CreateTestPlanBodyContent,
+    CreateTestPlanRequest,
     CreateTestPlansRequest,
     CreateTestPlansResponse,
     DeleteTestPlansRequest,
     QueryTestPlansRequest,
-    ScheduleTestPlanBodyContent,
+    ScheduleTestPlanRequest,
     ScheduleTestPlansRequest,
     State,
     TestPlan,
     TestPlanField,
-    UpdateTestPlanBodyContent,
+    UpdateTestPlanRequest,
     UpdateTestPlansRequest,
 )
 
@@ -31,7 +31,7 @@ class TestTestPlans:
 
     _test_plan_create = CreateTestPlansRequest(
         testPlans=[
-            CreateTestPlanBodyContent(
+            CreateTestPlanRequest(
                 name="Python integration test plan", state="NEW", part_number="px40482"
             )
         ]
@@ -53,7 +53,7 @@ class TestTestPlans:
 
         assert created_test_plan is not None
         assert created_test_plan.name == "Python integration test plan"
-        assert created_test_plan.state == State.New
+        assert created_test_plan.state == State.NEW
         assert created_test_plan.part_number == "px40482"
         assert get_test_plan_response is not None
         assert get_test_plan_response.name == "Python integration test plan"
@@ -83,7 +83,7 @@ class TestTestPlans:
 
         update_test_plans_request = UpdateTestPlansRequest(
             testPlans=[
-                UpdateTestPlanBodyContent(
+                UpdateTestPlanRequest(
                     id=created_test_plan.id,
                     name="Updated Test Plan",
                 )
@@ -113,7 +113,7 @@ class TestTestPlans:
 
         schedule_test_plans_request = ScheduleTestPlansRequest(
             test_plans=[
-                ScheduleTestPlanBodyContent(
+                ScheduleTestPlanRequest(
                     id=created_test_plan.id,
                     planned_start_date_time=datetime.strptime(
                         "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"

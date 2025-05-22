@@ -4,7 +4,7 @@ from typing import List, Optional
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class ScheduleTestPlanBodyContent(JsonModel):
+class ScheduleTestPlanRequest(JsonModel):
     """Represents the request body content for scheduling a test plan."""
 
     id: str

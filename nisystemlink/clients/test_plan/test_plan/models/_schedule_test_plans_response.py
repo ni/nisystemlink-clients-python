@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._schedule_test_plans_body_content import ScheduleTestPlanBodyContent
+from ._schedule_test_plan_request import ScheduleTestPlanRequest
 from ._test_plan import TestPlan
 
 
@@ -12,5 +12,5 @@ class ScheduleTestPlansResponse(JsonModel):
     scheduled_test_plans: Optional[List[TestPlan]] = None
     """(Optional) List of successfully scheduled test plans."""
 
-    failed_test_plans: Optional[List[ScheduleTestPlanBodyContent]] = None
+    failed_test_plans: Optional[List[ScheduleTestPlanRequest]] = None
     """(Optional) List of test plan requests that failed to schedule."""

@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+from ._order_by import OrderBy
+
 
 class TestPlanField(enum.Enum):
     """Model for an object describing an test plan with all of its properties."""
@@ -50,7 +52,7 @@ class QueryTestPlansRequest(JsonModel):
     take: Optional[int] = None
     """The maximum number of test plans to return in the response."""
 
-    order_by: Optional[str] = None
+    order_by: Optional[OrderBy] = None
     """The field name to use for sorting the test plans."""
 
     descending: Optional[bool] = None
@@ -62,7 +64,7 @@ class QueryTestPlansRequest(JsonModel):
     continuation_token: Optional[str] = None
     """A token to retrieve the next page of results for paginated queries."""
 
-    projection: List[TestPlanField] = []
+    projection: Optional[List[TestPlanField]] = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
     all properties will be returned.
