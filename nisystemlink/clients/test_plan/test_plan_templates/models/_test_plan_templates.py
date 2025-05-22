@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -12,7 +13,7 @@ class Dashboard(JsonModel):
     id: Optional[str] = None
     """The globally unique id of the dashboard."""
 
-    variables: Dict[str, str]
+    variables: Optional[Dict[str, str]] = None
     """Dictionary of variables set on the dashboard.
     These will be appended to the URL as query parameters.
     Each key will be prefixed with "var-" and the value will be the value of the variable.
@@ -22,10 +23,10 @@ class Dashboard(JsonModel):
 class TestPlanTemplateBase(JsonModel):
     """Contains information about a test plan template."""
 
-    name: str | None
+    name: Optional[str] = None
     """Name of the test plan template."""
 
-    template_group: str | None = None
+    template_group: Optional[str] = None
     """The template group defined by the user."""
 
     product_families: Optional[List[str]] = None
@@ -52,7 +53,8 @@ class TestPlanTemplateBase(JsonModel):
     """
 
     execution_actions: Optional[List[ExecutionDefinition]] = None
-    """Defines the executions that will be used for test plan actions created from this template.
+    """Defines the executions that will be used for test plan actions
+    created from this template.
     """
 
     file_ids: Optional[List[str]] = None
@@ -70,7 +72,7 @@ class TestPlanTemplateBase(JsonModel):
     """Defines a dashboard reference for a test plan."""
 
 
-class TestPlanTemplateResponse(TestPlanTemplateBase):
+class TestPlanTemplate(TestPlanTemplateBase):
     """Contains response information for test plan template."""
 
     id: Optional[str] = None
@@ -78,3 +80,17 @@ class TestPlanTemplateResponse(TestPlanTemplateBase):
 
     name: Optional[str] = None
     """Name of the test plan template."""
+
+    created_by: Optional[str] = None
+    """ID of the user who created the test plan template."""
+
+    updated_by: Optional[str] = None
+    """ID of the user who most recently updated the test plan template."""
+
+    created_at: Optional[datetime] = None
+    """ISO-8601 formatted timestamp indicating when the
+    test plan template was created."""
+
+    updated_at: Optional[datetime] = None
+    """ISO-8601 formatted timestamp indicating when the
+    test plan template was most recently updated."""

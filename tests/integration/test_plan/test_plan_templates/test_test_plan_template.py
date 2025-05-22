@@ -2,15 +2,14 @@ from typing import List
 
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.test_plan.models._execution_definition import ManualExecution
 from nisystemlink.clients.test_plan.test_plan_templates import TestPlanTemplateClient
 from nisystemlink.clients.test_plan.test_plan_templates.models import (
     CreateTestPlanTemplatePartialSuccessResponse,
+    PagedTestPlanTemplates,
     QueryTestPlanTemplatesRequest,
-    QueryTestPlanTemplatesResponse,
+    TestPlanTemplate,
     TestPlanTemplateBase,
     TestPlanTemplateField,
-    TestPlanTemplateResponse,
 )
 
 
@@ -36,7 +35,7 @@ def create_test_plan_templates(client: TestPlanTemplateClient):
 
     yield _create_test_plan_templates
 
-    created_test_plan_templates: List[TestPlanTemplateResponse] = []
+    created_test_plan_templates: List[TestPlanTemplate] = []
     for response in responses:
         if response.created_test_plan_templates:
             created_test_plan_templates = (
@@ -63,7 +62,6 @@ class TestPlanTemplateTest:
                 name="Python integration test plan template",
                 templateGroup="sample template group",
                 workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
-                executionActions=[ManualExecution(action="TEST", type="MANUAl")],
             )
         ]
         create_test_plan_template_response = create_test_plan_templates(
@@ -92,7 +90,6 @@ class TestPlanTemplateTest:
                 name="Python integration test plan template",
                 templateGroup="sample template group",
                 workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
-                executionActions=[ManualExecution(action="TEST", type="MANUAl")],
             )
         ]
 
@@ -111,7 +108,7 @@ class TestPlanTemplateTest:
 
         query = QueryTestPlanTemplatesRequest(filter=f'id="{template_id}"', take=1)
 
-        query_test_plan_template_response: QueryTestPlanTemplatesResponse = (
+        query_test_plan_template_response: PagedTestPlanTemplates = (
             client.query_test_plan_templates(query_test_plan_templates=query)
         )
 
@@ -127,7 +124,6 @@ class TestPlanTemplateTest:
                 name="Python integration test plan template",
                 templateGroup="sample template group",
                 workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
-                executionActions=[ManualExecution(action="TEST", type="MANUAl")],
             )
         ]
         create_test_plan_template_response: (
@@ -147,7 +143,7 @@ class TestPlanTemplateTest:
 
         client.delete_test_plan_templates(ids=[template_id])
 
-        query_deleted_test_plan_template_response: QueryTestPlanTemplatesResponse = (
+        query_deleted_test_plan_template_response: PagedTestPlanTemplates = (
             client.query_test_plan_templates(
                 query_test_plan_templates=QueryTestPlanTemplatesRequest(
                     filter=f'id="{template_id}"', take=1

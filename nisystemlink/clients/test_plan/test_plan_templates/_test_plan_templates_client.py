@@ -52,7 +52,7 @@ class TestPlanTemplateClient(BaseClient):
     @post("query-testplan-templates")
     def __query_test_plan_templates(
         self, query_test_plan_templates: models._QueryTestPlanTemplatesRequest
-    ) -> models.QueryTestPlanTemplatesResponse:
+    ) -> models.PagedTestPlanTemplates:
         """Queries one or more test plan templates and return errors for failed queries.
 
         Returns: A list of test plan templates, based on the query and errors for the wrong query.
@@ -64,7 +64,7 @@ class TestPlanTemplateClient(BaseClient):
 
     def query_test_plan_templates(
         self, query_test_plan_templates: models.QueryTestPlanTemplatesRequest
-    ) -> models.QueryTestPlanTemplatesResponse:
+    ) -> models.PagedTestPlanTemplates:
         """Queries one or more test plan templates and return errors for failed queries.
 
         Returns: A list of test plan templates, based on the query and errors for the wrong query.
@@ -91,7 +91,6 @@ class TestPlanTemplateClient(BaseClient):
 
         query_request = models._QueryTestPlanTemplatesRequest(**query_params)
 
-        print(query_request)
         return self.__query_test_plan_templates(query_test_plan_templates=query_request)
 
     @post("delete-testplan-templates", args=[Field("ids")])

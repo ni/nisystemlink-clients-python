@@ -95,17 +95,10 @@ class QueryTestPlanTemplatesRequest(JsonModel):
     """Allows users to continue the query at the next test plan templates that matches the given
     criteria."""
 
-    projection: List[TestPlanTemplateField] = []
+    projection: Optional[List[TestPlanTemplateField]] = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
     all properties will be returned.
-    """
-
-    """
-    To retrieve the next page of test plan templates, pass the continuation token from the previous
-    page in the next request. The service responds with the next page of data and provides a new
-    continuation token. To paginate results, continue sending requests with the newest continuation
-    token provided in each response.
     """
 
 

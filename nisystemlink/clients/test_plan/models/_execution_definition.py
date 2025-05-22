@@ -1,6 +1,7 @@
-from typing import List, Union
+from typing import Annotated, Any, List, Literal, Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Field
 
 
 class Job(JsonModel):
@@ -9,10 +10,10 @@ class Job(JsonModel):
     functions: List[str]
     """List of function names to execute."""
 
-    arguments: List[List[object]]
+    arguments: List[List[Any]]
     """List of argument lists for each function."""
 
-    metadata: dict[str, object]
+    metadata: dict[str, Any]
     """Additional metadata for the job."""
 
 
@@ -22,7 +23,7 @@ class NotebookExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = "NOTEBOOK"
+    type: Literal["NOTEBOOK"] = Field(default="NOTEBOOK")
     """Type of execution, default is 'NOTEBOOK'."""
 
     notebookId: str
@@ -35,7 +36,7 @@ class ManualExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = "MANUAL"
+    type: Literal["MANUAL"] = Field(default="MANUAL")
     """Type of execution, default is 'MANUAL'."""
 
 
@@ -45,13 +46,13 @@ class JobExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = "JOB"
+    type: Literal["JOB"] = Field(default="JOB")
     """Type of execution, default is 'JOB'."""
 
     jobs: List[Job]
     """List of jobs to execute."""
 
-    systemId: str | None = None
+    systemId: Optional[str] = None
     """Optional system ID where jobs will run."""
 
 
@@ -61,7 +62,7 @@ class ScheduleExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = "SCHEDULE"
+    type: Literal["SCHEDULE"] = Field(default="SCHEDULE")
     """Type of execution, default is 'SCHEDULE'."""
 
 
@@ -71,7 +72,7 @@ class UnscheduleExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = "UNSCHEDULE"
+    type: Literal["UNSCHEDULE"] = Field(default="UNSCHEDULE")
     """Type of execution, default is 'UNSCHEDULE'."""
 
 
@@ -81,15 +82,18 @@ class NoneExecution(JsonModel):
     action: str
     """User defined action to perform in workflow (user defined)."""
 
-    type: str = "None"
+    type: Literal["None"] = Field(default="None")
     """Type of execution, default is 'None'."""
 
 
-ExecutionDefinition = Union[
-    NotebookExecution,
-    ManualExecution,
-    JobExecution,
-    NoneExecution,
-    ScheduleExecution,
-    UnscheduleExecution,
+ExecutionDefinition = Annotated[
+    Union[
+        NotebookExecution,
+        ManualExecution,
+        JobExecution,
+        ScheduleExecution,
+        UnscheduleExecution,
+        NoneExecution,
+    ],
+    Field(discriminator="type"),
 ]

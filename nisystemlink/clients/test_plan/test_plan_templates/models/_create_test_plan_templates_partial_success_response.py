@@ -3,12 +3,12 @@ from typing import List, Optional
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._test_plan_templates import TestPlanTemplateBase, TestPlanTemplateResponse
+from ._test_plan_templates import TestPlanTemplate, TestPlanTemplateBase
 
 
 class CreateTestPlanTemplatePartialSuccessResponse(JsonModel):
 
-    created_test_plan_templates: Optional[List[TestPlanTemplateResponse]] = None
+    created_test_plan_templates: Optional[List[TestPlanTemplate]] = None
     """The list of test plan templates that were successfully created."""
 
     failed_test_plan_templates: Optional[List[TestPlanTemplateBase]] = None
