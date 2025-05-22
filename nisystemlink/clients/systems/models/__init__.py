@@ -16,6 +16,5 @@ from nisystemlink.clients.systems.models._remove_systems_request import (
 from nisystemlink.clients.systems.models._remove_systems_response import (
     RemoveSystemsResponse,
 )
-from nisystemlink.clients.systems.models._systems import System
 
 # flake8: noqa

@@ -112,7 +112,7 @@ class TestSystemsClient:
         )
 
         assert query_virtual_system_response.data is not None
-        assert query_virtual_system_response.data[0].id == minion_id
+        assert query_virtual_system_response.data[0]["id"] == minion_id
 
     def test__remove_sytems(self, client: SystemsClient):
 
