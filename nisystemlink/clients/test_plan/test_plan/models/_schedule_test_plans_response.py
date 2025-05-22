@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._schedule_test_plan_request import ScheduleTestPlanRequest
@@ -14,3 +15,7 @@ class ScheduleTestPlansResponse(JsonModel):
 
     failed_test_plans: Optional[List[ScheduleTestPlanRequest]] = None
     """(Optional) List of test plan requests that failed to schedule."""
+
+    error: Optional[ApiError] = None
+    """The error that occurred when scheduling the test plans."""
+    

@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._test_plan import TestPlan
@@ -14,3 +15,6 @@ class UpdateTestPlansResponse(JsonModel):
 
     failed_test_plans: Optional[List[UpdateTestPlanRequest]] = None
     """List of test plans that failed to update."""
+
+    error: Optional[ApiError] = None
+    """The error that occurred when updating the test plans."""

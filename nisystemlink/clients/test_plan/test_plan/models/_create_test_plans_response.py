@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._create_test_plan_request import CreateTestPlanRequest
@@ -19,3 +20,6 @@ class CreateTestPlansResponse(JsonModel):
 
     failed_test_plans: Optional[List[CreateTestPlanRequest]] = None
     """List of test plans that failed to be created, with their request body content."""
+
+    error: Optional[ApiError] = None
+    """The error that occurred when creating the test plans."""
