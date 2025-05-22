@@ -1,4 +1,4 @@
-from enum import auto, Enum
+from enum import Enum
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -13,69 +13,38 @@ class OrderBy(Enum):
 class AssetField(str, Enum):
     """Model for an object describing an asset with all of its properties."""
 
-    MODEL_NAME = auto()
-
-    MODEL_NUMBER = auto()
-
-    SERIAL_NUMBER = auto()
-
-    VENDOR_NAME = auto()
-
-    VENDOR_NUMBER = auto()
-
-    BUS_TYPE = auto()
-
-    NAME = auto()
-
-    ASSET_TYPE = auto()
-
-    DISCOVERY_TYPE = auto()
-
-    FIRMWARE_VERSION = auto()
-
-    HARDWARE_VERSION = auto()
-
-    VISA_RESOURCE_NAME = auto()
-
-    TEMPERATURE_SENSORS = auto()
-
-    SUPPORTS_SELF_CALIBRATION = auto()
-
-    SUPPORTS_EXTERNAL_CALIBRATION = auto()
-
-    CUSTOM_CALIBRATION_INTERVAL = auto()
-
-    SELF_CALIBRATION = auto()
-
-    IS_NI_ASSET = auto()
-
-    ID = auto()
-
-    LOCATION = auto()
-
-    CALIBRATION_STATUS = auto()
-
-    IS_SYSTEM_CONTROLLER = auto()
-
-    EXTERNAL_CALIBRATION = auto()
-
-    WORKSPACE = auto()
-
-    PROPERTIES = auto()
-
-    KEYWORDS = auto()
-
-    LAST_UPDATE = auto()
-
-    FILES_IDS = auto()
-
-    SUPPORTS_SELF_RESET = auto()
-
-    SUPPORTS_RESET = auto()
-
-    PART_NUMBER = auto()
-
-    OUT_FOR_CALIBRATION = auto()
+    MODEL_NAME = "MODEL_NAME"
+    MODEL_NUMBER = "MODEL_NUMBER"
+    SERIAL_NUMBER = "SERIAL_NUMBER"
+    VENDOR_NAME = "VENDOR_NAME"
+    VENDOR_NUMBER = "VENDOR_NUMBER"
+    BUS_TYPE = "BUS_TYPE"
+    NAME = "NAME"
+    ASSET_TYPE = "ASSET_TYPE"
+    DISCOVERY_TYPE = "DISCOVERY_TYPE"
+    FIRMWARE_VERSION = "FIRMWARE_VERSION"
+    HARDWARE_VERSION = "HARDWARE_VERSION"
+    VISA_RESOURCE_NAME = "VISA_RESOURCE_NAME"
+    TEMPERATURE_SENSORS = "TEMPERATURE_SENSORS"
+    SUPPORTS_SELF_CALIBRATION = "SUPPORTS_SELF_CALIBRATION"
+    SUPPORTS_EXTERNAL_CALIBRATION = "SUPPORTS_EXTERNAL_CALIBRATION"
+    CUSTOM_CALIBRATION_INTERVAL = "CUSTOM_CALIBRATION_INTERVAL"
+    SELF_CALIBRATION = "SELF_CALIBRATION"
+    IS_NI_ASSET = "IS_NI_ASSET"
+    ID = "ID"
+    LOCATION = "LOCATION"
+    CALIBRATION_STATUS = "CALIBRATION_STATUS"
+    IS_SYSTEM_CONTROLLER = "IS_SYSTEM_CONTROLLER"
+    EXTERNAL_CALIBRATION = "EXTERNAL_CALIBRATION"
+    WORKSPACE = "WORKSPACE"
+    PROPERTIES = "PROPERTIES"
+    KEYWORDS = "KEYWORDS"
+    LAST_UPDATE = "LAST_UPDATE"
+    FILES_IDS = "FILES_IDS"
+    SUPPORTS_SELF_RESET = "SUPPORTS_SELF_RESET"
+    SUPPORTS_RESET = "SUPPORTS_RESET"
+    PART_NUMBER = "PART_NUMBER"
+    OUT_FOR_CALIBRATION = "OUT_FOR_CALIBRATION"
 
 
 class QueryAssetsRequest(JsonModel):

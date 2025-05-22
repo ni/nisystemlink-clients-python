@@ -106,7 +106,6 @@ class AssetManagementClient(BaseClient):
 
         query_request = models._QueryAssetRequest(**query_params)
 
-        print(query_request, projection_str, query.projection)
         return self.__query_assets(query=query_request)
 
     @post("delete-assets", args=[Field("ids")])
