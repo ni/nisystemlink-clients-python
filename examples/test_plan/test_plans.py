@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan import TestPlanClient
 from nisystemlink.clients.test_plan.models import (
@@ -91,8 +93,12 @@ schedule_test_plans_request = ScheduleTestPlansRequest(
     test_plans=[
         ScheduleTestPlanRequest(
             id=created_test_plan_id,
-            planned_start_date_time="2025-05-20T15:07:42.527Z",
-            estimated_end_date_time="2025-05-20T15:07:42.527Z",
+            planned_start_date_time=datetime.strptime(
+                "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+            estimated_end_date_time=datetime.strptime(
+                "2025-05-22T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
             system_id="fake-system",
         )
     ]

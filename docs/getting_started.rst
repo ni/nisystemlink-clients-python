@@ -337,6 +337,7 @@ default connection. The default connection depends on your environment.
 With a :class:`.TestPlanClient` object, you can:
 
 * Create, query, get, update, schedule and delete TestPlans
+* Create, query and delete test plan templates
 
 Examples
 ~~~~~~~~
