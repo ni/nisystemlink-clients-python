@@ -2,8 +2,6 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan import TestPlanClient
 from nisystemlink.clients.test_plan.models import (
     CreateTestPlanRequest,
-    CreateTestPlansRequest,
-    DeleteTestPlansRequest,
     QueryTestPlansRequest,
     ScheduleTestPlanRequest,
     ScheduleTestPlansRequest,
@@ -18,17 +16,15 @@ server_configuration = HttpConfiguration(
 )
 client = TestPlanClient(configuration=server_configuration)
 
-create_test_plans_request = CreateTestPlansRequest(
-    test_plans=[
-        CreateTestPlanRequest(
-            name="Python integration test plan", state="NEW", partNumber="px40482"
-        )
-    ]
-)
+create_test_plans_request = [
+    CreateTestPlanRequest(
+        name="Python integration test plan", state="NEW", partNumber="px40482"
+    )
+]
 
 # create a test plan
 created_test_plans_response = client.create_test_plans(
-    create_request=create_test_plans_request
+    test_plans=create_test_plans_request
 )
 
 if created_test_plans_response.created_test_plans:
@@ -73,4 +69,4 @@ schedule_test_plan_response = client.schedule_test_plans(
 )
 
 # Delete test plan
-client.delete_test_plans(ids=DeleteTestPlansRequest(ids=[created_test_plan_id]))
+client.delete_test_plans(ids=[created_test_plan_id])

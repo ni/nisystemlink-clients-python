@@ -1,6 +1,4 @@
-from nisystemlink.clients.test_plan.models._test_plan_templates import (
-    TestPlanTemplateBase,
-)
+from ._test_plan_templates import TestPlanTemplateBase
 
 
 class CreateTestPlanTemplateRequest(TestPlanTemplateBase):

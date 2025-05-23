@@ -1,4 +1,7 @@
+from typing import List, Optional
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import Field
 
 from ._execution_definition import ExecutionDefinition
 from ._state import State
@@ -16,57 +19,57 @@ class ActionTransitionDefinition(JsonModel):
     next_substate: str
     """The substate to transition to within the next state."""
 
-    show_in_u_i: bool
+    show_in_UI: bool = Field(alias="showInUI")
     """Indicates whether this transition should be visible in the user interface."""
 
 
 class SubstateDefinition(JsonModel):
     """Represents a substate within a workflow definition."""
 
-    id: str
+    id: Optional[str] = None
     """The unique identifier for the substate."""
 
-    label: str
+    label: Optional[str] = None
     """The display label for the substate."""
 
-    available_actions: list[ActionTransitionDefinition]
+    available_actions: Optional[list[ActionTransitionDefinition]] = None
     """List of actions that can be performed from this substate."""
 
 
 class StateDefinition(JsonModel):
     """Represents the definition of a workflow state within a test plan."""
 
-    state: State
+    state: Optional[State] = None
     """The state associated with this definition."""
 
-    dashboard_available: bool
+    dashboard_available: Optional[bool] = None
     """Indicates if the state is available on the dashboard."""
 
-    default_substate: str
+    default_substate: Optional[str] = None
     """The name of the default substate for this state."""
 
-    substates: list[SubstateDefinition]
+    substates: Optional[list[SubstateDefinition]] = None
     """A list of substates defined for this state."""
 
 
 class ActionDefinition(JsonModel):
     """Represents the definition of an action within a workflow."""
 
-    id: str
+    id: Optional[str] = None
     """The unique identifier for the action."""
 
-    label: str
+    label: Optional[str] = None
     """The display label for the action."""
 
-    execution_action: ExecutionDefinition
+    execution_action: Optional[ExecutionDefinition] = None
     """The execution details associated with the action."""
 
 
 class WorkflowDefinition(JsonModel):
     """Contains information about a workflow definition."""
 
-    actions: list[ActionDefinition]
+    actions: Optional[List[ActionDefinition]] = None
     """A list of action definitions in the workflow."""
 
-    states: list[StateDefinition]
+    states: Optional[List[StateDefinition]] = None
     """A list of state definitions in the workflow."""

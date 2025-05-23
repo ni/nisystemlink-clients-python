@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+from ._dashboard import DashboardUrl
 from ._execution_definition import ExecutionDefinition
 from ._execution_event import ExecutionEvent
 from ._state import State
@@ -48,10 +49,10 @@ class TestPlan(JsonModel):
     updated_by: Optional[str] = None
     """The user who last updated the test plan."""
 
-    created_At: Optional[str] = None
+    created_At: Optional[datetime] = None
     """The date and time when the test plan was created."""
 
-    updated_at: Optional[str] = None
+    updated_at: Optional[datetime] = None
     """The date and time when the test plan was last updated."""
 
     properties: Optional[Dict[str, str]] = None
@@ -96,7 +97,7 @@ class TestPlan(JsonModel):
     dashboard_url: Optional[Dict[str, str]] = None
     """The URLs for dashboards related to the test plan."""
 
-    dashboard: Optional[Dict[str, str]] = None
+    dashboard: Optional[DashboardUrl] = None
     """The dashboard data related to the test plan."""
 
     workflow: Optional[WorkflowDefinition] = None

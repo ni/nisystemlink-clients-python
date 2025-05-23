@@ -2,17 +2,8 @@ from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+from ._dashboard import Dashboard
 from ._execution_definition import ExecutionDefinition
-
-
-class Dashboard(JsonModel):
-    """Represents a dashboard reference."""
-
-    id: Optional[str] = None
-    """ID of the dashboard"""
-
-    variables: Optional[Dict[str, str]] = None
-    """Variables for the dashboard"""
 
 
 class CreateTestPlanRequest(JsonModel):
@@ -51,7 +42,7 @@ class CreateTestPlanRequest(JsonModel):
     test_program: Optional[str] = None
     """The test program associated with the test plan."""
 
-    systemtest_programfilter: Optional[str] = None
+    system_filter: Optional[str] = None
     """The system filter to apply."""
 
     workspace: Optional[str] = None

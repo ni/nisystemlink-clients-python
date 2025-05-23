@@ -4,50 +4,22 @@ from typing import List
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan import TestPlanClient
-from nisystemlink.clients.test_plan.models._create_test_plan_request import (
+from nisystemlink.clients.test_plan.models import (
     CreateTestPlanRequest,
-)
-from nisystemlink.clients.test_plan.models._create_test_plan_template_request import (
-    CreateTestPlanTemplateRequest,
-)
-from nisystemlink.clients.test_plan.models._create_test_plan_templates_partial_success_response import (
+    CreateTestPlansPartialSuccessResponse,
     CreateTestPlanTemplatePartialSuccessResponse,
-)
-from nisystemlink.clients.test_plan.models._create_test_plans_request import (
-    CreateTestPlansRequest,
-)
-from nisystemlink.clients.test_plan.models._create_test_plans_response import (
-    CreateTestPlansResponse,
-)
-from nisystemlink.clients.test_plan.models._delete_test_plans_request import (
-    DeleteTestPlansRequest,
-)
-from nisystemlink.clients.test_plan.models._paged_test_plan_templates import (
+    CreateTestPlanTemplateRequest,
     PagedTestPlanTemplates,
-)
-from nisystemlink.clients.test_plan.models._query_test_plan_templates_request import (
-    QueryTestPlanTemplatesRequest,
-    TestPlanTemplateField,
-)
-from nisystemlink.clients.test_plan.models._query_test_plans_request import (
     QueryTestPlansRequest,
-    TestPlanField,
-)
-from nisystemlink.clients.test_plan.models._schedule_test_plan_request import (
+    QueryTestPlanTemplatesRequest,
     ScheduleTestPlanRequest,
-)
-from nisystemlink.clients.test_plan.models._schedule_test_plans_request import (
     ScheduleTestPlansRequest,
-)
-from nisystemlink.clients.test_plan.models._state import State
-from nisystemlink.clients.test_plan.models._test_plan import TestPlan
-from nisystemlink.clients.test_plan.models._test_plan_templates import (
+    State,
+    TestPlan,
+    TestPlanField,
     TestPlanTemplate,
-)
-from nisystemlink.clients.test_plan.models._update_test_plan_request import (
+    TestPlanTemplateField,
     UpdateTestPlanRequest,
-)
-from nisystemlink.clients.test_plan.models._update_test_plans_request import (
     UpdateTestPlansRequest,
 )
 
@@ -56,6 +28,34 @@ from nisystemlink.clients.test_plan.models._update_test_plans_request import (
 def client(enterprise_config: HttpConfiguration) -> TestPlanClient:
     """Fixture to create a TestPlansClient instance"""
     return TestPlanClient(enterprise_config)
+
+
+@pytest.fixture
+def create_test_plans(client: TestPlanClient):
+    """Fixture to return a factory that create test plans."""
+    responses: List[CreateTestPlansPartialSuccessResponse] = []
+
+    def _create_test_plans(
+        new_test_plans: List[CreateTestPlanRequest],
+    ) -> CreateTestPlansPartialSuccessResponse:
+        response = client.create_test_plans(test_plans=new_test_plans)
+        responses.append(response)
+        return response
+
+    yield _create_test_plans
+
+    created_test_plans: List[TestPlan] = []
+    for response in responses:
+        if response.created_test_plans:
+            created_test_plans += response.created_test_plans
+
+    client.delete_test_plans(
+        ids=[
+            test_plans.id
+            for test_plans in created_test_plans
+            if test_plans.id is not None
+        ]
+    )
 
 
 @pytest.fixture
@@ -93,30 +93,32 @@ def create_test_plan_templates(client: TestPlanClient):
 @pytest.mark.enterprise
 class TestTestPlanClient:
 
-    _test_plan_create = CreateTestPlansRequest(
-        testPlans=[
-            CreateTestPlanRequest(
-                name="Python integration test plan", state="NEW", part_number="px40482"
-            )
-        ]
-    )
-    """create test plan object."""
+    _test_plan_create = [
+        CreateTestPlanRequest(
+            name="Python integration test plan", state="NEW", part_number="px40482"
+        )
+    ]
+    """create test plan request object."""
+
+    _create_test_plan_template_request = [
+        CreateTestPlanTemplateRequest(
+            name="Python integration test plan template",
+            template_group="sample template group",
+            workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+        )
+    ]
+    """create test plan template request object."""
 
     def test__create_and_delete_test_plan__returns_created_and_deleted_test_plans(
-        self, client: TestPlanClient
+        self, client: TestPlanClient, create_test_plans
     ):
-        create_test_plan_response = client.create_test_plans(
-            create_request=self._test_plan_create
-        )
+        create_test_plan_response = create_test_plans(self._test_plan_create)
 
         assert create_test_plan_response.created_test_plans is not None
 
         created_test_plan = create_test_plan_response.created_test_plans[0]
 
         get_test_plan_response: TestPlan = client.get_test_plan(created_test_plan.id)
-
-        delete_test_plan_request = DeleteTestPlansRequest(ids=[created_test_plan.id])
-        client.delete_test_plans(ids=delete_test_plan_request)
 
         assert created_test_plan is not None
         assert created_test_plan.name == "Python integration test plan"
@@ -125,10 +127,10 @@ class TestTestPlanClient:
         assert get_test_plan_response is not None
         assert get_test_plan_response.name == "Python integration test plan"
 
-    def test__get_test_plan__returns_get_test_plan(self, client: TestPlanClient):
-        create_test_plan_response = client.create_test_plans(
-            create_request=self._test_plan_create
-        )
+    def test__get_test_plan__returns_get_test_plan(
+        self, client: TestPlanClient, create_test_plans
+    ):
+        create_test_plan_response = create_test_plans(self._test_plan_create)
 
         assert create_test_plan_response.created_test_plans is not None
 
@@ -136,19 +138,14 @@ class TestTestPlanClient:
 
         get_test_plan_response: TestPlan = client.get_test_plan(created_test_plan.id)
 
-        delete_request = DeleteTestPlansRequest(
-            ids=[create_test_plan_response.created_test_plans[0].id]
-        )
-        client.delete_test_plans(ids=delete_request)
-
         assert get_test_plan_response is not None
         assert isinstance(get_test_plan_response, TestPlan)
         assert get_test_plan_response.id == created_test_plan.id
 
-    def test__update_test_plan__returns_updated_test_plan(self, client: TestPlanClient):
-        create_test_plan_response = client.create_test_plans(
-            create_request=self._test_plan_create
-        )
+    def test__update_test_plan__returns_updated_test_plan(
+        self, client: TestPlanClient, create_test_plans
+    ):
+        create_test_plan_response = create_test_plans(self._test_plan_create)
 
         assert create_test_plan_response.created_test_plans is not None
 
@@ -166,11 +163,6 @@ class TestTestPlanClient:
             update_request=update_test_plans_request
         )
 
-        delete_request = DeleteTestPlansRequest(
-            ids=[create_test_plan_response.created_test_plans[0].id]
-        )
-        client.delete_test_plans(ids=delete_request)
-
         assert update_test_plans_response.updated_test_plans is not None
 
         updated_test_plan = update_test_plans_response.updated_test_plans[0]
@@ -178,11 +170,9 @@ class TestTestPlanClient:
         assert updated_test_plan.name == "Updated Test Plan"
 
     def test__schedule_test_plan__returns_scheduled_test_plan(
-        self, client: TestPlanClient
+        self, client: TestPlanClient, create_test_plans
     ):
-        create_test_plan_response = client.create_test_plans(
-            create_request=self._test_plan_create
-        )
+        create_test_plan_response = create_test_plans(self._test_plan_create)
 
         assert create_test_plan_response.created_test_plans is not None
 
@@ -206,9 +196,6 @@ class TestTestPlanClient:
             schedule_request=schedule_test_plans_request
         )
 
-        delete_request = DeleteTestPlansRequest(ids=[created_test_plan.id])
-        client.delete_test_plans(ids=delete_request)
-
         assert schedule_test_plans_response.scheduled_test_plans is not None
 
         scheduled_test_plan = schedule_test_plans_response.scheduled_test_plans[0]
@@ -218,10 +205,10 @@ class TestTestPlanClient:
         )
         assert scheduled_test_plan.system_id == "fake-system"
 
-    def test__query_test_plans__return_queried_test_plan(self, client: TestPlanClient):
-        create_test_plan_response: CreateTestPlansResponse = client.create_test_plans(
-            create_request=self._test_plan_create
-        )
+    def test__query_test_plans__return_queried_test_plan(
+        self, client: TestPlanClient, create_test_plans
+    ):
+        create_test_plan_response = create_test_plans(self._test_plan_create)
 
         assert create_test_plan_response.created_test_plans is not None
 
@@ -233,9 +220,6 @@ class TestTestPlanClient:
         queried_test_plans_response = client.query_test_plans(
             query_request=query_test_plans_request
         )
-
-        delete_request = DeleteTestPlansRequest(ids=[created_test_plan.id])
-        client.delete_test_plans(ids=delete_request)
 
         assert queried_test_plans_response is not None
         assert queried_test_plans_response.test_plans[0].id == created_test_plan.id
@@ -288,15 +272,8 @@ class TestTestPlanClient:
     def test__create_test_plan_template__returns_created_test_plan_template(
         self, client: TestPlanClient, create_test_plan_templates
     ):
-        create_test_plan_template_request: List[CreateTestPlanTemplateRequest] = [
-            CreateTestPlanTemplateRequest(
-                name="Python integration test plan template",
-                template_group="sample template group",
-                workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
-            )
-        ]
         create_test_plan_template_response = create_test_plan_templates(
-            create_test_plan_template_request
+            self._create_test_plan_template_request
         )
 
         template_id = (
@@ -309,23 +286,14 @@ class TestTestPlanClient:
         assert template_id is not None
         assert (
             create_test_plan_template_response.created_test_plan_templates[0].name
-            == create_test_plan_template_request[0].name
+            == self._create_test_plan_template_request[0].name
         )
 
     def test__query_test_plan_template__returns_queried_test_plan_template(
         self, client: TestPlanClient, create_test_plan_templates
     ):
-
-        create_test_plan_template_request: List[CreateTestPlanTemplateRequest] = [
-            CreateTestPlanTemplateRequest(
-                name="Python integration test plan template",
-                template_group="sample template group",
-                workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
-            )
-        ]
-
         create_test_plan_template_response = create_test_plan_templates(
-            create_test_plan_template_request
+            self._create_test_plan_template_request
         )
 
         template_id = (
@@ -349,18 +317,10 @@ class TestTestPlanClient:
         )
 
     def test__delete_test_plan_template(self, client: TestPlanClient):
-
-        create_test_plan_template_request: List[CreateTestPlanTemplateRequest] = [
-            CreateTestPlanTemplateRequest(
-                name="Python integration test plan template",
-                template_group="sample template group",
-                workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
-            )
-        ]
         create_test_plan_template_response: (
             CreateTestPlanTemplatePartialSuccessResponse
         ) = client.create_test_plan_templates(
-            test_plan_templates=create_test_plan_template_request
+            test_plan_templates=self._create_test_plan_template_request
         )
 
         template_id = (

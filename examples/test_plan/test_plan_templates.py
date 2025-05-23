@@ -18,7 +18,7 @@ create_test_plan_template_request = [
     CreateTestPlanTemplateRequest(
         name="Python integration test plan template",
         template_group="sample template group",
-        workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+        workspace="YourWorksapceId",
     )
 ]
 

@@ -1,4 +1,4 @@
-from typing import Annotated, Any, List, Literal, Optional, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
@@ -13,7 +13,7 @@ class Job(JsonModel):
     arguments: List[List[Any]]
     """List of argument lists for each function."""
 
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
     """Additional metadata for the job."""
 
 
@@ -28,6 +28,9 @@ class NotebookExecution(JsonModel):
 
     notebookId: str
     """ID of the notebook to execute."""
+
+    parameters: Optional[Dict[str, str]] = None
+    """	Dictionary of parameters that will be passed to the notebook when the execution is run."""
 
 
 class ManualExecution(JsonModel):
@@ -49,31 +52,11 @@ class JobExecution(JsonModel):
     type: Literal["JOB"] = Field(default="JOB")
     """Type of execution, default is 'JOB'."""
 
-    jobs: List[Job]
+    jobs: Optional[List[Job]] = None
     """List of jobs to execute."""
 
     systemId: Optional[str] = None
     """Optional system ID where jobs will run."""
-
-
-class ScheduleExecution(JsonModel):
-    """Represents a scheduled execution definition."""
-
-    action: str
-    """User defined action to perform in workflow (user defined)."""
-
-    type: Literal["SCHEDULE"] = Field(default="SCHEDULE")
-    """Type of execution, default is 'SCHEDULE'."""
-
-
-class UnscheduleExecution(JsonModel):
-    """Represents an unscheduled execution definition."""
-
-    action: str
-    """User defined action to perform in workflow (user defined)."""
-
-    type: Literal["UNSCHEDULE"] = Field(default="UNSCHEDULE")
-    """Type of execution, default is 'UNSCHEDULE'."""
 
 
 class NoneExecution(JsonModel):
@@ -91,8 +74,6 @@ ExecutionDefinition = Annotated[
         NotebookExecution,
         ManualExecution,
         JobExecution,
-        ScheduleExecution,
-        UnscheduleExecution,
         NoneExecution,
     ],
     Field(discriminator="type"),

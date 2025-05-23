@@ -43,10 +43,10 @@ class TestPlanClient(BaseClient):
         """
         ...
 
-    @post("testplans")
+    @post("testplans", args=[Field("testPlans")])
     def create_test_plans(
-        self, create_request: models.CreateTestPlansRequest
-    ) -> models.CreateTestPlansResponse:
+        self, test_plans: List[models.CreateTestPlanRequest]
+    ) -> models.CreateTestPlansPartialSuccessResponse:
         """Create a new test plan.
 
         Args:
@@ -57,8 +57,8 @@ class TestPlanClient(BaseClient):
         """
         ...
 
-    @post("delete-testplans")
-    def delete_test_plans(self, ids: models.DeleteTestPlansRequest) -> None:
+    @post("delete-testplans", args=[Field("ids")])
+    def delete_test_plans(self, ids: List[str]) -> None:
         """Delete test plans by IDs.
 
         Args:
@@ -70,19 +70,6 @@ class TestPlanClient(BaseClient):
         ...
 
     @post("query-testplans")
-    def __query_test_plans(
-        self, query_request: models._QueryTestPlansRequest
-    ) -> models.PagedTestPlans:
-        """Query test plans.
-
-        Args:
-            query: The query to execute.
-
-        Returns:
-            A PagedTestPlans object containing test plans that match the query.
-        """
-        ...
-
     def query_test_plans(
         self, query_request: models.QueryTestPlansRequest
     ) -> models.PagedTestPlans:
@@ -94,26 +81,7 @@ class TestPlanClient(BaseClient):
         Returns:
             A PagedTestPlans object containing test plans that match the query.
         """
-        projection_str = (
-            [projection.name for projection in query_request.projection]
-            if query_request.projection
-            else None
-        )
-        query_params = {
-            "filter": query_request.filter,
-            "take": query_request.take,
-            "continuation_token": query_request.continuation_token,
-            "order_by": query_request.order_by,
-            "descending": query_request.descending,
-            "return_count": query_request.return_count,
-            "projection": projection_str,
-        }
-
-        query_params = {k: v for k, v in query_params.items() if v is not None}
-
-        query_test_plans_request = models._QueryTestPlansRequest(**query_params)
-
-        return self.__query_test_plans(query_request=query_test_plans_request)
+        ...
 
     @post("schedule-testplans")
     def schedule_test_plans(
@@ -161,18 +129,6 @@ class TestPlanClient(BaseClient):
         ...
 
     @post("query-testplan-templates")
-    def __query_test_plan_templates(
-        self, query_test_plan_templates: models._QueryTestPlanTemplatesRequest
-    ) -> models.PagedTestPlanTemplates:
-        """Queries one or more test plan templates and return errors for failed queries.
-
-        Returns: A list of test plan templates, based on the query and errors for the wrong query.
-
-        Raises: ApiException: if unable to communicate with the `/niworkorder` service of provided invalid
-                arguments.
-        """
-        ...
-
     def query_test_plan_templates(
         self, query_test_plan_templates: models.QueryTestPlanTemplatesRequest
     ) -> models.PagedTestPlanTemplates:
@@ -183,26 +139,7 @@ class TestPlanClient(BaseClient):
         Raises: ApiException: if unable to communicate with the `/niworkorder` service of provided invalid
                 arguments.
         """
-        projection_str = (
-            [projection.name for projection in query_test_plan_templates.projection]
-            if query_test_plan_templates.projection
-            else None
-        )
-        query_params = {
-            "filter": query_test_plan_templates.filter,
-            "take": query_test_plan_templates.take,
-            "substitutions": query_test_plan_templates.substitutions,
-            "continuationToken": query_test_plan_templates.continuation_token,
-            "orderBy": query_test_plan_templates.order_by,
-            "descending": query_test_plan_templates.descending,
-            "projection": projection_str,
-        }
-
-        query_params = {k: v for k, v in query_params.items() if v is not None}
-
-        query_request = models._QueryTestPlanTemplatesRequest(**query_params)
-
-        return self.__query_test_plan_templates(query_test_plan_templates=query_request)
+        ...
 
     @post("delete-testplan-templates", args=[Field("ids")])
     def delete_test_plan_templates(
