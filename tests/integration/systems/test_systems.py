@@ -149,10 +149,11 @@ class TestSystemsClient:
         self, client: SystemsClient
     ):
         query_systems_request = QuerySystemsRequest(
-            projection= "new(id, alias, grains.data.master, grains.data.host)",
-            take=1
+            projection="new(id, alias, grains.data.master, grains.data.host)", take=1
         )
-        response: QuerySystemsResponse = client.query_systems(query=query_systems_request)
+        response: QuerySystemsResponse = client.query_systems(
+            query=query_systems_request
+        )
 
-        assert response is not None
+        assert response.data is not None
         assert set(response.data[0].keys()) == {"id", "alias", "master", "host"}
