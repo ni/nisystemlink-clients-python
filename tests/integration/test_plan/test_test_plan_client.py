@@ -121,7 +121,6 @@ class TestTestPlanClient:
     _test_plan_create = [
         CreateTestPlanRequest(
             name="Python integration test plan",
-            # template_id="Python Sample Id",
             state="NEW",
             description="Test plan for verifying integration flow",
             assigned_to="test.user@example.com",
