@@ -6,9 +6,6 @@ from nisystemlink.clients.systems.models._create_virtual_systems_request import 
 from nisystemlink.clients.systems.models._query_systems_request import (
     QuerySystemsRequest,
 )
-from nisystemlink.clients.systems.models._remove_systems_request import (
-    RemoveSystemsRequest,
-)
 
 # Setup the server configuration to point to your instance of
 # SystemLink Enterprise.
@@ -40,7 +37,6 @@ query_systems_request = QuerySystemsRequest(filter=f'id="{minion_id}"')
 client.query_systems(query=query_systems_request)
 
 # Delete the created systems.
-remove_systems = RemoveSystemsRequest(tgt=[minion_id])
-
 if minion_id is not None:
-    client.remove_systems(virtual_system_to_remove=remove_systems)
+    remove_systems = [minion_id]
+    client.remove_systems(tgt=remove_systems)

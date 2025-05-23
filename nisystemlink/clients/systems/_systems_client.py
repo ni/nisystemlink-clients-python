@@ -1,11 +1,11 @@
 """Implementation of SystemsClient"""
 
-from typing import Optional
+from typing import List, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import post
-from uplink import retry
+from uplink import Field, retry
 
 from . import models
 
@@ -69,10 +69,8 @@ class SystemsClient(BaseClient):
         """
         ...
 
-    @post("remove-systems")
-    def remove_systems(
-        self, virtual_system_to_remove: models.RemoveSystemsRequest
-    ) -> models.RemoveSystemsResponse:
+    @post("remove-systems", args=[Field("tgt")])
+    def remove_systems(self, tgt: List[str]) -> models.RemoveSystemsResponse:
         """Removes multiple systems.
 
         Args:

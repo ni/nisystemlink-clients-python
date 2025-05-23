@@ -15,9 +15,6 @@ from nisystemlink.clients.systems.models._query_systems_request import (
 from nisystemlink.clients.systems.models._query_systems_response import (
     QuerySystemsResponse,
 )
-from nisystemlink.clients.systems.models._remove_systems_request import (
-    RemoveSystemsRequest,
-)
 from nisystemlink.clients.systems.models._remove_systems_response import (
     RemoveSystemsResponse,
 )
@@ -51,11 +48,7 @@ def create_virtual_systems(client: SystemsClient):
             created_virtual_systems_minion_ids = created_virtual_systems_minion_ids + [
                 response.minionId
             ]
-        client.remove_systems(
-            virtual_system_to_remove=RemoveSystemsRequest(
-                tgt=created_virtual_systems_minion_ids,
-            )
-        )
+        client.remove_systems(tgt=created_virtual_systems_minion_ids)
 
 
 @pytest.mark.integration
@@ -139,7 +132,7 @@ class TestSystemsClient:
         assert minion_id is not None
 
         remove_system_response: RemoveSystemsResponse = client.remove_systems(
-            virtual_system_to_remove=RemoveSystemsRequest(tgt=[minion_id])
+            tgt=[minion_id]
         )
 
         assert remove_system_response.removed_ids is not None

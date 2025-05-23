@@ -10,9 +10,6 @@ from nisystemlink.clients.systems.models._query_systems_request import (
 from nisystemlink.clients.systems.models._query_systems_response import (
     QuerySystemsResponse,
 )
-from nisystemlink.clients.systems.models._remove_systems_request import (
-    RemoveSystemsRequest,
-)
 from nisystemlink.clients.systems.models._remove_systems_response import (
     RemoveSystemsResponse,
 )
