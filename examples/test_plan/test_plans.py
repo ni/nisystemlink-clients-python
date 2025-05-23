@@ -34,7 +34,7 @@ create_test_plans_request = [
         dut_id="Sample-Dut_Id",
         test_program="TP-Integration-001",
         system_filter="os:linux AND arch:x64",
-        workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+        workspace="your_workspace_id",
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(
             id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}

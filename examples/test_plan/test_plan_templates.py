@@ -45,7 +45,7 @@ create_test_plan_template_request = [
             ),
         ],
         file_ids=["file1", "file2"],
-        workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+        workspace="your_workspace_id",
         properties={"env": "staging", "priority": "high"},
         dashboard=Dashboard(
             id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
