@@ -32,7 +32,7 @@ class SubstateDefinition(JsonModel):
     label: Optional[str] = None
     """The display label for the substate."""
 
-    available_actions: Optional[list[ActionTransitionDefinition]] = None
+    available_actions: Optional[List[ActionTransitionDefinition]] = None
     """List of actions that can be performed from this substate."""
 
 
@@ -48,7 +48,7 @@ class StateDefinition(JsonModel):
     default_substate: Optional[str] = None
     """The name of the default substate for this state."""
 
-    substates: Optional[list[SubstateDefinition]] = None
+    substates: Optional[List[SubstateDefinition]] = None
     """A list of substates defined for this state."""
 
 
