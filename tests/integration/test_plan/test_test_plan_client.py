@@ -9,6 +9,10 @@ from nisystemlink.clients.test_plan.models import (
     CreateTestPlansPartialSuccessResponse,
     CreateTestPlanTemplatePartialSuccessResponse,
     CreateTestPlanTemplateRequest,
+    Dashboard,
+    Job,
+    JobExecution,
+    ManualExecution,
     PagedTestPlanTemplates,
     QueryTestPlansRequest,
     QueryTestPlanTemplatesRequest,
@@ -93,9 +97,44 @@ def create_test_plan_templates(client: TestPlanClient):
 @pytest.mark.enterprise
 class TestTestPlanClient:
 
+    _dashboard = Dashboard(
+        id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
+    )
+
+    _execution_actions = [
+        ManualExecution(action="boot", type="MANUAL"),
+        JobExecution(
+            action="run",
+            type="JOB",
+            jobs=[
+                Job(
+                    functions=["run_test_suite"],
+                    arguments=[["test_suite.py"]],
+                    metadata={"env": "staging"},
+                )
+            ],
+            systemId="system-001",
+        ),
+    ]
+
     _test_plan_create = [
         CreateTestPlanRequest(
-            name="Python integration test plan", state="NEW", part_number="px40482"
+            name="Python integration test plan",
+            # template_id="Python Sample Id",
+            state="NEW",
+            description="Test plan for verifying integration flow",
+            assigned_to="test.user@example.com",
+            # work_order_id="Sample-Work-Order",
+            estimated_duration_in_seconds=86400,
+            properties={"env": "staging", "priority": "high"},
+            part_number="px40482",
+            dut_id="Sample-Dut_Id",
+            test_program="TP-Integration-001",
+            system_filter="os:linux AND arch:x64",
+            # workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+            file_ids_from_template=["file1", "file2"],
+            dashboard=_dashboard,
+            execution_actions=_execution_actions,
         )
     ]
     """create test plan request object."""
@@ -104,7 +143,18 @@ class TestTestPlanClient:
         CreateTestPlanTemplateRequest(
             name="Python integration test plan template",
             template_group="sample template group",
-            workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+            product_families=["FamilyA", "FamilyB"],
+            part_numbers=["PN-1001", "PN-1002"],
+            summary="Template for running integration test plans",
+            description="This template defines execution steps for integration workflows.",
+            test_program="TP-INT-002",
+            estimated_duration_in_seconds=86400,
+            system_filter="os:linux AND arch:x64",
+            execution_actions=_execution_actions,
+            file_ids=["file1", "file2"],
+            # workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+            properties={"env": "staging", "priority": "high"},
+            dashboard=_dashboard,
         )
     ]
     """create test plan template request object."""

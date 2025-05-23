@@ -2,6 +2,10 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.test_plan import TestPlanClient
 from nisystemlink.clients.test_plan.models import (
     CreateTestPlanTemplateRequest,
+    Dashboard,
+    Job,
+    JobExecution,
+    ManualExecution,
     QueryTestPlanTemplatesRequest,
 )
 
@@ -18,7 +22,34 @@ create_test_plan_template_request = [
     CreateTestPlanTemplateRequest(
         name="Python integration test plan template",
         template_group="sample template group",
-        workspace="YourWorksapceId",
+        product_families=["FamilyA", "FamilyB"],
+        part_numbers=["PN-1001", "PN-1002"],
+        summary="Template for running integration test plans",
+        description="This template defines execution steps for integration workflows.",
+        test_program="TP-INT-002",
+        estimated_duration_in_seconds=86400,
+        system_filter="os:linux AND arch:x64",
+        execution_actions=[
+            ManualExecution(action="boot", type="MANUAL"),
+            JobExecution(
+                action="run",
+                type="JOB",
+                jobs=[
+                    Job(
+                        functions=["run_test_suite"],
+                        arguments=[["test_suite.py"]],
+                        metadata={"env": "staging"},
+                    )
+                ],
+                systemId="system-001",
+            ),
+        ],
+        file_ids=["file1", "file2"],
+        # workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+        properties={"env": "staging", "priority": "high"},
+        dashboard=Dashboard(
+            id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
+        ),
     )
 ]
 

@@ -12,7 +12,14 @@ from ._execution_event import ExecutionEvent
 from ._order_by import OrderBy
 from ._test_plan import TestPlan
 from ._state import State
-from ._execution_definition import ExecutionDefinition
+from ._execution_definition import (
+    ExecutionDefinition,
+    ManualExecution,
+    JobExecution,
+    NoneExecution,
+    NotebookExecution,
+    Job,
+)
 from ._schedule_test_plans_request import ScheduleTestPlansRequest
 from ._schedule_test_plan_request import ScheduleTestPlanRequest
 from ._schedule_test_plans_response import ScheduleTestPlansResponse

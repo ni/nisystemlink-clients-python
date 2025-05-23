@@ -3,20 +3,8 @@ from typing import Dict, List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+from ._dashboard import Dashboard
 from ._execution_definition import ExecutionDefinition
-
-
-class Dashboard(JsonModel):
-    """Contains information about a reference of a dashboard linked to test plan template."""
-
-    id: Optional[str] = None
-    """The globally unique id of the dashboard."""
-
-    variables: Optional[Dict[str, str]] = None
-    """Dictionary of variables set on the dashboard.
-    These will be appended to the URL as query parameters.
-    Each key will be prefixed with "var-" and the value will be the value of the variable.
-    """
 
 
 class TestPlanTemplateBase(JsonModel):
