@@ -32,7 +32,9 @@ if create_virtual_system_response and create_virtual_system_response.minionId:
     minion_id = create_virtual_system_response.minionId
 
 # Query systems using id.
-query_systems_request = QuerySystemsRequest(filter=f'id="{minion_id}"')
+query_systems_request = QuerySystemsRequest(
+    filter=f'id="{minion_id}"', projection="new(id, alias)"
+)
 
 client.query_systems(query=query_systems_request)
 

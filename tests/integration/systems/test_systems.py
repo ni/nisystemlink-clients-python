@@ -146,7 +146,8 @@ class TestSystemsClient:
         self, client: SystemsClient
     ):
         query_systems_request = QuerySystemsRequest(
-            projection="new(id, alias, grains.data.master, grains.data.host)", take=1
+            projection="new(id, alias, grains.data.master as master , grains.data.host as host)",
+            take=1,
         )
         response: QuerySystemsResponse = client.query_systems(
             query=query_systems_request
