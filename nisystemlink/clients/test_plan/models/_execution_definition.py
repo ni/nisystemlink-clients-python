@@ -69,12 +69,34 @@ class NoneExecution(JsonModel):
     """Type of execution, default is 'NONE'."""
 
 
+class ScheduleExecution(JsonModel):
+    """Represents a scheduled execution definition."""
+
+    action: str
+    """User defined action to perform in workflow (user defined)."""
+
+    type: Literal["SCHEDULE"] = Field(default="SCHEDULE")
+    """Type of execution, default is 'SCHEDULE'."""
+
+
+class UnscheduleExecution(JsonModel):
+    """Represents an unscheduled execution definition."""
+
+    action: str
+    """User defined action to perform in workflow (user defined)."""
+
+    type: Literal["UNSCHEDULE"] = Field(default="UNSCHEDULE")
+    """Type of execution, default is 'UNSCHEDULE'."""
+
+
 ExecutionDefinition = Annotated[
     Union[
         NotebookExecution,
         ManualExecution,
         JobExecution,
         NoneExecution,
+        ScheduleExecution,
+        UnscheduleExecution,
     ],
     Field(discriminator="type"),
 ]

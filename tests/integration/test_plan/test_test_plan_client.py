@@ -96,7 +96,7 @@ def create_test_plan_templates(client: TestPlanClient):
 @pytest.mark.enterprise
 class TestTestPlanClient:
 
-    _workspace = "33eba2fe-fe42-48a1-a47f-a6669479a8aa"
+    _workspace = "2300760d-38c4-48a1-9acb-800260812337"
 
     _dashboard = Dashboard(
         id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
