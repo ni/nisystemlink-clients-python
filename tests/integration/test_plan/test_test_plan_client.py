@@ -13,7 +13,6 @@ from nisystemlink.clients.test_plan.models import (
     Job,
     JobExecution,
     ManualExecution,
-    PagedTestPlanTemplates,
     QueryTestPlansRequest,
     QueryTestPlanTemplatesRequest,
     ScheduleTestPlanRequest,
@@ -277,15 +276,23 @@ class TestTestPlanClient:
         assert queried_test_plans_response.total_count > 0
 
     def test__query_test_plans_with_projections__returns_the_test_plans_with_projected_properties(
-        self, client: TestPlanClient
+        self, client: TestPlanClient, create_test_plans
     ):
+        create_test_plan_response = create_test_plans(self._test_plan_create)
+
+        assert create_test_plan_response.created_test_plans is not None
+
+        created_test_plan = create_test_plan_response.created_test_plans[0]
         query_test_plans_request = QueryTestPlansRequest(
-            projection=[TestPlanField.ID, TestPlanField.NAME]
+            filter=f'id = "{created_test_plan.id}"',
+            projection=[TestPlanField.ID, TestPlanField.NAME],
+            take=1,
         )
         response = client.query_test_plans(query_request=query_test_plans_request)
 
         assert response is not None
-        assert all(
+        test_plan = response.test_plans[0]
+        assert (
             test_plan.id is not None
             and test_plan.name is not None
             and test_plan.template_id is None
@@ -316,7 +323,6 @@ class TestTestPlanClient:
             and test_plan.dashboard_url is None
             and test_plan.dashboard is None
             and test_plan.workflow is None
-            for test_plan in response.test_plans
         )
 
     def test__create_test_plan_template__returns_created_test_plan_template(
@@ -357,8 +363,8 @@ class TestTestPlanClient:
 
         query = QueryTestPlanTemplatesRequest(filter=f'id="{template_id}"', take=1)
 
-        query_test_plan_template_response: PagedTestPlanTemplates = (
-            client.query_test_plan_templates(query_test_plan_templates=query)
+        query_test_plan_template_response = client.query_test_plan_templates(
+            query_test_plan_templates=query
         )
 
         assert len(query_test_plan_template_response.test_plan_templates) == 1, query
@@ -384,27 +390,41 @@ class TestTestPlanClient:
 
         client.delete_test_plan_templates(ids=[template_id])
 
-        query_deleted_test_plan_template_response: PagedTestPlanTemplates = (
-            client.query_test_plan_templates(
-                query_test_plan_templates=QueryTestPlanTemplatesRequest(
-                    filter=f'id="{template_id}"', take=1
-                )
+        query_deleted_test_plan_template_response = client.query_test_plan_templates(
+            query_test_plan_templates=QueryTestPlanTemplatesRequest(
+                filter=f'id="{template_id}"', take=1
             )
         )
 
         assert len(query_deleted_test_plan_template_response.test_plan_templates) == 0
 
     def test_query_test_plan_templates_with_projections__returns_test_plan_templates_with_projected_properties(
-        self, client: TestPlanClient
+        self, client: TestPlanClient, create_test_plan_templates
     ):
+        create_test_plan_template_response = create_test_plan_templates(
+            self._create_test_plan_template_request
+        )
+
+        template_id = (
+            create_test_plan_template_response.created_test_plan_templates[0].id
+            if create_test_plan_template_response.created_test_plan_templates
+            and create_test_plan_template_response.created_test_plan_templates[0].id
+            else None
+        )
+
+        assert template_id is not None
+
         query = QueryTestPlanTemplatesRequest(
+            filter=f'id="{template_id}"',
             projection=[TestPlanTemplateField.ID, TestPlanTemplateField.NAME],
+            take=1,
         )
         print(query)
         response = client.query_test_plan_templates(query_test_plan_templates=query)
 
         assert response is not None
-        assert all(
+        test_plan_template = response.test_plan_templates[0]
+        assert (
             test_plan_template.id is not None
             and test_plan_template.name is not None
             and test_plan_template.template_group is None
@@ -420,5 +440,4 @@ class TestTestPlanClient:
             and test_plan_template.workspace is None
             and test_plan_template.properties is None
             and test_plan_template.dashboard is None
-            for test_plan_template in response.test_plan_templates
         )
