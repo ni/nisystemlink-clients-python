@@ -96,6 +96,8 @@ def create_test_plan_templates(client: TestPlanClient):
 @pytest.mark.enterprise
 class TestTestPlanClient:
 
+    _workspace = "33eba2fe-fe42-48a1-a47f-a6669479a8aa"
+
     _dashboard = Dashboard(
         id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
     )
@@ -123,14 +125,13 @@ class TestTestPlanClient:
             state="NEW",
             description="Test plan for verifying integration flow",
             assigned_to="test.user@example.com",
-            # work_order_id="Sample-Work-Order",
             estimated_duration_in_seconds=86400,
             properties={"env": "staging", "priority": "high"},
             part_number="px40482",
             dut_id="Sample-Dut_Id",
             test_program="TP-Integration-001",
             system_filter="os:linux AND arch:x64",
-            # workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+            workspace=_workspace,
             file_ids_from_template=["file1", "file2"],
             dashboard=_dashboard,
             execution_actions=_execution_actions,
@@ -151,7 +152,7 @@ class TestTestPlanClient:
             system_filter="os:linux AND arch:x64",
             execution_actions=_execution_actions,
             file_ids=["file1", "file2"],
-            # workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+            workspace=_workspace,
             properties={"env": "staging", "priority": "high"},
             dashboard=_dashboard,
         )
@@ -161,13 +162,31 @@ class TestTestPlanClient:
     def test__create_and_delete_test_plan__returns_created_and_deleted_test_plans(
         self, client: TestPlanClient, create_test_plans
     ):
-        create_test_plan_response = create_test_plans(self._test_plan_create)
+        create_test_plan_template_response = client.create_test_plan_templates(
+            test_plan_templates=self._create_test_plan_template_request
+        )
+
+        template_id = (
+            create_test_plan_template_response.created_test_plan_templates[0].id
+            if create_test_plan_template_response.created_test_plan_templates
+            and create_test_plan_template_response.created_test_plan_templates[0].id
+            else None
+        )
+
+        assert template_id is not None
+
+        test_plan_request = self._test_plan_create
+        test_plan_request[0].template_id = template_id
+
+        create_test_plan_response = create_test_plans(test_plan_request)
 
         assert create_test_plan_response.created_test_plans is not None
 
         created_test_plan = create_test_plan_response.created_test_plans[0]
 
         get_test_plan_response: TestPlan = client.get_test_plan(created_test_plan.id)
+
+        client.delete_test_plan_templates(ids=[template_id])
 
         assert created_test_plan is not None
         assert created_test_plan.name == "Python integration test plan"

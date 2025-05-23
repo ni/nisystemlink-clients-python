@@ -23,18 +23,16 @@ client = TestPlanClient(configuration=server_configuration)
 create_test_plans_request = [
     CreateTestPlanRequest(
         name="Python integration test plan",
-        # template_id="Python Sample Id",
         state="NEW",
         description="Test plan for verifying integration flow",
         assigned_to="test.user@example.com",
-        # work_order_id="Sample-Work-Order",
         estimated_duration_in_seconds=86400,
         properties={"env": "staging", "priority": "high"},
         part_number="px40482",
         dut_id="Sample-Dut_Id",
         test_program="TP-Integration-001",
         system_filter="os:linux AND arch:x64",
-        # workspace="IntegrationWorkspace",
+        workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(
             id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
