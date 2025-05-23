@@ -3,7 +3,7 @@
 nisystemlink.clients.test_plan
 ======================
 
-.. autoclass:: nisystemlink.clients.test_plan.test_plan.TestPlanClient
+.. autoclass:: nisystemlink.clients.test_plan.TestPlanClient
    :exclude-members: __init__
 
    .. automethod:: __init__
