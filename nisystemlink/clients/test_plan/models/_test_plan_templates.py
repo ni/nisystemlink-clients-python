@@ -62,6 +62,8 @@ class TestPlanTemplateBase(JsonModel):
 class TestPlanTemplate(TestPlanTemplateBase):
     """Contains response information for test plan template."""
 
+    __test__ = False
+
     id: Optional[str] = None
     """The globally unique id of the test plan template."""
 

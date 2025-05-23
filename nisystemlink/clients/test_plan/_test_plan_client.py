@@ -14,6 +14,8 @@ from uplink import Field, retry
     on_exception=retry.CONNECTION_ERROR,
 )
 class TestPlanClient(BaseClient):
+    __test__ = False
+
     def __init__(self, configuration: Optional[HttpConfiguration] = None):
         """Initialize an instance.
 

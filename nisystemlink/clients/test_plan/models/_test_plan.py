@@ -13,6 +13,8 @@ from ._workflow_definition import WorkflowDefinition
 class TestPlan(JsonModel):
     """Contains information about a test plan."""
 
+    __test__ = False
+
     id: str
     """The unique identifier of the test plan."""
 

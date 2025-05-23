@@ -9,6 +9,8 @@ from ._order_by import OrderBy
 class TestPlanField(enum.Enum):
     """Model for an object describing an test plan with all of its properties."""
 
+    __test__ = False
+
     ID = "ID"
     TEMPLATE_ID = "TEMPLATE_ID"
     NAME = "NAME"

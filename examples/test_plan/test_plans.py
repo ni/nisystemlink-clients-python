@@ -67,10 +67,7 @@ if created_test_plans_response.created_test_plans:
 
 # Query test plan using id.
 query_test_plans_request = QueryTestPlansRequest(
-    skip=0,
-    take=1,
-    descending=False,
-    returnCount=False,
+    skip=0, take=1, descending=False, returnCount=False
 )
 client.query_test_plans(query_request=query_test_plans_request)
 

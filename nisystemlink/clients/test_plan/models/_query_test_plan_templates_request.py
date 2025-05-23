@@ -15,6 +15,10 @@ class TestPlanTemplateOrderBy(str, Enum):
 
 
 class TestPlanTemplateField(str, Enum):
+    """Model for an object describing an test plan template with all of its properties."""
+
+    __test__ = False
+
     ID = "ID"
     NAME = "NAME"
     TEMPLATE_GROUP = "TEMPLATE_GROUP"
