@@ -144,3 +144,15 @@ class TestSystemsClient:
 
         assert remove_system_response.removed_ids is not None
         assert remove_system_response.removed_ids[0] == minion_id
+
+    def test__query_systems_with_projections__returns_the_systems_with_projected_properties(
+        self, client: SystemsClient
+    ):
+        query_systems_request = QuerySystemsRequest(
+            projection= "new(id, alias, grains.data.master, grains.data.host)",
+            take=1
+        )
+        response: QuerySystemsResponse = client.query_systems(query=query_systems_request)
+
+        assert response is not None
+        assert set(response.data[0].keys()) == {"id", "alias", "master", "host"}
