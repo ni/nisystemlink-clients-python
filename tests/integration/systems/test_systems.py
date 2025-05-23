@@ -26,6 +26,10 @@ def client(enterprise_config: HttpConfiguration) -> SystemsClient:
     return SystemsClient(enterprise_config)
 
 
+workspace_id = "33eba2fe-fe42-48a1-a47f-a6669479a8aa"
+"""Constant represent id of the workspace."""
+
+
 @pytest.fixture
 def create_virtual_systems(client: SystemsClient):
     """Fixture to return a factory that create test plan templates."""
@@ -60,7 +64,7 @@ class TestSystemsClient:
         create_virtual_system_request: CreateVirtualSystemRequest = (
             CreateVirtualSystemRequest(
                 alias="Python integration virtual system",
-                workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+                workspace=workspace_id,
             )
         )
 
@@ -83,7 +87,7 @@ class TestSystemsClient:
         create_virtual_system_request: CreateVirtualSystemRequest = (
             CreateVirtualSystemRequest(
                 alias="Python integration virtual system",
-                workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+                workspace=workspace_id,
             )
         )
 
@@ -112,7 +116,7 @@ class TestSystemsClient:
         create_virtual_system_request: CreateVirtualSystemRequest = (
             CreateVirtualSystemRequest(
                 alias="Python integration query virtual system",
-                workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+                workspace=workspace_id,
             )
         )
 
