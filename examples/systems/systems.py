@@ -40,7 +40,7 @@ query_systems_request = QuerySystemsRequest(filter=f'id="{minion_id}"')
 client.query_systems(query=query_systems_request)
 
 # Delete the created systems.
-remove_systems = RemoveSystemsRequest(tgt=[minion_id], force=False)
+remove_systems = RemoveSystemsRequest(tgt=[minion_id])
 
 if minion_id is not None:
     client.remove_systems(virtual_system_to_remove=remove_systems)

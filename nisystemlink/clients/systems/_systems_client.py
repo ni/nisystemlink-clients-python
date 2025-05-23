@@ -76,10 +76,7 @@ class SystemsClient(BaseClient):
         """Removes multiple systems.
 
         Args:
-            tgt: List of unique IDs of systems.
-            force: A boolean that specifies whether to remove systems from the database immediately (True)
-               or wait until the unregister job returns from systems (False).
-               If True, unregister job failures are not cached.
+            virtual_system_to_remove : List of unique IDs of systems.
 
         Returns:
             A partial success if any systems failed to remove, or None if all
