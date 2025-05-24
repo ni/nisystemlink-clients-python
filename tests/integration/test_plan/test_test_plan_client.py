@@ -416,7 +416,7 @@ class TestTestPlanClient:
 
         assert len(query_deleted_test_plan_template_response.test_plan_templates) == 0
 
-    def test_query_test_plan_templates_with_projections__returns_test_plan_templates_with_projected_properties(
+    def test__query_test_plan_templates_with_projections__returns_test_plan_templates_with_projected_properties(
         self, client: TestPlanClient, create_test_plan_templates
     ):
         create_test_plan_template_response = create_test_plan_templates(
