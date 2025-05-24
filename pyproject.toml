@@ -64,6 +64,7 @@ types   = "mypy --config-file mypy.ini nisystemlink examples tests"
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"
+testpaths = ["tests"]
 markers = [
     "unit: mark a test as a unit test",
     "integration: mark a test as an integration test",
