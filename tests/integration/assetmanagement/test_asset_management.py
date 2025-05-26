@@ -163,13 +163,26 @@ class TestAssetManagement:
 
         assert response is not None
         assert response.assets is not None and len(response.assets) == 1
-        assert response.total_count is not None and response.total_count >= 1
+        assert response.total_count is not None and response.total_count == 1
 
     def test_query_assets_with_projections__returns_the_assets_with_projected_properties(
-        self, client: AssetManagementClient
+        self, client: AssetManagementClient, create_asset
     ):
+        self._create_assets_request[0].model_number = 103
+        create_assets_response = create_asset(self._create_assets_request)
+
+        assert create_assets_response is not None
+        assert len(create_assets_response.assets) == 1
+
+        asset_id = (
+            create_assets_response.assets[0].id
+            if create_assets_response.assets and create_assets_response.assets[0].id
+            else None
+        )
         query_asset = QueryAssetsRequest(
-            projection=[AssetField.ID, AssetField.NAME], take=1
+            filter=f'id = "{asset_id}"',
+            projection=[AssetField.ID, AssetField.NAME],
+            take=1,
         )
         response = client.query_assets(query=query_asset)
 
