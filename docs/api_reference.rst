@@ -17,6 +17,7 @@ API Reference
    api_reference/notebook
    api_reference/feeds
    api_reference/assetmanagement
+   api_reference/systems
 
 Indices and tables
 ------------------
