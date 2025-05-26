@@ -321,7 +321,6 @@ Create, query, retry, and cancel notebook executions.
    :language: python
    :linenos:
 
-
 Asset Management API
 -------
 
@@ -345,5 +344,31 @@ Examples
 create, delete and query asset
 
 .. literalinclude:: ../examples/assetmanagement/assets.py
+   :language: python
+   :linenos:
+
+Systems API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.SystemsClient` class is the primary entry point of the Systems API.
+
+When constructing a :class:`.SystemsClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.SystemsClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.SystemsClient` object, you can:
+
+* Create, query, and remove systems.
+
+Examples
+~~~~~~~~
+
+Create, query, and remove some systems.
+
+.. literalinclude:: ../examples/systems/systems.py
    :language: python
    :linenos:
