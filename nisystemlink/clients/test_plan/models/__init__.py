@@ -24,8 +24,6 @@ from ._execution_definition import (
     NoneExecution,
     NotebookExecution,
     Job,
-    ScheduleExecution,
-    UnscheduleExecution,
 )
 from ._schedule_test_plans_request import ScheduleTestPlansRequest
 from ._schedule_test_plan_request import ScheduleTestPlanRequest
