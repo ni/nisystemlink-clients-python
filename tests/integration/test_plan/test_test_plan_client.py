@@ -340,7 +340,6 @@ class TestTestPlanClient:
             and test_plan.execution_history is None
             and test_plan.dashboard_url is None
             and test_plan.dashboard is None
-            and test_plan.workflow is None
         )
 
     def test__create_test_plan_template__returns_created_test_plan_template(

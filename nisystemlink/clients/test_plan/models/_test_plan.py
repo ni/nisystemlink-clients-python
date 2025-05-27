@@ -7,7 +7,6 @@ from ._dashboard import DashboardUrl
 from ._execution_definition import ExecutionDefinition
 from ._execution_event import ExecutionEvent
 from ._state import State
-from ._workflow_definition import WorkflowDefinition
 
 
 class TestPlan(JsonModel):
@@ -101,6 +100,3 @@ class TestPlan(JsonModel):
 
     dashboard: Optional[DashboardUrl] = None
     """The dashboard data related to the test plan."""
-
-    workflow: Optional[WorkflowDefinition] = None
-    """The workflow definition associated with the test plan."""

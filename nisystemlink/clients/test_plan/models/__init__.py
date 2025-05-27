@@ -28,13 +28,6 @@ from ._execution_definition import (
 from ._schedule_test_plans_request import ScheduleTestPlansRequest
 from ._schedule_test_plan_request import ScheduleTestPlanRequest
 from ._schedule_test_plans_response import ScheduleTestPlansResponse
-from ._workflow_definition import (
-    WorkflowDefinition,
-    ActionDefinition,
-    ActionTransitionDefinition,
-    StateDefinition,
-    SubstateDefinition,
-)
 
 from ._test_plan_templates import TestPlanTemplateBase, TestPlanTemplate
 from ._create_test_plan_templates_partial_success_response import (
