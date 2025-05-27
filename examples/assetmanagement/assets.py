@@ -44,7 +44,7 @@ create_assets_request = [
             date="2022-06-07T18:58:05.000Z",
         ),
         is_NI_asset=True,
-        workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+        workspace="your-workspace-id",
         location=AssetLocationForCreate(
             state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
         ),
