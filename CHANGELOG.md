@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v2.12.0 (2025-05-27)
+
+### Feature
+
+* Added clients for systems management service create virtual system, remove systems and query system API ([#138](https://github.com/ni/nisystemlink-clients-python/issues/138)) ([`f73c04f`](https://github.com/ni/nisystemlink-clients-python/commit/f73c04f944943ae642140e03600b08588f34e195))
+* Add Client for Asset Management (Asset) create, delete and query API ([#134](https://github.com/ni/nisystemlink-clients-python/issues/134)) ([`dd9907f`](https://github.com/ni/nisystemlink-clients-python/commit/dd9907fa3618e6b1630e478154e280fa27aa78af))
+
 ## v2.11.0 (2025-05-15)
 
 ### Feature
