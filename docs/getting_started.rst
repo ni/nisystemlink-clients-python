@@ -372,3 +372,36 @@ Create, query, and remove some systems.
 .. literalinclude:: ../examples/systems/systems.py
    :language: python
    :linenos:
+
+TestPlan API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.TestPlanClient` class is the primary entry point of the TestPlan API.
+
+When constructing a :class:`.TestPlanClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.TestPlanClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.TestPlanClient` object, you can:
+
+* Create, query, get, update, schedule and delete TestPlans
+* Create, query and delete test plan templates
+
+Examples
+~~~~~~~~
+
+Create, query, get, update, schedule and delete TestPlans
+
+.. literalinclude:: ../examples/test_plan/test_plans.py
+   :language: python
+   :linenos:
+
+Create, query and delete test plan templates.
+
+.. literalinclude:: ../examples/test_plan/test_plan_templates.py
+   :language: python
+   :linenos:
