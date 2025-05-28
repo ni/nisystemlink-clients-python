@@ -18,7 +18,7 @@ client = SystemsClient(configuration=server_configuration)
 # Systems request metadata.
 create_virtual_system_request: CreateVirtualSystemRequest = CreateVirtualSystemRequest(
     alias="Python integration virtual system",
-    workspace="33eba2fe-fe42-48a1-a47f-a6669479a8aa",
+    workspace="your-workspace-id",
 )
 
 # Create a virtual system.

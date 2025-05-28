@@ -77,7 +77,7 @@ class TestAssetManagement:
                 date="2022-06-07T18:58:05.000Z",
             ),
             is_NI_asset=True,
-            workspace="846e294a-a007-47ac-9fc2-fac07eab240e",
+            workspace="2300760d-38c4-48a1-9acb-800260812337",
             location=AssetLocationForCreate(
                 state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
             ),
@@ -196,12 +196,12 @@ class TestAssetManagement:
             and asset.custom_calibration_interval is None
             and asset.discovery_type is None
             and asset.external_calibration is None
-            and asset.file_ids == []
+            and asset.file_ids is None
             and asset.firmware_version is None
             and asset.hardware_version is None
             and asset.is_NI_asset is None
             and asset.is_system_controller is None
-            and asset.keywords == []
+            and asset.keywords is None
             and asset.last_updated_timestamp is None
             and asset.location is None
             and asset.model_name is None
@@ -209,14 +209,14 @@ class TestAssetManagement:
             and asset.asset_type is None
             and asset.out_for_calibration is None
             and asset.part_number is None
-            and asset.properties == {}
+            and asset.properties is None
             and asset.self_calibration is None
             and asset.serial_number is None
             and asset.supports_external_calibration is None
             and asset.supports_reset is None
             and asset.supports_self_calibration is None
             and asset.supports_self_test is None
-            and asset.temperature_sensors == []
+            and asset.temperature_sensors is None
             and asset.vendor_name is None
             and asset.vendor_number is None
             and asset.visa_resource_name is None

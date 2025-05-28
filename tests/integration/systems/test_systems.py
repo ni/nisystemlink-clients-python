@@ -26,7 +26,7 @@ def client(enterprise_config: HttpConfiguration) -> SystemsClient:
     return SystemsClient(enterprise_config)
 
 
-workspace_id = "33eba2fe-fe42-48a1-a47f-a6669479a8aa"
+workspace_id = "2300760d-38c4-48a1-9acb-800260812337"
 """Constant represent id of the workspace."""
 
 
@@ -146,8 +146,8 @@ class TestSystemsClient:
         self, client: SystemsClient
     ):
         query_systems_request = QuerySystemsRequest(
-            filter='grains.data.localhost != "" && grains.data.master != ""',
-            projection="new(id, alias, grains.data.master as master , grains.data.host as host)",
+            filter="grains.data.host != null && grains.data.master != null",
+            projection="new(id, alias, grains.data.master as master, grains.data.host as host)",
             take=1,
         )
         response: QuerySystemsResponse = client.query_systems(
