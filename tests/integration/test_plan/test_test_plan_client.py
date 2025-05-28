@@ -97,6 +97,8 @@ def create_test_plan_templates(client: TestPlanClient):
 class TestTestPlanClient:
 
     _workspace = "2300760d-38c4-48a1-9acb-800260812337"
+    """Used the main-test default workspace since the client
+    for creating a workspace has not been added yet"""
 
     _dashboard = Dashboard(
         id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}

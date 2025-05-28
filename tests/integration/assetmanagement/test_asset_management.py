@@ -54,6 +54,9 @@ def client(enterprise_config: HttpConfiguration) -> AssetManagementClient:
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestAssetManagement:
+    _workspace = "2300760d-38c4-48a1-9acb-800260812337"
+    """Used the main-test default workspace since the client
+    for creating a workspace has not been added yet"""
 
     _create_assets_request = [
         CreateAssetRequest(
@@ -77,7 +80,7 @@ class TestAssetManagement:
                 date="2022-06-07T18:58:05.000Z",
             ),
             is_NI_asset=True,
-            workspace="2300760d-38c4-48a1-9acb-800260812337",
+            workspace=_workspace,
             location=AssetLocationForCreate(
                 state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
             ),
