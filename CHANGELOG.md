@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.13.0 (2025-05-28)
+
+### Feature
+
+* Add Client for Workorders service Test plans and Test plan template APIs ([#137](https://github.com/ni/nisystemlink-clients-python/issues/137)) ([`953686c`](https://github.com/ni/nisystemlink-clients-python/commit/953686c0c98cb23a18491355faa2a47a07e253f1))
+
 ## v2.12.0 (2025-05-27)
 
 ### Feature
