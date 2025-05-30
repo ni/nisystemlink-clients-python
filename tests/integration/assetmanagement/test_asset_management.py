@@ -142,7 +142,7 @@ class TestAssetManagement:
         link_files_response = client.link_files(asset_id=asset_id, file_ids=file_ids)
 
         assert link_files_response is None
-    
+
     def test__link_files__returns_error_when_asset_id_is_invalid(
         self, client: AssetManagementClient, create_asset
     ):

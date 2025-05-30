@@ -122,7 +122,7 @@ class AssetManagementClient(BaseClient):
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
         """
         ...
-    
+
     @post("assets/{assetId}/file", args=[Path("assetId"), Field("fileIds")])
     def link_files(
         self, asset_id: str, file_ids: List[str]
