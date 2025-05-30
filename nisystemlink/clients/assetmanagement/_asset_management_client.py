@@ -134,8 +134,8 @@ class AssetManagementClient(BaseClient):
             file_ids: The list of file IDs to link.
 
         Returns:
-            Optional[LinkFilesPartialSuccessResponse]: None if all link files succeed, otherwise a response
-            containing the IDs of files that were successfully linked and those that failed.
+            None if all link files succeed, otherwise a response containing the IDs of files that were
+            successfully linked and those that failed.
 
         Raises:
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
