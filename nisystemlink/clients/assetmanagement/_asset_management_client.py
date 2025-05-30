@@ -126,7 +126,7 @@ class AssetManagementClient(BaseClient):
     @post("assets/{assetId}/file", args=[Path("assetId"), Field("fileIds")])
     def link_files(
         self, asset_id: str, file_ids: List[str]
-    ) -> models.LinkFilesPartialSuccessResponse:
+    ) -> Optional[models.LinkFilesPartialSuccessResponse]:
         """Link files to an asset.
 
         Args:
@@ -134,7 +134,8 @@ class AssetManagementClient(BaseClient):
             file_ids: The list of file IDs to link.
 
         Returns:
-            LinkFilesPartialSuccessResponse: Response containing the results of the link operation.
+            Optional[LinkFilesPartialSuccessResponse]: None if all link files succeed, otherwise a response
+            containing the IDs of files that were successfully linked and those that failed.
 
         Raises:
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
