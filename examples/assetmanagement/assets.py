@@ -84,6 +84,13 @@ query_asset_request = QueryAssetsRequest(
 )
 client.query_assets(query=query_asset_request)
 
+# Link files to the created asset.
+file_ids = ["sameple-file-id"]
+if created_asset_id:
+    link_files_response = client.link_files(
+        asset_id=created_asset_id, file_ids=file_ids
+    )
+
 # Delete the created asset.
 if created_asset_id is not None:
     client.delete_assets(ids=[created_asset_id])

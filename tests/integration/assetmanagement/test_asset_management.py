@@ -123,6 +123,25 @@ class TestAssetManagement:
         asset_id = assets[0].id
         assert asset_id is not None
 
+    def test__link_files__link_succeded(
+        self, client: AssetManagementClient, create_asset
+    ):
+        self._create_assets_request[0].model_number = 101
+        create_response = create_asset(self._create_assets_request)
+
+        asset_id = (
+            create_response.assets[0].id
+            if create_response.assets and create_response.assets[0].id
+            else None
+        )
+
+        assert asset_id is not None
+
+        file_ids = ["608a5684800e325b48837c2a"]
+        link_files_response = client.link_files(asset_id=asset_id, file_ids=file_ids)
+
+        assert link_files_response is None
+
     def test__delete_asset__returns_deleted_asset(self, client: AssetManagementClient):
         self._create_assets_request[0].model_number = 102
         create_response: CreateAssetsPartialSuccessResponse = client.create_assets(
