@@ -1,9 +1,10 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._api_error import ApiError
+from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class LinkFilesPartialSuccessResponse:
+class LinkFilesPartialSuccessResponse(JsonModel):
     """Model for a Link Files Partial Success Response."""
 
     succeeded: Optional[List[str]] = None
