@@ -19,7 +19,6 @@ from nisystemlink.clients.assetmanagement.models import (
     SelfCalibration,
     TemperatureSensor,
 )
-from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
