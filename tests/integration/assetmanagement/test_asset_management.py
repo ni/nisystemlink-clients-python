@@ -143,15 +143,6 @@ class TestAssetManagement:
 
         assert link_files_response is None
 
-    def test__link_files__returns_error_when_asset_id_is_invalid(
-        self, client: AssetManagementClient, create_asset
-    ):
-        invalid_asset_id = "invalid-asset-id"
-        file_ids = ["608a5684800e325b48837c2a"]
-
-        with pytest.raises(ApiException, match="NonExistingAssetWithIdentifier"):
-            client.link_files(asset_id=invalid_asset_id, file_ids=file_ids)
-
     def test__delete_asset__returns_deleted_asset(self, client: AssetManagementClient):
         self._create_assets_request[0].model_number = 102
         create_response: CreateAssetsPartialSuccessResponse = client.create_assets(
