@@ -6,7 +6,7 @@ from nisystemlink.clients import core
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import post
-from uplink import Field, retry
+from uplink import Field, Path, retry
 
 from . import models
 
@@ -117,6 +117,24 @@ class AssetManagementClient(BaseClient):
 
         Returns:
             DeleteAssetsResponse: Response containing the IDs of the assets that were deleted.
+
+        Raises:
+            ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
+        """
+        ...
+    
+    @post("assets/{assetId}/file", args=[Path("assetId"), Field("fileIds")])
+    def link_files(
+        self, asset_id: str, file_ids: List[str]
+    ) -> models.LinkFilesPartialSuccessResponse:
+        """Link files to an asset.
+
+        Args:
+            asset_id: The ID of the asset to which files should be linked.
+            file_ids: The list of file IDs to link.
+
+        Returns:
+            LinkFilesPartialSuccessResponse: Response containing the results of the link operation.
 
         Raises:
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.

@@ -336,12 +336,12 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.AssetManagementClient` object, you can:
 
-* Create, delete and get the list of assets.
+* Create, delete, get the list of assets and link files to assets.
 
 Examples
 ~~~~~~~~
 
-create, delete and query asset
+create, delete, query asset and link files to assets.
 
 .. literalinclude:: ../examples/assetmanagement/assets.py
    :language: python

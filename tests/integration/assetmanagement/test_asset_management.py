@@ -19,6 +19,7 @@ from nisystemlink.clients.assetmanagement.models import (
     SelfCalibration,
     TemperatureSensor,
 )
+from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
@@ -122,6 +123,34 @@ class TestAssetManagement:
         assert len(assets) == 1
         asset_id = assets[0].id
         assert asset_id is not None
+
+    def test__link_files__link_succeded(
+        self, client: AssetManagementClient, create_asset
+    ):
+        self._create_assets_request[0].model_number = 101
+        create_response = create_asset(self._create_assets_request)
+
+        asset_id = (
+            create_response.assets[0].id
+            if create_response.assets and create_response.assets[0].id
+            else None
+        )
+
+        assert asset_id is not None
+
+        file_ids = ["608a5684800e325b48837c2a"]
+        link_files_response = client.link_files(asset_id=asset_id, file_ids=file_ids)
+
+        assert link_files_response is None
+    
+    def test__link_files__returns_error_when_asset_id_is_invalid(
+        self, client: AssetManagementClient, create_asset
+    ):
+        invalid_asset_id = "invalid-asset-id"
+        file_ids = ["608a5684800e325b48837c2a"]
+
+        with pytest.raises(ApiException, match="NonExistingAssetWithIdentifier"):
+            client.link_files(asset_id=invalid_asset_id, file_ids=file_ids)
 
     def test__delete_asset__returns_deleted_asset(self, client: AssetManagementClient):
         self._create_assets_request[0].model_number = 102

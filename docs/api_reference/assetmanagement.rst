@@ -10,6 +10,7 @@ nisystemlink.clients.assetmanagement
    .. automethod:: create_assets
    .. automethod:: query_assets
    .. automethod:: delete_assets
+   .. automethod:: link_files
 
 .. automodule:: nisystemlink.clients.assetmanagement.models
    :members:
