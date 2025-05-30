@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.14.0 (2025-05-30)
+
+### Feature
+
+* Add link files API route in Asset Management Client ([#141](https://github.com/ni/nisystemlink-clients-python/issues/141)) ([`f791138`](https://github.com/ni/nisystemlink-clients-python/commit/f7911380871b9c718c10da697c116b4b90909795))
+
 ## v2.13.0 (2025-05-28)
 
 ### Feature
