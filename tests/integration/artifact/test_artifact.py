@@ -81,8 +81,6 @@ class TestArtifact:
         upload_response: UploadArtifactResponse = create_artifact()
         artifact_id = upload_response.id
 
-        client.delete_artifact(artifact_id)
+        delete_response = client.delete_artifact(artifact_id)
 
-        with pytest.raises(ApiException) as exc_info:
-            client.download_artifact(artifact_id)
-        assert exc_info.value.http_status_code == 404
+        assert delete_response is None

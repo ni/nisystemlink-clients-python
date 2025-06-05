@@ -94,8 +94,5 @@ class ArtifactClient(BaseClient):
         Args:
             id: The ID of the artifact to delete.
 
-        Returns:
-            None
-
         """
         ...

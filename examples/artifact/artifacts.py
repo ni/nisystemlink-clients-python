@@ -2,7 +2,6 @@ import io
 
 from nisystemlink.clients.artifact import ArtifactClient
 from nisystemlink.clients.core import HttpConfiguration
-from nisystemlink.clients.core._api_exception import ApiException
 
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
@@ -29,8 +28,4 @@ if download_response:
     print(f"Downloaded artifact content: {downloaded_content.decode('utf-8')}")
 
 # Delete the artifact
-try:
-    client.delete_artifact(artifact_id)
-    print(f"Successfully deleted artifact with ID: {artifact_id}")
-except ApiException as api_exception:
-    print(f"Failed to delete artifact with ID {artifact_id}: {api_exception}")
+client.delete_artifact(artifact_id)
