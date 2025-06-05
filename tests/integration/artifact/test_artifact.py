@@ -1,5 +1,4 @@
 import io
-import os
 from typing import List
 
 import pytest
@@ -7,7 +6,6 @@ from nisystemlink.clients.artifact import ArtifactClient
 from nisystemlink.clients.artifact.models._upload_artifact_response import (
     UploadArtifactResponse,
 )
-from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
@@ -17,36 +15,25 @@ def client(enterprise_config: HttpConfiguration) -> ArtifactClient:
     return ArtifactClient(enterprise_config)
 
 
-def get_workspace() -> str:
-    """Get the workspace ID from environment variables or skip the test if not set."""
-    workspace = os.getenv("SYSTEMLINK_WORKSPACE_ID")
-    if workspace is None:
-        pytest.skip("SYSTEMLINK_WORKSPACE_ID environment variable is not set.")
-
-    return workspace
-
-
 @pytest.fixture
 def create_artifact(client: ArtifactClient):
     """Fixture to return a factory that creates artifact."""
     created_artifact_ids: List[str] = []
 
-    def _create_artifact(content: bytes = b"test content"):
-        workspace = get_workspace()
+    def _create_artifact(content: bytes = b"test content", cleanup: bool = True):
         artifact_stream = io.BytesIO(content)
-        response = client.upload_artifact(workspace=workspace, artifact=artifact_stream)
-        created_artifact_ids.append(response.id)
+        response = client.upload_artifact(
+            workspace="2300760d-38c4-48a1-9acb-800260812337", artifact=artifact_stream
+        )
+        if cleanup:
+            created_artifact_ids.append(response.id)
 
         return response
 
     yield _create_artifact
 
     for artifact_id in created_artifact_ids:
-        try:
-            client.delete_artifact(artifact_id)
-        except ApiException as api_exception:
-            if api_exception.http_status_code != 404:
-                raise api_exception
+        client.delete_artifact(artifact_id)
 
 
 @pytest.mark.integration
@@ -78,7 +65,7 @@ class TestArtifact:
     def test__delete_artifact__artifact_deleted(
         self, client: ArtifactClient, create_artifact
     ):
-        upload_response: UploadArtifactResponse = create_artifact()
+        upload_response: UploadArtifactResponse = create_artifact(cleanup=False)
         artifact_id = upload_response.id
 
         delete_response = client.delete_artifact(artifact_id)
