@@ -4,7 +4,12 @@ from typing import BinaryIO, Optional
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
-from nisystemlink.clients.core._uplink._methods import get, post, response_handler
+from nisystemlink.clients.core._uplink._methods import (
+    delete,
+    get,
+    post,
+    response_handler,
+)
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
 from requests.models import Response
 from uplink import Part, Path
@@ -78,6 +83,19 @@ class ArtifactClient(BaseClient):
 
         Returns:
             A file-like object for reading the artifact content.
+
+        """
+        ...
+
+    @delete("artifacts/{id}")
+    def delete_artifact(self, id: Path) -> None:
+        """Deletes an artifact.
+
+        Args:
+            id: The ID of the artifact to delete.
+
+        Returns:
+            None
 
         """
         ...
