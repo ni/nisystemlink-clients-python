@@ -20,11 +20,14 @@ def create_artifact(client: ArtifactClient):
     """Fixture to return a factory that creates artifact."""
     created_artifact_ids: List[str] = []
 
-    def _create_artifact(content: bytes = b"test content", cleanup: bool = True):
+    def _create_artifact(
+        content: bytes = b"test content",
+        cleanup: bool = True,
+        workspace: str = "2300760d-38c4-48a1-9acb-800260812337",
+    ):
+        # Used the main-test default workspace since the client for creating a workspace has not been added yet
         artifact_stream = io.BytesIO(content)
-        response = client.upload_artifact(
-            workspace="2300760d-38c4-48a1-9acb-800260812337", artifact=artifact_stream
-        )
+        response = client.upload_artifact(workspace=workspace, artifact=artifact_stream)
         if cleanup:
             created_artifact_ids.append(response.id)
 
