@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from typing import List
 
@@ -176,7 +177,7 @@ class TestTestPlanClient:
 
         assert template_id is not None
 
-        test_plan_request = self._test_plan_create
+        test_plan_request = copy.deepcopy(self._test_plan_create)
         test_plan_request[0].template_id = template_id
 
         create_test_plan_response = create_test_plans(test_plan_request)
@@ -187,7 +188,11 @@ class TestTestPlanClient:
 
         get_test_plan_response: TestPlan = client.get_test_plan(created_test_plan.id)
 
-        client.delete_test_plan_templates(ids=[template_id])
+        delete_test_plan_template_response = client.delete_test_plan_templates(
+            ids=[template_id]
+        )
+
+        assert delete_test_plan_template_response is None
 
         assert created_test_plan is not None
         assert created_test_plan.name == "Python integration test plan"
