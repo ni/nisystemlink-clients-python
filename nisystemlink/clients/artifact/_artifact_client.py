@@ -87,7 +87,7 @@ class ArtifactClient(BaseClient):
         """
         ...
 
-    @delete("artifacts/{id}", (Path,))
+    @delete("artifacts/{id}", args=[Path("id")])
     def delete_artifact(self, id: str) -> None:
         """Deletes an artifact.
 
