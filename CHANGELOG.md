@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.15.0 (2025-06-11)
+
+### Feature
+
+* Add delete API for Artifact client ([#142](https://github.com/ni/nisystemlink-clients-python/issues/142)) ([`22f6515`](https://github.com/ni/nisystemlink-clients-python/commit/22f6515bac2b298fb18468095d9a02c782f4f6fb))
+
 ## v2.14.0 (2025-05-30)
 
 ### Feature
