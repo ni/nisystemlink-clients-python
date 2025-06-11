@@ -19,6 +19,7 @@ API Reference
    api_reference/assetmanagement
    api_reference/systems
    api_reference/test_plan
+   api_reference/artifact
 
 Indices and tables
 ------------------
