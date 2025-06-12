@@ -68,7 +68,11 @@ spec_requests = [
 ]
 
 # Create the specs on the server
-client.create_specs(CreateSpecificationsRequest(specs=spec_requests))
+created_response = client.create_specs(CreateSpecificationsRequest(specs=spec_requests))
+
+# use get for first spec created
+if len(created_response.created_specs) > 0:
+    created_spec = client.get_spec(created_response.created_specs[0].id)
 
 # You can query specs based on any field using DynamicLinq syntax.
 # These are just some representative examples.

@@ -237,6 +237,28 @@ class TestSpec:
         updated_spec = update_response.updated_specs[0]
         assert updated_spec.version == 1
 
+    def test__get_spec_by_id__spec_matches_expected(
+        self, client: SpecClient, create_specs, product
+    ):
+        productId = product
+        spec = CreateSpecificationsRequestObject(
+            product_id=productId,
+            spec_id="spec1",
+            type=SpecificationType.FUNCTIONAL,
+            keywords=["work", "reviewed"],
+            category="Parametric Specs",
+            block="newBlock",
+        )
+        response = create_specs(CreateSpecificationsRequest(specs=[spec]))
+        assert response is not None
+        assert len(response.created_specs) == 1
+        created_spec = response.created_specs[0]
+
+        get_spec_response = client.get_spec(created_spec.id)
+        assert get_spec_response is not None
+        assert get_spec_response.id == created_spec.id
+        assert get_spec_response.product_id == productId
+
     def test__query_product__all_returned(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):

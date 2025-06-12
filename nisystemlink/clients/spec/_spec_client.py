@@ -96,6 +96,22 @@ class SpecClient(BaseClient):
         """
         ...
 
+    @get("specs/{id}")
+    def get_spec(self, id: str) -> models.Specification:
+        """Retrieves a single spec by id.
+
+        Args:
+            id (str): Unique ID of a specification.
+
+        Returns:
+            The single spec matching `id`
+
+        Raises:
+            ApiException: if unable to communicate with the `nispec` service or if there are invalid
+            arguments.
+        """
+        ...
+
     @post("update-specs")
     def update_specs(
         self, specs: models.UpdateSpecificationsRequest

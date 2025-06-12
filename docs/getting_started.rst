@@ -162,7 +162,7 @@ When constructing a :class:`.SpecClient`, you can pass an
 :class:`.HttpConfigurationManager`), or let :class:`.SpecClient` use the
 default connection. The default connection depends on your environment.
 
-With a :class:`.SpecClient` object, you can: 
+With a :class:`.SpecClient` object, you can:
 
 * Create and delete specifications under a product.
 
@@ -170,12 +170,14 @@ With a :class:`.SpecClient` object, you can:
 
 * Query for specifications on any fields using DynamicLinq syntax.
 
+* Get a specification using an Id.
+
 Examples
 ~~~~~~~~
 
-Create and Query Specifications
+Create, Get and Query Specifications
 
-.. literalinclude:: ../examples/spec/query_specs.py
+.. literalinclude:: ../examples/spec/get_and_query_specs.py
    :language: python
    :linenos:
 
