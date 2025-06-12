@@ -5,4 +5,3 @@ class ApiErrorResponse:
     """Represents an error response from the SystemLink API responses."""
 
     error: ApiError
-
