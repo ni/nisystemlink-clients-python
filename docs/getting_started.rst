@@ -162,7 +162,7 @@ When constructing a :class:`.SpecClient`, you can pass an
 :class:`.HttpConfigurationManager`), or let :class:`.SpecClient` use the
 default connection. The default connection depends on your environment.
 
-With a :class:`.SpecClient` object, you can:
+With a :class:`.SpecClient` object, you can: 
 
 * Create and delete specifications under a product.
 

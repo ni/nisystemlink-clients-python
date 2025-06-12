@@ -257,9 +257,9 @@ class TestSpec:
         created_spec = response.created_specs[0]
 
         get_spec_response = client.get_spec(created_spec.id)
-        if isinstance(get_spec_response, Specification):
-            assert get_spec_response.id == created_spec.id
-            assert get_spec_response.product_id == productId
+        assert isinstance(get_spec_response, Specification)
+        assert get_spec_response.id == created_spec.id
+        assert get_spec_response.product_id == productId
 
     def test__get_non_existant_spec_by_id__get_spec_fails(self, client: SpecClient):
         non_existant_spec_id = "10"
