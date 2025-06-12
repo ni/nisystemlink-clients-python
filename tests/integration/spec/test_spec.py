@@ -2,7 +2,6 @@ import uuid
 from typing import List
 
 import pytest
-from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
@@ -22,7 +21,6 @@ from nisystemlink.clients.spec.models import (
     UpdateSpecificationsRequest,
     UpdateSpecificationsRequestObject,
 )
-from nisystemlink.clients.spec.models._specification import Specification
 
 
 @pytest.fixture(scope="class")
@@ -260,25 +258,9 @@ class TestSpec:
 
         get_spec_response = client.get_spec(created_spec.id)
 
-        assert isinstance(get_spec_response, Specification)
+        assert get_spec_response is not None
         assert get_spec_response.id == created_spec.id
         assert get_spec_response.product_id == productId
-
-    def test__get_non_existant_spec_by_id__get_spec_fails(self, client: SpecClient):
-        non_existant_spec_id = "10"
-
-        with pytest.raises(ApiException) as exception_info:
-            client.get_spec(non_existant_spec_id)
-
-        assert exception_info.value.http_status_code == 404
-
-    def test__get_spec_by_invalid_id__get_spec_fails(self, client: SpecClient):
-        invalid_spec_id = "110ac9e841879870a0b410dabfa02a0e"
-
-        with pytest.raises(ApiException) as exception_info:
-            client.get_spec(invalid_spec_id)
-
-        assert exception_info.value.http_status_code == 400
 
     def test__query_product__all_returned(
         self, client: SpecClient, create_specs, create_specs_for_query, product

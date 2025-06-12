@@ -1,9 +1,8 @@
 """Implementation of SpecClient"""
 
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from nisystemlink.clients import core
-from nisystemlink.clients.core._api_error_response import ApiErrorResponse
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
 from uplink import Field, retry
@@ -98,7 +97,7 @@ class SpecClient(BaseClient):
         ...
 
     @get("specs/{id}")
-    def get_spec(self, id: str) -> Union[models.Specification, ApiErrorResponse]:
+    def get_spec(self, id: str) -> models.Specification:
         """Retrieves a single spec by id.
 
         Args:
