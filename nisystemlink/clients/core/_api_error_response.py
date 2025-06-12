@@ -3,6 +3,6 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class ApiErrorResponse(JsonModel):
-    """Represents an error response from the SystemLink API responses."""
+    """Represents an error response from the SystemLink APIs."""
 
     error: ApiError
