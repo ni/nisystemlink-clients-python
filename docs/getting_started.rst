@@ -170,12 +170,14 @@ With a :class:`.SpecClient` object, you can:
 
 * Query for specifications on any fields using DynamicLinq syntax.
 
+* Get a specification using an Id.
+
 Examples
 ~~~~~~~~
 
-Create and Query Specifications
+Create, Get and Query Specifications
 
-.. literalinclude:: ../examples/spec/query_specs.py
+.. literalinclude:: ../examples/spec/get_and_query_specs.py
    :language: python
    :linenos:
 
