@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.16.0 (2025-06-13)
+
+### Feature
+
+* Spec client | Add Get Spec API ([#147](https://github.com/ni/nisystemlink-clients-python/issues/147)) ([`b1ebf7c`](https://github.com/ni/nisystemlink-clients-python/commit/b1ebf7cb77f0be84e1e9a76afe52413c720bf0ea))
+
 ## v2.15.0 (2025-06-11)
 
 ### Feature
