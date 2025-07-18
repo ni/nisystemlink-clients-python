@@ -7,15 +7,8 @@ from pydantic import Field
 from ._link import Link
 
 
-class FileMetadata(JsonModel):
-    field_links: Optional[Dict[str, Link]] = Field(None, alias="_links")
-    """
-    The links to access and manipulate the file:
-    - data: Link to download the file using a GET request
-    - delete: Link to delete the file using a DELETE request
-    - self: Link to the file's metadata
-    - updateMetadata: Link to update the file's metadata using a POST request
-    """
+class BaseFileMetadata(JsonModel):
+    """Base class for file metadata."""
 
     created: Optional[datetime] = None
     """
@@ -31,24 +24,10 @@ class FileMetadata(JsonModel):
     example: "5afb2ce3741fe11d88838cc9"
     """
 
-    path: Optional[str] = None
-    """
-    The path to the file on the server.  This field is returned only if
-    the user has associated privileges to view file paths.
-
-    example: C:\temp\4afb2ce3741fe11d88838cc9.txt
-    """
-
     properties: Optional[Dict[str, str]] = None
     """
     The file's properties
     Example - {"Name": "myfile.txt", "MyProperty": "Value"}
-    """
-
-    meta_data_revision: Optional[int] = None
-    """
-    The file's properties revision number. When a file is uploaded, the revision number starts at 1.
-    Every time metadata is updated, the revision number is incremented by 1.
     """
 
     service_group: Optional[str] = None
@@ -72,9 +51,46 @@ class FileMetadata(JsonModel):
     The workspace the file belongs to
     """
 
+
+class FileMetadata(BaseFileMetadata):
+
+    field_links: Optional[Dict[str, Link]] = Field(None, alias="_links")
+    """
+    The links to access and manipulate the file:
+    - data: Link to download the file using a GET request
+    - delete: Link to delete the file using a DELETE request
+    - self: Link to the file's metadata
+    - updateMetadata: Link to update the file's metadata using a POST request
+    """
+
+    path: Optional[str] = None
+    """
+    The path to the file on the server.  This field is returned only if
+    the user has associated privileges to view file paths.
+
+    example: C:\temp\4afb2ce3741fe11d88838cc9.txt
+    """
+
+    meta_data_revision: Optional[int] = None
+    """
+    The file's properties revision number. When a file is uploaded, the revision number starts at 1.
+    Every time metadata is updated, the revision number is incremented by 1.
+    """
+
     last_updated_timestamp: Optional[datetime] = None
     """
     The date and time the file was last updated in the file service.
 
     example: 2018-05-15T18:54:27.519Z
+    """
+
+
+class LinqFileMetadata(JsonModel):
+    """Metadata for a file returned by a LINQ query."""
+
+    updated: Optional[datetime] = None
+    """
+    The date and time the file was last updated in the file service.
+
+    example :2018-05-15T18:54:27.519Z
     """

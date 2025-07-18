@@ -147,15 +147,17 @@ class FileClient(BaseClient):
         return resp
 
     @post("service-groups/Default/query-files-linq")
-    def query_files_linq(self, query_request: models.LinqFileQueryRequest) -> models.LinqQueryResponse:
+    def query_files_linq(
+        self, query: models.LinqFileQueryRequest
+    ) -> models.LinqFileQueryResponse:
         """Queries files using LINQ syntax.
 
         Args:
-            query_request: The LINQ query request containing the query string and optional parameters.
+            query: The LINQ query request containing the query string and optional parameters.
 
         Returns:
             File Query Response
-        
+
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
