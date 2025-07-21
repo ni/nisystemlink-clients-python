@@ -1,12 +1,12 @@
-# Contributing to *nisystemlink-clients-python*
+# Contributing to _nisystemlink-clients-python_
 
-Contributions to *nisystemlink-clients-python* are welcome from all!
+Contributions to _nisystemlink-clients-python_ are welcome from all!
 
-*nisystemlink-clients-python* is managed via [git](https://git-scm.com), with
+_nisystemlink-clients-python_ is managed via [git](https://git-scm.com), with
 the canonical upstream repository hosted on
 [GitHub](https://github.com/ni/nisystemlink-clients-python/).
 
-*nisystemlink-clients-python* follows a pull-request model for development.  If
+_nisystemlink-clients-python_ follows a pull-request model for development. If
 you wish to contribute, you will need to create a GitHub account, fork this
 project, push a branch with your changes to your project, and then submit a
 pull request.
@@ -37,7 +37,7 @@ To contribute to this project, it is recommended that you follow these steps:
 
 ## Testing
 
-Before running any tests, you must have a supported version of Python (3.10+) and [Poetry](https://python-poetry.org/docs/) installed locally.
+Before running any tests, you must have a supported version of Python (3.9+) and [Poetry](https://python-poetry.org/docs/) installed locally.
 
 It is also helpful to install SystemLink Server and configure the NI Web Server
 to run on localhost.
@@ -94,33 +94,33 @@ you may need to escape special characters in the API key.
 
 ## Developer Certificate of Origin (DCO)
 
-   Developer's Certificate of Origin 1.1
+Developer's Certificate of Origin 1.1
 
-   By making a contribution to this project, I certify that:
+By making a contribution to this project, I certify that:
 
-   (a) The contribution was created in whole or in part by me and I
-       have the right to submit it under the open source license
-       indicated in the file; or
+(a) The contribution was created in whole or in part by me and I
+have the right to submit it under the open source license
+indicated in the file; or
 
-   (b) The contribution is based upon previous work that, to the best
-       of my knowledge, is covered under an appropriate open source
-       license and I have the right under that license to submit that
-       work with modifications, whether created in whole or in part
-       by me, under the same open source license (unless I am
-       permitted to submit under a different license), as indicated
-       in the file; or
+(b) The contribution is based upon previous work that, to the best
+of my knowledge, is covered under an appropriate open source
+license and I have the right under that license to submit that
+work with modifications, whether created in whole or in part
+by me, under the same open source license (unless I am
+permitted to submit under a different license), as indicated
+in the file; or
 
-   (c) The contribution was provided directly to me by some other
-       person who certified (a), (b) or (c) and I have not modified
-       it.
+(c) The contribution was provided directly to me by some other
+person who certified (a), (b) or (c) and I have not modified
+it.
 
-   (d) I understand and agree that this project and the contribution
-       are public and that a record of the contribution (including all
-       personal information I submit with it, including my sign-off) is
-       maintained indefinitely and may be redistributed consistent with
-       this project or the open source license(s) involved.
+(d) I understand and agree that this project and the contribution
+are public and that a record of the contribution (including all
+personal information I submit with it, including my sign-off) is
+maintained indefinitely and may be redistributed consistent with
+this project or the open source license(s) involved.
 
 (taken from [developercertificate.org](https://developercertificate.org/))
 
 See [LICENSE](https://github.com/ni/nisystemlink-clients-python/blob/master/LICENSE)
-for details about how *nisystemlink-clients-python* is licensed.
+for details about how _nisystemlink-clients-python_ is licensed.
