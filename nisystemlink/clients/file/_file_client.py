@@ -102,7 +102,7 @@ class FileClient(BaseClient):
         self,
         skip: int = 0,
         take: int = 0,
-        order_by: Optional[models.GetFilesOrderBy] = None,
+        order_by: Optional[models.FileQueryOrderBy] = None,
         order_by_descending: Optional[bool] = False,
         ids: Optional[List[str]] = None,
     ) -> models.FileQueryResponse:

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.file.models._file_metadata import LinqFileMetadata
-from nisystemlink.clients.file.models._file_query_order_by import QueryFilesLinqOrderBy
+from nisystemlink.clients.file.models._file_query_order_by import FileLinqQueryOrderBy
 
 
 class LinqFileQueryRequest(JsonModel):
@@ -15,7 +15,7 @@ class LinqFileQueryRequest(JsonModel):
     Example Filter syntax: '[property name][operator][operand] and [property name][operator][operand]'
     """
 
-    ordery_by: Optional[QueryFilesLinqOrderBy] = None
+    ordery_by: Optional[FileLinqQueryOrderBy] = None
     """The property by which to order the files in the response."""
 
     order_by_descending: Optional[bool] = False

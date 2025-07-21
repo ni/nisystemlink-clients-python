@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class GetFilesOrderBy(Enum):
+class FileQueryOrderBy(Enum):
     """Order Files Query Response by Metadata for GET /files endpoint."""
 
     CREATED = "created"
@@ -10,7 +10,7 @@ class GetFilesOrderBy(Enum):
     LAST_UPDATED_TIMESTAMP = "lastUpdatedTimestamp"
 
 
-class QueryFilesLinqOrderBy(Enum):
+class FileLinqQueryOrderBy(Enum):
     """Order Files LINQ Query by Metadata for POST /query-files-linq endpoint."""
 
     CREATED = "created"
