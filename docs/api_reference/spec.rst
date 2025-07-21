@@ -12,6 +12,7 @@ nisystemlink.clients.spec
    .. automethod:: delete_specs
    .. automethod:: query_specs
    .. automethod:: update_specs
+   .. automethod:: get_spec
 
 .. automodule:: nisystemlink.clients.spec.models
    :members:

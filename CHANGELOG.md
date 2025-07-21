@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v2.16.0 (2025-06-13)
+
+### Feature
+
+* Spec client | Add Get Spec API ([#147](https://github.com/ni/nisystemlink-clients-python/issues/147)) ([`b1ebf7c`](https://github.com/ni/nisystemlink-clients-python/commit/b1ebf7cb77f0be84e1e9a76afe52413c720bf0ea))
+
+## v2.15.0 (2025-06-11)
+
+### Feature
+
+* Add delete API for Artifact client ([#142](https://github.com/ni/nisystemlink-clients-python/issues/142)) ([`22f6515`](https://github.com/ni/nisystemlink-clients-python/commit/22f6515bac2b298fb18468095d9a02c782f4f6fb))
+
 ## v2.14.0 (2025-05-30)
 
 ### Feature
