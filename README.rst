@@ -18,7 +18,7 @@ Requirements
 **nisystemlink-clients** has the following requirements:
 
 * Access to a SystemLink Server or SystemLink Enterprise installation
-* CPython 3.9+
+* CPython 3.10+
 
 .. _installation_section:
 

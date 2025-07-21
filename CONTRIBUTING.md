@@ -37,7 +37,7 @@ To contribute to this project, it is recommended that you follow these steps:
 
 ## Testing
 
-Before running any tests, you must have a supported version of Python (3.9+) and [Poetry](https://python-poetry.org/docs/) installed locally.
+Before running any tests, you must have a supported version of Python (3.10+) and [Poetry](https://python-poetry.org/docs/) installed locally.
 
 It is also helpful to install SystemLink Server and configure the NI Web Server
 to run on localhost.
