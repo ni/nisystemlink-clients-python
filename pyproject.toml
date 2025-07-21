@@ -20,7 +20,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -31,12 +30,12 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python   = "^3.9"
+python   = "^3.10"
 aenum    = "^3.1.11"
 Events   = "^0.4"
 httpx    = "^0.28.1"
 requests = "^2.28.1"
-uplink   = "^0.9.7"
+uplink   = {version = "^0.10.0", extras = ["pydantic"]}
 pydantic = "^2.11.3"
 pyyaml = "^6.0.1"
 pandas = "^2.1.0"
