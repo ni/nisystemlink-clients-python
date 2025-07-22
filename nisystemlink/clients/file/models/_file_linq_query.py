@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.file.models._file_metadata import FileLinqQueryMetadata
+from nisystemlink.clients.file.models._file_metadata import LinqQueryFileMetadata
 from nisystemlink.clients.file.models._file_query_order_by import FileLinqQueryOrderBy
 
 
@@ -46,7 +46,7 @@ class TotalCount(JsonModel):
 
 
 class FileLinqQueryResponse(JsonModel):
-    available_files: List[FileLinqQueryMetadata]
+    available_files: List[LinqQueryFileMetadata]
     """The list of files returned by the query"""
 
     total_count: TotalCount

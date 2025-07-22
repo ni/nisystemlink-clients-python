@@ -85,7 +85,7 @@ class FileMetadata(BaseFileMetadata):
     """
 
 
-class FileLinqQueryMetadata(BaseFileMetadata):
+class LinqQueryFileMetadata(BaseFileMetadata):
     """Metadata for a file returned by a LINQ query."""
 
     updated: Optional[datetime] = None
