@@ -5,7 +5,6 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._dashboard import DashboardUrl
 from ._execution_definition import ExecutionDefinition
-from ._execution_event import ExecutionEvent
 from ._state import State
 
 
@@ -38,8 +37,17 @@ class TestPlan(JsonModel):
     work_order_id: Optional[str] = None
     """The identifier of the associated work order."""
 
-    work_order_name: Optional[str] = None
-    """The name of the associated work order."""
+    part_number: Optional[str] = None
+    """The part number associated with the test plan."""
+
+    dut_id: Optional[str] = None
+    """The identifier of the device under test (DUT)."""
+
+    dut_serial_number: Optional[str] = None
+    """The serial number of the device under test (DUT)."""
+
+    test_program: Optional[str] = None
+    """The test program associated with the test plan."""
 
     workspace: Optional[str] = None
     """The workspace to which the test plan belongs."""
@@ -50,32 +58,11 @@ class TestPlan(JsonModel):
     updated_by: Optional[str] = None
     """The user who last updated the test plan."""
 
-    created_At: Optional[datetime] = None
-    """The date and time when the test plan was created."""
-
-    updated_at: Optional[datetime] = None
-    """The date and time when the test plan was last updated."""
-
-    properties: Optional[Dict[str, str]] = None
-    """Additional properties associated with the test plan."""
-
-    part_number: Optional[str] = None
-    """The part number associated with the test plan."""
-
-    dut_id: Optional[str] = None
-    """The identifier of the device under test (DUT)."""
-
-    test_program: Optional[str] = None
-    """The test program associated with the test plan."""
-
     system_id: Optional[str] = None
     """The identifier of the system used for the test plan."""
 
     fixture_ids: Optional[List[str]] = None
     """The list of fixture identifiers associated with the test plan."""
-
-    system_filter: Optional[str] = None
-    """The filter used to select systems for the test plan."""
 
     planned_start_date_time: Optional[datetime] = None
     """The planned start date and time for the test plan."""
@@ -86,17 +73,26 @@ class TestPlan(JsonModel):
     estimated_duration_in_seconds: Optional[float] = None
     """The estimated duration of the test plan in seconds."""
 
+    system_filter: Optional[str] = None
+    """The filter used to select systems for the test plan."""
+
+    dut_filter: Optional[str] = None
+    """The filter used to select DUTs for the test plan."""
+
+    created_At: Optional[datetime] = None
+    """The date and time when the test plan was created."""
+
+    updated_at: Optional[datetime] = None
+    """The date and time when the test plan was last updated."""
+
+    properties: Optional[Dict[str, str]] = None
+    """Additional properties associated with the test plan."""
+
     file_ids_from_template: Optional[List[str]] = None
     """The list of file identifiers inherited from the template."""
 
-    execution_actions: Optional[List[ExecutionDefinition]] = None
-    """The execution actions defined for the test plan."""
-
-    execution_history: Optional[List[ExecutionEvent]] = None
-    """The execution history of the test plan."""
-
-    dashboard_url: Optional[Dict[str, str]] = None
-    """The URLs for dashboards related to the test plan."""
-
     dashboard: Optional[DashboardUrl] = None
     """The dashboard data related to the test plan."""
+
+    execution_actions: Optional[List[ExecutionDefinition]] = None
+    """The execution actions defined for the test plan."""

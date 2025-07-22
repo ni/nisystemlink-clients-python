@@ -131,8 +131,10 @@ class TestTestPlanClient:
             properties={"env": "staging", "priority": "high"},
             part_number="px40482",
             dut_id="Sample-Dut_Id",
+            dut_serial_number="Sample-Dut_serial_number",
             test_program="TP-Integration-001",
             system_filter="os:linux AND arch:x64",
+            dut_Filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
             workspace=_workspace,
             file_ids_from_template=["file1", "file2"],
             dashboard=_dashboard,
@@ -152,6 +154,7 @@ class TestTestPlanClient:
             test_program="TP-INT-002",
             estimated_duration_in_seconds=86400,
             system_filter="os:linux AND arch:x64",
+            dut_Filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
             execution_actions=_execution_actions,
             file_ids=["file1", "file2"],
             workspace=_workspace,
@@ -326,7 +329,6 @@ class TestTestPlanClient:
             and test_plan.description is None
             and test_plan.assigned_to is None
             and test_plan.work_order_id is None
-            and test_plan.work_order_name is None
             and test_plan.workspace is None
             and test_plan.created_by is None
             and test_plan.updated_at is None
@@ -335,8 +337,10 @@ class TestTestPlanClient:
             and test_plan.properties is None
             and test_plan.part_number is None
             and test_plan.dut_id is None
+            and test_plan.dut_serial_number is None
             and test_plan.test_program is None
             and test_plan.system_filter is None
+            and test_plan.dut_filter is None
             and test_plan.fixture_ids is None
             and test_plan.system_id is None
             and test_plan.planned_start_date_time is None
@@ -344,8 +348,6 @@ class TestTestPlanClient:
             and test_plan.estimated_end_date_time is None
             and test_plan.file_ids_from_template is None
             and test_plan.execution_actions is None
-            and test_plan.execution_history is None
-            and test_plan.dashboard_url is None
             and test_plan.dashboard is None
         )
 
@@ -459,6 +461,7 @@ class TestTestPlanClient:
             and test_plan_template.test_program is None
             and test_plan_template.estimated_duration_in_seconds is None
             and test_plan_template.system_filter is None
+            and test_plan_template.dut_filter is None
             and test_plan_template.execution_actions is None
             and test_plan_template.file_ids is None
             and test_plan_template.workspace is None
