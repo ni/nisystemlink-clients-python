@@ -38,6 +38,9 @@ class TestPlan(JsonModel):
     work_order_id: Optional[str] = None
     """The identifier of the associated work order."""
 
+    work_order_name: Optional[str] = None
+    """The name of the associated work order."""
+
     part_number: Optional[str] = None
     """The part number associated with the test plan."""
 
@@ -103,6 +106,3 @@ class TestPlan(JsonModel):
 
     dashboard_url: Optional[Dict[str, str]] = None
     """The URLs for dashboards related to the test plan."""
-
-    work_order_name: Optional[str] = None
-    """The name of the associated work order."""
