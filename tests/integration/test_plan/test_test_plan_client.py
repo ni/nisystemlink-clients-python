@@ -333,7 +333,7 @@ class TestTestPlanClient:
             and test_plan.workspace is None
             and test_plan.created_by is None
             and test_plan.updated_at is None
-            and test_plan.created_At is None
+            and test_plan.created_at is None
             and test_plan.updated_by is None
             and test_plan.properties is None
             and test_plan.part_number is None
