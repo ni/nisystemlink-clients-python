@@ -8,12 +8,6 @@ from ._update_test_plans_request import UpdateTestPlansRequest
 from ._update_test_plans_response import UpdateTestPlansResponse
 from ._query_test_plans_request import QueryTestPlansRequest, TestPlanField
 from ._paged_test_plans import PagedTestPlans
-from ._execution_event import (
-    ExecutionEvent,
-    NotebookExecutionEvent,
-    JobExecutionEvent,
-    ManualExecutionEvent,
-)
 from ._order_by import OrderBy
 from ._test_plan import TestPlan
 from ._state import State
