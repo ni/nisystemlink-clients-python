@@ -148,9 +148,9 @@ class FileClient(BaseClient):
 
     @post("service-groups/Default/query-files-linq")
     def query_files_linq(
-        self, query: models.LinqFileQueryRequest
-    ) -> models.LinqFileQueryResponse:
-        """Queries files using LINQ syntax.
+        self, query: models.FileLinqQueryRequest
+    ) -> models.FileLinqQueryResponse:
+        """Queries file using LINQ filters.
 
         Args:
             query: The LINQ query request containing the query string and optional parameters.

@@ -1,11 +1,11 @@
 from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from nisystemlink.clients.file.models._file_metadata import LinqFileMetadata
+from nisystemlink.clients.file.models._file_metadata import FileLinqQueryMetadata
 from nisystemlink.clients.file.models._file_query_order_by import FileLinqQueryOrderBy
 
 
-class LinqFileQueryRequest(JsonModel):
+class FileLinqQueryRequest(JsonModel):
     filter: Optional[str] = None
     """
     The filter criteria for files. Consists of a string of queries composed using AND/OR operators.
@@ -15,11 +15,11 @@ class LinqFileQueryRequest(JsonModel):
     Example Filter syntax: '[property name][operator][operand] and [property name][operator][operand]'
     """
 
-    ordery_by: Optional[FileLinqQueryOrderBy] = None
+    order_by: Optional[FileLinqQueryOrderBy] = None
     """The property by which to order the files in the response."""
 
     order_by_descending: Optional[bool] = False
-    """If true, the files are ordered in descending order based on the property specified in `ordery_by`."""
+    """If true, the files are ordered in descending order based on the property specified in `order_by`."""
 
     take: Optional[int] = None
     """The maximum number of files to return in the response. Default value is 1000"""
@@ -45,8 +45,8 @@ class TotalCount(JsonModel):
     """Describes the number of files that were returned as a result of the query in the database"""
 
 
-class LinqFileQueryResponse(JsonModel):
-    available_files: List[LinqFileMetadata]
+class FileLinqQueryResponse(JsonModel):
+    available_files: List[FileLinqQueryMetadata]
     """The list of files returned by the query"""
 
     total_count: TotalCount
