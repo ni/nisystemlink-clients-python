@@ -80,7 +80,7 @@ class TestPlan(JsonModel):
     dut_filter: Optional[str] = None
     """The filter used to select DUTs for the test plan."""
 
-    created_At: Optional[datetime] = None
+    created_at: Optional[datetime] = None
     """The date and time when the test plan was created."""
 
     updated_at: Optional[datetime] = None
