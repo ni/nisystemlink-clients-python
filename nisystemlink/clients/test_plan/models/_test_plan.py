@@ -5,6 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._dashboard import DashboardUrl
 from ._execution_definition import ExecutionDefinition
+from ._execution_event import ExecutionEvent
 from ._state import State
 
 
@@ -96,3 +97,12 @@ class TestPlan(JsonModel):
 
     execution_actions: Optional[List[ExecutionDefinition]] = None
     """The execution actions defined for the test plan."""
+
+    execution_history: Optional[List[ExecutionEvent]] = None
+    """The execution history of the test plan."""
+
+    dashboard_url: Optional[Dict[str, str]] = None
+    """The URLs for dashboards related to the test plan."""
+
+    work_order_name: Optional[str] = None
+    """The name of the associated work order."""

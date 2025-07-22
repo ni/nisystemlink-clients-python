@@ -329,6 +329,7 @@ class TestTestPlanClient:
             and test_plan.description is None
             and test_plan.assigned_to is None
             and test_plan.work_order_id is None
+            and test_plan.work_order_name is None
             and test_plan.workspace is None
             and test_plan.created_by is None
             and test_plan.updated_at is None
@@ -348,6 +349,8 @@ class TestTestPlanClient:
             and test_plan.estimated_end_date_time is None
             and test_plan.file_ids_from_template is None
             and test_plan.execution_actions is None
+            and test_plan.execution_history is None
+            and test_plan.dashboard_url is None
             and test_plan.dashboard is None
         )
 
