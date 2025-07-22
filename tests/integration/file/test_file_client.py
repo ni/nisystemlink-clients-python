@@ -209,7 +209,7 @@ class TestFileClient:
     def test__query_files_linq__filter_by_name_succeeds(
         self, client: FileClient, test_file, random_filename_extension: str
     ):
-        file_id = test_file(file_name=random_filename_extension, cleanup=False)
+        file_id = test_file(file_name=random_filename_extension)
 
         query_request = FileLinqQueryRequest(
             filter=f'name == "{random_filename_extension}"'
@@ -221,13 +221,10 @@ class TestFileClient:
         assert response.available_files[0].id == file_id
         assert response.available_files[0].properties is not None
         assert (
-            response.available_files[0].properties["Name"]
-            == random_filename_extension
+            response.available_files[0].properties["Name"] == random_filename_extension
         )
         assert response.total_count.value == 1
         assert response.total_count.relation == "eq"
-
-        client.delete_file(id=file_id)
 
     def test__query_files_linq__invalid_filter_raises(self, client: FileClient):
         query_request = FileLinqQueryRequest(filter="invalid filter syntax:")
