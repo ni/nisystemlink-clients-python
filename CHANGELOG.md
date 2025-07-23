@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.17.1 (2025-07-23)
+
+### Fix
+
+* Upgrade uplink to v0.10.0 for python 3.10+ to resolve pkg_resources deprecation ([#150](https://github.com/ni/nisystemlink-clients-python/issues/150)) ([`c613a78`](https://github.com/ni/nisystemlink-clients-python/commit/c613a7824f19e25e162b2e8376a066fe63a56981))
+
 ## v2.17.0 (2025-07-23)
 
 ### Feature
