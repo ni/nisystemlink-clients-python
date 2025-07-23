@@ -39,6 +39,11 @@ class TestPlanTemplateBase(JsonModel):
     systems capable of executing test plans created from this template.
     """
 
+    dut_filter: Optional[str] = None
+    """The LINQ filter string is used to filter the potential list of
+    DUTs capable of executing test plans created from this template.
+    """
+
     execution_actions: Optional[List[ExecutionDefinition]] = None
     """Defines the executions that will be used for test plan actions
     created from this template.

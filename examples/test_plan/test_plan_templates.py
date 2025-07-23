@@ -29,6 +29,7 @@ create_test_plan_template_request = [
         test_program="TP-INT-002",
         estimated_duration_in_seconds=86400,
         system_filter="os:linux AND arch:x64",
+        dut_Filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
             JobExecution(

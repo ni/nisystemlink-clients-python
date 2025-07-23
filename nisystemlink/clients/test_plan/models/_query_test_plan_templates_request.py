@@ -29,6 +29,7 @@ class TestPlanTemplateField(str, Enum):
     TEST_PROGRAM = "TEST_PROGRAM"
     ESTIMATED_DURATION_IN_SECONDS = "ESTIMATED_DURATION_IN_SECONDS"
     SYSTEM_FILTER = "SYSTEM_FILTER"
+    DUT_FILTER = "DUT_FILTER"
     EXECUTION_ACTIONS = "EXECUTION_ACTIONS"
     FILE_IDS = "FILE_IDS"
     WORKSPACE = "WORKSPACE"
@@ -60,6 +61,7 @@ class QueryTestPlanTemplatesRequest(WithPaging):
     `testProgram`: String representing the test program name of the test plan created from this
     template.
     `systemFilter`: String representing the LINQ filter used to filter the potential list of systems
+    `dutFilter`: String representing the LINQ filter used to filter the potential list of DUTs
     capable of executing test plans created from this template.
     `workspace`: String representing the workspace where the test plan template belongs.
     `createdBy`: String representing the user who created the test plan template.
