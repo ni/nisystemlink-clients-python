@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.17.0 (2025-07-23)
+
+### Feature
+
+* Add DUT filter and DUT serial number fields in test plans models ([#151](https://github.com/ni/nisystemlink-clients-python/issues/151)) ([`d6b9d68`](https://github.com/ni/nisystemlink-clients-python/commit/d6b9d68c36f5b6089c5d378214a4f54097b87e03))
+
 ## v2.16.0 (2025-06-13)
 
 ### Feature
