@@ -32,8 +32,10 @@ create_test_plans_request = [
         properties={"env": "staging", "priority": "high"},
         part_number="px40482",
         dut_id="Sample-Dut_Id",
+        dut_serial_number="serial_number_123",
         test_program="TP-Integration-001",
         system_filter="os:linux AND arch:x64",
+        dut_Filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
         workspace="your_workspace_id",
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(

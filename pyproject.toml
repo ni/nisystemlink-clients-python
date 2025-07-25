@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nisystemlink-clients"
-version = "2.16.0"
+version = "2.17.1"
 description = "NI-SystemLink Python API"
 authors = ["National Instruments"]
 maintainers = [
@@ -36,7 +36,10 @@ aenum    = "^3.1.11"
 Events   = "^0.4"
 httpx    = "^0.28.1"
 requests = "^2.28.1"
-uplink   = "^0.9.7"
+uplink   = [
+  { version = "^0.10.0", extras = ["pydantic"], python = ">=3.10" },
+  { version = "^0.9.7", python = ">=3.9,<3.10" }
+]
 pydantic = "^2.11.3"
 pyyaml = "^6.0.1"
 pandas = "^2.1.0"
@@ -72,7 +75,7 @@ markers = [
     "enterprise: mark a test as an enterprise integration test",
     "webserver: mark a test as a webserver integration test",
     "slow: mark a test as a slow test",
-    "focus: focus a specific test during development",
+    "focus: focus a test during development",
 ]
 
 [tool.black]
