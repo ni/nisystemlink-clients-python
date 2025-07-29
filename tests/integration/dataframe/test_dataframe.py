@@ -275,8 +275,10 @@ class TestDataFrame:
         for table in client.list_tables(id=ids).tables:
             assert table.properties == {"pig": "oink"}
 
-    def test__modify_tables__returns_partial_success(self, client: DataFrameClient):
-        id = client.create_table(basic_table_model)
+    def test__modify_tables__returns_partial_success(
+        self, client: DataFrameClient, create_table
+    ):
+        id = create_table(basic_table_model)
 
         updates = [
             TableMetadataModification(id=id, name="Modified table")
