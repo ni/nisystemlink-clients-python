@@ -26,7 +26,7 @@ query_request = FileLinqQueryRequest(
 response = client.query_files_linq(query=query_request)
 
 print(
-    f"\nFound {len(response.available_files)} files (limited to {query_request.take}) with 'test' in name:"
+    f"\nFound {len(response.available_files)} files (limited to {query_request.take}) with 'test' in name"
 )
 for file in response.available_files:
     file_name = file.properties.get("Name", "Unknown") if file.properties else "Unknown"
@@ -44,7 +44,7 @@ query_request = FileLinqQueryRequest(
 response = client.query_files_linq(query=query_request)
 
 print(
-    f"\nFound {len(response.available_files)} files (limited to {query_request.take}) larger than 1KB:"
+    f"\nFound {len(response.available_files)} files (limited to {query_request.take}) larger than 1KB"
 )
 for file in response.available_files:
     file_name = file.properties.get("Name", "Unknown") if file.properties else "Unknown"
