@@ -13,7 +13,7 @@ response = client.query_files_linq(query=query_request)
 print(f"Found {response.total_count.value} files matching the filter")
 for file in response.available_files:
     file_name = file.properties.get("Name", "Unknown") if file.properties else "Unknown"
-    print(f"  - File ID: {file.id}, Name: {file_name}")
+    print(f"- File ID: {file.id}, Name: {file_name}")
 
 
 # Example 2: Query with ordering and pagination
@@ -30,8 +30,8 @@ print(
 )
 for file in response.available_files:
     file_name = file.properties.get("Name", "Unknown") if file.properties else "Unknown"
-    print(f"  - File ID: {file.id}, Name: {file_name}")
-    print(f"    Created: {file.created}")
+    print(f"- File ID: {file.id}, Name: {file_name}")
+    print(f"  Created: {file.created}")
 
 
 # Example 3: Query files by size
@@ -48,5 +48,5 @@ print(
 )
 for file in response.available_files:
     file_name = file.properties.get("Name", "Unknown") if file.properties else "Unknown"
-    print(f"  - File ID: {file.id}, Name: {file_name}")
-    print(f"    Size: {file.size} bytes")
+    print(f"- File ID: {file.id}, Name: {file_name}")
+    print(f"  Size: {file.size} bytes")
