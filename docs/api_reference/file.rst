@@ -9,6 +9,7 @@ nisystemlink.clients.file
    .. automethod:: __init__
    .. automethod:: api_info
    .. automethod:: get_files
+   .. automethod:: query_files_linq
    .. automethod:: delete_file
    .. automethod:: delete_files
    .. automethod:: upload_file

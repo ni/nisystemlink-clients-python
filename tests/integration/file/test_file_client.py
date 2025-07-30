@@ -2,13 +2,18 @@
 
 import io
 import string
+from datetime import datetime
 from random import choices, randint
 from typing import BinaryIO
 
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
-from nisystemlink.clients.file.models import FileLinqQueryRequest, UpdateMetadataRequest
+from nisystemlink.clients.file.models import (
+    FileLinqQueryOrderBy,
+    FileLinqQueryRequest,
+    UpdateMetadataRequest,
+)
 from nisystemlink.clients.file.utilities import rename_file
 
 FILE_NOT_FOUND_ERR = "Not Found"
@@ -212,19 +217,30 @@ class TestFileClient:
         file_id = test_file(file_name=random_filename_extension)
 
         query_request = FileLinqQueryRequest(
-            filter=f'name == "{random_filename_extension}"'
+            filter=f'name == "{random_filename_extension}"',
+            order_by=FileLinqQueryOrderBy.CREATED,
+            order_by_descending=True,
+            take=1,
         )
         response = client.query_files_linq(query=query_request)
 
         assert response.available_files is not None
+        assert response.total_count is not None
+        assert response.total_count.value == 1
+        assert response.total_count.relation == "eq"
         assert len(response.available_files) == 1
         assert response.available_files[0].id == file_id
+        assert response.available_files[0].created is not None
+        assert isinstance(response.available_files[0].created, datetime)
+        assert response.available_files[0].updated is not None
+        assert isinstance(response.available_files[0].updated, datetime)
+        assert response.available_files[0].workspace is not None
+        assert response.available_files[0].size is not None
+        assert response.available_files[0].size64 is not None
         assert response.available_files[0].properties is not None
         assert (
             response.available_files[0].properties["Name"] == random_filename_extension
         )
-        assert response.total_count.value == 1
-        assert response.total_count.relation == "eq"
 
     def test__query_files_linq__invalid_filter_raises(self, client: FileClient):
         query_request = FileLinqQueryRequest(filter="invalid filter syntax:")
