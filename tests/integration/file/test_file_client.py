@@ -2,13 +2,18 @@
 
 import io
 import string
+from datetime import datetime
 from random import choices, randint
 from typing import BinaryIO
 
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
-from nisystemlink.clients.file.models import UpdateMetadataRequest
+from nisystemlink.clients.file.models import (
+    FileLinqQueryOrderBy,
+    FileLinqQueryRequest,
+    UpdateMetadataRequest,
+)
 from nisystemlink.clients.file.utilities import rename_file
 
 FILE_NOT_FOUND_ERR = "Not Found"
@@ -38,8 +43,10 @@ def test_file(client: FileClient):
         test_file = io.BytesIO(TEST_FILE_DATA)
         test_file.name = file_name
         file_id = client.upload_file(file=test_file)
+
         if cleanup:
             file_ids.append(file_id)
+
         return file_id
 
     yield _test_file
@@ -63,7 +70,7 @@ def invalid_file_id(client: FileClient) -> str:
     raise Exception(f"Failed to generate a invalid-file-id in {MAX_RETRIES} attempts.")
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture
 def random_filename_extension() -> str:
     """Generate a random filename and extension."""
     rand_file_name = "".join(choices(string.ascii_letters + string.digits, k=10))
@@ -203,3 +210,56 @@ class TestFileClient:
 
         for i in range(20):
             rename_file(client=client, file_id=file_id, name=f"{PREFIX}{i}.abc")
+
+    def test__query_files_linq__filter_by_name_succeeds(
+        self, client: FileClient, test_file, random_filename_extension: str
+    ):
+        file_id = test_file(file_name=random_filename_extension)
+
+        query_request = FileLinqQueryRequest(
+            filter=f'name == "{random_filename_extension}"',
+            order_by=FileLinqQueryOrderBy.CREATED,
+            order_by_descending=True,
+            take=1,
+        )
+        response = client.query_files_linq(query=query_request)
+
+        assert response.available_files is not None
+        assert response.total_count is not None
+        assert response.total_count.value == 1
+        assert response.total_count.relation == "eq"
+        assert len(response.available_files) == 1
+        assert response.available_files[0].id == file_id
+        assert response.available_files[0].created is not None
+        assert isinstance(response.available_files[0].created, datetime)
+        assert response.available_files[0].updated is not None
+        assert isinstance(response.available_files[0].updated, datetime)
+        assert response.available_files[0].workspace is not None
+        assert response.available_files[0].size is not None
+        assert response.available_files[0].size64 is not None
+        assert response.available_files[0].properties is not None
+        assert (
+            response.available_files[0].properties["Name"] == random_filename_extension
+        )
+
+    def test__query_files_linq__invalid_filter_raises(self, client: FileClient):
+        query_request = FileLinqQueryRequest(filter="invalid filter syntax:")
+
+        with pytest.raises(ApiException):
+            client.query_files_linq(query=query_request)
+
+    def test__query_files_linq__filter_returns_no_results(self, client: FileClient):
+        unique_nonexistent_name = (
+            f"{PREFIX}nonexistent_file_{randint(100000, 999999)}.random_extension"
+        )
+
+        query_request = FileLinqQueryRequest(
+            filter=f'name == "{unique_nonexistent_name}"'
+        )
+        response = client.query_files_linq(query=query_request)
+
+        assert response.available_files is not None
+        assert len(response.available_files) == 0
+        assert response.total_count is not None
+        assert response.total_count.value == 0
+        assert response.total_count.relation == "eq"

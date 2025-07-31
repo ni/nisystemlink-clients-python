@@ -146,6 +146,23 @@ class FileClient(BaseClient):
 
         return resp
 
+    @post("service-groups/Default/query-files-linq")
+    def query_files_linq(
+        self, query: models.FileLinqQueryRequest
+    ) -> models.FileLinqQueryResponse:
+        """Queries file using LINQ filters.
+
+        Args:
+            query: The LINQ query request containing the query string and optional parameters.
+
+        Returns:
+            File Query Response
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """
+        ...
+
     @params({"force": True})  # type: ignore
     @delete("service-groups/Default/files/{id}", args=[Path])
     def delete_file(self, id: str) -> None:
