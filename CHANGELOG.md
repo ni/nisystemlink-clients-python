@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.18.0 (2025-07-31)
+
+### Feature
+
+* File Client | Linq file query API ([#149](https://github.com/ni/nisystemlink-clients-python/issues/149)) ([`4e2a589`](https://github.com/ni/nisystemlink-clients-python/commit/4e2a5898a6845600d0f4d52d33fb9a040cde5583))
+
 ## v2.17.1 (2025-07-23)
 
 ### Fix
