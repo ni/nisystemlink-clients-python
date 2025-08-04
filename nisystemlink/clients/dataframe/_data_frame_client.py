@@ -1,5 +1,8 @@
 """Implementation of DataFrameClient."""
 
+import pyarrow as pa
+from collections.abc import Iterable
+from io import BytesIO
 from typing import List, Optional
 
 from nisystemlink.clients import core
@@ -13,7 +16,7 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
-from uplink import Body, Field, Path, Query, retry
+from uplink import Body, Field, Path, Query, headers, retry
 
 from . import models
 
@@ -263,6 +266,61 @@ class DataFrameClient(BaseClient):
         """
         ...
 
+    def append_table_data2(
+        self,
+        id: str,
+        data: Iterable[pa.RecordBatch],
+        end_of_data: bool = False,
+    ) -> None:
+        """Appends one or more rows of data to the table identified by its ID.
+
+        Args:
+            id: Unique ID of a data table.
+            data: The data to append.
+            end_of_data: Whether the table should expect any additional rows to be
+                appended in future requests.
+
+        Raises:
+            ApiException: if unable to communicate with the DataFrame Service
+                or provided an invalid argument.
+        """
+
+        def _generate_body() -> Iterable[memoryview]:
+            data_iter = iter(data)
+            try:
+                batch = next(data_iter)
+            except StopIteration:
+                return
+            with BytesIO() as buf:
+                options = pa.ipc.IpcWriteOptions(compression="zstd")
+                writer = pa.ipc.new_stream(buf, batch.schema, options=options)
+
+                while True:
+                    writer.write_batch(batch)
+                    with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
+                        yield slice
+                    buf.seek(0)
+                    try:
+                        batch = next(data_iter)
+                    except StopIteration:
+                        break
+
+                writer.close()
+                with buf.getbuffer() as view:
+                    with view[0 : buf.tell()] as slice:
+                        yield slice
+
+        return self.__append_table_data_arrow(id, _generate_body(), end_of_data)
+
+    @post(
+        "tables/{id}/data",
+        args=[Path, Body, Query],
+        content_type="application/vnd.apache.arrow.stream",
+    )
+    def __append_table_data_arrow(
+        self, id: str, data: Iterable[bytes], end_of_data: bool
+    ) -> None: ...
+
     @post("tables/{id}/query-data", args=[Path, Body])
     def query_table_data(
         self, id: str, query: models.QueryTableDataRequest
@@ -301,7 +359,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
+    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:  # type: ignore
         return IteratorFileLike(response.iter_content(chunk_size=4096))
 
     @response_handler(_iter_content_filelike_wrapper)
