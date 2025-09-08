@@ -1,9 +1,12 @@
 """Implementation of DataFrameClient."""
 
-import pyarrow as pa
+try:  # Optional pyarrow dependency
+    import pyarrow as pa  # type: ignore
+except Exception:  # pragma: no cover - pyarrow not installed
+    pa = None  # type: ignore
 from collections.abc import Iterable
 from io import BytesIO
-from typing import List, Optional
+from typing import Any, List, Optional, Union
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -252,74 +255,134 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @post("tables/{id}/data", args=[Path, Body])
-    def append_table_data(self, id: str, data: models.AppendTableDataRequest) -> None:
-        """Appends one or more rows of data to the table identified by its ID.
-
-        Args:
-            id: Unique ID of a data table.
-            data: The rows of data to append and any additional options.
-
-        Raises:
-            ApiException: if unable to communicate with the DataFrame Service
-                or provided an invalid argument.
-        """
-        ...
-
-    def append_table_data2(
-        self,
-        id: str,
-        data: Iterable[pa.RecordBatch],
-        end_of_data: bool = False,
+    @post(
+        "tables/{id}/data",
+        args=[Path, Body]
+    )
+    def _append_table_data_json(
+        self, id: str, data: models.AppendTableDataRequest
     ) -> None:
-        """Appends one or more rows of data to the table identified by its ID.
-
-        Args:
-            id: Unique ID of a data table.
-            data: The data to append.
-            end_of_data: Whether the table should expect any additional rows to be
-                appended in future requests.
-
-        Raises:
-            ApiException: if unable to communicate with the DataFrame Service
-                or provided an invalid argument.
-        """
-
-        def _generate_body() -> Iterable[memoryview]:
-            data_iter = iter(data)
-            try:
-                batch = next(data_iter)
-            except StopIteration:
-                return
-            with BytesIO() as buf:
-                options = pa.ipc.IpcWriteOptions(compression="zstd")
-                writer = pa.ipc.new_stream(buf, batch.schema, options=options)
-
-                while True:
-                    writer.write_batch(batch)
-                    with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
-                        yield slice
-                    buf.seek(0)
-                    try:
-                        batch = next(data_iter)
-                    except StopIteration:
-                        break
-
-                writer.close()
-                with buf.getbuffer() as view:
-                    with view[0 : buf.tell()] as slice:
-                        yield slice
-
-        return self.__append_table_data_arrow(id, _generate_body(), end_of_data)
+        ...
 
     @post(
         "tables/{id}/data",
         args=[Path, Body, Query],
         content_type="application/vnd.apache.arrow.stream",
     )
-    def __append_table_data_arrow(
+    def _append_table_data_arrow(
         self, id: str, data: Iterable[bytes], end_of_data: bool
-    ) -> None: ...
+    ) -> None:
+        ...
+
+    def append_table_data(
+        self,
+        id: str,
+        data: Optional[
+            Union[
+                models.AppendTableDataRequest,
+                models.DataFrame,
+                Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
+            ]
+        ],
+        *,
+        end_of_data: Optional[bool] = None,
+    ) -> None:
+        """Appends one or more rows of data to the table identified by its ID.
+
+    This method accepts:
+    - None: ``end_of_data`` must be provided. Sends JSON with only the ``endOfData`` flag.
+    - DataFrame (service model): Wrapped into an AppendTableDataRequest (with optional ``end_of_data``) and sent as JSON.
+    - AppendTableDataRequest: Sent as-is via JSON. ``end_of_data`` must be ``None``.
+    - Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query parameter. If the iterable yields no batches, behaves like the ``None`` case (thus requiring ``end_of_data``).
+
+        Args:
+            id: Unique ID of a data table.
+            data: The data to append in one of the supported forms.
+            end_of_data: Whether the table should expect any additional rows to be
+                appended in future requests. Required when ``data`` is ``None`` or
+                an empty iterator of RecordBatches. Must be omitted when ``data`` is
+                an ``AppendTableDataRequest`` (provide it inside the request model).
+
+        Raises:
+            ValueError: If parameter constraints are violated.
+            ApiException: If unable to communicate with the DataFrame Service
+                or an invalid argument is provided.
+        """
+
+        if isinstance(data, models.AppendTableDataRequest):
+            if end_of_data is not None:
+                raise ValueError(
+                    "end_of_data must not be provided separately when passing an AppendTableDataRequest."
+                )
+            self._append_table_data_json(id, data)
+            return
+
+        if isinstance(data, models.DataFrame):
+            self._append_table_data_json(
+                id, models.AppendTableDataRequest(frame=data, end_of_data=end_of_data)
+            )
+            return
+
+        if isinstance(data, Iterable):
+            iterator = iter(data)
+            try:
+                first_batch = next(iterator)
+            except StopIteration:
+                if end_of_data is None:
+                    raise ValueError(
+                        "end_of_data must be provided when data iterator is empty."
+                    )
+                self._append_table_data_json(
+                    id, models.AppendTableDataRequest(end_of_data=end_of_data)
+                )
+                return
+
+            if pa is None:
+                raise RuntimeError(
+                    "pyarrow is not installed. Install with the appropriate extra to stream RecordBatches."
+                )
+
+            if not isinstance(first_batch, pa.RecordBatch):
+                raise ValueError(
+                    "Iterable provided to data must yield pyarrow.RecordBatch objects."
+                )
+
+            def _generate_body() -> Iterable[memoryview]:
+                data_iter = (b for b in (first_batch, *iterator))
+                first = True
+                with BytesIO() as buf:
+                    writer = None
+                    for batch in data_iter:
+                        if first:
+                            options = pa.ipc.IpcWriteOptions(compression="zstd")
+                            writer = pa.ipc.new_stream(buf, batch.schema, options=options)
+                            first = False
+                        writer.write_batch(batch)
+                        with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
+                            yield slice
+                        buf.seek(0)
+                    if writer is not None:
+                        writer.close()
+                        with buf.getbuffer() as view:
+                            with view[0 : buf.tell()] as slice:
+                                yield slice
+
+            self._append_table_data_arrow(id, _generate_body(), end_of_data or False)
+            return
+
+        if data is None:
+            if end_of_data is None:
+                raise ValueError(
+                    "end_of_data must be provided when data is None (no rows to append)."
+                )
+            self._append_table_data_json(
+                id, models.AppendTableDataRequest(end_of_data=end_of_data)
+            )
+            return
+
+        raise ValueError(
+            "Unsupported type for data. Expected AppendTableDataRequest, DataFrame, Iterable[RecordBatch], or None."
+        )
 
     @post("tables/{id}/query-data", args=[Path, Body])
     def query_table_data(
