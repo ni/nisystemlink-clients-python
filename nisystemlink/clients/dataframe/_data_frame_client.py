@@ -289,11 +289,11 @@ class DataFrameClient(BaseClient):
     ) -> None:
         """Appends one or more rows of data to the table identified by its ID.
 
-    This method accepts:
-    - None: ``end_of_data`` must be provided. Sends JSON with only the ``endOfData`` flag.
-    - DataFrame (service model): Wrapped into an AppendTableDataRequest (with optional ``end_of_data``) and sent as JSON.
-    - AppendTableDataRequest: Sent as-is via JSON. ``end_of_data`` must be ``None``.
-    - Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query parameter. If the iterable yields no batches, behaves like the ``None`` case (thus requiring ``end_of_data``).
+        This method accepts:
+        - AppendTableDataRequest: Sent as-is via JSON. ``end_of_data`` must be ``None``.
+        - DataFrame (service model): Wrapped into an AppendTableDataRequest (with optional ``end_of_data``) and sent as JSON.
+        - Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query parameter. If the iterable yields no batches, behaves like the ``None`` case (thus requiring ``end_of_data``).
+        - None: ``end_of_data`` must be provided. Sends JSON with only the ``endOfData`` flag.
 
         Args:
             id: Unique ID of a data table.
@@ -339,7 +339,7 @@ class DataFrameClient(BaseClient):
 
             if pa is None:
                 raise RuntimeError(
-                    "pyarrow is not installed. Install with the appropriate extra to stream RecordBatches."
+                    "pyarrow is not installed. Install to stream RecordBatches."
                 )
 
             if not isinstance(first_batch, pa.RecordBatch):
