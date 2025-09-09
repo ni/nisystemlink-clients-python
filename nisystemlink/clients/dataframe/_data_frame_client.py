@@ -364,17 +364,27 @@ class DataFrameClient(BaseClient):
             try:
                 self._append_table_data_arrow(id, _generate_body(), end_of_data or False)
             except core.ApiException as ex:
-                # TODO: Maybe we should also check the error code in addition to the response status code?
                 if ex.http_status_code == 400:
-                    raise core.ApiException(
-                        (
-                            "Arrow ingestion request was rejected. The target DataFrame Service doesn't support Arrow streaming. "
-                            "Install a DataFrame Service version with Arrow support or fall back to JSON ingestion."
-                        ),
-                        error=ex.error,
-                        http_status_code=ex.http_status_code,
-                        inner=ex,
-                    ) from ex
+                    wrap = True
+                    try:
+                        info = self.api_info()
+                        # write_data attribute (camelCase writeData in JSON) denotes supported write version
+                        write_op = getattr(info.operations, "write_data", None)
+                        if write_op is not None and getattr(write_op, "version", 0) >= 2:
+                            # Service claims Arrow-capable write version; re-raise original exception
+                            wrap = False
+                    except Exception:  # pragma: no cover - fallback to wrapping
+                        pass
+                    if wrap:
+                        raise core.ApiException(
+                            (
+                                "Arrow ingestion request was rejected. The target DataFrame Service doesn't support Arrow streaming. "
+                                "Install a DataFrame Service version with Arrow support or fall back to JSON ingestion."
+                            ),
+                            error=ex.error,
+                            http_status_code=ex.http_status_code,
+                            inner=ex,
+                        ) from ex
                 raise
             return
 
