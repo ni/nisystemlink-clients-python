@@ -368,12 +368,11 @@ class DataFrameClient(BaseClient):
                     wrap = True
                     try:
                         info = self.api_info()
-                        # write_data attribute (camelCase writeData in JSON) denotes supported write version
                         write_op = getattr(info.operations, "write_data", None)
                         if write_op is not None and getattr(write_op, "version", 0) >= 2:
                             # Service claims Arrow-capable write version; re-raise original exception
                             wrap = False
-                    except Exception:  # pragma: no cover - fallback to wrapping
+                    except Exception:
                         pass
                     if wrap:
                         raise core.ApiException(
