@@ -266,11 +266,11 @@ class DataFrameClient(BaseClient):
 
     @post(
         "tables/{id}/data",
-        args=[Path, Body, Query],
+        args=[Path, Body, Query("endOfData")],
         content_type="application/vnd.apache.arrow.stream",
     )
     def _append_table_data_arrow(
-        self, id: str, data: Iterable[bytes], end_of_data: bool
+        self, id: str, data: Iterable[bytes], end_of_data: Optional[bool] = None
     ) -> None:
         ...
 
@@ -281,7 +281,7 @@ class DataFrameClient(BaseClient):
             Union[
                 models.AppendTableDataRequest,
                 models.DataFrame,
-                Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
+                Iterable["pa.RecordBatch"], # type: ignore[name-defined]
             ]
         ],
         *,
@@ -313,7 +313,8 @@ class DataFrameClient(BaseClient):
 
         if isinstance(data, models.DataFrame):
             self._append_table_data_json(
-                id, models.AppendTableDataRequest(frame=data, end_of_data=end_of_data)
+                id,
+                models.AppendTableDataRequest(frame=data, end_of_data=end_of_data)
             )
             return
 
@@ -327,7 +328,8 @@ class DataFrameClient(BaseClient):
                         "end_of_data must be provided when data iterator is empty."
                     )
                 self._append_table_data_json(
-                    id, models.AppendTableDataRequest(end_of_data=end_of_data)
+                    id,
+                    models.AppendTableDataRequest(end_of_data=end_of_data),
                 )
                 return
 
@@ -362,7 +364,11 @@ class DataFrameClient(BaseClient):
                                 yield slice
 
             try:
-                self._append_table_data_arrow(id, _generate_body(), end_of_data or False)
+                self._append_table_data_arrow(
+                    id,
+                    _generate_body(),
+                    ("true" if (end_of_data or False) else "false"),
+                )
             except core.ApiException as ex:
                 if ex.http_status_code == 400:
                     wrap = True
