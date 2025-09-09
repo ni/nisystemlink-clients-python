@@ -289,24 +289,18 @@ class DataFrameClient(BaseClient):
     ) -> None:
         """Appends one or more rows of data to the table identified by its ID.
 
-        This method accepts:
-        - AppendTableDataRequest: Sent as-is via JSON. ``end_of_data`` must be ``None``.
-        - DataFrame (service model): Wrapped into an AppendTableDataRequest (with optional ``end_of_data``) and sent as JSON.
-        - Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query parameter. If the iterable yields no batches, behaves like the ``None`` case (thus requiring ``end_of_data``).
-        - None: ``end_of_data`` must be provided. Sends JSON with only the ``endOfData`` flag.
-
         Args:
             id: Unique ID of a data table.
-            data: The data to append in one of the supported forms.
-            end_of_data: Whether the table should expect any additional rows to be
-                appended in future requests. Required when ``data`` is ``None`` or
-                an empty iterator of RecordBatches. Must be omitted when ``data`` is
-                an ``AppendTableDataRequest`` (provide it inside the request model).
+            data: The data to append in one of the following forms:
+                - AppendTableDataRequest: Sent as-is via JSON. ``end_of_data`` must be ``None``.
+                - DataFrame (service model): Wrapped into an AppendTableDataRequest (``end_of_data`` optional) and sent as JSON.
+                - Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query parameter. If the iterator yields no batches, it is treated like ``None`` and requires ``end_of_data``.
+                - None: ``end_of_data`` must be provided; sends JSON containing only the ``endOfData`` flag.
+            end_of_data: Whether the table should expect any additional rows to be appended in future requests. Required when ``data`` is ``None`` or an empty RecordBatch iterator; must be omitted when supplying an ``AppendTableDataRequest`` (put it inside that model instead).
 
         Raises:
             ValueError: If parameter constraints are violated.
-            ApiException: If unable to communicate with the DataFrame Service
-                or an invalid argument is provided.
+            ApiException: If unable to communicate with the DataFrame Service or an invalid argument is provided.
         """
 
         if isinstance(data, models.AppendTableDataRequest):
@@ -367,7 +361,21 @@ class DataFrameClient(BaseClient):
                             with view[0 : buf.tell()] as slice:
                                 yield slice
 
-            self._append_table_data_arrow(id, _generate_body(), end_of_data or False)
+            try:
+                self._append_table_data_arrow(id, _generate_body(), end_of_data or False)
+            except core.ApiException as ex:
+                # TODO: Maybe we should also check the error code in addition to the response status code?
+                if ex.http_status_code == 400:
+                    raise core.ApiException(
+                        (
+                            "Arrow ingestion request was rejected. The target DataFrame Service doesn't support Arrow streaming. "
+                            "Install a DataFrame Service version with Arrow support or fall back to JSON ingestion."
+                        ),
+                        error=ex.error,
+                        http_status_code=ex.http_status_code,
+                        inner=ex,
+                    ) from ex
+                raise
             return
 
         if data is None:
