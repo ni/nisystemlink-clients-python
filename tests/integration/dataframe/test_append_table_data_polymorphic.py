@@ -90,7 +90,7 @@ def test__append_table_data__append_request_success(
 @pytest.mark.enterprise
 @pytest.mark.integration
 def test__append_table_data__append_request_with_end_of_data_argument_disallowed(
-    client: DataFrameClient,
+    client: DataFrameClient, test_tables: List[str]
 ):
     request = AppendTableDataRequest(end_of_data=True)
     with pytest.raises(ValueError, match="end_of_data must not be provided separately when passing an AppendTableDataRequest."):
@@ -116,10 +116,33 @@ def test__append_table_data__accepts_dataframe_model(client: DataFrameClient, te
             client.append_table_data(test_tables[0], frame, end_of_data=True) is None
         )
 
+@pytest.mark.enterprise
+@pytest.mark.integration
+def test__append_table_data__dataframe_without_end_of_data_success(
+    client: DataFrameClient, test_tables: List[str]
+):
+    frame = DataFrame(data=[["10"], ["11"]])
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            responses.POST,
+            f"{client.session.base_url}tables/{test_tables[0]}/data",
+            json={},
+        )
+        client.append_table_data(test_tables[0], frame)  # no end_of_data
+
 
 @pytest.mark.enterprise
 @pytest.mark.integration
-def test__append_table_data__flush_only_with_none(client: DataFrameClient):
+def test__append_table_data__none_without_end_of_data_raises(
+    client: DataFrameClient, test_tables: List[str]
+):
+    with pytest.raises(ValueError, match="end_of_data must be provided when data is None"):
+        client.append_table_data(test_tables[0], None)
+
+
+@pytest.mark.enterprise
+@pytest.mark.integration
+def test__append_table_data__flush_only_with_none(client: DataFrameClient, test_tables: List[str]):
     with responses.RequestsMock() as rsps:
         rsps.add(
             responses.POST,
@@ -132,7 +155,7 @@ def test__append_table_data__flush_only_with_none(client: DataFrameClient):
 
 @pytest.mark.enterprise
 @pytest.mark.integration
-def test__append_table_data__empty_iterator_requires_end_of_data(client: DataFrameClient):
+def test__append_table_data__empty_iterator_requires_end_of_data(client: DataFrameClient, test_tables: List[str]):
     # No end_of_data -> ValueError
     with pytest.raises(ValueError, match="end_of_data must be provided when data iterator is empty."):
         client.append_table_data(test_tables[0], [])
@@ -182,7 +205,7 @@ def _arrow_record_batches() -> Iterable["pa.RecordBatch"]:  # type: ignore[name-
 
 @pytest.mark.enterprise
 @pytest.mark.integration
-def test__append_table_data__arrow_ingestion_400_wrapped_error(client: DataFrameClient):
+def test__append_table_data__arrow_ingestion_400_wrapped_error(client: DataFrameClient, test_tables: List[str]):
     pa = pytest.importorskip("pyarrow")  # noqa: F841
 
     with responses.RequestsMock() as rsps:
@@ -287,7 +310,55 @@ def test__append_table_data__arrow_ingestion_400_api_info_failure_wrapped(
 
 @pytest.mark.enterprise
 @pytest.mark.integration
-def test__append_table_data__arrow_ingestion_success(client: DataFrameClient):
+def test__append_table_data__arrow_ingestion_non_400_error_passthrough(
+    client: DataFrameClient, test_tables: List[str]
+):
+    pa = pytest.importorskip("pyarrow")  # noqa: F841
+
+    with responses.RequestsMock() as rsps:
+        def _callback(request):  # type: ignore
+            return (415, {}, "")  # Unsupported Media Type
+
+        rsps.add_callback(
+            responses.POST,
+            f"{client.session.base_url}tables/{test_tables[0]}/data",
+            callback=_callback,
+            content_type="application/vnd.apache.arrow.stream",
+        )
+
+        with pytest.raises(ApiException) as excinfo:
+            client.append_table_data(test_tables[0], _arrow_record_batches())
+        assert "doesn't support Arrow streaming" not in str(excinfo.value)
+        assert "415" in str(excinfo.value)
+
+
+@pytest.mark.enterprise
+@pytest.mark.integration
+def test__append_table_data__arrow_ingestion_with_end_of_data_query_param(
+    client: DataFrameClient, test_tables: List[str]
+):
+    pa = pytest.importorskip("pyarrow")  # noqa: F841
+
+    with responses.RequestsMock() as rsps:
+        def _callback(request):  # type: ignore
+            url = request.url.lower()
+            # Allow either endOfData or end_of_data just in case
+            assert ("endofdata=true" in url) or ("end_of_data=true" in url)
+            return (200, {}, "")
+
+        rsps.add_callback(
+            responses.POST,
+            f"{client.session.base_url}tables/{test_tables[0]}/data",
+            callback=_callback,
+            content_type="application/vnd.apache.arrow.stream",
+        )
+
+        client.append_table_data(test_tables[0], _arrow_record_batches(), end_of_data=True)
+
+
+@pytest.mark.enterprise
+@pytest.mark.integration
+def test__append_table_data__arrow_ingestion_success(client: DataFrameClient, test_tables: List[str]):
     pa = pytest.importorskip("pyarrow")  # noqa: F841
 
     with responses.RequestsMock() as rsps:
@@ -312,6 +383,6 @@ def test__append_table_data__arrow_ingestion_success(client: DataFrameClient):
 
 @pytest.mark.enterprise
 @pytest.mark.integration
-def test__append_table_data__unsupported_type_raises(client: DataFrameClient):
+def test__append_table_data__unsupported_type_raises(client: DataFrameClient, test_tables: List[str]):
     with pytest.raises(ValueError, match="Unsupported type"):
         client.append_table_data(test_tables[0], 123)  # type: ignore[arg-type]
