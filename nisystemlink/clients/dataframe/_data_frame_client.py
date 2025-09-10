@@ -373,8 +373,7 @@ class DataFrameClient(BaseClient):
                 if ex.http_status_code == 400:
                     wrap = True
                     try:
-                        info = self.api_info()
-                        write_op = getattr(info.operations, "write_data", None)
+                        write_op = getattr(self.api_info().operations, "write_data", None)
                         if write_op is not None and getattr(write_op, "version", 0) >= 2:
                             # Service claims Arrow-capable write version; re-raise original exception
                             wrap = False
