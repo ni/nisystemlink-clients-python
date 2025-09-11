@@ -3,7 +3,7 @@
 import pyarrow as pa  # type: ignore
 from collections.abc import Iterable
 from io import BytesIO
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -252,14 +252,10 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    @post(
-        "tables/{id}/data",
-        args=[Path, Body]
-    )
+    @post("tables/{id}/data", args=[Path, Body])
     def _append_table_data_json(
         self, id: str, data: models.AppendTableDataRequest
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @post(
         "tables/{id}/data",
@@ -267,9 +263,8 @@ class DataFrameClient(BaseClient):
         content_type="application/vnd.apache.arrow.stream",
     )
     def _append_table_data_arrow(
-        self, id: str, data: Iterable[bytes], end_of_data: Optional[bool] = None
-    ) -> None:
-        ...
+        self, id: str, data: bytes, end_of_data: Optional[bool] = None
+    ) -> None: ...
 
     def append_table_data(
         self,
@@ -278,7 +273,7 @@ class DataFrameClient(BaseClient):
             Union[
                 models.AppendTableDataRequest,
                 models.DataFrame,
-                Iterable["pa.RecordBatch"], # type: ignore[name-defined]
+                Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
             ]
         ],
         *,
@@ -343,44 +338,34 @@ class DataFrameClient(BaseClient):
                     "Iterable provided to data must yield pyarrow.RecordBatch objects."
                 )
 
-            def _generate_body() -> Iterable[memoryview]:
-                data_iter = iter(data)
-                try:
-                    batch = next(data_iter)
-                except StopIteration:
-                    return
+            def _build_body() -> bytes:
                 with BytesIO() as buf:
                     options = pa.ipc.IpcWriteOptions(compression="zstd")
-                    writer = pa.ipc.new_stream(buf, batch.schema, options=options)
-
-                    while True:
-                        writer.write_batch(batch)
-                        with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
-                            yield slice
-                        buf.seek(0)
-                        try:
-                            batch = next(data_iter)
-                        except StopIteration:
-                            break
-
-                    writer.close()
-                    with buf.getbuffer() as view:
-                        with view[0 : buf.tell()] as slice:
-                            yield slice
+                    with pa.ipc.new_stream(
+                        buf, first_batch.schema, options=options
+                    ) as writer:
+                        writer.write_batch(first_batch)
+                        for batch in iterator:
+                            writer.write_batch(batch)
+                    return buf.getvalue()
 
             try:
                 self._append_table_data_arrow(
                     id,
-                    _generate_body(),
+                    _build_body(),
                     (end_of_data if end_of_data is not None else None),
                 )
             except core.ApiException as ex:
                 if ex.http_status_code == 400:
                     wrap = True
                     try:
-                        write_op = getattr(self.api_info().operations, "write_data", None)
-                        if write_op is not None and getattr(write_op, "version", 0) >= 2:
-                            # Service claims Arrow-capable write version; re-raise original exception
+                        write_op = getattr(
+                            self.api_info().operations, "write_data", None
+                        )
+                        if (
+                            write_op is not None
+                            and getattr(write_op, "version", 0) >= 2
+                        ):
                             wrap = False
                     except Exception:
                         pass
