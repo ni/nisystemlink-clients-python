@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timezone
-from typing import List, Optional, Iterable
+from typing import List, Optional
 
 import pytest  # type: ignore
 import responses

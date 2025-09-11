@@ -1,12 +1,9 @@
 """Implementation of DataFrameClient."""
 
-try:  # Optional pyarrow dependency
-    import pyarrow as pa  # type: ignore
-except Exception:  # pragma: no cover - pyarrow not installed
-    pa = None  # type: ignore
+import pyarrow as pa  # type: ignore
 from collections.abc import Iterable
 from io import BytesIO
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -19,7 +16,7 @@ from nisystemlink.clients.core._uplink._methods import (
 )
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
-from uplink import Body, Field, Path, Query, headers, retry
+from uplink import Body, Field, Path, Query, retry
 
 from . import models
 
@@ -452,7 +449,7 @@ class DataFrameClient(BaseClient):
         """
         ...
 
-    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:  # type: ignore
+    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
         return IteratorFileLike(response.iter_content(chunk_size=4096))
 
     @response_handler(_iter_content_filelike_wrapper)
