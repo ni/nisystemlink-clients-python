@@ -312,10 +312,14 @@ class DataFrameClient(BaseClient):
             return
 
         if isinstance(data, models.DataFrame):
-            self._append_table_data_json(
-                id,
-                models.AppendTableDataRequest(frame=data, end_of_data=end_of_data)
-            )
+            # Only include end_of_data in the request if explicitly provided to avoid sending null
+            if end_of_data is None:
+                request_model = models.AppendTableDataRequest(frame=data)
+            else:
+                request_model = models.AppendTableDataRequest(
+                    frame=data, end_of_data=end_of_data
+                )
+            self._append_table_data_json(id, request_model)
             return
 
         if isinstance(data, Iterable):
@@ -344,30 +348,36 @@ class DataFrameClient(BaseClient):
                 )
 
             def _generate_body() -> Iterable[memoryview]:
-                data_iter = (b for b in (first_batch, *iterator))
-                first = True
+                data_iter = iter(data)
+                try:
+                    batch = next(data_iter)
+                except StopIteration:
+                    return
                 with BytesIO() as buf:
-                    writer = None
-                    for batch in data_iter:
-                        if first:
-                            options = pa.ipc.IpcWriteOptions(compression="zstd")
-                            writer = pa.ipc.new_stream(buf, batch.schema, options=options)
-                            first = False
+                    options = pa.ipc.IpcWriteOptions(compression="zstd")
+                    writer = pa.ipc.new_stream(buf, batch.schema, options=options)
+
+                    while True:
                         writer.write_batch(batch)
                         with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
                             yield slice
                         buf.seek(0)
-                    if writer is not None:
-                        writer.close()
-                        with buf.getbuffer() as view:
-                            with view[0 : buf.tell()] as slice:
-                                yield slice
+                        try:
+                            batch = next(data_iter)
+                        except StopIteration:
+                            break
+
+                    writer.close()
+                    with buf.getbuffer() as view:
+                        with view[0 : buf.tell()] as slice:
+                            yield slice
 
             try:
+                # Only include the endOfData query when caller specified it.
                 self._append_table_data_arrow(
                     id,
                     _generate_body(),
-                    ("true" if (end_of_data or False) else "false"),
+                    (end_of_data if end_of_data is not None else None),
                 )
             except core.ApiException as ex:
                 if ex.http_status_code == 400:
