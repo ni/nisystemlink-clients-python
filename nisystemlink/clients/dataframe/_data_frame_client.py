@@ -312,7 +312,6 @@ class DataFrameClient(BaseClient):
             return
 
         if isinstance(data, models.DataFrame):
-            # Only include end_of_data in the request if explicitly provided to avoid sending null
             if end_of_data is None:
                 request_model = models.AppendTableDataRequest(frame=data)
             else:
@@ -373,7 +372,6 @@ class DataFrameClient(BaseClient):
                             yield slice
 
             try:
-                # Only include the endOfData query when caller specified it.
                 self._append_table_data_arrow(
                     id,
                     _generate_body(),
