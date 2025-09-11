@@ -1,10 +1,10 @@
 """Implementation of DataFrameClient."""
 
-import pyarrow as pa  # type: ignore
 from collections.abc import Iterable
 from io import BytesIO
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
+import pyarrow as pa  # type: ignore
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import (
@@ -255,7 +255,9 @@ class DataFrameClient(BaseClient):
     @post("tables/{id}/data", args=[Path, Body])
     def _append_table_data_json(
         self, id: str, data: models.AppendTableDataRequest
-    ) -> None: ...
+    ) -> None:
+        """Internal uplink-implemented JSON append call."""
+        ...
 
     @post(
         "tables/{id}/data",
@@ -264,7 +266,9 @@ class DataFrameClient(BaseClient):
     )
     def _append_table_data_arrow(
         self, id: str, data: bytes, end_of_data: Optional[bool] = None
-    ) -> None: ...
+    ) -> None:
+        """Internal uplink-implemented Arrow (binary) append call."""
+        ...
 
     def append_table_data(
         self,
@@ -283,18 +287,24 @@ class DataFrameClient(BaseClient):
 
         Args:
             id: Unique ID of a data table.
-            data: The data to append in one of the following forms:
-                - AppendTableDataRequest: Sent as-is via JSON. ``end_of_data`` must be ``None``.
-                - DataFrame (service model): Wrapped into an AppendTableDataRequest (``end_of_data`` optional) and sent as JSON.
-                - Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query parameter. If the iterator yields no batches, it is treated like ``None`` and requires ``end_of_data``.
-                - None: ``end_of_data`` must be provided; sends JSON containing only the ``endOfData`` flag.
-            end_of_data: Whether the table should expect any additional rows to be appended in future requests. Required when ``data`` is ``None`` or an empty RecordBatch iterator; must be omitted when supplying an ``AppendTableDataRequest`` (put it inside that model instead).
+            data: The data to append. Supported forms:
+                * AppendTableDataRequest: Sent as-is via JSON; ``end_of_data`` must be ``None``.
+                * DataFrame (service model): Wrapped into an AppendTableDataRequest (``end_of_data``
+                    optional) and sent as JSON.
+                * Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided)
+                    is sent as a query parameter. If the iterator yields no batches, it is treated as
+                    ``None`` and requires ``end_of_data``.
+                * None: ``end_of_data`` must be provided; sends JSON containing only the
+                    ``endOfData`` flag.
+            end_of_data: Whether additional rows may be appended in future requests. Required when
+                    ``data`` is ``None`` or the RecordBatch iterator is empty; must be omitted when
+                    passing an ``AppendTableDataRequest`` (include it inside that model instead).
 
         Raises:
             ValueError: If parameter constraints are violated.
-            ApiException: If unable to communicate with the DataFrame Service or an invalid argument is provided.
+            ApiException: If unable to communicate with the DataFrame Service or an
+                invalid argument is provided.
         """
-
         if isinstance(data, models.AppendTableDataRequest):
             if end_of_data is not None:
                 raise ValueError(
@@ -372,8 +382,10 @@ class DataFrameClient(BaseClient):
                     if wrap:
                         raise core.ApiException(
                             (
-                                "Arrow ingestion request was rejected. The target DataFrame Service doesn't support Arrow streaming. "
-                                "Install a DataFrame Service version with Arrow support or fall back to JSON ingestion."
+                                "Arrow ingestion request was rejected. The target "
+                                "DataFrame Service doesn't support Arrow streaming. "
+                                "Install a DataFrame Service version with Arrow support "
+                                "or fall back to JSON ingestion."
                             ),
                             error=ex.error,
                             http_status_code=ex.http_status_code,
