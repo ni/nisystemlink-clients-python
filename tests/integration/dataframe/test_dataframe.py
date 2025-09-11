@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Any, cast, List, Optional
 
 import pytest  # type: ignore
 import responses
@@ -830,4 +830,5 @@ class TestDataFrame:
     ):
         table_id = create_table(basic_table_model)
         with pytest.raises(ValueError, match="Unsupported type"):
-            client.append_table_data(table_id, 123)
+            # cast to Any to satisfy type checker while still exercising runtime path
+            client.append_table_data(table_id, cast(Any, 123))
