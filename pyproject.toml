@@ -43,7 +43,10 @@ uplink   = [
 pydantic = "^2.11.3"
 pyyaml = "^6.0.1"
 pandas = "^2.1.0"
-pyarrow = "^21.0.0"
+pyarrow = { version = "^21.0.0", optional = true }
+
+[tool.poetry.extras]
+pyarrow = ["pyarrow"]
 
 [tool.poetry.group.dev.dependencies]
 black               = ">=22.10,<25.0"

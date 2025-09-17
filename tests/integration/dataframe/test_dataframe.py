@@ -698,6 +698,16 @@ class TestDataFrame:
         with pytest.raises(ApiException):
             client.append_table_data(table_id, None, end_of_data=True)
 
+    def test__append_table_data__single_recordbatch_success(
+        self, client: DataFrameClient, create_table
+    ):
+        pa = pytest.importorskip("pyarrow")
+        table_id = self._new_single_int_table(create_table)
+        batch = pa.record_batch([pa.array([1, 2, 3])], names=["a"])
+        client.append_table_data(table_id, batch, end_of_data=True)
+        with pytest.raises(ApiException):
+            client.append_table_data(table_id, None, end_of_data=True)
+
     def test__append_table_data__arrow_ingestion_with_end_of_data_query_param_false(
         self, client: DataFrameClient, create_table
     ):

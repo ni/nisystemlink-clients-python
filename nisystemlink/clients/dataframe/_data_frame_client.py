@@ -4,7 +4,10 @@ from collections.abc import Iterable
 from io import BytesIO
 from typing import List, Optional, Union
 
-import pyarrow as pa  # type: ignore
+try:
+    import pyarrow as pa  # type: ignore
+except Exception:
+    pa = None
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import (
@@ -265,7 +268,7 @@ class DataFrameClient(BaseClient):
         content_type="application/vnd.apache.arrow.stream",
     )
     def _append_table_data_arrow(
-        self, id: str, data: bytes, end_of_data: Optional[bool] = None
+        self, id: str, data: Iterable[bytes], end_of_data: Optional[bool] = None
     ) -> None:
         """Internal uplink-implemented Arrow (binary) append call."""
         ...
@@ -277,6 +280,7 @@ class DataFrameClient(BaseClient):
             Union[
                 models.AppendTableDataRequest,
                 models.DataFrame,
+                "pa.RecordBatch",  # type: ignore[name-defined]
                 Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
             ]
         ],
@@ -291,9 +295,12 @@ class DataFrameClient(BaseClient):
                 * AppendTableDataRequest: Sent as-is via JSON; ``end_of_data`` must be ``None``.
                 * DataFrame (service model): Wrapped into an AppendTableDataRequest (``end_of_data``
                     optional) and sent as JSON.
+                * Single pyarrow.RecordBatch: Treated the same as an iterable containing one batch
+                    and streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query
+                    parameter.
                 * Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided)
-                    is sent as a query parameter. If the iterator yields no batches, it is treated as
-                    ``None`` and requires ``end_of_data``.
+                    is sent as a query parameter. If the iterator yields no batches, it is treated
+                    as ``None`` and requires ``end_of_data``.
                 * None: ``end_of_data`` must be provided; sends JSON containing only the
                     ``endOfData`` flag.
             end_of_data: Whether additional rows may be appended in future requests. Required when
@@ -323,6 +330,9 @@ class DataFrameClient(BaseClient):
             self._append_table_data_json(id, request_model)
             return
 
+        if pa is not None and isinstance(data, pa.RecordBatch):
+            data = [data]
+
         if isinstance(data, Iterable):
             iterator = iter(data)
             try:
@@ -348,22 +358,36 @@ class DataFrameClient(BaseClient):
                     "Iterable provided to data must yield pyarrow.RecordBatch objects."
                 )
 
-            def _build_body() -> bytes:
+            def _generate_body() -> Iterable[memoryview]:
+                data_iter = iter(data)
+                try:
+                    batch = next(data_iter)
+                except StopIteration:
+                    return
                 with BytesIO() as buf:
                     options = pa.ipc.IpcWriteOptions(compression="zstd")
-                    with pa.ipc.new_stream(
-                        buf, first_batch.schema, options=options
-                    ) as writer:
-                        writer.write_batch(first_batch)
-                        for batch in iterator:
-                            writer.write_batch(batch)
-                    return buf.getvalue()
+                    writer = pa.ipc.new_stream(buf, batch.schema, options=options)
+
+                    while True:
+                        writer.write_batch(batch)
+                        with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
+                            yield slice
+                        buf.seek(0)
+                        try:
+                            batch = next(data_iter)
+                        except StopIteration:
+                            break
+
+                    writer.close()
+                    with buf.getbuffer() as view:
+                        with view[0 : buf.tell()] as slice:
+                            yield slice
 
             try:
                 self._append_table_data_arrow(
                     id,
-                    _build_body(),
-                    (end_of_data if end_of_data is not None else None),
+                    _generate_body(),
+                    end_of_data,
                 )
             except core.ApiException as ex:
                 if ex.http_status_code == 400:
