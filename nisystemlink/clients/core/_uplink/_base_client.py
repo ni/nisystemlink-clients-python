@@ -104,6 +104,7 @@ class BaseClient(Consumer):
             converter=_JsonModelConverter(),
             hooks=[_handle_http_status],
             client=session,
+            auth=(configuration.username, configuration.password),
         )
         if configuration.api_keys:
             self.session.headers.update(configuration.api_keys)
