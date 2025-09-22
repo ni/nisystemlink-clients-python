@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.18.1 (2025-09-22)
+
+### Fix
+
+* Revert #158 ([#159](https://github.com/ni/nisystemlink-clients-python/issues/159)) ([`3eddcab`](https://github.com/ni/nisystemlink-clients-python/commit/3eddcab1ae5c77293bef677acb5ecc8dd7f6d9ff))
+
 ## v2.18.0 (2025-07-31)
 
 ### Feature
