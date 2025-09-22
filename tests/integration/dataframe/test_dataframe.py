@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timezone
-from typing import Any, cast, List, Optional
+from typing import List, Optional
 
 import pytest  # type: ignore
 import responses
@@ -826,7 +826,9 @@ class TestDataFrame:
         pa = pytest.importorskip("pyarrow")
         batch = pa.record_batch([pa.array([1, 2, 3])], names=["a"])
         with pytest.raises(ApiException) as excinfo:
-            client.append_table_data("111111111111111111111111", [batch], end_of_data=True)
+            client.append_table_data(
+                "111111111111111111111111", [batch], end_of_data=True
+            )
         assert "Arrow ingestion request was rejected" not in str(excinfo.value)
 
     def test__append_table_data__unsupported_type_raises(
