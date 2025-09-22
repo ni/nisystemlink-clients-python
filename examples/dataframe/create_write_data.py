@@ -66,10 +66,10 @@ if pa is not None:
     ]
     client.append_table_data(table_id, batch_list)
 
-    # Flush only (no additional rows, mark end_of_data)
+    # Mark end_of_data for the table
+    # Supply `None` and `end_of_data=True`
     client.append_table_data(table_id, None, end_of_data=True)
-
-    # Empty iterable (must supply end_of_data)
+    # OR supply an empty Iterable and `end_of_data=True`
     client.append_table_data(table_id, [], end_of_data=True)
 else:
     # If pyarrow not installed, flush via JSON path

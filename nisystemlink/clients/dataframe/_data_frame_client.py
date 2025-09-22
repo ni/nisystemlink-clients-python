@@ -359,11 +359,7 @@ class DataFrameClient(BaseClient):
                 )
 
             def _generate_body() -> Iterable[memoryview]:
-                data_iter = iter(data)
-                try:
-                    batch = next(data_iter)
-                except StopIteration:
-                    return
+                batch = first_batch
                 with BytesIO() as buf:
                     options = pa.ipc.IpcWriteOptions(compression="zstd")
                     writer = pa.ipc.new_stream(buf, batch.schema, options=options)
@@ -374,14 +370,13 @@ class DataFrameClient(BaseClient):
                             yield slice
                         buf.seek(0)
                         try:
-                            batch = next(data_iter)
+                            batch = next(iterator)
                         except StopIteration:
                             break
 
                     writer.close()
-                    with buf.getbuffer() as view:
-                        with view[0 : buf.tell()] as slice:
-                            yield slice
+                    with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
+                        yield slice
 
             try:
                 self._append_table_data_arrow(

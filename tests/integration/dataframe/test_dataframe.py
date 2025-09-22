@@ -684,9 +684,10 @@ class TestDataFrame:
         self, client: DataFrameClient, create_table
     ):
         table_id = self._new_single_int_table(create_table)
-        frame = DataFrame(columns=["a"], data=[["1"]])
-        client.append_table_data(table_id, frame)
         client.append_table_data(table_id, None, end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 0
+        assert metadata.supports_append is False
 
     def test__append_table_data__arrow_ingestion_success(
         self, client: DataFrameClient, create_table
@@ -823,16 +824,9 @@ class TestDataFrame:
         self, client: DataFrameClient
     ):
         pa = pytest.importorskip("pyarrow")
-        table_id = "mock_table_id"
         batch = pa.record_batch([pa.array([1, 2, 3])], names=["a"])
-        with responses.RequestsMock() as rsps:
-            rsps.add(
-                responses.POST,
-                f"{client.session.base_url}tables/{table_id}/data",
-                status=409,
-            )
-            with pytest.raises(ApiException) as excinfo:
-                client.append_table_data(table_id, [batch], end_of_data=True)
+        with pytest.raises(ApiException) as excinfo:
+            client.append_table_data("111111111111111111111111", [batch], end_of_data=True)
         assert "Arrow ingestion request was rejected" not in str(excinfo.value)
 
     def test__append_table_data__unsupported_type_raises(
@@ -840,5 +834,4 @@ class TestDataFrame:
     ):
         table_id = create_table(basic_table_model)
         with pytest.raises(ValueError, match="Unsupported type"):
-            # cast to Any to satisfy type checker while still exercising runtime path
-            client.append_table_data(table_id, cast(Any, 123))
+            client.append_table_data(table_id, 123)  # type: ignore[arg-type]
