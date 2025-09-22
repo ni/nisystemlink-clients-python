@@ -59,6 +59,8 @@ class HttpConfiguration:
         self._server_uri = urllib.parse.urlunsplit(uri[:2] + ("", "", ""))
 
         self._api_keys = None  # type: Optional[Dict[str, str]]
+        self._username = None  # type: Optional[str]
+        self._password = None  # type: Optional[str]
         if api_key:
             self._api_keys = {self._SYSTEM_LINK_API_KEY_HEADER: api_key}
         elif username or password:

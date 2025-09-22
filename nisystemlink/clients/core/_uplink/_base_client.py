@@ -7,6 +7,7 @@ from nisystemlink.clients import core
 from pydantic import TypeAdapter
 from requests import JSONDecodeError, Response
 from uplink import commands, Consumer, converters, response_handler, utils
+from uplink.auth import BasicAuth
 
 from ._json_model import JsonModel
 
@@ -98,12 +99,18 @@ class BaseClient(Consumer):
         """
         session = requests.Session()
         session.verify = configuration.verify
+        auth = None  # type: Optional[BasicAuth]
+        if (configuration.username is not None) and (
+            configuration.password is not None
+        ):
+            auth = BasicAuth(configuration.username, configuration.password)
 
         super().__init__(
             base_url=configuration.server_uri + base_path,
             converter=_JsonModelConverter(),
             hooks=[_handle_http_status],
             client=session,
+            auth=auth,
         )
         if configuration.api_keys:
             self.session.headers.update(configuration.api_keys)
