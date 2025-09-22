@@ -100,7 +100,9 @@ class BaseClient(Consumer):
         session = requests.Session()
         session.verify = configuration.verify
         auth = None  # type: Optional[BasicAuth]
-        if (configuration.username is not None) and (configuration.password is not None):
+        if (configuration.username is not None) and (
+            configuration.password is not None
+        ):
             auth = BasicAuth(configuration.username, configuration.password)
 
         super().__init__(
