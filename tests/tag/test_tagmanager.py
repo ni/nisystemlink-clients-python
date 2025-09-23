@@ -2349,7 +2349,11 @@ class TestTagManager(HttpClientTestBase):
         writer.write(path, tbase.DataType.INT32, value1, timestamp=timestamp)
         writer.write(path, tbase.DataType.INT32, value2, timestamp=timestamp)
 
-        utctime = datetime.fromtimestamp(timestamp.timestamp(), timezone.utc).isoformat().replace("+00:00", "Z")
+        utctime = (
+            datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2384,7 +2388,11 @@ class TestTagManager(HttpClientTestBase):
         self._client.all_requests.assert_not_called()
         # Deterministic flush instead of waiting for timer.
         writer.send_buffered_writes()
-        utctime = datetime.fromtimestamp(timestamp.timestamp(), timezone.utc).isoformat().replace("+00:00", "Z")
+        utctime = (
+            datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2420,7 +2428,11 @@ class TestTagManager(HttpClientTestBase):
 
         writer1.write(path, tbase.DataType.INT32, value1, timestamp=timestamp)
         writer1.write(path, tbase.DataType.INT32, value2, timestamp=timestamp)
-        utctime = datetime.fromtimestamp(timestamp.timestamp(), timezone.utc).isoformat().replace("+00:00", "Z")
+        utctime = (
+            datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
