@@ -1,5 +1,4 @@
 import asyncio
-import time
 import uuid
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
@@ -2350,7 +2349,7 @@ class TestTagManager(HttpClientTestBase):
         writer.write(path, tbase.DataType.INT32, value1, timestamp=timestamp)
         writer.write(path, tbase.DataType.INT32, value2, timestamp=timestamp)
 
-        utctime = datetime.utcfromtimestamp(timestamp.timestamp()).isoformat() + "Z"
+        utctime = datetime.fromtimestamp(timestamp.timestamp(), timezone.utc).isoformat().replace("+00:00", "Z")
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2383,12 +2382,9 @@ class TestTagManager(HttpClientTestBase):
 
         writer.write(path, tbase.DataType.INT32, value, timestamp=timestamp)
         self._client.all_requests.assert_not_called()
-        for i in range(100):
-            if self._client.all_requests.call_count > 0:
-                break
-            time.sleep(0.01)
-
-        utctime = datetime.utcfromtimestamp(timestamp.timestamp()).isoformat() + "Z"
+        # Deterministic flush instead of waiting for timer.
+        writer.send_buffered_writes()
+        utctime = datetime.fromtimestamp(timestamp.timestamp(), timezone.utc).isoformat().replace("+00:00", "Z")
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2424,8 +2420,7 @@ class TestTagManager(HttpClientTestBase):
 
         writer1.write(path, tbase.DataType.INT32, value1, timestamp=timestamp)
         writer1.write(path, tbase.DataType.INT32, value2, timestamp=timestamp)
-
-        utctime = datetime.utcfromtimestamp(timestamp.timestamp()).isoformat() + "Z"
+        utctime = datetime.fromtimestamp(timestamp.timestamp(), timezone.utc).isoformat().replace("+00:00", "Z")
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2449,10 +2444,8 @@ class TestTagManager(HttpClientTestBase):
 
         writer2.write(path, tbase.DataType.INT32, value3, timestamp=timestamp)
         assert 1 == self._client.all_requests.call_count  # same as before
-        for i in range(100):
-            if self._client.all_requests.call_count > 1:
-                break
-            time.sleep(0.01)
+        # Deterministic flush instead of waiting for timer.
+        writer2.send_buffered_writes()
 
         assert 2 == self._client.all_requests.call_count
         assert self._client.all_requests.call_args_list[1] == mock.call(
@@ -2486,7 +2479,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -2554,7 +2547,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -2669,7 +2662,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -2743,7 +2736,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [

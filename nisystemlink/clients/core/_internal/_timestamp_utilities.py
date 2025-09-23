@@ -30,7 +30,13 @@ class TimestampUtilities:
         Returns:
             The string representation of the timestamp.
         """
-        return datetime.datetime.utcfromtimestamp(value.timestamp()).isoformat() + "Z"
+        # Use timezone-aware conversion to avoid deprecated utcfromtimestamp usage and
+        # preserve exact UTC semantics (value assumed either naive UTC or aware).
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=datetime.timezone.utc)
+        else:
+            value = value.astimezone(datetime.timezone.utc)
+        return value.isoformat().replace("+00:00", "Z")
 
     @classmethod
     def str_to_datetime(cls, timestamp: str) -> datetime.datetime:
