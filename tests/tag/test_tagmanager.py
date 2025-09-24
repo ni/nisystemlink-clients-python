@@ -2461,7 +2461,7 @@ class TestTagManager(HttpClientTestBase):
         writer2.write(path, tbase.DataType.INT32, value3, timestamp=timestamp)
         assert 1 == self._client.all_requests.call_count  # same as before
         for i in range(100):
-            if self._client.all_requests.call_count > 0:
+            if self._client.all_requests.call_count > 1:
                 break
             time.sleep(0.01)
 
