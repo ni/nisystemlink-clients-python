@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.19.0 (2025-09-24)
+
+### Feature
+
+* DataFrame client binary ingestion support ([#155](https://github.com/ni/nisystemlink-clients-python/issues/155)) ([`5c9e062`](https://github.com/ni/nisystemlink-clients-python/commit/5c9e062470f1fa4186730957caf716898fe833a0))
+
 ## v2.18.1 (2025-09-22)
 
 ### Fix
