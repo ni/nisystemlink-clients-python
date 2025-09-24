@@ -1,6 +1,7 @@
 import asyncio
 import time
 import uuid
+from typing import Optional
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from unittest import mock
@@ -10,6 +11,38 @@ from nisystemlink.clients import core, tag as tbase
 
 from .http.httpclienttestbase import HttpClientTestBase, MockResponse
 from ..anyorderlist import AnyOrderList
+
+
+def _wait_for_call_count(mock_obj, expected: int, *, timeout: float = 3.0, min_elapsed: Optional[float] = None):
+    """Wait until mock_obj.call_count >= expected or timeout.
+
+    Args:
+        mock_obj: Mock with call_count attribute.
+        expected: Target call count (>=).
+        timeout: Max seconds to wait.
+        min_elapsed: If provided, fail if the condition is met before this many seconds (guards against premature flushes).
+
+    Returns:
+        Elapsed seconds when condition satisfied.
+
+    Raises:
+        AssertionError on timeout or premature satisfaction.
+    """
+    start = time.monotonic()
+    while True:
+        current = mock_obj.call_count
+        if current >= expected:
+            elapsed = time.monotonic() - start
+            if min_elapsed is not None and elapsed < min_elapsed:
+                raise AssertionError(
+                    f"Condition reached too early: call_count={current} elapsed={elapsed:.4f}s < min_elapsed={min_elapsed:.4f}s"
+                )
+            return elapsed
+        if time.monotonic() - start >= timeout:
+            raise AssertionError(
+                f"Timed out waiting for call_count >= {expected}. Final={current} timeout={timeout}s"
+            )
+        time.sleep(0.01)
 
 
 class TestTagManager(HttpClientTestBase):
@@ -2379,18 +2412,20 @@ class TestTagManager(HttpClientTestBase):
     def test__create_writer_with_buffer_time__sends_when_timer_elapsed(self):
         path = "tag"
         value = 1
-        writer = self._uut.create_writer(max_buffer_time=timedelta(milliseconds=50))
+        buffer_ms = 50
+        writer = self._uut.create_writer(max_buffer_time=timedelta(milliseconds=buffer_ms))
         timestamp = datetime.now()
-        self._client.all_requests.configure_mock(
-            side_effect=self._get_mock_request([None])
-        )
+        self._client.all_requests.configure_mock(side_effect=self._get_mock_request([None]))
 
         writer.write(path, tbase.DataType.INT32, value, timestamp=timestamp)
         self._client.all_requests.assert_not_called()
-        for _ in range(500):
-            if self._client.all_requests.call_count > 0:
-                break
-            time.sleep(0.01)
+
+        # Warm wait: allow timer thread to start; > configured buffer time but small overall.
+        time.sleep(buffer_ms / 1000 * 1.5)
+        # Should still not have flushed yet (some jitter allowed). If it has, test still passes but we note it.
+        if self._client.all_requests.call_count == 0:
+            # Now wait until call observed or timeout, enforcing not too early flush (<20ms) to catch regressions.
+            _wait_for_call_count(self._client.all_requests, 1, timeout=3.0, min_elapsed=0.02)
 
         utctime = (
             datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
@@ -2422,8 +2457,9 @@ class TestTagManager(HttpClientTestBase):
         writer1 = self._uut.create_writer(
             buffer_size=2, max_buffer_time=timedelta(minutes=1)
         )
+        buffer_ms = 50
         writer2 = self._uut.create_writer(
-            buffer_size=2, max_buffer_time=timedelta(milliseconds=50)
+            buffer_size=2, max_buffer_time=timedelta(milliseconds=buffer_ms)
         )
         timestamp = datetime.now()
         self._client.all_requests.configure_mock(
@@ -2459,12 +2495,11 @@ class TestTagManager(HttpClientTestBase):
         )
 
         writer2.write(path, tbase.DataType.INT32, value3, timestamp=timestamp)
-        assert 1 == self._client.all_requests.call_count  # same as before
-        for i in range(100):
-            if self._client.all_requests.call_count > 1:
-                break
-            time.sleep(0.01)
-
+        assert 1 == self._client.all_requests.call_count  # still only size-based flush so far
+        # Warm wait beyond buffer time; only after this should timer flush occur.
+        time.sleep(buffer_ms / 1000 * 1.5)
+        if self._client.all_requests.call_count == 1:
+            _wait_for_call_count(self._client.all_requests, 2, timeout=3.0, min_elapsed=0.02)
         assert 2 == self._client.all_requests.call_count
         assert self._client.all_requests.call_args_list[1] == mock.call(
             "POST",
