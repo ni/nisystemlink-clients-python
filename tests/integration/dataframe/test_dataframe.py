@@ -637,6 +637,9 @@ class TestDataFrame:
         client.append_table_data(
             table_id, AppendTableDataRequest(frame=frame, end_of_data=True)
         )
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is False
 
     def test__append_table_data__append_request_with_end_of_data_argument_disallowed(
         self, client: DataFrameClient, create_table
@@ -656,6 +659,9 @@ class TestDataFrame:
         table_id = self._new_single_int_table(create_table)
         frame = DataFrame(columns=["a"], data=[["7"], ["8"]])
         client.append_table_data(table_id, AppendTableDataRequest(frame=frame))
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is True
 
     def test__append_table_data__accepts_dataframe_model(
         self, client: DataFrameClient, create_table
@@ -663,6 +669,9 @@ class TestDataFrame:
         table_id = self._new_single_int_table(create_table)
         frame = DataFrame(columns=["a"], data=[["1"], ["2"]])
         client.append_table_data(table_id, frame, end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is False
 
     def test__append_table_data__dataframe_without_end_of_data_success(
         self, client: DataFrameClient, create_table
@@ -670,6 +679,9 @@ class TestDataFrame:
         table_id = self._new_single_int_table(create_table)
         frame = DataFrame(columns=["a"], data=[["10"], ["11"]])
         client.append_table_data(table_id, frame)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is True
 
     def test__append_table_data__none_without_end_of_data_raises(
         self, client: DataFrameClient, create_table
@@ -696,6 +708,9 @@ class TestDataFrame:
         table_id = self._new_single_int_table(create_table)
         batch = pa.record_batch([pa.array([10, 11, 12])], names=["a"])
         client.append_table_data(table_id, [batch], end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 3
+        assert metadata.supports_append is False
         with pytest.raises(ApiException):
             client.append_table_data(table_id, None, end_of_data=True)
 
@@ -706,6 +721,9 @@ class TestDataFrame:
         table_id = self._new_single_int_table(create_table)
         batch = pa.record_batch([pa.array([1, 2, 3])], names=["a"])
         client.append_table_data(table_id, batch, end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 3
+        assert metadata.supports_append is False
         with pytest.raises(ApiException):
             client.append_table_data(table_id, None, end_of_data=True)
 
@@ -716,8 +734,14 @@ class TestDataFrame:
         table_id = self._new_single_int_table(create_table)
         batch1 = pa.record_batch([pa.array([4, 5, 6])], names=["a"])
         client.append_table_data(table_id, [batch1], end_of_data=False)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 3
+        assert metadata.supports_append is True
         batch2 = pa.record_batch([pa.array([7, 8])], names=["a"])
         client.append_table_data(table_id, [batch2], end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 5
+        assert metadata.supports_append is False
 
     def test__append_table_data__empty_iterator_requires_end_of_data(
         self, client: DataFrameClient, create_table
@@ -729,6 +753,9 @@ class TestDataFrame:
         ):
             client.append_table_data(table_id, [])
         client.append_table_data(table_id, [], end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 0
+        assert metadata.supports_append is False
 
     def test__append_table_data__arrow_iterable_with_non_recordbatch_elements_raises(
         self, client: DataFrameClient, create_table
