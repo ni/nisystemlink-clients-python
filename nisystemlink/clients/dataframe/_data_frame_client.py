@@ -1,7 +1,13 @@
 """Implementation of DataFrameClient."""
 
-from typing import List, Optional
+from collections.abc import Iterable
+from io import BytesIO
+from typing import List, Optional, Union
 
+try:
+    import pyarrow as pa  # type: ignore
+except Exception:
+    pa = None
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import (
@@ -250,18 +256,176 @@ class DataFrameClient(BaseClient):
         ...
 
     @post("tables/{id}/data", args=[Path, Body])
-    def append_table_data(self, id: str, data: models.AppendTableDataRequest) -> None:
+    def _append_table_data_json(
+        self, id: str, data: models.AppendTableDataRequest
+    ) -> None:
+        """Internal uplink-implemented JSON append call."""
+        ...
+
+    @post(
+        "tables/{id}/data",
+        args=[Path, Body, Query("endOfData")],
+        content_type="application/vnd.apache.arrow.stream",
+    )
+    def _append_table_data_arrow(
+        self, id: str, data: Iterable[bytes], end_of_data: Optional[bool] = None
+    ) -> None:
+        """Internal uplink-implemented Arrow (binary) append call."""
+        ...
+
+    def append_table_data(
+        self,
+        id: str,
+        data: Optional[
+            Union[
+                models.AppendTableDataRequest,
+                models.DataFrame,
+                "pa.RecordBatch",  # type: ignore[name-defined]
+                Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
+            ]
+        ],
+        *,
+        end_of_data: Optional[bool] = None,
+    ) -> None:
         """Appends one or more rows of data to the table identified by its ID.
 
         Args:
             id: Unique ID of a data table.
-            data: The rows of data to append and any additional options.
+            data: The data to append. Supported forms:
+                * AppendTableDataRequest: Sent as-is via JSON; ``end_of_data`` must be ``None``.
+                * DataFrame (service model): Wrapped into an AppendTableDataRequest (``end_of_data``
+                    optional) and sent as JSON.
+                * Single pyarrow.RecordBatch: Treated the same as an iterable containing one batch
+                    and streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query
+                    parameter.
+                * Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided)
+                    is sent as a query parameter. If the iterator yields no batches, it is treated
+                    as ``None`` and requires ``end_of_data``.
+                * None: ``end_of_data`` must be provided; sends JSON containing only the
+                    ``endOfData`` flag.
+            end_of_data: Whether additional rows may be appended in future requests. Required when
+                    ``data`` is ``None`` or the RecordBatch iterator is empty; must be omitted when
+                    passing an ``AppendTableDataRequest`` (include it inside that model instead).
 
         Raises:
-            ApiException: if unable to communicate with the DataFrame Service
-                or provided an invalid argument.
+            ValueError: If parameter constraints are violated.
+            ApiException: If unable to communicate with the DataFrame Service or an
+                invalid argument is provided.
         """
-        ...
+        if isinstance(data, models.AppendTableDataRequest):
+            if end_of_data is not None:
+                raise ValueError(
+                    "end_of_data must not be provided separately when passing an AppendTableDataRequest."
+                )
+            self._append_table_data_json(id, data)
+            return
+
+        if isinstance(data, models.DataFrame):
+            if end_of_data is None:
+                request_model = models.AppendTableDataRequest(frame=data)
+            else:
+                request_model = models.AppendTableDataRequest(
+                    frame=data, end_of_data=end_of_data
+                )
+            self._append_table_data_json(id, request_model)
+            return
+
+        if pa is not None and isinstance(data, pa.RecordBatch):
+            data = [data]
+
+        if isinstance(data, Iterable):
+            iterator = iter(data)
+            try:
+                first_batch = next(iterator)
+            except StopIteration:
+                if end_of_data is None:
+                    raise ValueError(
+                        "end_of_data must be provided when data iterator is empty."
+                    )
+                self._append_table_data_json(
+                    id,
+                    models.AppendTableDataRequest(end_of_data=end_of_data),
+                )
+                return
+
+            if pa is None:
+                raise RuntimeError(
+                    "pyarrow is not installed. Install to stream RecordBatches."
+                )
+
+            if not isinstance(first_batch, pa.RecordBatch):
+                raise ValueError(
+                    "Iterable provided to data must yield pyarrow.RecordBatch objects."
+                )
+
+            def _generate_body() -> Iterable[memoryview]:
+                batch = first_batch
+                with BytesIO() as buf:
+                    options = pa.ipc.IpcWriteOptions(compression="zstd")
+                    writer = pa.ipc.new_stream(buf, batch.schema, options=options)
+
+                    while True:
+                        writer.write_batch(batch)
+                        with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
+                            yield slice
+                        buf.seek(0)
+                        try:
+                            batch = next(iterator)
+                        except StopIteration:
+                            break
+
+                    writer.close()
+                    with buf.getbuffer() as view, view[0 : buf.tell()] as slice:
+                        yield slice
+
+            try:
+                self._append_table_data_arrow(
+                    id,
+                    _generate_body(),
+                    end_of_data,
+                )
+            except core.ApiException as ex:
+                if ex.http_status_code == 400:
+                    wrap = True
+                    try:
+                        write_op = getattr(
+                            self.api_info().operations, "write_data", None
+                        )
+                        if (
+                            write_op is not None
+                            and getattr(write_op, "version", 0) >= 2
+                        ):
+                            wrap = False
+                    except Exception:
+                        pass
+                    if wrap:
+                        raise core.ApiException(
+                            (
+                                "Arrow ingestion request was rejected. The target "
+                                "DataFrame Service doesn't support Arrow streaming. "
+                                "Install a DataFrame Service version with Arrow support "
+                                "or fall back to JSON ingestion."
+                            ),
+                            error=ex.error,
+                            http_status_code=ex.http_status_code,
+                            inner=ex,
+                        ) from ex
+                raise
+            return
+
+        if data is None:
+            if end_of_data is None:
+                raise ValueError(
+                    "end_of_data must be provided when data is None (no rows to append)."
+                )
+            self._append_table_data_json(
+                id, models.AppendTableDataRequest(end_of_data=end_of_data)
+            )
+            return
+
+        raise ValueError(
+            "Unsupported type for data. Expected AppendTableDataRequest, DataFrame, Iterable[RecordBatch], or None."
+        )
 
     @post("tables/{id}/query-data", args=[Path, Body])
     def query_table_data(

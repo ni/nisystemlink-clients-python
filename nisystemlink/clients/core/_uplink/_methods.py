@@ -5,6 +5,7 @@ from typing import Any, Callable, Optional, Sequence, Tuple, TypeVar, Union
 from uplink import (
     Body,
     commands,
+    headers,
     json,
     response_handler as uplink_response_handler,
     returns,
@@ -26,13 +27,18 @@ def post(
     path: str,
     args: Optional[Sequence[Any]] = None,
     return_key: Optional[Union[str, Tuple[str, ...]]] = None,
+    content_type: Optional[str] = None,
 ) -> Callable[[F], F]:
     """Annotation for a POST request with a JSON request body. If args is not
     specified, defaults to a single argument that represents the request body.
     """
 
     def decorator(func: F) -> F:
-        result = json(commands.post(path, args=args or (Body,))(func))
+        result = commands.post(path, args=args or (Body,))(func)
+        if content_type:
+            result = headers({"Content-Type": content_type})(result)
+        else:
+            result = json(result)  # type: ignore
         if return_key:
             result = returns.json(key=return_key)(result)
         return result  # type: ignore

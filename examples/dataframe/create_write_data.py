@@ -1,6 +1,10 @@
 import random
 from datetime import datetime
 
+try:
+    import pyarrow as pa  # type: ignore
+except Exception:
+    pa = None
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import (
     AppendTableDataRequest,
@@ -25,12 +29,46 @@ table_id = client.create_table(
     )
 )
 
-# Generate example data
-frame = DataFrame(
-    data=[[i, random.random(), datetime.now().isoformat()] for i in range(100)]
+# Append via explicit AppendTableDataRequest (JSON)
+frame_request = DataFrame(
+    data=[[i, random.random(), datetime.now().isoformat()] for i in range(3)]
 )
+client.append_table_data(table_id, AppendTableDataRequest(frame=frame_request))
 
-# Write example data to table
-client.append_table_data(
-    table_id, data=AppendTableDataRequest(frame=frame, endOfData=True)
+# Append via DataFrame model directly (JSON)
+frame_direct = DataFrame(
+    data=[[i + 3, random.random(), datetime.now().isoformat()] for i in range(3)]
 )
+client.append_table_data(table_id, frame_direct)
+
+if pa is not None:
+    # Append via single RecordBatch (Arrow)
+    batch_single = pa.record_batch(
+        [
+            pa.array([6, 7, 8]),
+            pa.array([0.1, 0.2, 0.3]),
+            pa.array([datetime.now().isoformat()] * 3),
+        ],
+        names=["ix", "Float_Column", "Timestamp_Column"],
+    )
+    client.append_table_data(table_id, batch_single)
+
+    # Append via iterable of RecordBatches (Arrow)
+    batch_list = [
+        pa.record_batch(
+            [
+                pa.array([9, 10]),
+                pa.array([0.4, 0.5]),
+                pa.array([datetime.now().isoformat(), datetime.now().isoformat()]),
+            ],
+            names=["ix", "Float_Column", "Timestamp_Column"],
+        )
+    ]
+    client.append_table_data(table_id, batch_list)
+
+    # Mark end_of_data for the table
+    # Supply `None` and `end_of_data=True`
+    client.append_table_data(table_id, None, end_of_data=True)
+else:
+    # If pyarrow not installed, flush via JSON path
+    client.append_table_data(table_id, None, end_of_data=True)

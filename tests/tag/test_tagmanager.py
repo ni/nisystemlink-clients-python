@@ -12,6 +12,31 @@ from .http.httpclienttestbase import HttpClientTestBase, MockResponse
 from ..anyorderlist import AnyOrderList
 
 
+def _wait_for_call_count(mock_obj, expected: int, *, timeout: float = 3.0):
+    """Wait until mock_obj.call_count >= expected or timeout.
+
+    Args:
+        mock_obj: Mock with call_count attribute.
+        expected: Target call count (>=).
+        timeout: Max seconds to wait.
+
+    Returns:
+        Elapsed seconds when condition satisfied.
+
+    Raises:
+        AssertionError on timeout or premature satisfaction.
+    """
+    start = time.monotonic()
+    while True:
+        if mock_obj.call_count >= expected:
+            return time.monotonic() - start
+        if time.monotonic() - start >= timeout:
+            raise AssertionError(
+                f"Timed out waiting for call_count >= {expected}. Final={mock_obj.call_count} timeout={timeout}s"
+            )
+        time.sleep(0.01)
+
+
 class TestTagManager(HttpClientTestBase):
     def setup_method(self, method):
         super().setup_method(method)
@@ -2350,7 +2375,11 @@ class TestTagManager(HttpClientTestBase):
         writer.write(path, tbase.DataType.INT32, value1, timestamp=timestamp)
         writer.write(path, tbase.DataType.INT32, value2, timestamp=timestamp)
 
-        utctime = datetime.utcfromtimestamp(timestamp.timestamp()).isoformat() + "Z"
+        utctime = (
+            datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2375,7 +2404,10 @@ class TestTagManager(HttpClientTestBase):
     def test__create_writer_with_buffer_time__sends_when_timer_elapsed(self):
         path = "tag"
         value = 1
-        writer = self._uut.create_writer(max_buffer_time=timedelta(milliseconds=50))
+        buffer_ms = 50
+        writer = self._uut.create_writer(
+            max_buffer_time=timedelta(milliseconds=buffer_ms)
+        )
         timestamp = datetime.now()
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request([None])
@@ -2383,12 +2415,16 @@ class TestTagManager(HttpClientTestBase):
 
         writer.write(path, tbase.DataType.INT32, value, timestamp=timestamp)
         self._client.all_requests.assert_not_called()
-        for i in range(100):
-            if self._client.all_requests.call_count > 0:
-                break
-            time.sleep(0.01)
 
-        utctime = datetime.utcfromtimestamp(timestamp.timestamp()).isoformat() + "Z"
+        time.sleep(buffer_ms / 1000 * 2.5)
+        if self._client.all_requests.call_count == 0:
+            _wait_for_call_count(self._client.all_requests, 1, timeout=5.0)
+
+        utctime = (
+            datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2414,8 +2450,9 @@ class TestTagManager(HttpClientTestBase):
         writer1 = self._uut.create_writer(
             buffer_size=2, max_buffer_time=timedelta(minutes=1)
         )
+        buffer_ms = 50
         writer2 = self._uut.create_writer(
-            buffer_size=2, max_buffer_time=timedelta(milliseconds=50)
+            buffer_size=2, max_buffer_time=timedelta(milliseconds=buffer_ms)
         )
         timestamp = datetime.now()
         self._client.all_requests.configure_mock(
@@ -2424,8 +2461,11 @@ class TestTagManager(HttpClientTestBase):
 
         writer1.write(path, tbase.DataType.INT32, value1, timestamp=timestamp)
         writer1.write(path, tbase.DataType.INT32, value2, timestamp=timestamp)
-
-        utctime = datetime.utcfromtimestamp(timestamp.timestamp()).isoformat() + "Z"
+        utctime = (
+            datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
         self._client.all_requests.assert_called_once_with(
             "POST",
             "/nitag/v2/update-current-values",
@@ -2449,10 +2489,10 @@ class TestTagManager(HttpClientTestBase):
 
         writer2.write(path, tbase.DataType.INT32, value3, timestamp=timestamp)
         assert 1 == self._client.all_requests.call_count  # same as before
-        for i in range(100):
-            if self._client.all_requests.call_count > 1:
-                break
-            time.sleep(0.01)
+
+        time.sleep(buffer_ms / 1000 * 2.5)
+        if self._client.all_requests.call_count == 1:
+            _wait_for_call_count(self._client.all_requests, 2, timeout=5.0)
 
         assert 2 == self._client.all_requests.call_count
         assert self._client.all_requests.call_args_list[1] == mock.call(
@@ -2486,7 +2526,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -2554,7 +2594,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -2669,7 +2709,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [
@@ -2743,7 +2783,7 @@ class TestTagManager(HttpClientTestBase):
         path = "test"
         value = "success"
         now = datetime.now(timezone.utc)
-        utctime = datetime.utcfromtimestamp(now.timestamp()).isoformat() + "Z"
+        utctime = now.isoformat().replace("+00:00", "Z")
         self._client.all_requests.configure_mock(
             side_effect=self._get_mock_request(
                 [

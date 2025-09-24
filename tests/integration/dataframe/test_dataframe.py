@@ -87,6 +87,19 @@ def test_tables(create_table):
 @pytest.mark.enterprise
 @pytest.mark.integration
 class TestDataFrame:
+    def _new_single_int_table(self, create_table, column_name: str = "a") -> str:
+        return create_table(
+            CreateTableRequest(
+                columns=[
+                    Column(
+                        name=column_name,
+                        data_type=DataType.Int64,
+                        column_type=ColumnType.Index,
+                    )
+                ]
+            )
+        )
+
     def test__api_info__returns(self, client):
         response = client.api_info()
 
@@ -615,3 +628,239 @@ class TestDataFrame:
                 response.read()
                 == b'"col1","col2","col3"\r\n1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5'
             )
+
+    def test__append_table_data__append_request_success(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = self._new_single_int_table(create_table)
+        frame = DataFrame(columns=["a"], data=[["1"], ["2"]])
+        client.append_table_data(
+            table_id, AppendTableDataRequest(frame=frame, end_of_data=True)
+        )
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is False
+
+    def test__append_table_data__append_request_with_end_of_data_argument_disallowed(
+        self, client: DataFrameClient, create_table
+    ):
+        request = AppendTableDataRequest(end_of_data=True)
+        with pytest.raises(
+            ValueError,
+            match="end_of_data must not be provided separately when passing an AppendTableDataRequest.",
+        ):
+            client.append_table_data(
+                self._new_single_int_table(create_table), request, end_of_data=True
+            )
+
+    def test__append_table_data__append_request_without_end_of_data_success(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = self._new_single_int_table(create_table)
+        frame = DataFrame(columns=["a"], data=[["7"], ["8"]])
+        client.append_table_data(table_id, AppendTableDataRequest(frame=frame))
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is True
+
+    def test__append_table_data__accepts_dataframe_model(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = self._new_single_int_table(create_table)
+        frame = DataFrame(columns=["a"], data=[["1"], ["2"]])
+        client.append_table_data(table_id, frame, end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is False
+
+    def test__append_table_data__dataframe_without_end_of_data_success(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = self._new_single_int_table(create_table)
+        frame = DataFrame(columns=["a"], data=[["10"], ["11"]])
+        client.append_table_data(table_id, frame)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 2
+        assert metadata.supports_append is True
+
+    def test__append_table_data__none_without_end_of_data_raises(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = create_table(basic_table_model)
+        with pytest.raises(
+            ValueError, match="end_of_data must be provided when data is None"
+        ):
+            client.append_table_data(table_id, None)
+
+    def test__append_table_data__flush_only_with_none(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = self._new_single_int_table(create_table)
+        client.append_table_data(table_id, None, end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 0
+        assert metadata.supports_append is False
+
+    def test__append_table_data__arrow_ingestion_success(
+        self, client: DataFrameClient, create_table
+    ):
+        pa = pytest.importorskip("pyarrow")
+        table_id = self._new_single_int_table(create_table)
+        batch = pa.record_batch([pa.array([10, 11, 12])], names=["a"])
+        client.append_table_data(table_id, [batch], end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 3
+        assert metadata.supports_append is False
+        with pytest.raises(ApiException):
+            client.append_table_data(table_id, None, end_of_data=True)
+
+    def test__append_table_data__single_recordbatch_success(
+        self, client: DataFrameClient, create_table
+    ):
+        pa = pytest.importorskip("pyarrow")
+        table_id = self._new_single_int_table(create_table)
+        batch = pa.record_batch([pa.array([1, 2, 3])], names=["a"])
+        client.append_table_data(table_id, batch, end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 3
+        assert metadata.supports_append is False
+        with pytest.raises(ApiException):
+            client.append_table_data(table_id, None, end_of_data=True)
+
+    def test__append_table_data__arrow_ingestion_with_end_of_data_query_param_false(
+        self, client: DataFrameClient, create_table
+    ):
+        pa = pytest.importorskip("pyarrow")
+        table_id = self._new_single_int_table(create_table)
+        batch1 = pa.record_batch([pa.array([4, 5, 6])], names=["a"])
+        client.append_table_data(table_id, [batch1], end_of_data=False)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 3
+        assert metadata.supports_append is True
+        batch2 = pa.record_batch([pa.array([7, 8])], names=["a"])
+        client.append_table_data(table_id, [batch2], end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 5
+        assert metadata.supports_append is False
+
+    def test__append_table_data__empty_iterator_requires_end_of_data(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = create_table(basic_table_model)
+        with pytest.raises(
+            ValueError,
+            match="end_of_data must be provided when data iterator is empty.",
+        ):
+            client.append_table_data(table_id, [])
+        client.append_table_data(table_id, [], end_of_data=True)
+        metadata = client.get_table_metadata(table_id)
+        assert metadata.row_count == 0
+        assert metadata.supports_append is False
+
+    def test__append_table_data__arrow_iterable_with_non_recordbatch_elements_raises(
+        self, client: DataFrameClient, create_table
+    ):
+        pytest.importorskip("pyarrow")
+        table_id = create_table(basic_table_model)
+        with pytest.raises(
+            ValueError,
+            match="Iterable provided to data must yield pyarrow.RecordBatch objects.",
+        ):
+            client.append_table_data(table_id, [1, 2, 3])
+
+    def test__append_table_data__arrow_iterable_without_pyarrow_raises_runtime_error(
+        self, client: DataFrameClient, create_table, monkeypatch
+    ):
+        import nisystemlink.clients.dataframe._data_frame_client as df_module
+
+        monkeypatch.setattr(df_module, "pa", None)
+        table_id = create_table(basic_table_model)
+        with pytest.raises(
+            RuntimeError,
+            match="pyarrow is not installed. Install to stream RecordBatches.",
+        ):
+            client.append_table_data(table_id, [object()])
+
+    def test__append_table_data__arrow_ingestion_400_unsupported(
+        self, client: DataFrameClient
+    ):
+        pa = pytest.importorskip("pyarrow")
+        table_id = "mock_table_id"
+        bad_batch = pa.record_batch([pa.array([1, 2, 3])], names=["b"])
+        api_info_json = {
+            "operations": {
+                "create_tables": {"available": True, "version": 1},
+                "delete_tables": {"available": True, "version": 1},
+                "modify_metadata": {"available": True, "version": 1},
+                "list_tables": {"available": True, "version": 1},
+                "read_data": {"available": True, "version": 3},
+                "write_data": {"available": True, "version": 1},
+            }
+        }
+
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.GET,
+                f"{client.session.base_url}",
+                json=api_info_json,
+            )
+            rsps.add(
+                responses.POST,
+                f"{client.session.base_url}tables/{table_id}/data",
+                status=400,
+            )
+            with pytest.raises(ApiException) as excinfo:
+                client.append_table_data(table_id, [bad_batch], end_of_data=True)
+
+        assert "Arrow ingestion request was rejected" in str(excinfo.value)
+
+    def test__append_table_data__arrow_ingestion_400_supported_passthrough(
+        self, client: DataFrameClient
+    ):
+        pa = pytest.importorskip("pyarrow")
+        table_id = "mock_table_id"
+        bad_batch = pa.record_batch([pa.array([1, 2, 3])], names=["b"])
+        api_info_json = {
+            "operations": {
+                "create_tables": {"available": True, "version": 1},
+                "delete_tables": {"available": True, "version": 1},
+                "modify_metadata": {"available": True, "version": 1},
+                "list_tables": {"available": True, "version": 1},
+                "read_data": {"available": True, "version": 3},
+                "write_data": {"available": True, "version": 2},
+            }
+        }
+
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.GET,
+                f"{client.session.base_url}",
+                json=api_info_json,
+            )
+            rsps.add(
+                responses.POST,
+                f"{client.session.base_url}tables/{table_id}/data",
+                status=400,
+            )
+            with pytest.raises(ApiException) as excinfo:
+                client.append_table_data(table_id, [bad_batch], end_of_data=True)
+
+        assert "Arrow ingestion request was rejected" not in str(excinfo.value)
+
+    def test__append_table_data__arrow_ingestion_non_400_passthrough(
+        self, client: DataFrameClient
+    ):
+        pa = pytest.importorskip("pyarrow")
+        batch = pa.record_batch([pa.array([1, 2, 3])], names=["a"])
+        with pytest.raises(ApiException) as excinfo:
+            client.append_table_data(
+                "111111111111111111111111", [batch], end_of_data=True
+            )
+        assert "Arrow ingestion request was rejected" not in str(excinfo.value)
+
+    def test__append_table_data__unsupported_type_raises(
+        self, client: DataFrameClient, create_table
+    ):
+        table_id = create_table(basic_table_model)
+        with pytest.raises(ValueError, match="Unsupported type"):
+            client.append_table_data(table_id, 123)  # type: ignore[arg-type]
