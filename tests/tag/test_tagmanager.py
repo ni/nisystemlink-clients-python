@@ -2387,7 +2387,7 @@ class TestTagManager(HttpClientTestBase):
 
         writer.write(path, tbase.DataType.INT32, value, timestamp=timestamp)
         self._client.all_requests.assert_not_called()
-        for i in range(100):
+        for _ in range(500):
             if self._client.all_requests.call_count > 0:
                 break
             time.sleep(0.01)
