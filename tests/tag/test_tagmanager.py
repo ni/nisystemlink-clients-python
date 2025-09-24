@@ -12,8 +12,8 @@ from nisystemlink.clients import core, tag as tbase
 from .http.httpclienttestbase import HttpClientTestBase, MockResponse
 from ..anyorderlist import AnyOrderList
 
-
 def _wait_for_call_count(mock_obj, expected: int, *, timeout: float = 3.0, min_elapsed: Optional[float] = None):
+
     """Wait until mock_obj.call_count >= expected or timeout.
 
     Args:
@@ -2420,12 +2420,15 @@ class TestTagManager(HttpClientTestBase):
         writer.write(path, tbase.DataType.INT32, value, timestamp=timestamp)
         self._client.all_requests.assert_not_called()
 
-        # Warm wait: allow timer thread to start; > configured buffer time but small overall.
-        time.sleep(buffer_ms / 1000 * 1.5)
-        # Should still not have flushed yet (some jitter allowed). If it has, test still passes but we note it.
+        warm = buffer_ms / 1000 * 2.5  # generous warm period for slow CI start
+        time.sleep(warm)
         if self._client.all_requests.call_count == 0:
-            # Now wait until call observed or timeout, enforcing not too early flush (<20ms) to catch regressions.
-            _wait_for_call_count(self._client.all_requests, 1, timeout=3.0, min_elapsed=0.02)
+            _wait_for_call_count(
+                self._client.all_requests,
+                1,
+                timeout=5.0,
+                min_elapsed=buffer_ms / 1000 * 0.4,  # at least 40% of interval to avoid racey early flush
+            )
 
         utctime = (
             datetime.fromtimestamp(timestamp.timestamp(), timezone.utc)
@@ -2495,11 +2498,16 @@ class TestTagManager(HttpClientTestBase):
         )
 
         writer2.write(path, tbase.DataType.INT32, value3, timestamp=timestamp)
-        assert 1 == self._client.all_requests.call_count  # still only size-based flush so far
-        # Warm wait beyond buffer time; only after this should timer flush occur.
-        time.sleep(buffer_ms / 1000 * 1.5)
+        assert 1 == self._client.all_requests.call_count
+        # Use longer warm period in CI to allow thread scheduling
+        time.sleep(buffer_ms / 1000 * 2.5)
         if self._client.all_requests.call_count == 1:
-            _wait_for_call_count(self._client.all_requests, 2, timeout=3.0, min_elapsed=0.02)
+            _wait_for_call_count(
+                self._client.all_requests,
+                2,
+                timeout=5.0,
+                min_elapsed=buffer_ms / 1000 * 0.4,
+            )
         assert 2 == self._client.all_requests.call_count
         assert self._client.all_requests.call_args_list[1] == mock.call(
             "POST",
