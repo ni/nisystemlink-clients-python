@@ -36,13 +36,20 @@ To install **nisystemlink-clients**, use one of the following methods:
 
 Optional Arrow (pyarrow) Support
 --------------------------------
-The base install does not pull in ``pyarrow``. Install the optional extra if you
-plan to use Arrow RecordBatch ingestion with ``DataFrameClient.append_table_data``::
+The base install does not pull in ``pyarrow``. Arrow ``RecordBatch`` ingestion via
+``DataFrameClient.append_table_data`` is available starting in
+``nisystemlink-clients`` version 2.19.0. Install that version (or newer) with the
+optional extra:
 
-   $ python -m pip install "nisystemlink-clients[pyarrow]"
+   $ python -m pip install "nisystemlink-clients[pyarrow]>=2.19.0"
 
-Without the extra, Arrow-specific code paths will raise a ``RuntimeError`` when
-attempting to append ``pyarrow.RecordBatch`` instances.
+If you already have an older version installed, upgrade with:
+
+   $ python -m pip install --upgrade "nisystemlink-clients[pyarrow]>=2.19.0"
+
+Without the extra (or when using a package version earlier than 2.19.0),
+Arrow-specific code paths will raise a ``RuntimeError`` when attempting to
+append ``pyarrow.RecordBatch`` instances.
 
 .. _usage_section:
 
