@@ -45,9 +45,9 @@ if pa is not None:
     # Append via single RecordBatch (Arrow)
     batch_single = pa.record_batch(
         [
-            pa.array([6, 7, 8]),
-            pa.array([0.1, 0.2, 0.3]),
-            pa.array([datetime.now().isoformat()] * 3),
+            pa.array([6, 7, 8], type=pa.int32()),
+            pa.array([0.1, 0.2, 0.3], type=pa.float32()),
+            pa.array([datetime.now() for _ in range(3)], pa.timestamp("ms")),
         ],
         names=["ix", "Float_Column", "Timestamp_Column"],
     )
@@ -57,9 +57,9 @@ if pa is not None:
     batch_list = [
         pa.record_batch(
             [
-                pa.array([9, 10]),
-                pa.array([0.4, 0.5]),
-                pa.array([datetime.now().isoformat(), datetime.now().isoformat()]),
+                pa.array([9, 10], type=pa.int32()),
+                pa.array([0.4, 0.5], type=pa.float32()),
+                pa.array([datetime.now() for _ in range(2)], pa.timestamp("ms")),
             ],
             names=["ix", "Float_Column", "Timestamp_Column"],
         )
