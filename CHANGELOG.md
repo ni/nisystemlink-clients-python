@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.19.1 (2025-09-29)
+
+### Fix
+
+* DFS Arrow example datatypes ([#160](https://github.com/ni/nisystemlink-clients-python/issues/160)) ([`0f9abf7`](https://github.com/ni/nisystemlink-clients-python/commit/0f9abf7543bdebd7143e8215699dae3d9f8cba85))
+
 ## v2.19.0 (2025-09-24)
 
 ### Feature
