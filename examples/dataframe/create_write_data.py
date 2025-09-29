@@ -59,7 +59,7 @@ if pa is not None:
             [
                 pa.array([9, 10], type=pa.int32()),
                 pa.array([0.4, 0.5], type=pa.float32()),
-                pa.array([datetime.now() for _ in range(2)], pa.timestamp("ns")),
+                pa.array([datetime.now() for _ in range(2)], pa.timestamp("ms")),
             ],
             names=["ix", "Float_Column", "Timestamp_Column"],
         )
