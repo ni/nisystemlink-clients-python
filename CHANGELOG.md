@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.19.2 (2025-09-30)
+
+### Fix
+
+* Rendering of DFS append_table_data doc string ([#161](https://github.com/ni/nisystemlink-clients-python/issues/161)) ([`0c0d92f`](https://github.com/ni/nisystemlink-clients-python/commit/0c0d92fa32cb808757ae6a8aa304f8db8d8be2e3))
+
 ## v2.19.1 (2025-09-29)
 
 ### Fix
