@@ -2,12 +2,15 @@
 
 from collections.abc import Iterable
 from io import BytesIO
-from typing import List, Optional, Union
+from typing import List, Optional, TYPE_CHECKING, Union
 
-try:
-    import pyarrow as pa  # type: ignore
-except Exception:
-    pa = None
+if TYPE_CHECKING:
+    import pyarrow as pa
+else:
+    try:
+        import pyarrow as pa  # type: ignore
+    except Exception:
+        pa = None
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import (
@@ -280,8 +283,8 @@ class DataFrameClient(BaseClient):
             Union[
                 models.AppendTableDataRequest,
                 models.DataFrame,
-                "pa.RecordBatch",  # type: ignore[name-defined]
-                Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
+                "pa.RecordBatch",
+                Iterable["pa.RecordBatch"],
             ]
         ],
         *,
