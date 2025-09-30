@@ -291,21 +291,24 @@ class DataFrameClient(BaseClient):
 
         Args:
             id: Unique ID of a data table.
-            data: The data to append. Supported forms:
-                * AppendTableDataRequest: Sent as-is via JSON; ``end_of_data`` must be ``None``.
-                * DataFrame (service model): Wrapped into an AppendTableDataRequest (``end_of_data``
-                    optional) and sent as JSON.
-                * Single pyarrow.RecordBatch: Treated the same as an iterable containing one batch
-                    and streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a query
-                    parameter.
-                * Iterable[pyarrow.RecordBatch]: Streamed as Arrow IPC. ``end_of_data`` (if provided)
-                    is sent as a query parameter. If the iterator yields no batches, it is treated
-                    as ``None`` and requires ``end_of_data``.
-                * None: ``end_of_data`` must be provided; sends JSON containing only the
-                    ``endOfData`` flag.
+            data: The data to append.
+
+                Supported forms:
+
+                * ``AppendTableDataRequest``: Sent as-is via JSON; ``end_of_data`` must be ``None``.
+                * ``DataFrame`` (service model): Wrapped into an
+                  ``AppendTableDataRequest`` (``end_of_data`` optional) and sent as JSON.
+                * Single ``pyarrow.RecordBatch``: Treated the same as an iterable containing one
+                  batch and streamed as Arrow IPC. ``end_of_data`` (if provided) is sent as a
+                  query parameter.
+                * ``Iterable[pyarrow.RecordBatch]``: Streamed as Arrow IPC. ``end_of_data`` (if
+                  provided) is sent as a query parameter. If the iterator yields no batches, it is
+                  treated as ``None`` and requires ``end_of_data``.
+                * ``None``: ``end_of_data`` must be provided; sends JSON containing only the
+                  ``endOfData`` flag (useful for closing a table without appending rows).
             end_of_data: Whether additional rows may be appended in future requests. Required when
-                    ``data`` is ``None`` or the RecordBatch iterator is empty; must be omitted when
-                    passing an ``AppendTableDataRequest`` (include it inside that model instead).
+                ``data`` is ``None`` or the RecordBatch iterator is empty; must be omitted when
+                passing an ``AppendTableDataRequest`` (include it inside that model instead).
 
         Raises:
             ValueError: If parameter constraints are violated.
