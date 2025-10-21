@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import warnings
 from datetime import datetime, timezone
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, TypedDict
 
 import pytest  # type: ignore
 import responses
@@ -31,6 +31,10 @@ from nisystemlink.clients.dataframe.models import (
 )
 from responses import matchers
 
+
+_TestResultIdArg = TypedDict(
+    "_TestResultIdArg", {"test_result_id": Optional[str]}, total=False
+)
 
 int_index_column = Column(
     name="index", data_type=DataType.Int32, column_type=ColumnType.Index
@@ -248,17 +252,16 @@ class TestDataFrame:
 
         client.modify_table(
             id,
-            self._remove_test_result_id_if_not_supported(
-                ModifyTableRequest(
-                    metadata_revision=2,
-                    name="Modified table",
-                    test_result_id="Test result",
-                    properties={"cow": "moo"},
-                    columns=[
-                        ColumnMetadataPatch(name="index", properties={"sheep": "baa"})
-                    ],
+            ModifyTableRequest(
+                metadata_revision=2,
+                name="Modified table",
+                properties={"cow": "moo"},
+                columns=[
+                    ColumnMetadataPatch(name="index", properties={"sheep": "baa"})
+                ],
+                **self._test_result_id_if_supported(
+                    "Test result", supports_test_result_id
                 ),
-                supports_test_result_id,
             ),
         )
         table = client.get_table_metadata(id)
@@ -282,17 +285,12 @@ class TestDataFrame:
 
         client.modify_table(
             id,
-            self._remove_test_result_id_if_not_supported(
-                ModifyTableRequest(
-                    metadata_revision=4,
-                    name=None,
-                    test_result_id=None,
-                    properties={"cow": None},
-                    columns=[
-                        ColumnMetadataPatch(name="index", properties={"sheep": None})
-                    ],
-                ),
-                supports_test_result_id,
+            ModifyTableRequest(
+                metadata_revision=4,
+                name=None,
+                properties={"cow": None},
+                columns=[ColumnMetadataPatch(name="index", properties={"sheep": None})],
+                **self._test_result_id_if_supported(None, supports_test_result_id),
             ),
         )
         table = client.get_table_metadata(id)
@@ -304,12 +302,10 @@ class TestDataFrame:
         assert table.columns[0].properties == {}
 
     @staticmethod
-    def _remove_test_result_id_if_not_supported(
-        model: ModifyTableRequest, supports_test_result_id: bool
-    ) -> ModifyTableRequest:
-        if not supports_test_result_id:
-            del model.test_result_id
-        return model
+    def _test_result_id_if_supported(
+        test_result_id: Optional[str], supports_test_result_id: bool
+    ) -> _TestResultIdArg:
+        return {"test_result_id": test_result_id} if supports_test_result_id else {}
 
     def test__delete_table__deletes(self, client: DataFrameClient):
         id = client.create_table(
