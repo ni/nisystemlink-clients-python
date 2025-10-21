@@ -1,3 +1,5 @@
+from typing import cast
+
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
@@ -44,7 +46,7 @@ client = TestMonitorClient(configuration=server_configuration)
 create_response = create_test_result()
 
 # Create the step requests
-result_id = create_response.results[0].result_id
+result_id = cast(str, create_response.results[0].id)
 step_requests = [
     CreateStepRequest(
         step_id="step1",
@@ -89,7 +91,7 @@ update_response = client.update_steps(
     steps=[
         UpdateStepRequest(
             step_id=step.step_id,
-            result_id=step.result_id,
+            result_id=cast(str, step.result_id),
             data=StepData(
                 text="My output string",
                 parameters=[
@@ -116,7 +118,9 @@ update_response = client.update_steps(
 # delete all steps at once
 delete_response = client.delete_steps(
     steps=[
-        StepIdResultIdPair(step_id=step.step_id, result_id=step.result_id)
+        StepIdResultIdPair(
+            step_id=cast(str, step.step_id), result_id=cast(str, step.result_id)
+        )
         for step in queried_steps
     ]
 )

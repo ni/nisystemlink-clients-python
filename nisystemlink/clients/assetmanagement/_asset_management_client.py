@@ -104,7 +104,7 @@ class AssetManagementClient(BaseClient):
 
         query_params = {k: v for k, v in query_params.items() if v is not None}
 
-        query_request = models._QueryAssetsRequest(**query_params)
+        query_request = models._QueryAssetsRequest(**query_params)  # type: ignore
 
         return self.__query_assets(query=query_request)
 

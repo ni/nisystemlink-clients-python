@@ -1,10 +1,12 @@
+from typing import cast
+
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
 from nisystemlink.clients.spec.models import (
     QuerySpecificationsRequest,
-    SpecificationDefinition,
     SpecificationType,
     UpdateSpecificationsRequest,
+    UpdateSpecificationsRequestObject,
 )
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
@@ -27,22 +29,22 @@ if response.specs:
     print(f"Original spec1 block: {original_spec1.block}")
     print(f"Original spec1 version: {original_spec1.version}")
 
-# make the modifications
-modified_spec = SpecificationDefinition(
-    id=original_spec1.id,
-    product_id=original_spec1.product_id,
-    spec_id=original_spec1.spec_id,
-    type=SpecificationType.FUNCTIONAL,
-    keywords=["work", "reviewed"],
-    block="modifiedBlock",
-    version=original_spec1.version,
-    workspace=original_spec1.workspace,
-)
-update_response = client.update_specs(
-    specs=UpdateSpecificationsRequest(specs=[modified_spec])
-)
-if update_response and update_response.updated_specs:
-    print(f"New spec1 version: {update_response.updated_specs[0].version}")
+    # make the modifications
+    modified_spec = UpdateSpecificationsRequestObject(
+        id=cast(str, original_spec1.id),
+        product_id=cast(str, original_spec1.product_id),
+        spec_id=cast(str, original_spec1.spec_id),
+        type=SpecificationType.FUNCTIONAL,
+        keywords=["work", "reviewed"],
+        block="modifiedBlock",
+        version=cast(int, original_spec1.version),
+        workspace=cast(str, original_spec1.workspace),
+    )
+    update_response = client.update_specs(
+        specs=UpdateSpecificationsRequest(specs=[modified_spec])
+    )
+    if update_response and update_response.updated_specs:
+        print(f"New spec1 version: {update_response.updated_specs[0].version}")
 
 # query again to see new version
 response = client.query_specs(

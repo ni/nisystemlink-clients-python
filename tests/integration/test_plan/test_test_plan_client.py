@@ -11,6 +11,7 @@ from nisystemlink.clients.test_plan.models import (
     CreateTestPlanTemplatePartialSuccessResponse,
     CreateTestPlanTemplateRequest,
     Dashboard,
+    ExecutionDefinition,
     Job,
     JobExecution,
     ManualExecution,
@@ -105,7 +106,7 @@ class TestTestPlanClient:
         id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
     )
 
-    _execution_actions = [
+    _execution_actions: List[ExecutionDefinition] = [
         ManualExecution(action="boot", type="MANUAL"),
         JobExecution(
             action="run",
@@ -134,7 +135,7 @@ class TestTestPlanClient:
             dut_serial_number="Sample-Dut_serial_number",
             test_program="TP-Integration-001",
             system_filter="os:linux AND arch:x64",
-            dut_Filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
+            dut_filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
             workspace=_workspace,
             file_ids_from_template=["file1", "file2"],
             dashboard=_dashboard,
@@ -154,7 +155,7 @@ class TestTestPlanClient:
             test_program="TP-INT-002",
             estimated_duration_in_seconds=86400,
             system_filter="os:linux AND arch:x64",
-            dut_Filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
+            dut_filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
             execution_actions=_execution_actions,
             file_ids=["file1", "file2"],
             workspace=_workspace,
