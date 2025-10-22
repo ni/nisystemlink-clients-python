@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.19.3 (2025-10-22)
+
+### Fix
+
+* Fix typing in examples and tests ([#166](https://github.com/ni/nisystemlink-clients-python/issues/166)) ([`9a846e6`](https://github.com/ni/nisystemlink-clients-python/commit/9a846e6ae3b1348df12b6be1080c002f3a6e7dc1))
+
 ## v2.19.2 (2025-09-30)
 
 ### Fix
