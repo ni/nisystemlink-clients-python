@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import List
 
 import pytest
@@ -63,7 +64,7 @@ class TestAssetManagement:
             model_name="python integration test 1",
             serial_number="01BB8",
             vendor_name="NI",
-            vendor_number="4244",
+            vendor_number=4244,
             bus_type=AssetBusType.ACCESSORY,
             name="Python Integration Tests 1",
             asset_type=AssetType.DEVICE_UNDER_TEST,
@@ -77,7 +78,7 @@ class TestAssetManagement:
             self_calibration=SelfCalibration(
                 temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
                 is_limited=False,
-                date="2022-06-07T18:58:05.000Z",
+                date=datetime(2022, 6, 7, 18, 58, 5, tzinfo=timezone.utc),
             ),
             is_NI_asset=True,
             workspace=_workspace,
@@ -86,11 +87,15 @@ class TestAssetManagement:
             ),
             external_calibration=ExternalCalibration(
                 temperature_sensors=[TemperatureSensor(name="Sensor0", reading=25.8)],
-                date="2022-06-07T18:58:05.000Z",
+                date=datetime(2022, 6, 7, 18, 58, 5, tzinfo=timezone.utc),
                 recommended_interval=10,
-                next_recommended_date="2023-11-14T20:42:11.583Z",
-                next_custom_due_date="2024-11-14T20:42:11.583Z",
-                resolved_due_date="2022-06-07T18:58:05.000Z",
+                next_recommended_date=datetime(
+                    2023, 11, 14, 20, 42, 11, 583000, tzinfo=timezone.utc
+                ),
+                next_custom_due_date=datetime(
+                    2024, 11, 14, 20, 42, 11, 583000, tzinfo=timezone.utc
+                ),
+                resolved_due_date=datetime(2022, 6, 7, 18, 58, 5, tzinfo=timezone.utc),
             ),
             properties={"Key1": "Value1"},
             keywords=["Keyword1"],
@@ -98,7 +103,7 @@ class TestAssetManagement:
             file_ids=["608a5684800e325b48837c2a"],
             supports_self_test=True,
             supports_reset=True,
-            partNumber="A1234",
+            part_number="A1234",
         )
     ]
     """CreateAssetRequest object"""

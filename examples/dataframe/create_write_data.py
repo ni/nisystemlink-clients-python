@@ -31,13 +31,15 @@ table_id = client.create_table(
 
 # Append via explicit AppendTableDataRequest (JSON)
 frame_request = DataFrame(
-    data=[[i, random.random(), datetime.now().isoformat()] for i in range(3)]
+    data=[[str(i), str(random.random()), datetime.now().isoformat()] for i in range(3)]
 )
 client.append_table_data(table_id, AppendTableDataRequest(frame=frame_request))
 
 # Append via DataFrame model directly (JSON)
 frame_direct = DataFrame(
-    data=[[i + 3, random.random(), datetime.now().isoformat()] for i in range(3)]
+    data=[
+        [str(i + 3), str(random.random()), datetime.now().isoformat()] for i in range(3)
+    ]
 )
 client.append_table_data(table_id, frame_direct)
 

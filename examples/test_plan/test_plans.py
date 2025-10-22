@@ -35,7 +35,7 @@ create_test_plans_request = [
         dut_serial_number="serial_number_123",
         test_program="TP-Integration-001",
         system_filter="os:linux AND arch:x64",
-        dut_Filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
+        dut_filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
         workspace="your_workspace_id",
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(
@@ -69,7 +69,7 @@ if created_test_plans_response.created_test_plans:
 
 # Query test plan using id.
 query_test_plans_request = QueryTestPlansRequest(
-    skip=0, take=1, descending=False, returnCount=False
+    take=1, descending=False, return_count=False
 )
 client.query_test_plans(query_request=query_test_plans_request)
 

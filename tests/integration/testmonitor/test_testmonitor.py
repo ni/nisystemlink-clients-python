@@ -1,5 +1,5 @@
 import uuid
-from typing import Dict, List, Optional
+from typing import cast, Dict, List, Optional
 
 import pytest
 from nisystemlink.clients.core._api_exception import ApiException
@@ -115,7 +115,9 @@ def create_steps(client: TestMonitorClient):
             created_steps = created_steps + response.steps
     client.delete_steps(
         [
-            StepIdResultIdPair(step_id=step.step_id, result_id=step.result_id)
+            StepIdResultIdPair(
+                step_id=cast(str, step.step_id), result_id=cast(str, step.result_id)
+            )
             for step in created_steps
         ]
     )
@@ -133,7 +135,7 @@ class TestTestMonitor:
     ):
         part_number = "Python Client Testing"
         keywords = ["testing"]
-        properties = {"test_property": "yes"}
+        properties: Dict[str, Optional[str]] = {"test_property": "yes"}
         program_name = "Python Client Test Program"
         status = Status.PASSED()
         host_name = "Test Host"
@@ -407,7 +409,7 @@ class TestTestMonitor:
         self, client: TestMonitorClient, create_results
     ):
         new_key = "newKey"
-        original_properties = {"originalKey": "originalValue"}
+        original_properties: Dict[str, Optional[str]] = {"originalKey": "originalValue"}
         program_name = "Python Client Test Program"
         status = Status.PASSED()
         new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
@@ -444,7 +446,7 @@ class TestTestMonitor:
     ):
         original_key = "originalKey"
         new_key = "newKey"
-        original_properties = {original_key: "originalValue"}
+        original_properties: Dict[str, Optional[str]] = {original_key: "originalValue"}
         program_name = "Python Client Test Program"
         status = Status.PASSED()
         new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
@@ -888,7 +890,7 @@ class TestTestMonitor:
             steps=[
                 UpdateStepRequest(
                     step_id=step.step_id,
-                    result_id=step.result_id,
+                    result_id=cast(str, step.result_id),
                     data=updated_data,
                     inputs=updated_inputs,
                     outputs=updated_outputs,
@@ -955,7 +957,7 @@ class TestTestMonitor:
             steps=[
                 UpdateStepRequest(
                     step_id=step.step_id,
-                    result_id=step.result_id,
+                    result_id=cast(str, step.result_id),
                     keywords=new_keywords,
                     properties=new_properties,
                 )
@@ -1036,7 +1038,10 @@ class TestTestMonitor:
 
         delete_response = client.delete_steps(
             steps=[
-                StepIdResultIdPair(step_id=step.step_id, result_id=step.result_id)
+                StepIdResultIdPair(
+                    step_id=cast(str, step.step_id),
+                    result_id=cast(str, step.result_id),
+                )
                 for step in created_steps
             ]
         )

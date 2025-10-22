@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 from typing import Dict, List
 
 import numpy as np
@@ -62,9 +63,9 @@ def specs() -> List[Specification]:
             properties={"Comments": "comma separated with unicode"},
             workspace=uuid.uuid1().hex,
             id=uuid.uuid1().hex,
-            created_at="2024-03-28T13:59:12.744Z",
+            created_at=datetime(2024, 3, 28, 13, 59, 12, 744000, tzinfo=timezone.utc),
             created_by=uuid.uuid1().hex,
-            updated_at="2024-03-28T13:59:12.744Z",
+            updated_at=datetime(2024, 3, 28, 13, 59, 12, 744000, tzinfo=timezone.utc),
             updated_by=uuid.uuid1().hex,
             version=28,
         ),
