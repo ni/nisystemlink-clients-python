@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.19.4 (2025-10-24)
+
+### Fix
+
+* Update python client example ([#167](https://github.com/ni/nisystemlink-clients-python/issues/167)) ([`561d81f`](https://github.com/ni/nisystemlink-clients-python/commit/561d81f19c51b0781840767b2b86554daad9ee76))
+
 ## v2.19.3 (2025-10-22)
 
 ### Fix
