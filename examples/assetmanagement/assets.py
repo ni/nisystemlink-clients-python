@@ -87,7 +87,7 @@ query_asset_request = QueryAssetsRequest(
     take=1,
     descending=False,
     return_count=False,
-)  # type: ignore
+)
 client.query_assets(query=query_asset_request)
 
 # Link files to the created asset.
