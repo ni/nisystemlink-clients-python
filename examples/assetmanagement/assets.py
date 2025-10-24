@@ -16,7 +16,8 @@ from nisystemlink.clients.assetmanagement.models import (
 )
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
-
+# workspace where the asset will be created
+workspace_id = "yourWorkspaceId"
 server_configuration = HttpConfiguration(
     server_uri="https://yourserver.yourcompany.com",
     api_key="YourAPIKeyGeneratedFromSystemLink",
@@ -46,7 +47,7 @@ create_assets_request = [
             date=datetime(2022, 6, 7, 18, 58, 5, tzinfo=timezone.utc),
         ),
         is_NI_asset=True,
-        workspace="your-workspace-id",
+        workspace=workspace_id,
         location=AssetLocationForCreate(
             state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
         ),
@@ -81,17 +82,16 @@ if create_assets_response.assets and len(create_assets_response.assets) > 0:
 
 # Query assets using id.
 query_asset_request = QueryAssetsRequest(
-    ids=[created_asset_id],
+    filter=f'AssetIdentifier = "{created_asset_id}"',
     skip=0,
     take=1,
     descending=False,
-    calibratable_only=False,
     return_count=False,
-)  # type: ignore
+)
 client.query_assets(query=query_asset_request)
 
 # Link files to the created asset.
-file_ids = ["sameple-file-id"]
+file_ids = ["sample-file-id"]
 if created_asset_id:
     link_files_response = client.link_files(
         asset_id=created_asset_id, file_ids=file_ids
