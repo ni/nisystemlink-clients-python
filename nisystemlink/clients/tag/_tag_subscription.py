@@ -46,7 +46,7 @@ class TagSubscription(events.Events, abc.ABC):
     # Under certain circumstances, mypy complains about the event not having a type hint
     # unless we specify it explicitly. (But we also need to delete the attribute so that
     # Events.__getattr__ can do its magic.)
-    tag_changed = None  # type: events._EventSlot
+    tag_changed: events._EventSlot = None  # type: ignore[assignment]
     del tag_changed
 
     _HEARTBEAT_INTERVAL_MILLISECONDS = 30000.0

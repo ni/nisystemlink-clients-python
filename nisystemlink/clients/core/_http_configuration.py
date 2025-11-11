@@ -58,9 +58,9 @@ class HttpConfiguration:
             )
         self._server_uri = urllib.parse.urlunsplit(uri[:2] + ("", "", ""))
 
-        self._api_keys = None  # type: Optional[Dict[str, str]]
-        self._username = None  # type: Optional[str]
-        self._password = None  # type: Optional[str]
+        self._api_keys: Optional[Dict[str, str]] = None
+        self._username: Optional[str] = None
+        self._password: Optional[str] = None
         if api_key:
             self._api_keys = {self._SYSTEM_LINK_API_KEY_HEADER: api_key}
         elif username or password:
@@ -71,7 +71,7 @@ class HttpConfiguration:
 
         self._cert_path = cert_path
 
-        self._user_agent = ""  # type: Optional[str]
+        self._user_agent: Optional[str] = ""
 
         self._timeout_ms = self.DEFAULT_TIMEOUT_MILLISECONDS
 

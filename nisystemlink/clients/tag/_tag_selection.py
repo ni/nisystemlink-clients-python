@@ -69,7 +69,7 @@ class TagSelection(tbase.ITagReader):
             if r is not None
         }
 
-        self._values = None  # type: Optional[Dict[str, SerializedTagWithAggregates]]
+        self._values: Optional[Dict[str, SerializedTagWithAggregates]] = None
 
     @property
     def paths(self) -> Tuple[str, ...]:  # noqa: D401

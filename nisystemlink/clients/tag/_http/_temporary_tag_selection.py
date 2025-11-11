@@ -60,7 +60,7 @@ class TemporaryTagSelection:
             magic == self.__MAGIC
         ), "Do not construct a TemporaryTagSelection directly. Use create() instead."
         self._api = client.at_uri("/nitag/v2/selections")
-        self._id = None  # type: Optional[str]
+        self._id: Optional[str] = None
 
     @property
     def id(self) -> Optional[str]:  # noqa: D401

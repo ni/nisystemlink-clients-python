@@ -48,11 +48,11 @@ class TagData:
         self._path = path
         self._data_type = tbase.DataType.UNKNOWN if data_type is None else data_type
         self._keywords = list(keywords) if keywords else []
-        self._properties = {}  # type: Dict[str, str]
+        self._properties: Dict[str, str] = {}
         self._collect_aggregates = False
         self._retention_type = tbase.RetentionType.NONE
-        self._retention_count = None  # type: Optional[int]
-        self._retention_days = None  # type: Optional[int]
+        self._retention_count: Optional[int] = None
+        self._retention_days: Optional[int] = None
         if properties:
             self.replace_properties(properties)
 
@@ -70,7 +70,7 @@ class TagData:
         if self.data_type == tbase.DataType.UNKNOWN:
             raise ValueError("Invalid tag data type")
 
-        data = {}  # type: Dict[str, Any]
+        data: Dict[str, Any] = {}
         data["path"] = self._path
         data["type"] = self._data_type.api_name
         data["collectAggregates"] = self.collect_aggregates

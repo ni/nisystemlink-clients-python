@@ -4,6 +4,7 @@
 
 import asyncio
 import datetime
+import typing
 from typing import (
     Any,
     Awaitable,
@@ -161,7 +162,7 @@ class TagManager(tbase.ITagReader):
         if data_type == tbase.DataType.UNKNOWN:
             raise ValueError("Must specify a valid data type")
 
-        tag = None  # type: Optional[Dict[str, Any]]
+        tag: Optional[Dict[str, Any]] = None
         try:
             tag, _ = self._api.get(
                 "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
@@ -224,7 +225,7 @@ class TagManager(tbase.ITagReader):
         if data_type == tbase.DataType.UNKNOWN:
             raise ValueError("Must specify a valid data type")
 
-        tag = None  # type: Optional[Dict[str, Any]]
+        tag: Optional[Dict[str, Any]] = None
         try:
             tag, _ = await self._api.as_async.get(
                 "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
@@ -709,7 +710,7 @@ class TagManager(tbase.ITagReader):
                 raise ValueError("max_buffer_time must be at least 1 millisecond")
             timer = ManualResetTimer(max_buffer_time)
         else:
-            timer = ManualResetTimer.null_timer
+            timer = typing.cast(ManualResetTimer, ManualResetTimer.null_timer)
 
         return HttpBufferedTagWriter(
             self._http_client, SystemTimeStamper(), buffer_size, timer
@@ -820,8 +821,8 @@ class TagManager(tbase.ITagReader):
         if response is None:
             return None
 
-        agg = response.get("aggregates") or {}  # type: Dict[str, Any]
-        current = response.get("current", response)  # type: Dict[str, Any]
+        agg: Dict[str, Any] = response.get("aggregates") or {}
+        current: Dict[str, Any] = response.get("current", response)
         if current is None:
             return None
 
@@ -834,7 +835,7 @@ class TagManager(tbase.ITagReader):
 
         assert "value" in val
 
-        timestamp = None  # type: Optional[datetime.datetime]
+        timestamp: Optional[datetime.datetime] = None
         if include_timestamp:
             if current.get("timestamp") is None:
                 raise self.invalid_response(http_response)

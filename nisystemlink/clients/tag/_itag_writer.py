@@ -5,21 +5,21 @@
 import abc
 import datetime
 import typing
-from typing import Any, Awaitable, Dict, Optional, Tuple, Union
+from typing import Any, Awaitable, Optional, Union
 
 from nisystemlink.clients import tag as tbase
 from nisystemlink.clients.core._internal._timestamp_utilities import TimestampUtilities
 from typing_extensions import Literal
 
 
-_VALID_TYPES = {
+_VALID_TYPES: typing.Dict[tbase.DataType, Union[type, typing.Tuple[type, type]]] = {
     tbase.DataType.BOOLEAN: bool,
     tbase.DataType.DATE_TIME: datetime.datetime,
     tbase.DataType.DOUBLE: (float, int),
     tbase.DataType.INT32: int,
     tbase.DataType.UINT64: int,
     tbase.DataType.STRING: str,
-}  # type: Dict[tbase.DataType, Union[type, Tuple[type, type]]]
+}
 
 
 class _ITagWriterOverloads(abc.ABC):

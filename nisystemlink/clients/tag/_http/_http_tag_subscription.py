@@ -124,7 +124,7 @@ class HttpTagSubscription(tbase.TagSubscription):
 
         self._update_timer_handler = callback
         self._update_timer.elapsed += self._update_timer_handler
-        self._token = None  # type: Optional[str]
+        self._token: Optional[str] = None
 
     # Base class implementation is sufficient:
     #   def __enter__(self):

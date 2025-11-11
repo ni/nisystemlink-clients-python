@@ -163,7 +163,7 @@ class HttpTagSelection(tbase.TagSelection):
     def _create_subscription_internal(
         self, update_interval: Optional[datetime.timedelta] = None
     ) -> tbase.TagSubscription:
-        update_timer = None  # type: Optional[ManualResetTimer]
+        update_timer: Optional[ManualResetTimer] = None
         if update_interval is not None:
             update_timer = ManualResetTimer(update_interval)
         paths = set(self.paths).union(self.metadata.keys())
@@ -174,7 +174,7 @@ class HttpTagSelection(tbase.TagSelection):
     async def _create_subscription_internal_async(
         self, update_interval: Optional[datetime.timedelta] = None
     ) -> tbase.TagSubscription:
-        update_timer = None  # type: Optional[ManualResetTimer]
+        update_timer: Optional[ManualResetTimer] = None
         if update_interval is not None:
             update_timer = ManualResetTimer(update_interval)
         paths = set(self.paths).union(self.metadata.keys())
@@ -241,7 +241,7 @@ class HttpTagSelection(tbase.TagSelection):
         if response is None or any(t is None for t in response):
             raise tbase.TagManager.invalid_response(http_response)
 
-        result = []  # type: List[Optional[SerializedTagWithAggregates]]
+        result: List[Optional[SerializedTagWithAggregates]] = []
         for i, t in enumerate(response):
             path = paths[i] if paths else t.get("path")
             if path is None:

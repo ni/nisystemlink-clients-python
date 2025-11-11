@@ -38,10 +38,10 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
     # Under certain circumstances, mypy complains about the event not having a type hint
     # unless we specify it explicitly. (But we also need to delete the attribute so that
     # Events.__getattr__ can do its magic.)
-    elapsed = None  # type: events._EventSlot
+    elapsed: events._EventSlot = None  # type: ignore[assignment]
     del elapsed
 
-    __null_timer_impl = None  # type: Optional[ManualResetTimer]
+    __null_timer_impl: Optional["ManualResetTimer"] = None
 
     @ClasspropertySupport.classproperty
     def null_timer(cls) -> "ManualResetTimer":
@@ -77,7 +77,7 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
         self._running = [None]  # used as mutable boolean; non-empty is True
         self._timer_start = threading.Event()
         self._timer_cancel = threading.Event()
-        self._thread = threading.Thread(
+        self._thread: Optional[threading.Thread] = threading.Thread(
             target=self._run,
             args=[
                 self._running,
@@ -86,7 +86,7 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
                 self._timer_cancel,
                 self.elapsed,
             ],
-        )  # type: Optional[threading.Thread]
+        )
         self._thread.daemon = True
         self._thread.start()
 

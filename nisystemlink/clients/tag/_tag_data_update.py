@@ -58,11 +58,11 @@ class TagDataUpdate:
                 "Must specify at least one of keywords or properties to update"
             )
         self._keywords = list(keywords) if keywords is not None else None
-        self._properties = None  # type: Optional[Dict[str, str]]
+        self._properties: Optional[Dict[str, str]] = None
         if properties is not None:
             self._properties = dict(properties)
 
-        self._collect_aggregates = None  # type: Optional[bool]
+        self._collect_aggregates: Optional[bool] = None
 
     @classmethod
     def from_tagdata(
@@ -113,10 +113,10 @@ class TagDataUpdate:
         if self.data_type == tbase.DataType.UNKNOWN:
             raise ValueError("Invalid tag data type")
 
-        data = {
+        data: Dict[str, Any] = {
             "path": tbase.TagPathUtilities.validate(self._path),
             "type": self._data_type.api_name,
-        }  # type: Dict[str, Any]
+        }
 
         if self._keywords is not None:
             data["keywords"] = self._keywords

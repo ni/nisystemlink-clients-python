@@ -5,7 +5,6 @@
 import os
 import pathlib
 import typing
-from typing import Optional
 
 from nisystemlink.clients.core._internal._classproperty_support import (
     ClasspropertySupport,
@@ -21,9 +20,9 @@ class PathConstants(metaclass=ClasspropertySupport):
 
     PRODUCT_NAME = "Skyline"
 
-    _application_data_directory = None  # type: Optional[pathlib.Path]
+    _application_data_directory: typing.Optional[pathlib.Path] = None
 
-    _salt_data_directory = None  # type: Optional[pathlib.Path]
+    _salt_data_directory: typing.Optional[pathlib.Path] = None
 
     def __init_subclass__(cls) -> None:
         raise TypeError("type 'PathConstants' is not an acceptable base type")

@@ -22,7 +22,7 @@ class AsyncTagQueryResultCollection(abc.ABC):
             skip: The skip used for the first page of results.
         """
         self._total_count = total_count
-        self._current_page = None  # type: Optional[List[tbase.TagData]]
+        self._current_page: Optional[List[tbase.TagData]] = None
         if first_page:
             if skip >= total_count:
                 raise core.ApiException(

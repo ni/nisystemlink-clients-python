@@ -28,7 +28,7 @@ class HttpBufferedTagWriter(tbase.BufferedTagWriter):
     ) -> None:
         super().__init__(stamper, buffer_size, flush_timer)
         self._api = client.at_uri("/nitag/v2")
-        self._buffer = OrderedDict()  # type: OrderedDict[str, Dict[str, Any]]
+        self._buffer: OrderedDict[str, Dict[str, Any]] = OrderedDict()
 
     def _buffer_value(self, path: str, value: Dict[str, Any]) -> None:
         if path not in self._buffer:
@@ -50,9 +50,9 @@ class HttpBufferedTagWriter(tbase.BufferedTagWriter):
         value: str,
         timestamp: Optional[datetime.datetime] = None,
     ) -> Dict[str, Any]:
-        item = {
+        item: Dict[str, Any] = {
             "value": {"value": value, "type": data_type.api_name}
-        }  # type: Dict[str, Any]
+        }
         if timestamp is not None:
             item["timestamp"] = TimestampUtilities.datetime_to_str(timestamp)
         return item
