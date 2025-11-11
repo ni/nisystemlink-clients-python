@@ -2,7 +2,7 @@
 
 """Implementation of HttpConfigurationFile."""
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from typing_extensions import final
 
@@ -24,12 +24,12 @@ class HttpConfigurationFile:
     ]
 
     def __init__(self) -> None:
-        self._id = None  # type: Optional[str]
-        self._display_name = None  # type: Optional[str]
-        self._connection_type = None  # type: Optional[str]
-        self._uri = None  # type: Optional[str]
-        self._api_key = None  # type: Optional[str]
-        self._cert_path = None  # type: Optional[str]
+        self._id = None  # type: str | None
+        self._display_name = None  # type: str | None
+        self._connection_type = None  # type: str | None
+        self._uri = None  # type: str | None
+        self._api_key = None  # type: str | None
+        self._cert_path = None  # type: str | None
 
     @staticmethod
     def from_json_dict(d: Dict[str, Any]) -> "HttpConfigurationFile":
@@ -44,55 +44,55 @@ class HttpConfigurationFile:
         return self
 
     @property
-    def id(self) -> Optional[str]:  # noqa: D401
+    def id(self) -> str | None:  # noqa: D401
         """The ID of this configuration."""
         return self._id
 
     @id.setter
-    def id(self, value: Optional[str]) -> None:
+    def id(self, value: str | None) -> None:
         self._id = value
 
     @property
-    def display_name(self) -> Optional[str]:  # noqa: D401
+    def display_name(self) -> str | None:  # noqa: D401
         """A user-friendly display name for this configuration."""
         return self._display_name
 
     @display_name.setter
-    def display_name(self, value: Optional[str]) -> None:
+    def display_name(self, value: str | None) -> None:
         self._display_name = value
 
     @property
-    def connection_type(self) -> Optional[str]:  # noqa: D401
+    def connection_type(self) -> str | None:  # noqa: D401
         """The type of connection to use."""
         return self._connection_type
 
     @connection_type.setter
-    def connection_type(self, value: Optional[str]) -> None:
+    def connection_type(self, value: str | None) -> None:
         self._connection_type = value
 
     @property
-    def uri(self) -> Optional[str]:  # noqa: D401
+    def uri(self) -> str | None:  # noqa: D401
         """The URI of the SystemLink server."""
         return self._uri
 
     @uri.setter
-    def uri(self, value: Optional[str]) -> None:
+    def uri(self, value: str | None) -> None:
         self._uri = value
 
     @property
-    def api_key(self) -> Optional[str]:  # noqa: D401
+    def api_key(self) -> str | None:  # noqa: D401
         """The API key of this client."""
         return self._api_key
 
     @api_key.setter
-    def api_key(self, value: Optional[str]) -> None:
+    def api_key(self, value: str | None) -> None:
         self._api_key = value
 
     @property
-    def cert_path(self) -> Optional[str]:  # noqa: D401
+    def cert_path(self) -> str | None:  # noqa: D401
         """The path to the server's HTTPS certificate, relative to the Skyline Certificates directory."""
         return self._cert_path
 
     @cert_path.setter
-    def cert_path(self, value: Optional[str]) -> None:
+    def cert_path(self, value: str | None) -> None:
         self._cert_path = value

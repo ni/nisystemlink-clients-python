@@ -3,7 +3,7 @@
 """Implementation of HttpTagSelection."""
 
 import datetime
-from typing import Any, Awaitable, Callable, List, Optional, Sequence, Tuple, TypeVar
+from typing import Any, Awaitable, Callable, List, Sequence, Tuple, TypeVar
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient, HttpResponse
@@ -14,7 +14,6 @@ from nisystemlink.clients.tag._core._serialized_tag_with_aggregates import (
 )
 from nisystemlink.clients.tag._http._http_tag_subscription import HttpTagSubscription
 from typing_extensions import final
-
 
 T = TypeVar("T")
 
@@ -29,7 +28,7 @@ class HttpTagSelection(tbase.TagSelection):
         client: HttpClient,
         tags: Sequence[tbase.TagData],
         *,
-        _paths: Optional[Sequence[str]] = None
+        _paths: Sequence[str] | None = None
     ) -> None:
         """Initialize a selection using existing data.
 
@@ -46,7 +45,7 @@ class HttpTagSelection(tbase.TagSelection):
         self._client = client
         self._api = client.at_uri("/nitag/v2/selections")
         self._selection_stale = False
-        self._token = None  # Optional[str]
+        self._token = None  # str | None
 
     @classmethod
     def open(cls, client: HttpClient, paths: Sequence[str]) -> "HttpTagSelection":
@@ -161,9 +160,9 @@ class HttpTagSelection(tbase.TagSelection):
             pass
 
     def _create_subscription_internal(
-        self, update_interval: Optional[datetime.timedelta] = None
+        self, update_interval: datetime.timedelta | None = None
     ) -> tbase.TagSubscription:
-        update_timer: Optional[ManualResetTimer] = None
+        update_timer: ManualResetTimer | None = None
         if update_interval is not None:
             update_timer = ManualResetTimer(update_interval)
         paths = set(self.paths).union(self.metadata.keys())
@@ -172,9 +171,9 @@ class HttpTagSelection(tbase.TagSelection):
         )
 
     async def _create_subscription_internal_async(
-        self, update_interval: Optional[datetime.timedelta] = None
+        self, update_interval: datetime.timedelta | None = None
     ) -> tbase.TagSubscription:
-        update_timer: Optional[ManualResetTimer] = None
+        update_timer: ManualResetTimer | None = None
         if update_interval is not None:
             update_timer = ManualResetTimer(update_interval)
         paths = set(self.paths).union(self.metadata.keys())
@@ -216,7 +215,7 @@ class HttpTagSelection(tbase.TagSelection):
 
         return [tbase.TagData.from_json_dict(t) for t in response]
 
-    def _read_tag_values(self) -> List[Optional[SerializedTagWithAggregates]]:
+    def _read_tag_values(self) -> List[SerializedTagWithAggregates | None]:
         def fn(token: str) -> Tuple[Any, HttpResponse]:
             return self._api.get("/{id}/values", params={"id": token})
 
@@ -225,7 +224,7 @@ class HttpTagSelection(tbase.TagSelection):
 
     async def _read_tag_values_async(
         self,
-    ) -> List[Optional[SerializedTagWithAggregates]]:
+    ) -> List[SerializedTagWithAggregates | None]:
         def fn(token: str) -> Awaitable[Tuple[Any, HttpResponse]]:
             return self._api.as_async.get("/{id}/values", params={"id": token})
 
@@ -236,12 +235,12 @@ class HttpTagSelection(tbase.TagSelection):
         self,
         response: List[Any],
         http_response: HttpResponse,
-        paths: Optional[List[str]] = None,
-    ) -> List[Optional[SerializedTagWithAggregates]]:
+        paths: List[str] | None = None,
+    ) -> List[SerializedTagWithAggregates | None]:
         if response is None or any(t is None for t in response):
             raise tbase.TagManager.invalid_response(http_response)
 
-        result: List[Optional[SerializedTagWithAggregates]] = []
+        result: List[SerializedTagWithAggregates | None] = []
         for i, t in enumerate(response):
             path = paths[i] if paths else t.get("path")
             if path is None:
@@ -255,7 +254,7 @@ class HttpTagSelection(tbase.TagSelection):
             value = v.get("value")
             data_type = v.get("type")
             aggregates = t.get("aggregates") or {}
-            timestamp = None  # type: Optional[datetime.datetime]
+            timestamp = None  # type: datetime.datetime | None
             if t["current"].get("timestamp"):
                 timestamp = TimestampUtilities.str_to_datetime(
                     t["current"]["timestamp"]
@@ -283,7 +282,7 @@ class HttpTagSelection(tbase.TagSelection):
 
     def _read_tag_metadata_and_values(
         self,
-    ) -> Tuple[List[tbase.TagData], List[Optional[SerializedTagWithAggregates]]]:
+    ) -> Tuple[List[tbase.TagData], List[SerializedTagWithAggregates | None]]:
         def fn(token: str) -> Tuple[Any, HttpResponse]:
             return self._api.get("/{id}/tags-with-values", params={"id": token})
 
@@ -292,7 +291,7 @@ class HttpTagSelection(tbase.TagSelection):
 
     async def _read_tag_metadata_and_values_async(
         self,
-    ) -> Tuple[List[tbase.TagData], List[Optional[SerializedTagWithAggregates]]]:
+    ) -> Tuple[List[tbase.TagData], List[SerializedTagWithAggregates | None]]:
         def fn(token: str) -> Awaitable[Tuple[Any, HttpResponse]]:
             return self._api.as_async.get(
                 "/{id}/tags-with-values", params={"id": token}
@@ -303,7 +302,7 @@ class HttpTagSelection(tbase.TagSelection):
 
     def _handle_read_tags_metadata_and_values(
         self, response: Any, http_response: HttpResponse
-    ) -> Tuple[List[tbase.TagData], List[Optional[SerializedTagWithAggregates]]]:
+    ) -> Tuple[List[tbase.TagData], List[SerializedTagWithAggregates | None]]:
         if (
             response is None
             or response.get("tagsWithValues") is None

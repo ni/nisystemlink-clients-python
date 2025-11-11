@@ -1,20 +1,20 @@
-from typing import Optional
+
 
 from nisystemlink.clients.core._api_info import Operation
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class Operations(JsonModel):
-    delete_files: Optional[Operation] = None
-    download_data: Optional[Operation] = None
-    list_files: Optional[Operation] = None
-    query_files: Optional[Operation] = None
-    update_metadata: Optional[Operation] = None
-    upload_files: Optional[Operation] = None
+    delete_files: Operation | None = None
+    download_data: Operation | None = None
+    list_files: Operation | None = None
+    query_files: Operation | None = None
+    update_metadata: Operation | None = None
+    upload_files: Operation | None = None
 
 
 class V1Operations(JsonModel):
-    operations: Optional[Operations] = None
+    operations: Operations | None = None
     """
     Available operations in the v1 version of the API:
     - deleteFiles: The ability to delete uploaded files

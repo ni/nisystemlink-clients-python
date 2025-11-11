@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List
 
 import pytest  # type: ignore
 import responses
@@ -30,7 +30,6 @@ from nisystemlink.clients.dataframe.models import (
 )
 from responses import matchers
 
-
 int_index_column = Column(
     name="index", data_type=DataType.Int32, column_type=ColumnType.Index
 )
@@ -49,7 +48,7 @@ def create_table(client: DataFrameClient):
     """Fixture to return a factory that creates tables."""
     tables = []
 
-    def _create_table(table: Optional[CreateTableRequest] = None) -> str:
+    def _create_table(table: CreateTableRequest | None = None) -> str:
         id = client.create_table(table or basic_table_model)
         tables.append(id)
         return id

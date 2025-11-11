@@ -4,7 +4,7 @@
 
 import datetime
 import weakref
-from typing import Iterable, List, Optional
+from typing import Iterable, List
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient
@@ -33,8 +33,8 @@ class HttpTagSubscription(tbase.TagSubscription):
         cls,
         client: HttpClient,
         paths: Iterable[str],
-        update_timer: Optional[ManualResetTimer] = None,
-        heartbeat_timer: Optional[ManualResetTimer] = None,
+        update_timer: ManualResetTimer | None = None,
+        heartbeat_timer: ManualResetTimer | None = None,
     ) -> "HttpTagSubscription":
         """Create an :class:`HttpTagSubscription` with a custom heartbeat timer for testing purposes.
 
@@ -64,8 +64,8 @@ class HttpTagSubscription(tbase.TagSubscription):
         cls,
         client: HttpClient,
         paths: Iterable[str],
-        update_timer: Optional[ManualResetTimer] = None,
-        heartbeat_timer: Optional[ManualResetTimer] = None,
+        update_timer: ManualResetTimer | None = None,
+        heartbeat_timer: ManualResetTimer | None = None,
     ) -> "HttpTagSubscription":
         """Asynchronously create an :class:`HttpTagSubscription` with a custom heartbeat timer for testing purposes.
 
@@ -96,8 +96,8 @@ class HttpTagSubscription(tbase.TagSubscription):
         magic: object,
         client: HttpClient,
         paths: Iterable[str],
-        update_timer: Optional[ManualResetTimer] = None,
-        heartbeat_timer: Optional[ManualResetTimer] = None,
+        update_timer: ManualResetTimer | None = None,
+        heartbeat_timer: ManualResetTimer | None = None,
     ) -> None:
         assert (
             magic is self.__MAGIC
@@ -124,7 +124,7 @@ class HttpTagSubscription(tbase.TagSubscription):
 
         self._update_timer_handler = callback
         self._update_timer.elapsed += self._update_timer_handler
-        self._token: Optional[str] = None
+        self._token: str | None = None
 
     # Base class implementation is sufficient:
     #   def __enter__(self):

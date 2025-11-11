@@ -2,7 +2,7 @@
 
 """Implementation of TagDataUpdate."""
 
-from typing import Any, Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, Tuple
 
 from nisystemlink.clients import tag as tbase
 from typing_extensions import final
@@ -26,8 +26,8 @@ class TagDataUpdate:
         self,
         path: str,
         data_type: tbase.DataType,
-        keywords: Optional[Iterable[str]] = None,
-        properties: Optional[Dict[str, str]] = None,
+        keywords: Iterable[str] | None = None,
+        properties: Dict[str, str] | None = None,
     ) -> None:
         """Initialize an update of a tag's keywords and/or properties.
 
@@ -58,11 +58,11 @@ class TagDataUpdate:
                 "Must specify at least one of keywords or properties to update"
             )
         self._keywords = list(keywords) if keywords is not None else None
-        self._properties: Optional[Dict[str, str]] = None
+        self._properties: Dict[str, str] | None = None
         if properties is not None:
             self._properties = dict(properties)
 
-        self._collect_aggregates: Optional[bool] = None
+        self._collect_aggregates: bool | None = None
 
     @classmethod
     def from_tagdata(
@@ -127,7 +127,7 @@ class TagDataUpdate:
         return data
 
     @property
-    def collect_aggregates(self) -> Optional[bool]:  # noqa: D401
+    def collect_aggregates(self) -> bool | None:  # noqa: D401
         """The :attr:`TagData.collect_aggregates` setting to send with the update, or None to not send a value."""
         return self._collect_aggregates
 
@@ -137,7 +137,7 @@ class TagDataUpdate:
         return self._data_type
 
     @property
-    def keywords(self) -> Optional[Tuple[str, ...]]:  # noqa: D401
+    def keywords(self) -> Tuple[str, ...] | None:  # noqa: D401
         """The list of keywords to send with the update, or None to not send any keywords."""
         return tuple(self._keywords) if self._keywords is not None else None
 
@@ -147,7 +147,7 @@ class TagDataUpdate:
         return self._path
 
     @property
-    def properties(self) -> Optional[Dict[str, str]]:  # noqa: D401
+    def properties(self) -> Dict[str, str] | None:  # noqa: D401
         """The properties send with the update, or None to not send any properties."""
         if self._properties:
             return dict(self._properties)

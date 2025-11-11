@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable
 from io import BytesIO
-from typing import List, Optional, Union
+from typing import List
 
 try:
     import pyarrow as pa  # type: ignore
@@ -23,15 +23,16 @@ from uplink import Body, Field, Path, Query, retry
 
 from . import models
 
-
 # retry for common http status codes and any Connection error
+
+
 @retry(
     when=retry.when.status([429, 502, 503, 504]),
     stop=retry.stop.after_attempt(5),
     on_exception=retry.CONNECTION_ERROR,
 )
 class DataFrameClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -73,12 +74,12 @@ class DataFrameClient(BaseClient):
     )
     def list_tables(
         self,
-        take: Optional[int] = None,
-        id: Optional[List[str]] = None,
-        order_by: Optional[models.OrderBy] = None,
-        order_by_descending: Optional[bool] = None,
-        continuation_token: Optional[str] = None,
-        workspace: Optional[List[str]] = None,
+        take: int | None = None,
+        id: List[str] | None = None,
+        order_by: models.OrderBy | None = None,
+        order_by_descending: bool | None = None,
+        continuation_token: str | None = None,
+        workspace: List[str] | None = None,
     ) -> models.PagedTables:
         """Lists available tables on the SystemLink DataFrame service.
 
@@ -177,7 +178,7 @@ class DataFrameClient(BaseClient):
     @post("delete-tables", args=[Field("ids")])
     def delete_tables(
         self, ids: List[str]
-    ) -> Optional[models.DeleteTablesPartialSuccess]:
+    ) -> models.DeleteTablesPartialSuccess | None:
         """Deletes multiple tables.
 
         Args:
@@ -196,7 +197,7 @@ class DataFrameClient(BaseClient):
     @post("modify-tables")
     def modify_tables(
         self, updates: models.ModifyTablesRequest
-    ) -> Optional[models.ModifyTablesPartialSuccess]:
+    ) -> models.ModifyTablesPartialSuccess | None:
         """Modify the properties associated with the tables identified by their IDs.
 
         Args:
@@ -226,11 +227,11 @@ class DataFrameClient(BaseClient):
     def get_table_data(
         self,
         id: str,
-        columns: Optional[List[str]] = None,
-        order_by: Optional[List[str]] = None,
-        order_by_descending: Optional[bool] = None,
-        take: Optional[int] = None,
-        continuation_token: Optional[str] = None,
+        columns: List[str] | None = None,
+        order_by: List[str] | None = None,
+        order_by_descending: bool | None = None,
+        take: int | None = None,
+        continuation_token: str | None = None,
     ) -> models.PagedTableRows:
         """Reads raw data from the table identified by its ID.
 
@@ -268,7 +269,7 @@ class DataFrameClient(BaseClient):
         content_type="application/vnd.apache.arrow.stream",
     )
     def _append_table_data_arrow(
-        self, id: str, data: Iterable[bytes], end_of_data: Optional[bool] = None
+        self, id: str, data: Iterable[bytes], end_of_data: bool | None = None
     ) -> None:
         """Internal uplink-implemented Arrow (binary) append call."""
         ...
@@ -276,16 +277,13 @@ class DataFrameClient(BaseClient):
     def append_table_data(
         self,
         id: str,
-        data: Optional[
-            Union[
-                models.AppendTableDataRequest,
-                models.DataFrame,
-                "pa.RecordBatch",  # type: ignore[name-defined]
-                Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
-            ]
-        ],
+        data:
+            models.AppendTableDataRequest
+            | models.DataFrame
+            | "pa.RecordBatch"  # type: ignore[name-defined]
+            | Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
         *,
-        end_of_data: Optional[bool] = None,
+        end_of_data: bool | None = None,
     ) -> None:
         """Appends one or more rows of data to the table identified by its ID.
 

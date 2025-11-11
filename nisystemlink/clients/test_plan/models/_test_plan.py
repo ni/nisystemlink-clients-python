@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -17,92 +17,92 @@ class TestPlan(JsonModel):
     id: str
     """The unique identifier of the test plan."""
 
-    template_id: Optional[str] = None
+    template_id: str | None = None
     """The identifier of the template used to create the test plan."""
 
-    name: Optional[str] = None
+    name: str | None = None
     """The name of the test plan."""
 
-    state: Optional[State] = None
+    state: State | None = None
     """The current state of the test plan."""
 
-    substate: Optional[str] = None
+    substate: str | None = None
     """The substate of the test plan, if any."""
 
-    description: Optional[str] = None
+    description: str | None = None
     """The description of the test plan."""
 
-    assigned_to: Optional[str] = None
+    assigned_to: str | None = None
     """The user or group assigned to the test plan."""
 
-    work_order_id: Optional[str] = None
+    work_order_id: str | None = None
     """The identifier of the associated work order."""
 
-    work_order_name: Optional[str] = None
+    work_order_name: str | None = None
     """The name of the associated work order."""
 
-    part_number: Optional[str] = None
+    part_number: str | None = None
     """The part number associated with the test plan."""
 
-    dut_id: Optional[str] = None
+    dut_id: str | None = None
     """The identifier of the device under test (DUT)."""
 
-    dut_serial_number: Optional[str] = None
+    dut_serial_number: str | None = None
     """The serial number of the device under test (DUT)."""
 
-    test_program: Optional[str] = None
+    test_program: str | None = None
     """The test program associated with the test plan."""
 
-    workspace: Optional[str] = None
+    workspace: str | None = None
     """The workspace to which the test plan belongs."""
 
-    created_by: Optional[str] = None
+    created_by: str | None = None
     """The user who created the test plan."""
 
-    updated_by: Optional[str] = None
+    updated_by: str | None = None
     """The user who last updated the test plan."""
 
-    system_id: Optional[str] = None
+    system_id: str | None = None
     """The identifier of the system used for the test plan."""
 
-    fixture_ids: Optional[List[str]] = None
+    fixture_ids: List[str] | None = None
     """The list of fixture identifiers associated with the test plan."""
 
-    planned_start_date_time: Optional[datetime] = None
+    planned_start_date_time: datetime | None = None
     """The planned start date and time for the test plan."""
 
-    estimated_end_date_time: Optional[datetime] = None
+    estimated_end_date_time: datetime | None = None
     """The estimated end date and time for the test plan."""
 
-    estimated_duration_in_seconds: Optional[float] = None
+    estimated_duration_in_seconds: float | None = None
     """The estimated duration of the test plan in seconds."""
 
-    system_filter: Optional[str] = None
+    system_filter: str | None = None
     """The filter used to select systems for the test plan."""
 
-    dut_filter: Optional[str] = None
+    dut_filter: str | None = None
     """The filter used to select DUTs for the test plan."""
 
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
     """The date and time when the test plan was created."""
 
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
     """The date and time when the test plan was last updated."""
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """Additional properties associated with the test plan."""
 
-    file_ids_from_template: Optional[List[str]] = None
+    file_ids_from_template: List[str] | None = None
     """The list of file identifiers inherited from the template."""
 
-    dashboard: Optional[DashboardUrl] = None
+    dashboard: DashboardUrl | None = None
     """The dashboard data related to the test plan."""
 
-    execution_actions: Optional[List[ExecutionDefinition]] = None
+    execution_actions: List[ExecutionDefinition] | None = None
     """The execution actions defined for the test plan."""
 
-    execution_history: Optional[List[ExecutionEvent]] = None
+    execution_history: List[ExecutionEvent] | None = None
     """The execution history of the test plan."""
 
-    dashboard_url: Optional[Dict[str, str]] = None
+    dashboard_url: Dict[str, str] | None = None
     """The URLs for dashboards related to the test plan."""

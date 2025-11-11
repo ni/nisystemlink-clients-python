@@ -20,9 +20,9 @@ class PathConstants(metaclass=ClasspropertySupport):
 
     PRODUCT_NAME = "Skyline"
 
-    _application_data_directory: typing.Optional[pathlib.Path] = None
+    _application_data_directory: pathlib.Path | None = None
 
-    _salt_data_directory: typing.Optional[pathlib.Path] = None
+    _salt_data_directory: pathlib.Path | None = None
 
     def __init_subclass__(cls) -> None:
         raise TypeError("type 'PathConstants' is not an acceptable base type")

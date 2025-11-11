@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -11,12 +11,12 @@ class CreateTableRequest(JsonModel):
     columns: List[Column]
     """The list of columns in the table. Exactly one column must have a :class:`.ColumnType` of INDEX."""
 
-    name: Optional[str] = None
+    name: str | None = None
     """The name to associate with the table. When not specified, a name will be
     assigned from the table's ID."""
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """User-defined properties to associate with the table."""
 
-    workspace: Optional[str] = None
+    workspace: str | None = None
     """The workspace to create the table in. Uses the default workspace when not specified."""

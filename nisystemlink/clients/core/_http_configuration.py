@@ -4,7 +4,7 @@
 
 import pathlib
 import urllib.parse
-from typing import Dict, Optional
+from typing import Dict
 
 
 class HttpConfiguration:
@@ -18,11 +18,11 @@ class HttpConfiguration:
     def __init__(
         self,
         server_uri: str,
-        api_key: Optional[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        cert_path: Optional[pathlib.Path] = None,
-        workspace: Optional[str] = None,
+        api_key: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        cert_path: pathlib.Path | None = None,
+        workspace: str | None = None,
         verify: bool = True,
     ) -> None:
         """Initialize a configuration.
@@ -58,9 +58,9 @@ class HttpConfiguration:
             )
         self._server_uri = urllib.parse.urlunsplit(uri[:2] + ("", "", ""))
 
-        self._api_keys: Optional[Dict[str, str]] = None
-        self._username: Optional[str] = None
-        self._password: Optional[str] = None
+        self._api_keys: Dict[str, str] | None = None
+        self._username: str | None = None
+        self._password: str | None = None
         if api_key:
             self._api_keys = {self._SYSTEM_LINK_API_KEY_HEADER: api_key}
         elif username or password:
@@ -71,7 +71,7 @@ class HttpConfiguration:
 
         self._cert_path = cert_path
 
-        self._user_agent: Optional[str] = ""
+        self._user_agent: str | None = ""
 
         self._timeout_ms = self.DEFAULT_TIMEOUT_MILLISECONDS
 
@@ -102,7 +102,7 @@ class HttpConfiguration:
         self._timeout_ms = value
 
     @property
-    def user_agent(self) -> Optional[str]:  # noqa: D401
+    def user_agent(self) -> str | None:  # noqa: D401
         """The string to pass the web server as the product name or names making the
         request, or None to use a library-specific default.
 
@@ -112,11 +112,11 @@ class HttpConfiguration:
         return self._user_agent or None
 
     @user_agent.setter
-    def user_agent(self, value: Optional[str]) -> None:
+    def user_agent(self, value: str | None) -> None:
         self._user_agent = value
 
     @property
-    def api_keys(self) -> Optional[Dict[str, str]]:  # noqa: D401
+    def api_keys(self) -> Dict[str, str] | None:  # noqa: D401
         """The available API keys to use for authorization, or None if none were provided."""
         return dict(self._api_keys) if self._api_keys else None
 
@@ -132,21 +132,21 @@ class HttpConfiguration:
         return self._server_uri
 
     @property
-    def username(self) -> Optional[str]:  # noqa: D401
+    def username(self) -> str | None:  # noqa: D401
         """The username to use for HTTP authentication, or None if none was provided."""
         return self._username
 
     @property
-    def password(self) -> Optional[str]:  # noqa: D401
+    def password(self) -> str | None:  # noqa: D401
         """The password to use for HTTP authentication, or None if none was provided."""
         return self._password
 
     @property
-    def cert_path(self) -> Optional[pathlib.Path]:
+    def cert_path(self) -> pathlib.Path | None:
         """Local path to an SSL certificate file."""
         return self._cert_path
 
     @property
-    def workspace(self) -> Optional[str]:  # noqa: D401
+    def workspace(self) -> str | None:  # noqa: D401
         """ID of workspace to use for Client operations."""
         return self._workspace

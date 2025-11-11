@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List
 
 import pandas as pd
 from nisystemlink.clients.spec.models._condition import (
@@ -94,9 +94,8 @@ def normalize_conditions_per_row(
 
 def convert_specs_to_dataframe(
     specs: List[Specification],
-    condition_format: Optional[
-        Callable[[List[Condition]], List[Dict[str, Any]]]
-    ] = normalize_conditions_per_column,
+    condition_format: Callable[[List[Condition]], List[Dict[str, Any]]] | None
+        = normalize_conditions_per_column,
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the specs.
 
@@ -345,7 +344,7 @@ def __serialize_numeric_condition_range(value: NumericConditionValue) -> List[st
 
 
 def __serialize_condition_discrete_values(
-    value: Union[NumericConditionValue, StringConditionValue],
+    value: NumericConditionValue | StringConditionValue,
 ) -> List[str]:
     """Serialize discrete values of a value.
 

@@ -1,6 +1,6 @@
 """Wrappers around uplink HTTP decorators with proper type annotations."""
 
-from typing import Any, Callable, Optional, Sequence, Tuple, TypeVar, Union
+from typing import Any, Callable, Sequence, Tuple, TypeVar
 
 from uplink import (
     Body,
@@ -14,7 +14,7 @@ from uplink import (
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def get(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
+def get(path: str, args: Sequence[Any] | None = None) -> Callable[[F], F]:
     """Annotation for a GET request."""
 
     def decorator(func: F) -> F:
@@ -25,9 +25,9 @@ def get(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
 
 def post(
     path: str,
-    args: Optional[Sequence[Any]] = None,
-    return_key: Optional[Union[str, Tuple[str, ...]]] = None,
-    content_type: Optional[str] = None,
+    args: Sequence[Any] | None = None,
+    return_key: str | Tuple[str, ...] | None = None,
+    content_type: str | None = None,
 ) -> Callable[[F], F]:
     """Annotation for a POST request with a JSON request body. If args is not
     specified, defaults to a single argument that represents the request body.
@@ -46,7 +46,7 @@ def post(
     return decorator
 
 
-def put(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
+def put(path: str, args: Sequence[Any] | None = None) -> Callable[[F], F]:
     """Annotation for a PUT request with a JSON request body. If args is not
     specified, defaults to a single argument that represents the request body.
     """
@@ -57,7 +57,7 @@ def put(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
     return decorator
 
 
-def patch(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
+def patch(path: str, args: Sequence[Any] | None = None) -> Callable[[F], F]:
     """Annotation for a PATCH request with a JSON request body."""
 
     def decorator(func: F) -> F:
@@ -66,7 +66,7 @@ def patch(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
     return decorator
 
 
-def delete(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
+def delete(path: str, args: Sequence[Any] | None = None) -> Callable[[F], F]:
     """Annotation for a DELETE request."""
 
     def decorator(func: F) -> F:
@@ -76,7 +76,7 @@ def delete(path: str, args: Optional[Sequence[Any]] = None) -> Callable[[F], F]:
 
 
 def response_handler(
-    handler: Any, requires_consumer: Optional[bool] = False
+    handler: Any, requires_consumer: bool | None = False
 ) -> Callable[[F], F]:
     """Annotation for creating custom response handlers."""
 

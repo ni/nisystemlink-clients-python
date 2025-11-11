@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
@@ -16,7 +16,7 @@ from uplink import Field, retry
 class TestPlanClient(BaseClient):
     __test__ = False
 
-    def __init__(self, configuration: Optional[HttpConfiguration] = None):
+    def __init__(self, configuration: HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -146,7 +146,7 @@ class TestPlanClient(BaseClient):
     @post("delete-testplan-templates", args=[Field("ids")])
     def delete_test_plan_templates(
         self, ids: List[str]
-    ) -> Optional[models.DeleteTestPlanTemplatesPartialSuccessResponse]:
+    ) -> models.DeleteTestPlanTemplatesPartialSuccessResponse | None:
         """Deletes one or more test plan templates and return errors for failed deletion.
 
         Returns:

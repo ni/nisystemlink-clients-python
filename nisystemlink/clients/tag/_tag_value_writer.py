@@ -4,7 +4,7 @@
 
 import datetime
 import typing
-from typing import Any, Awaitable, Generic, Optional, TypeVar
+from typing import Any, Awaitable, Generic, TypeVar
 
 from nisystemlink.clients import tag as tbase
 
@@ -48,7 +48,7 @@ class TagValueWriter(Generic[_Any]):
         return self.__writer
 
     def write(
-        self, value: _Any, *, timestamp: Optional[datetime.datetime] = None
+        self, value: _Any, *, timestamp: datetime.datetime | None = None
     ) -> None:
         """Write the tag's value.
 
@@ -66,7 +66,7 @@ class TagValueWriter(Generic[_Any]):
         )
 
     def write_async(
-        self, value: _Any, *, timestamp: Optional[datetime.datetime] = None
+        self, value: _Any, *, timestamp: datetime.datetime | None = None
     ) -> Awaitable[None]:
         """Write the tag's value.
 

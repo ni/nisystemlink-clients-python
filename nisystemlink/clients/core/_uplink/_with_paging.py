@@ -1,10 +1,10 @@
-from typing import Optional
+
 
 from ._json_model import JsonModel
 
 
 class WithPaging(JsonModel):
-    continuation_token: Optional[str] = None
+    continuation_token: str | None = None
     """A token which allows the user to resume a query at the next item in the matching results.
 
     When querying, a token will be returned if a query may be

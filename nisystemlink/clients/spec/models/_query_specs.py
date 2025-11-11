@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
@@ -47,13 +47,13 @@ class QuerySpecificationsRequest(JsonModel):
     product_ids: List[str]
     """IDs of the products to query the specifications for."""
 
-    take: Optional[int] = None
+    take: int | None = None
     """Maximum number of specifications to return in the current API response.
 
     Uses the default if the specified value is negative. The default value is `1000` specs.
     """
 
-    continuation_token: Optional[str] = None
+    continuation_token: str | None = None
     """Allows users to continue the query at the next specification that matches the given criteria.
 
     To retrieve the next batch of specifications, pass the continuation token from the previous
@@ -62,7 +62,7 @@ class QuerySpecificationsRequest(JsonModel):
     token provided in each response.
     """
 
-    filter: Optional[str] = None
+    filter: str | None = None
     """
     The specification query filter in Dynamic Linq format.
 
@@ -85,18 +85,18 @@ class QuerySpecificationsRequest(JsonModel):
     documentation for more details.
     """
 
-    projection: Optional[List[SpecificationProjection]] = None
+    projection: List[SpecificationProjection] | None = None
     """Specifies the fields to include in the returned specifications.
 
     Fields you do not specify are excluded. Returns all fields if no value is specified.
     """
 
-    order_by: Optional[SpecificationOrderBy] = None
+    order_by: SpecificationOrderBy | None = None
     """Specifies the field to use to sort specifications.
 
     By default, specifications are sorted by `ID`.
     """
-    order_by_descending: Optional[bool] = None
+    order_by_descending: bool | None = None
     """Specifies whether to return the specifications in descending order.
 
     By default, this value is `false` and specifications are sorted in ascending order.
@@ -106,7 +106,7 @@ class QuerySpecificationsRequest(JsonModel):
 class PagedSpecifications(WithPaging):
     """The list of matching specifications and a continuation token to get the next items."""
 
-    specs: Optional[List[Specification]] = None
+    specs: List[Specification] | None = None
     """List of queried specifications.
 
     An empty list indicates that there are no specifications meeting the criteria provided in the

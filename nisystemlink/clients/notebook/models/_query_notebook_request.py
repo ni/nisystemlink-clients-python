@@ -1,4 +1,4 @@
-from typing import Optional
+
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
@@ -6,7 +6,7 @@ from nisystemlink.clients.core._uplink._with_paging import WithPaging
 class QueryNotebookRequest(WithPaging):
     """Model for a query notebooks request."""
 
-    filter: Optional[str] = None
+    filter: str | None = None
     """
     The filter criteria for notebook, consisting of a string of queries composed using AND/OR operators.
     String values need to be enclosed in double quotes. Parenthesis can be used within the filter
@@ -36,5 +36,5 @@ class QueryNotebookRequest(WithPaging):
       workspace
     """
 
-    take: Optional[int] = None
+    take: int | None = None
     """The maximum number of notebooks to return."""

@@ -6,7 +6,7 @@ import abc
 import asyncio
 import datetime
 from types import TracebackType
-from typing import Awaitable, Dict, List, Optional, Sequence, Tuple, Type, Union
+from typing import Awaitable, Dict, List, Sequence, Tuple, Type
 
 from nisystemlink.clients import tag as tbase
 from nisystemlink.clients.tag._core._serialized_tag_with_aggregates import (
@@ -28,7 +28,7 @@ class TagSelection(tbase.ITagReader):
     """
 
     def __init__(
-        self, tags: Sequence[tbase.TagData], paths: Optional[Sequence[str]] = None
+        self, tags: Sequence[tbase.TagData], paths: Sequence[str] | None = None
     ) -> None:
         """Initialize a selection using queried or existing tag data.
 
@@ -69,7 +69,7 @@ class TagSelection(tbase.ITagReader):
             if r is not None
         }
 
-        self._values: Optional[Dict[str, SerializedTagWithAggregates]] = None
+        self._values: Dict[str, SerializedTagWithAggregates] | None = None
 
     @property
     def paths(self) -> Tuple[str, ...]:  # noqa: D401
@@ -118,7 +118,7 @@ class TagSelection(tbase.ITagReader):
 
     @abc.abstractmethod
     def _create_subscription_internal(
-        self, update_interval: Optional[datetime.timedelta] = None
+        self, update_interval: datetime.timedelta | None = None
     ) -> tbase.TagSubscription:
         """Subscribe to receive events when tags in the selection are written to using the specified update interval.
 
@@ -136,7 +136,7 @@ class TagSelection(tbase.ITagReader):
 
     @abc.abstractmethod
     async def _create_subscription_internal_async(
-        self, update_interval: Optional[datetime.timedelta] = None
+        self, update_interval: datetime.timedelta | None = None
     ) -> tbase.TagSubscription:
         """Asynchronously subscribe to receive events when tags in the selection are
         written to using the specified update interval.
@@ -188,7 +188,7 @@ class TagSelection(tbase.ITagReader):
         ...
 
     @abc.abstractmethod
-    def _read_tag_values(self) -> List[Optional[SerializedTagWithAggregates]]:
+    def _read_tag_values(self) -> List[SerializedTagWithAggregates | None]:
         """Retrieve the values of all tags in the selection.
 
         Returns:
@@ -202,7 +202,7 @@ class TagSelection(tbase.ITagReader):
     @abc.abstractmethod
     def _read_tag_metadata_and_values(
         self,
-    ) -> Tuple[List[tbase.TagData], List[Optional[SerializedTagWithAggregates]]]:
+    ) -> Tuple[List[tbase.TagData], List[SerializedTagWithAggregates | None]]:
         """Retrieve the metadata and values of all tags in the selection.
 
         Returns:
@@ -229,7 +229,7 @@ class TagSelection(tbase.ITagReader):
     @abc.abstractmethod
     async def _read_tag_values_async(
         self,
-    ) -> List[Optional[SerializedTagWithAggregates]]:
+    ) -> List[SerializedTagWithAggregates | None]:
         """Asynchronously retrieve the values of all tags in the selection.
 
         Returns:
@@ -244,7 +244,7 @@ class TagSelection(tbase.ITagReader):
     @abc.abstractmethod
     async def _read_tag_metadata_and_values_async(
         self,
-    ) -> Tuple[List[tbase.TagData], List[Optional[SerializedTagWithAggregates]]]:
+    ) -> Tuple[List[tbase.TagData], List[SerializedTagWithAggregates | None]]:
         """Asynchronously retrieve the metadata and values of all tags in the selection.
 
         Returns:
@@ -369,7 +369,7 @@ class TagSelection(tbase.ITagReader):
             self._values.clear()
 
     def create_subscription(
-        self, *, update_interval: Optional[datetime.timedelta] = None
+        self, *, update_interval: datetime.timedelta | None = None
     ) -> tbase.TagSubscription:
         """Subscribe to receive events when tags in the selection are written to.
 
@@ -408,7 +408,7 @@ class TagSelection(tbase.ITagReader):
         return self._create_subscription_internal(update_interval)
 
     def create_subscription_async(
-        self, *, update_interval: Optional[datetime.timedelta] = None
+        self, *, update_interval: datetime.timedelta | None = None
     ) -> Awaitable[tbase.TagSubscription]:
         """Asynchronously subscribe to receive events when tags in the selection are written to.
 
@@ -626,7 +626,7 @@ class TagSelection(tbase.ITagReader):
         values = await self._read_tag_values_async()
         self._update_values(values)
 
-    def remove_tags(self, tags: List[Union[tbase.TagData, str]]) -> None:
+    def remove_tags(self, tags: List[tbase.TagData | str]) -> None:
         """Remove one or more tags from the selection.
 
         The tags are not removed from the :attr:`metadata` and :attr:`values`
@@ -706,18 +706,18 @@ class TagSelection(tbase.ITagReader):
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         """Clean up resources associated with the selection."""
         self.close()
 
     def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> Awaitable[None]:
         """Asynchronously clean up resources associated with the selection."""
         return self.close_async()
@@ -728,7 +728,7 @@ class TagSelection(tbase.ITagReader):
 
     def _read(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[Optional[SerializedTagWithAggregates]]:
+    ) -> SerializedTagWithAggregates | None:
         if self._closed:
             raise ReferenceError("TagSelection")
 
@@ -748,7 +748,7 @@ class TagSelection(tbase.ITagReader):
 
     async def _read_async(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[Optional[SerializedTagWithAggregates]]:
+    ) -> SerializedTagWithAggregates | None:
         if self._closed:
             raise ReferenceError("TagSelection")
 
@@ -768,7 +768,7 @@ class TagSelection(tbase.ITagReader):
 
     def _create_value_reader(
         self, tag: tbase.TagData
-    ) -> Optional[tbase.TagValueReader]:
+    ) -> tbase.TagValueReader | None:
         if tag is None:
             raise ValueError("tag cannot be None")
 
@@ -796,7 +796,7 @@ class TagSelection(tbase.ITagReader):
             self._metadata[tag.path] = tag
 
     def _update_values(
-        self, values: List[Optional[SerializedTagWithAggregates]]
+        self, values: List[SerializedTagWithAggregates | None]
     ) -> None:
         if self._values is None:
             self._values = {}

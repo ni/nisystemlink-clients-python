@@ -11,10 +11,8 @@ from typing import (
     Dict,
     Iterable,
     List,
-    Optional,
     Sequence,
-    Tuple,
-    Union,
+    Tuple
 )
 
 from nisystemlink.clients import core, tag as tbase
@@ -48,7 +46,7 @@ class TagManager(tbase.ITagReader):
     def __init_subclass__(cls) -> None:
         raise TypeError("type 'TagManager' is not an acceptable base type")
 
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None) -> None:
+    def __init__(self, configuration: core.HttpConfiguration | None = None) -> None:
         """Initialize an instance.
 
         Args:
@@ -126,9 +124,9 @@ class TagManager(tbase.ITagReader):
     def open(
         self,
         path: str,
-        data_type: Optional[tbase.DataType] = None,
+        data_type: tbase.DataType | None = None,
         *,
-        create: Optional[bool] = None
+        create: bool | None = None
     ) -> tbase.TagData:
         """Query the server for the metadata of a tag, optionally creating it if it doesn't already exist.
 
@@ -162,7 +160,7 @@ class TagManager(tbase.ITagReader):
         if data_type == tbase.DataType.UNKNOWN:
             raise ValueError("Must specify a valid data type")
 
-        tag: Optional[Dict[str, Any]] = None
+        tag: Dict[str, Any] | None = None
         try:
             tag, _ = self._api.get(
                 "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
@@ -190,9 +188,9 @@ class TagManager(tbase.ITagReader):
     async def open_async(
         self,
         path: str,
-        data_type: Optional[tbase.DataType] = None,
+        data_type: tbase.DataType | None = None,
         *,
-        create: Optional[bool] = None
+        create: bool | None = None
     ) -> tbase.TagData:
         """Asynchronously query the server for the metadata of a tag, optionally
         creating it if it doesn't already exist.
@@ -225,7 +223,7 @@ class TagManager(tbase.ITagReader):
         if data_type == tbase.DataType.UNKNOWN:
             raise ValueError("Must specify a valid data type")
 
-        tag: Optional[Dict[str, Any]] = None
+        tag: Dict[str, Any] | None = None
         try:
             tag, _ = await self._api.as_async.get(
                 "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
@@ -331,12 +329,12 @@ class TagManager(tbase.ITagReader):
 
     def query(
         self,
-        paths: Optional[Sequence[str]] = None,
-        keywords: Optional[Iterable[str]] = None,
-        properties: Optional[Dict[str, str]] = None,
+        paths: Sequence[str] | None = None,
+        keywords: Iterable[str] | None = None,
+        properties: Dict[str, str] | None = None,
         *,
         skip: int = 0,
-        take: Optional[int] = None
+        take: int | None = None
     ) -> tbase.TagQueryResultCollection:
         """Query the server for available tags matching the given criteria.
 
@@ -387,12 +385,12 @@ class TagManager(tbase.ITagReader):
 
     async def query_async(
         self,
-        paths: Optional[Sequence[str]] = None,
-        keywords: Optional[Iterable[str]] = None,
-        properties: Optional[Dict[str, str]] = None,
+        paths: Sequence[str] | None = None,
+        keywords: Iterable[str] | None = None,
+        properties: Dict[str, str] | None = None,
         *,
         skip: int = 0,
-        take: Optional[int] = None
+        take: int | None = None
     ) -> tbase.AsyncTagQueryResultCollection:
         """Asynchronously query the server for available tags matching the given criteria.
 
@@ -443,12 +441,12 @@ class TagManager(tbase.ITagReader):
 
     def _prepare_query(
         self,
-        paths: Optional[Sequence[str]],
-        keywords: Optional[Iterable[str]],
-        properties: Optional[Dict[str, str]],
-        skip: Optional[int],
-        take: Optional[int] = None,
-    ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+        paths: Sequence[str] | None,
+        keywords: Iterable[str] | None,
+        properties: Dict[str, str] | None,
+        skip: int | None,
+        take: int | None = None,
+    ) -> Tuple[str | None, str | None, str | None]:
         if paths is not None and len(paths) == 0:
             raise ValueError("paths cannot be empty an empty list")
         if paths is not None and any(p is None for p in paths):
@@ -472,7 +470,7 @@ class TagManager(tbase.ITagReader):
         return path_str, keyword_str, prop_str
 
     def update(
-        self, updates: Union[Sequence[tbase.TagData], Sequence[tbase.TagDataUpdate]]
+        self, updates: Sequence[tbase.TagData] | Sequence[tbase.TagDataUpdate]
     ) -> None:
         """Update the metadata of one or more tags on the server, creating tags that don't exist.
 
@@ -512,7 +510,7 @@ class TagManager(tbase.ITagReader):
             raise core.ApiException(error=err_obj)
 
     async def update_async(
-        self, updates: Union[Sequence[tbase.TagData], Sequence[tbase.TagDataUpdate]]
+        self, updates: Sequence[tbase.TagData] | Sequence[tbase.TagDataUpdate]
     ) -> None:
         """Asynchronously update the metadata of one or more tags on the server, creating tags that don't exist.
 
@@ -553,7 +551,7 @@ class TagManager(tbase.ITagReader):
             raise core.ApiException(error=err_obj)
 
     def _prepare_update(
-        self, updates: Union[Sequence[tbase.TagData], Sequence[tbase.TagDataUpdate]]
+        self, updates: Sequence[tbase.TagData] | Sequence[tbase.TagDataUpdate]
     ) -> Tuple[List[Dict[str, Any]], bool]:
         if updates is None:
             raise ValueError("updates cannot be None")
@@ -568,7 +566,7 @@ class TagManager(tbase.ITagReader):
 
         return [u.to_json_dict() for u in updates], merge
 
-    def delete(self, tags: Iterable[Union[tbase.TagData, str]]) -> None:
+    def delete(self, tags: Iterable[tbase.TagData | str]) -> None:
         """Delete one or more tags from the server.
 
         Args:
@@ -596,7 +594,7 @@ class TagManager(tbase.ITagReader):
         self._perform_delete(validated_paths)
 
     def delete_async(
-        self, tags: Iterable[Union[tbase.TagData, str]]
+        self, tags: Iterable[tbase.TagData | str]
     ) -> Awaitable[None]:
         """Asynchronously delete one or more tags from the server.
 
@@ -675,8 +673,8 @@ class TagManager(tbase.ITagReader):
     def create_writer(
         self,
         *,
-        buffer_size: Optional[int] = None,
-        max_buffer_time: Optional[datetime.timedelta] = None
+        buffer_size: int | None = None,
+        max_buffer_time: datetime.timedelta | None = None
     ) -> tbase.BufferedTagWriter:
         """Create a tag writer that buffers tag values until
         :meth:`~BufferedTagWriter.send_buffered_writes()` is called on the returned
@@ -718,7 +716,7 @@ class TagManager(tbase.ITagReader):
 
     def _read(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[SerializedTagWithAggregates]:
+    ) -> SerializedTagWithAggregates | None:
         """Retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist. Clients
@@ -765,7 +763,7 @@ class TagManager(tbase.ITagReader):
 
     async def _read_async(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[SerializedTagWithAggregates]:
+    ) -> SerializedTagWithAggregates | None:
         """Asynchronously retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist. Clients
@@ -815,9 +813,9 @@ class TagManager(tbase.ITagReader):
         path: str,
         response: Dict[str, Any],
         http_response: HttpResponse,
-        include_timestamp: Optional[bool] = False,
-        include_aggregates: Optional[bool] = False,
-    ) -> Optional[SerializedTagWithAggregates]:
+        include_timestamp: bool | None = False,
+        include_aggregates: bool | None = False,
+    ) -> SerializedTagWithAggregates | None:
         if response is None:
             return None
 
@@ -835,7 +833,7 @@ class TagManager(tbase.ITagReader):
 
         assert "value" in val
 
-        timestamp: Optional[datetime.datetime] = None
+        timestamp: datetime.datetime | None = None
         if include_timestamp:
             if current.get("timestamp") is None:
                 raise self.invalid_response(http_response)

@@ -4,7 +4,7 @@
 
 import datetime
 from collections import OrderedDict
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from nisystemlink.clients import tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient
@@ -48,7 +48,7 @@ class HttpBufferedTagWriter(tbase.BufferedTagWriter):
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: datetime.datetime | None = None,
     ) -> Dict[str, Any]:
         item: Dict[str, Any] = {
             "value": {"value": value, "type": data_type.api_name}
