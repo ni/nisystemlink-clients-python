@@ -47,9 +47,7 @@ class TagValueWriter(Generic[_Any]):
         """The underlying :class:`ITagWriter` for writing values."""
         return self.__writer
 
-    def write(
-        self, value: _Any, *, timestamp: datetime.datetime | None = None
-    ) -> None:
+    def write(self, value: _Any, *, timestamp: datetime.datetime | None = None) -> None:
         """Write the tag's value.
 
         Args:

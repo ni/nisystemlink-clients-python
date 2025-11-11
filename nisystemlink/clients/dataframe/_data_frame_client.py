@@ -176,9 +176,7 @@ class DataFrameClient(BaseClient):
         ...
 
     @post("delete-tables", args=[Field("ids")])
-    def delete_tables(
-        self, ids: List[str]
-    ) -> models.DeleteTablesPartialSuccess | None:
+    def delete_tables(self, ids: List[str]) -> models.DeleteTablesPartialSuccess | None:
         """Deletes multiple tables.
 
         Args:
@@ -277,12 +275,15 @@ class DataFrameClient(BaseClient):
     def append_table_data(
         self,
         id: str,
-        data: Union[
-            models.AppendTableDataRequest,
-            models.DataFrame,
-            "pa.RecordBatch",  # type: ignore[name-defined]
-            Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
-        ] | None,
+        data: (
+            Union[
+                models.AppendTableDataRequest,
+                models.DataFrame,
+                "pa.RecordBatch",  # type: ignore[name-defined]
+                Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
+            ]
+            | None
+        ),
         *,
         end_of_data: bool | None = None,
     ) -> None:

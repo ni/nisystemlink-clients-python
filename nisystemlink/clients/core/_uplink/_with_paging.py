@@ -1,5 +1,3 @@
-
-
 from ._json_model import JsonModel
 
 

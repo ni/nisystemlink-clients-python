@@ -59,7 +59,9 @@ def convert_results_to_dataframe(
 
 def convert_steps_to_dataframe(
     steps: List[Step],
-    is_valid_measurement: Callable[[Measurement], bool] | None = has_name_and_measurement,
+    is_valid_measurement: (
+        Callable[[Measurement], bool] | None
+    ) = has_name_and_measurement,
 ) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
 

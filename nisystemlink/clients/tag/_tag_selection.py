@@ -766,9 +766,7 @@ class TagSelection(tbase.ITagReader):
         else:
             raise ValueError("Cannot read a tag that is not in the selection")
 
-    def _create_value_reader(
-        self, tag: tbase.TagData
-    ) -> tbase.TagValueReader | None:
+    def _create_value_reader(self, tag: tbase.TagData) -> tbase.TagValueReader | None:
         if tag is None:
             raise ValueError("tag cannot be None")
 
@@ -795,9 +793,7 @@ class TagSelection(tbase.ITagReader):
 
             self._metadata[tag.path] = tag
 
-    def _update_values(
-        self, values: List[SerializedTagWithAggregates | None]
-    ) -> None:
+    def _update_values(self, values: List[SerializedTagWithAggregates | None]) -> None:
         if self._values is None:
             self._values = {}
 

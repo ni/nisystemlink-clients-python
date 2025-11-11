@@ -50,9 +50,7 @@ class HttpBufferedTagWriter(tbase.BufferedTagWriter):
         value: str,
         timestamp: datetime.datetime | None = None,
     ) -> Dict[str, Any]:
-        item: Dict[str, Any] = {
-            "value": {"value": value, "type": data_type.api_name}
-        }
+        item: Dict[str, Any] = {"value": {"value": value, "type": data_type.api_name}}
         if timestamp is not None:
             item["timestamp"] = TimestampUtilities.datetime_to_str(timestamp)
         return item

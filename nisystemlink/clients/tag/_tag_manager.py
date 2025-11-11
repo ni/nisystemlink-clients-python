@@ -5,15 +5,7 @@
 import asyncio
 import datetime
 import typing
-from typing import (
-    Any,
-    Awaitable,
-    Dict,
-    Iterable,
-    List,
-    Sequence,
-    Tuple
-)
+from typing import Any, Awaitable, Dict, Iterable, List, Sequence, Tuple
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient, HttpResponse
@@ -593,9 +585,7 @@ class TagManager(tbase.ITagReader):
 
         self._perform_delete(validated_paths)
 
-    def delete_async(
-        self, tags: Iterable[tbase.TagData | str]
-    ) -> Awaitable[None]:
+    def delete_async(self, tags: Iterable[tbase.TagData | str]) -> Awaitable[None]:
         """Asynchronously delete one or more tags from the server.
 
         Args:

@@ -94,8 +94,9 @@ def normalize_conditions_per_row(
 
 def convert_specs_to_dataframe(
     specs: List[Specification],
-    condition_format: Callable[[List[Condition]], List[Dict[str, Any]]] | None
-        = normalize_conditions_per_column,
+    condition_format: (
+        Callable[[List[Condition]], List[Dict[str, Any]]] | None
+    ) = normalize_conditions_per_column,
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the specs.
 
