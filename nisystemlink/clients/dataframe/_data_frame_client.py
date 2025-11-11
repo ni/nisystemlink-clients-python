@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable
 from io import BytesIO
-from typing import List
+from typing import List, Union
 
 try:
     import pyarrow as pa  # type: ignore
@@ -277,11 +277,12 @@ class DataFrameClient(BaseClient):
     def append_table_data(
         self,
         id: str,
-        data:
-            models.AppendTableDataRequest
-            | models.DataFrame
-            | "pa.RecordBatch"  # type: ignore[name-defined]
-            | Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
+        data: Union[
+            models.AppendTableDataRequest,
+            models.DataFrame,
+            "pa.RecordBatch",  # type: ignore[name-defined]
+            Iterable["pa.RecordBatch"],  # type: ignore[name-defined]
+        ] | None,
         *,
         end_of_data: bool | None = None,
     ) -> None:

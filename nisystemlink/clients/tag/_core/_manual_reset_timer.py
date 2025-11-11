@@ -6,7 +6,7 @@ import datetime
 import threading
 import traceback
 from types import TracebackType
-from typing import Any, Callable, List, Type
+from typing import Any, Callable, List, Optional, Type
 
 import events
 from nisystemlink.clients.core._internal._classproperty_support import (
@@ -38,10 +38,10 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
     # Under certain circumstances, mypy complains about the event not having a type hint
     # unless we specify it explicitly. (But we also need to delete the attribute so that
     # Events.__getattr__ can do its magic.)
-    elapsed: events._EventSlot = None  # type: ignore[assignment]
+    elapsed = None  # type: events._EventSlot
     del elapsed
 
-    __null_timer_impl: "ManualResetTimer" | None = None
+    __null_timer_impl: Optional["ManualResetTimer"] = None
 
     @ClasspropertySupport.classproperty
     def null_timer(cls) -> "ManualResetTimer":
