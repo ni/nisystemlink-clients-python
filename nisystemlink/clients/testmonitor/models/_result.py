@@ -39,7 +39,7 @@ class Result(JsonModel):
     total_time_in_seconds: Optional[float] = None
     """The total time that the result took to run in seconds."""
 
-    keywords: Optional[List[str]] = None
+    keywords: Optional[List[Optional[str]]] = None
     """A list of keywords that categorize this result."""
 
     properties: Optional[Dict[str, Optional[str]]] = None
@@ -48,10 +48,10 @@ class Result(JsonModel):
     operator: Optional[str] = None
     """The operator that ran the result."""
 
-    file_ids: Optional[List[str]] = None
+    file_ids: Optional[List[Optional[str]]] = None
     """A list of file ids that are attached to this result."""
 
-    data_table_ids: Optional[List[str]] = None
+    data_table_ids: Optional[List[Optional[str]]] = None
     """A list of data table ids that are attached to this result."""
 
     status_type_summary: Optional[Dict[StatusType, int]] = None
