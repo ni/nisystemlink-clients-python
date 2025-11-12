@@ -79,7 +79,9 @@ class _JsonModelConverter(converters.Factory):
                 return adapter.validate_python(response, by_alias=True, strict=True)
 
         origin = get_origin(_class)
-        modelable_origin = origin is Union or origin is UnionType or origin is dict or origin is list
+        modelable_origin = (
+            origin is Union or origin is UnionType or origin is dict or origin is list
+        )
         if modelable_origin or utils.is_subclass(_class, JsonModel):
             if _type_adapters.get(_class) is None:
                 _type_adapters[_class] = TypeAdapter(_class)
