@@ -1,18 +1,16 @@
-from typing import Optional
-
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class QuerySystemsRequest(JsonModel):
     """Model for query systems request."""
 
-    skip: Optional[int] = None
+    skip: int | None = None
     """Gets or sets the number of systems to skip."""
 
-    take: Optional[int] = None
+    take: int | None = None
     """Gets or sets number of systems to return maximum value is 1000."""
 
-    filter: Optional[str] = None
+    filter: str | None = None
     """The systems query filter is dynamic LINQ format.
 
     `id` : String representing the ID of the system.
@@ -60,9 +58,9 @@ class QuerySystemsRequest(JsonModel):
     `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable."""
 
-    projection: Optional[str] = None
+    projection: str | None = None
     """Gets or sets specifies the projection for resources.
     Use this field to receive specific properties of the model."""
 
-    order_by: Optional[str] = None
+    order_by: str | None = None
     """Gets or sets the order in which data returns."""

@@ -3,7 +3,6 @@
 """Implementation of ApiException."""
 
 import typing
-from typing import Optional
 
 from nisystemlink.clients import core
 
@@ -13,10 +12,10 @@ class ApiException(Exception):
 
     def __init__(
         self,
-        message: Optional[str] = None,
-        error: Optional[core.ApiError] = None,
-        http_status_code: Optional[int] = None,
-        inner: Optional[Exception] = None,
+        message: str | None = None,
+        error: core.ApiError | None = None,
+        http_status_code: int | None = None,
+        inner: Exception | None = None,
     ) -> None:
         """Initialize an exception.
 
@@ -33,12 +32,12 @@ class ApiException(Exception):
         self._inner = inner
 
     @property
-    def message(self) -> Optional[str]:  # noqa:D401
+    def message(self) -> str | None:  # noqa:D401
         """The error message."""
         return self._message
 
     @property
-    def error(self) -> Optional[core.ApiError]:  # noqa: D401
+    def error(self) -> core.ApiError | None:  # noqa: D401
         """The error information returned by the SystemLink API, or None if the API did
         not return one or the error occurred trying to call the API.
         """
@@ -48,12 +47,12 @@ class ApiException(Exception):
             return self._error.model_copy()
 
     @property
-    def http_status_code(self) -> Optional[int]:  # noqa: D401
+    def http_status_code(self) -> int | None:  # noqa: D401
         """The HTTP status code, if this exception was the result of an HTTP error."""
         return self._http_status_code
 
     @property
-    def inner_exception(self) -> Optional[Exception]:  # noqa: D401
+    def inner_exception(self) -> Exception | None:  # noqa: D401
         """The exception that caused this failure, if any."""
         return self._inner
 

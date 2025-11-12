@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.file.models._file_metadata import LinqQueryFileMetadata
@@ -6,7 +6,7 @@ from nisystemlink.clients.file.models._file_query_order_by import FileLinqQueryO
 
 
 class FileLinqQueryRequest(JsonModel):
-    filter: Optional[str] = None
+    filter: str | None = None
     """
     The filter criteria for files. Consists of a string of queries composed using AND/OR operators.
     String values and date strings need to be enclosed in double quotes. Parentheses can be used
@@ -15,13 +15,13 @@ class FileLinqQueryRequest(JsonModel):
     Example Filter syntax: '[property name][operator][operand] and [property name][operator][operand]'
     """
 
-    order_by: Optional[FileLinqQueryOrderBy] = None
+    order_by: FileLinqQueryOrderBy | None = None
     """The property by which to order the files in the response."""
 
-    order_by_descending: Optional[bool] = False
+    order_by_descending: bool | None = False
     """If true, the files are ordered in descending order based on the property specified in `order_by`."""
 
-    take: Optional[int] = None
+    take: int | None = None
     """The maximum number of files to return in the response. Default value is 1000"""
 
 

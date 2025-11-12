@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -19,7 +19,7 @@ class CalibrationStatus(Enum):
 class TemperatureSensor(JsonModel):
     """Temperature sensor information."""
 
-    name: Optional[str] = None
+    name: str | None = None
     """Gets or sets sensor name."""
 
     reading: float
@@ -27,10 +27,10 @@ class TemperatureSensor(JsonModel):
 
 
 class SelfCalibration(JsonModel):
-    temperature_sensors: Optional[List[TemperatureSensor]] = None
+    temperature_sensors: List[TemperatureSensor] | None = None
     """Gets or sets an array of temperature sensor information."""
 
-    is_limited: Optional[bool] = None
+    is_limited: bool | None = None
     """Gets or sets whether the last self-calibration of the asset was a limited calibration."""
 
     date: datetime
@@ -45,10 +45,10 @@ class CalibrationMode(Enum):
 
 
 class ExternalCalibration(JsonModel):
-    temperature_sensors: Optional[List[TemperatureSensor]] = None
+    temperature_sensors: List[TemperatureSensor] | None = None
     """Gets or sets an array of temperature sensor information."""
 
-    is_limited: Optional[bool] = None
+    is_limited: bool | None = None
     """Gets or sets whether the last external calibration of the asset was a limited calibration."""
 
     date: datetime
@@ -60,14 +60,14 @@ class ExternalCalibration(JsonModel):
     next_recommended_date: datetime
     """Gets or sets ISO-8601 formatted timestamp specifying the recommended date for the next external calibration."""
 
-    next_custom_due_date: Optional[datetime] = None
+    next_custom_due_date: datetime | None = None
     """Gets or sets ISO-8601 formatted timestamp specifying the date for the next external calibration."""
 
-    resolved_due_date: Optional[datetime] = None
+    resolved_due_date: datetime | None = None
     """Gets ISO-8601 formatted timestamp specifying the resolved due date for external calibration."""
 
-    comments: Optional[str] = None
+    comments: str | None = None
     """Gets or sets calibration comments provided by an operator."""
 
-    entry_type: Optional[CalibrationMode] = None
+    entry_type: CalibrationMode | None = None
     """Gets or sets whether automatically discovered the calibration data for an asset or manually entered."""

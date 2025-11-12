@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -18,5 +18,5 @@ class Column(JsonModel):
     column_type: ColumnType = ColumnType.Normal
     """The column type. Defaults to ColumnType.Normal."""
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """User-defined properties associated with the column."""

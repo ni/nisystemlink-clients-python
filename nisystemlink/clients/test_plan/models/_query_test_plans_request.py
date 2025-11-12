@@ -1,5 +1,5 @@
 import enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
@@ -50,22 +50,22 @@ class QueryTestPlansRequest(WithPaging):
     Allows filtering, sorting, and pagination of test plan results.
     """
 
-    filter: Optional[str] = None
+    filter: str | None = None
     """A string expression to filter the test plans returned by the query."""
 
-    take: Optional[int] = None
+    take: int | None = None
     """The maximum number of test plans to return in the response."""
 
-    order_by: Optional[OrderBy] = None
+    order_by: OrderBy | None = None
     """The field name to use for sorting the test plans."""
 
-    descending: Optional[bool] = None
+    descending: bool | None = None
     """Whether to sort the test plans in descending order."""
 
-    return_count: Optional[bool] = None
+    return_count: bool | None = None
     """Whether to include the total count of matching test plans in the response."""
 
-    projection: Optional[List[TestPlanField]] = None
+    projection: List[TestPlanField] | None = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
     all properties will be returned.

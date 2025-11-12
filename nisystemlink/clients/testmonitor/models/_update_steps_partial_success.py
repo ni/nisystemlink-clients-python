@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -12,13 +12,13 @@ class UpdateStepsPartialSuccess(JsonModel):
     steps: List[Step]
     """The list of steps that were successfully updated."""
 
-    failed: Optional[List[UpdateStepRequest]] = None
+    failed: List[UpdateStepRequest] | None = None
     """The list of steps that were not updated.
 
     If this is `None`, then all steps were successfully updated.
     """
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """Error messages for steps that were not updated.
 
     If this is `None`, then all steps were successfully updated.

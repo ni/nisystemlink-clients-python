@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import StrictFloat, StrictInt, StrictStr
@@ -18,20 +18,20 @@ class ConditionType(Enum):
 class ConditionRange(JsonModel):
     """Specifies the range of values that the condition must cover."""
 
-    min: Optional[float] = None
+    min: float | None = None
     """Minimum value of the condition range."""
 
-    max: Optional[float] = None
+    max: float | None = None
     """Maximum value of the condition range."""
 
-    step: Optional[float] = None
+    step: float | None = None
     """Step value of the condition range."""
 
 
 class ConditionValueBase(JsonModel):
     """The base type for conditions that can be represented in several styles."""
 
-    condition_type: Optional[ConditionType] = None
+    condition_type: ConditionType | None = None
     """Type of the Condition."""
 
 
@@ -41,17 +41,17 @@ class NumericConditionValue(ConditionValueBase):
     Numeric conditions can contain a combination of ranges and discrete lists.
     """
 
-    range: Optional[List[ConditionRange]] = None
+    range: List[ConditionRange] | None = None
     """List of condition range values."""
 
     # StrictFloat and StrictInt are used here because discrete is a common property for
     # NumericConditionValue and StringConditionValue.
     # If float/int is used, pydantic converts string of number into float/int by default
     # when deserializing a StringCondition JSON and misinterprets it as NumericConditionValue type.
-    discrete: Optional[List[Union[StrictFloat, StrictInt]]] = None
+    discrete: List[StrictFloat | StrictInt | None] | None = None
     """List of condition discrete values."""
 
-    unit: Optional[str] = None
+    unit: str | None = None
     """Unit of the condition."""
 
 
@@ -65,18 +65,18 @@ class StringConditionValue(ConditionValueBase):
     # NumericConditionValue and StringConditionValue.
     # If str is used, pydantic converts any datatype into string by default when deserializing a
     # NumericCondition JSON and misinterprets it as StringConditionValue type.
-    discrete: Optional[List[StrictStr]] = None
+    discrete: List[StrictStr] | None = None
     """List of condition discrete values."""
 
 
 class Condition(JsonModel):
     """A single condition."""
 
-    name: Optional[str] = None
+    name: str | None = None
     """Name of the condition."""
 
     # Ideal approach is to set the dtype here as ConditionValue and use pydantic discriminator to
     # deserialize/serialize the JSON into correct ConditionValue sub types. But Union of dtypes is
     # used here as the discriminator field could be none when projection is used in query API.
-    value: Optional[Union[NumericConditionValue, StringConditionValue]] = None
+    value: NumericConditionValue | StringConditionValue | None = None
     """Value of the condition."""

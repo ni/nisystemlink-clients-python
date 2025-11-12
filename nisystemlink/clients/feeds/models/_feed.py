@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -11,23 +11,23 @@ from ._platform import Platform
 class Feed(JsonModel):
     """Feed model."""
 
-    id: Optional[str] = None
+    id: str | None = None
     """The auto-generated ID of the feed."""
-    name: Optional[str] = None
+    name: str | None = None
     """The name of the feed."""
-    description: Optional[str] = None
+    description: str | None = None
     """The description of the feed."""
-    platform: Optional[Platform] = None
+    platform: Platform | None = None
     """The platform of the feed, the following package extensions are available: .nipkg for
     windows feeds, .ipk and .deb for ni-linux-rt feeds.
     """
-    workspace: Optional[str] = None
+    workspace: str | None = None
     """The ID of the workspace this feed belongs to."""
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
     """The date of the latest feed update"""
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
     """The date when the feed was created at."""
-    package_sources: Optional[List[str]] = None
+    package_sources: List[str] | None = None
     """The package sources list of the feed."""
-    deleted: Optional[bool] = None
+    deleted: bool | None = None
     """Whether the feed deletion was requested."""

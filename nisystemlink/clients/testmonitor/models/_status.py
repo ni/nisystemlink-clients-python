@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -26,7 +25,7 @@ class Status(JsonModel):
     status_type: StatusType
     """The type of status."""
 
-    status_name: Optional[str] = None
+    status_name: str | None = None
     """The name of the status."""
 
     @staticmethod

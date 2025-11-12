@@ -1,5 +1,5 @@
 import uuid
-from typing import cast, Dict, List, Optional
+from typing import cast, Dict, List
 
 import pytest
 from nisystemlink.clients.core._api_exception import ApiException
@@ -135,7 +135,7 @@ class TestTestMonitor:
     ):
         part_number = "Python Client Testing"
         keywords = ["testing"]
-        properties: Dict[str, Optional[str]] = {"test_property": "yes"}
+        properties: Dict[str, str | None] = {"test_property": "yes"}
         program_name = "Python Client Test Program"
         status = Status.PASSED()
         host_name = "Test Host"
@@ -409,10 +409,10 @@ class TestTestMonitor:
         self, client: TestMonitorClient, create_results
     ):
         new_key = "newKey"
-        original_properties: Dict[str, Optional[str]] = {"originalKey": "originalValue"}
+        original_properties: Dict[str, str | None] = {"originalKey": "originalValue"}
         program_name = "Python Client Test Program"
         status = Status.PASSED()
-        new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
+        new_properties: Dict[str, str | None] = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(
@@ -446,10 +446,10 @@ class TestTestMonitor:
     ):
         original_key = "originalKey"
         new_key = "newKey"
-        original_properties: Dict[str, Optional[str]] = {original_key: "originalValue"}
+        original_properties: Dict[str, str | None] = {original_key: "originalValue"}
         program_name = "Python Client Test Program"
         status = Status.PASSED()
-        new_properties: Dict[str, Optional[str]] = {new_key: "newValue"}
+        new_properties: Dict[str, str | None] = {new_key: "newValue"}
         create_response: CreateResultsPartialSuccess = create_results(
             [
                 CreateResultRequest(

@@ -3,7 +3,7 @@
 """Implementation of AsyncTagQueryResultCollection."""
 
 import abc
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core, tag as tbase
 
@@ -22,7 +22,7 @@ class AsyncTagQueryResultCollection(abc.ABC):
             skip: The skip used for the first page of results.
         """
         self._total_count = total_count
-        self._current_page = None  # type: Optional[List[tbase.TagData]]
+        self._current_page: List[tbase.TagData] | None = None
         if first_page:
             if skip >= total_count:
                 raise core.ApiException(
@@ -35,7 +35,7 @@ class AsyncTagQueryResultCollection(abc.ABC):
         self._current_skip = skip
 
     @property
-    def current_page(self) -> Optional[List[tbase.TagData]]:  # noqa: D401
+    def current_page(self) -> List[tbase.TagData] | None:  # noqa: D401
         """The current page of tag results that were last retrieved from the server, or
         None if there are no more results.
 
@@ -48,7 +48,7 @@ class AsyncTagQueryResultCollection(abc.ABC):
         """The total number of tags matched by the query at the time the query was made."""
         return self._total_count
 
-    async def move_next_page_async(self) -> Optional[List[tbase.TagData]]:
+    async def move_next_page_async(self) -> List[tbase.TagData] | None:
         """Asynchronously retrieve the next page of query results from the server,
         returning them and updating :attr:`current_page`.
 

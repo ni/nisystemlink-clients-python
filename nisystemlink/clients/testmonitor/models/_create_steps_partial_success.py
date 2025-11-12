@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -12,13 +12,13 @@ class CreateStepsPartialSuccess(JsonModel):
     steps: List[Step]
     """The list of steps that were successfully created."""
 
-    failed: Optional[List[CreateStepRequest]] = None
+    failed: List[CreateStepRequest] | None = None
     """The list of step requests that failed.
 
     If this is `None`, then all steps were successfully created.
     """
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """Error messages for steps that were not created.
 
     If this is `None`, then all steps were successfully created.

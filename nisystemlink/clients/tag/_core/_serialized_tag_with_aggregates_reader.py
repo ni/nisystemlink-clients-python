@@ -2,8 +2,6 @@
 
 """Implementation of SerializedTagWithAggregatesReader."""
 
-from typing import Optional
-
 from nisystemlink.clients import tag as tbase
 from nisystemlink.clients.tag._core._serialized_tag_with_aggregates import (
     SerializedTagWithAggregates,
@@ -35,7 +33,7 @@ class SerializedTagWithAggregatesReader(tbase.ITagReader):
 
     def _read(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[SerializedTagWithAggregates]:
+    ) -> SerializedTagWithAggregates | None:
         """Retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist. Clients
@@ -60,7 +58,7 @@ class SerializedTagWithAggregatesReader(tbase.ITagReader):
 
     async def _read_async(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[SerializedTagWithAggregates]:
+    ) -> SerializedTagWithAggregates | None:
         """Asynchronously retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist. Clients

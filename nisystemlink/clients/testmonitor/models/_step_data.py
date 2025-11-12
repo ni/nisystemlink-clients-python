@@ -1,24 +1,24 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import ConfigDict, Field
 
 
 class Measurement(JsonModel):
-    name: Optional[str] = None
-    status: Optional[str] = None
-    measurement: Optional[str] = None
-    lowLimit: Optional[str] = None
-    highLimit: Optional[str] = None
-    units: Optional[str] = None
-    comparisonType: Optional[str] = None
+    name: str | None = None
+    status: str | None = None
+    measurement: str | None = None
+    lowLimit: str | None = None
+    highLimit: str | None = None
+    units: str | None = None
+    comparisonType: str | None = None
     model_config = ConfigDict(extra="allow")
     __pydantic_extra__: Dict[str, str] = Field(init=False)
 
 
 class StepData(JsonModel):
-    text: Optional[str] = None
+    text: str | None = None
     """Text string describing the output data."""
 
-    parameters: Optional[List[Measurement]] = None
+    parameters: List[Measurement] | None = None
     """List of properties objects."""

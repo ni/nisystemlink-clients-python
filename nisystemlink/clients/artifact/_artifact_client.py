@@ -1,6 +1,6 @@
 """Implementation of ArtifactClient"""
 
-from typing import BinaryIO, Optional
+from typing import BinaryIO
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -18,7 +18,7 @@ from . import models
 
 
 class ArtifactClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:

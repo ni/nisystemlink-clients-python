@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -10,57 +10,57 @@ from ._execution_definition import ExecutionDefinition
 class TestPlanTemplateBase(JsonModel):
     """Contains information about a test plan template."""
 
-    name: Optional[str] = None
+    name: str | None = None
     """Name of the test plan template."""
 
-    template_group: Optional[str] = None
+    template_group: str | None = None
     """The template group defined by the user."""
 
-    product_families: Optional[List[str]] = None
+    product_families: List[str] | None = None
     """Array of product families to which the test plan template belongs."""
 
-    part_numbers: Optional[List[str]] = None
+    part_numbers: List[str] | None = None
     """Array of part numbers of the products to which the test plan template belongs."""
 
-    summary: Optional[str] = None
+    summary: str | None = None
     """Summary of the test plan template."""
 
-    description: Optional[str] = None
+    description: str | None = None
     """Description of the test plan created from this template."""
 
-    test_program: Optional[str] = None
+    test_program: str | None = None
     """Test program name of the test plan created from this template."""
 
-    estimated_duration_in_seconds: Optional[int] = None
+    estimated_duration_in_seconds: int | None = None
     """The estimated time in seconds for executing the test plan created from this template."""
 
-    system_filter: Optional[str] = None
+    system_filter: str | None = None
     """The LINQ filter string is used to filter the potential list of
     systems capable of executing test plans created from this template.
     """
 
-    dut_filter: Optional[str] = None
+    dut_filter: str | None = None
     """The LINQ filter string is used to filter the potential list of
     DUTs capable of executing test plans created from this template.
     """
 
-    execution_actions: Optional[List[ExecutionDefinition]] = None
+    execution_actions: List[ExecutionDefinition] | None = None
     """Defines the executions that will be used for test plan actions
     created from this template.
     """
 
-    file_ids: Optional[List[str]] = None
+    file_ids: List[str] | None = None
     """Array of file IDs associated with the test plan template."""
 
-    workspace: Optional[str] = None
+    workspace: str | None = None
     """ID of the workspace where the test plan template belongs.
     Default workspace will be taken if the value is not given.
     """
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """Properties of the test plan created from this template as key-value pairs."""
 
-    dashboard: Optional[Dashboard] = None
+    dashboard: Dashboard | None = None
     """Defines a dashboard reference for a test plan."""
 
 
@@ -69,22 +69,22 @@ class TestPlanTemplate(TestPlanTemplateBase):
 
     __test__ = False
 
-    id: Optional[str] = None
+    id: str | None = None
     """The globally unique id of the test plan template."""
 
-    name: Optional[str] = None
+    name: str | None = None
     """Name of the test plan template."""
 
-    created_by: Optional[str] = None
+    created_by: str | None = None
     """ID of the user who created the test plan template."""
 
-    updated_by: Optional[str] = None
+    updated_by: str | None = None
     """ID of the user who most recently updated the test plan template."""
 
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
     """ISO-8601 formatted timestamp indicating when the
     test plan template was created."""
 
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
     """ISO-8601 formatted timestamp indicating when the
     test plan template was most recently updated."""

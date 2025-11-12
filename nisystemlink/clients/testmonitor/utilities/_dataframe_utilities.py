@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List
 
 import pandas as pd
 from nisystemlink.clients.testmonitor.models import (
@@ -59,9 +59,9 @@ def convert_results_to_dataframe(
 
 def convert_steps_to_dataframe(
     steps: List[Step],
-    is_valid_measurement: Optional[
-        Callable[[Measurement], bool]
-    ] = has_name_and_measurement,
+    is_valid_measurement: (
+        Callable[[Measurement], bool] | None
+    ) = has_name_and_measurement,
 ) -> pd.DataFrame:
     """Converts a list of steps into a normalized dataframe.
 
@@ -187,7 +187,7 @@ def __is_property_header(header: str) -> bool:
 
 def __convert_steps_to_dict(
     steps: List[Step],
-    is_valid_measurement: Optional[Callable[[Measurement], bool]],
+    is_valid_measurement: Callable[[Measurement], bool] | None,
 ) -> List[Dict[str, Any]]:
     """Converts a list of steps to dictionaries, excluding None values.
 
@@ -213,7 +213,7 @@ def __convert_steps_to_dict(
 def __filter_invalid_measurements(
     step_dict: Dict[str, Any],
     step: Step,
-    is_valid_measurement: Optional[Callable[[Measurement], bool]],
+    is_valid_measurement: Callable[[Measurement], bool] | None,
 ) -> None:
     """Gets data parameters from the step dictionary and filters it based on the callback function.
 
