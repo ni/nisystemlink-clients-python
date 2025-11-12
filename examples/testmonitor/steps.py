@@ -103,7 +103,7 @@ update_response = client.update_steps(
                         highLimit="40",
                         units="C",
                         comparisonType="Numeric",
-                        spec_id="spec1"
+                        spec_id="spec1",
                     )
                 ],
             ),
