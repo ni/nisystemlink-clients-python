@@ -99,6 +99,71 @@ class DataFrameClient(BaseClient):
         """
         ...
 
+    # ---------------------------------------------------------------------------
+    # Intentionally Insecure Examples (FOR SNYK / SAST TESTING ONLY)
+    # ---------------------------------------------------------------------------
+    # These examples are NEVER executed at runtime (guarded by `if False:` below),
+    # but are present so that static analysis / SAST tooling (e.g., Snyk Code) can
+    # detect a representative variety of insecure coding patterns. Do NOT copy
+    # these into production code. Keep them self‑contained and side‑effect free.
+    
+    def _snyk_insecure_examples(user_input: str, sql_value: str, url: str, pickled: bytes):  # pragma: no cover
+        """Insecure code samples to trigger SAST findings.
+    
+        Patterns intentionally included:
+          - Hardcoded credentials / secrets
+          - Use of eval()
+          - subprocess with shell=True (command injection risk)
+          - Weak cryptographic hash (MD5)
+          - SQL query string concatenation (SQL injection)
+          - Unsafe deserialization via pickle.loads
+          - HTTP request with TLS verification disabled (verify=False)
+        """
+        # Hardcoded secrets / credentials
+        password = "P@ssw0rd!"  # hardcoded password
+        api_key = "AKIA1234567890FAKE"  # fake AWS-style access key
+    
+        # Dangerous dynamic evaluation
+        eval("print('Eval executed: ' + str(" + repr(user_input) + "))")
+    
+        # Command injection risk via shell=True
+        import subprocess
+        subprocess.run(f"echo {user_input}", shell=True)
+    
+        # Weak hashing (MD5)
+        import hashlib
+        md5_digest = hashlib.md5(user_input.encode("utf-8")).hexdigest()
+    
+        # SQL injection prone string building
+        query = "SELECT * FROM users WHERE name = '" + sql_value + "'"
+    
+        # Unsafe deserialization
+        import pickle
+        deserialized = pickle.loads(pickled)
+    
+        # Insecure HTTP request (certificate verification disabled)
+        import requests
+        r = requests.get(url, verify=False)
+    
+        return {
+            "password": password,
+            "api_key": api_key,
+            "md5": md5_digest,
+            "query": query,
+            "deserialized": deserialized,
+            "status": r.status_code,
+        }
+    
+    
+    # Guard to ensure the insecure examples never run during normal operation or tests
+    if False:  # pragma: no cover
+        _snyk_insecure_examples(
+            user_input="example",
+            sql_value="alice",
+            url="http://example.com",
+            pickled=b"\x80\x04\x95\x02\x00\x00\x00\x00\x00\x00\x00}.",  # benign small pickle for static analysis
+        )
+    
     @post("tables", return_key="id")
     def create_table(self, table: models.CreateTableRequest) -> str:
         """Create a new table with the provided metadata and column definitions.
