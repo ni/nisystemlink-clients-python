@@ -22,6 +22,12 @@ class TableMetadataModification(JsonModel):
     name: Optional[str] = None
     """The new name of the table."""
 
+    test_result_id: Optional[str] = None
+    """The new test result ID associated with the table. Set to an empty string to remove
+    the test result ID. Added in version 2 of the
+    :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.modify_metadata` operation. Older
+    versions of the service will ignore this value."""
+
     workspace: Optional[str] = None
     """The new workspace for the table. Changing the workspace requires
     permission to delete the table in its current workspace and permission to
