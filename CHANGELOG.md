@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.19.5 (2025-12-01)
+
+### Fix
+
+* Fix Test Monitor examples ([#169](https://github.com/ni/nisystemlink-clients-python/issues/169)) ([`b3588b1`](https://github.com/ni/nisystemlink-clients-python/commit/b3588b14821758c685b2bd3efbb05007b4c9f4a2))
+
 ## v2.19.4 (2025-10-24)
 
 ### Fix
