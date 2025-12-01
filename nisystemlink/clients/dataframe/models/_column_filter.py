@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -33,6 +32,6 @@ class ColumnFilter(JsonModel):
     * When ``value`` is ``NaN`` for a floating-point column, the operation must be ``NOT_EQUALS``.
     """
 
-    value: Optional[str] = None
+    value: str | None = None
     """The comparison value to use for filtering. An error will be returned if
     the value cannot be converted to the column's data type."""

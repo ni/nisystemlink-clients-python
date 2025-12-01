@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -49,9 +49,9 @@ class DataFrame(JsonModel):
     the table was created.
     """
 
-    columns: Optional[List[str]] = None
+    columns: List[str] | None = None
     """The names and order of the columns included in the data frame."""
 
-    data: List[List[Optional[str]]]
+    data: List[List[str | None]]
     """The data for each row with the order specified in the columns property.
     Must contain a value for each column in the columns property."""

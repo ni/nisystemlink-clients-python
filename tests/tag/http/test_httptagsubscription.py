@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from unittest import mock
 
 import events
@@ -154,7 +154,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
         )
 
         def on_tag_changed(
-            tag: tbase.TagData, reader: Optional[tbase.TagValueReader]
+            tag: tbase.TagData, reader: tbase.TagValueReader | None
         ) -> None:
             assert tag is not None
             assert tag.path
@@ -177,7 +177,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
         def check_args(
             data: Dict[str, Any],
             tag: tbase.TagData,
-            reader: Optional[tbase.TagValueReader],
+            reader: tbase.TagValueReader | None,
         ) -> None:
             assert tbase.DataType.from_api_name(data["type"]) == tag.data_type
             convert_value = value_converters[data["type"]]
@@ -229,7 +229,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
         assert self._client.all_requests.call_count == 2
 
         def on_tag_changed(
-            tag: tbase.TagData, reader: Optional[tbase.TagValueReader]
+            tag: tbase.TagData, reader: tbase.TagValueReader | None
         ) -> None:
             assert False, "Should not have received any updates"
 
@@ -255,7 +255,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
         updates = []
 
         def on_tag_changed(
-            tag: tbase.TagData, reader: Optional[tbase.TagValueReader]
+            tag: tbase.TagData, reader: tbase.TagValueReader | None
         ) -> None:
             updates.append((tag, reader))
 
@@ -339,7 +339,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
         )
 
         def on_tag_changed(
-            tag: tbase.TagData, value: Optional[tbase.TagValueReader]
+            tag: tbase.TagData, value: tbase.TagValueReader | None
         ) -> None:
             assert tag is not None
             assert tag.path
@@ -407,7 +407,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
         )
 
         def on_tag_changed(
-            tag: tbase.TagData, reader: Optional[tbase.TagValueReader]
+            tag: tbase.TagData, reader: tbase.TagValueReader | None
         ) -> None:
             assert tag is not None
             assert tag.path

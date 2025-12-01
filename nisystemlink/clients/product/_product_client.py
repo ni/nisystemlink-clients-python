@@ -1,6 +1,6 @@
 """Implementation of Product Client"""
 
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -16,7 +16,7 @@ from . import models
     on_exception=retry.CONNECTION_ERROR,
 )
 class ProductClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -56,9 +56,9 @@ class ProductClient(BaseClient):
     )
     def get_products_paged(
         self,
-        continuation_token: Optional[str] = None,
-        take: Optional[int] = None,
-        return_count: Optional[bool] = None,
+        continuation_token: str | None = None,
+        take: int | None = None,
+        return_count: bool | None = None,
     ) -> models.PagedProducts:
         """Reads a list of products.
 
@@ -169,7 +169,7 @@ class ProductClient(BaseClient):
     @post("delete-products", args=[Field("ids")])
     def delete_products(
         self, ids: List[str]
-    ) -> Optional[models.DeleteProductsPartialSuccess]:
+    ) -> models.DeleteProductsPartialSuccess | None:
         """Deletes multiple products.
 
         Args:

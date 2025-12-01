@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -26,7 +26,7 @@ class CreateSpecificationsRequestObject(SpecificationDefinition):
 class CreateSpecificationsRequest(JsonModel):
     """Create multiple specifications."""
 
-    specs: Optional[List[CreateSpecificationsRequestObject]] = None
+    specs: List[CreateSpecificationsRequestObject] | None = None
     """List of specifications to be created."""
 
 
@@ -72,10 +72,10 @@ class CreatedSpecification(BaseSpecificationResponse):
 class CreateSpecificationsPartialSuccess(JsonModel):
     """When some specs can not be created, this contains the list that was and was not created."""
 
-    created_specs: Optional[List[CreatedSpecification]] = None
+    created_specs: List[CreatedSpecification] | None = None
     """Information about the created specification(s)"""
 
-    failed_specs: Optional[List[CreateSpecificationsRequestObject]] = None
+    failed_specs: List[CreateSpecificationsRequestObject] | None = None
     """List of specification requests that failed during creation."""
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None

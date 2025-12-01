@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.testmonitor.models._create_steps_request import (
     BaseStepRequest,
@@ -6,8 +6,8 @@ from nisystemlink.clients.testmonitor.models._create_steps_request import (
 
 
 class UpdateStepRequest(BaseStepRequest):
-    name: Optional[str] = None
+    name: str | None = None
     """Step name."""
 
-    children: Optional[List["UpdateStepRequest"]] = None
+    children: List["UpdateStepRequest"] | None = None
     """Nested child steps."""

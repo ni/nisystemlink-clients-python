@@ -7,7 +7,7 @@ import sys
 import threading
 import typing
 import urllib.parse
-from typing import Any, Awaitable, Dict, Iterable, Optional, Tuple, Union
+from typing import Any, Awaitable, Dict, Iterable, Tuple
 
 from nisystemlink.clients import core
 
@@ -89,8 +89,8 @@ class _HttpClientAtUri:
         method: str,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Tuple[Any, HttpResponse]:
         client = self._client._client
         uri, params2 = _expand_uri_params(uri, params)
@@ -98,19 +98,19 @@ class _HttpClientAtUri:
         return _handle_response(response, method, uri), response
 
     def get(
-        self, uri: str, *, params: Optional[Dict[str, Optional[str]]] = None
+        self, uri: str, *, params: Dict[str, str | None] | None = None
     ) -> Tuple[Any, HttpResponse]:
         """Perform a GET request."""
         return self._request("GET", self._base_uri + uri, params=params)
 
     def head(
-        self, uri: str, *, params: Optional[Dict[str, Optional[str]]] = None
+        self, uri: str, *, params: Dict[str, str | None] | None = None
     ) -> Tuple[Any, HttpResponse]:
         """Perform a HEAD request."""
         return self._request("HEAD", self._base_uri + uri, params=params)
 
     def delete(
-        self, uri: str, *, params: Optional[Dict[str, Optional[str]]] = None
+        self, uri: str, *, params: Dict[str, str | None] | None = None
     ) -> Tuple[Any, HttpResponse]:
         """Perform a DELETE request."""
         return self._request("DELETE", self._base_uri + uri, params=params)
@@ -119,8 +119,8 @@ class _HttpClientAtUri:
         self,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Tuple[Any, HttpResponse]:
         """Perform a POST request."""
         return self._request("POST", self._base_uri + uri, params=params, data=data)
@@ -129,8 +129,8 @@ class _HttpClientAtUri:
         self,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Tuple[Any, HttpResponse]:
         """Perform a PUT request."""
         return self._request("PUT", self._base_uri + uri, params=params, data=data)
@@ -139,8 +139,8 @@ class _HttpClientAtUri:
         self,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Tuple[Any, HttpResponse]:
         """Perform a PATCH request."""
         return self._request("PATCH", self._base_uri + uri, params=params, data=data)
@@ -162,8 +162,8 @@ class _AsyncHttpClientAtUri:
         method: str,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Tuple[Any, HttpResponse]:
         client = self._client._async_client
         uri, params2 = _expand_uri_params(uri, params)
@@ -171,19 +171,19 @@ class _AsyncHttpClientAtUri:
         return _handle_response(response, method, uri), response
 
     def get(
-        self, uri: str, *, params: Optional[Dict[str, Optional[str]]] = None
+        self, uri: str, *, params: Dict[str, str | None] | None = None
     ) -> Awaitable[Tuple[Any, HttpResponse]]:
         """Perform a GET request."""
         return self._request("GET", self._base_uri + uri, params=params)
 
     def head(
-        self, uri: str, *, params: Optional[Dict[str, Optional[str]]] = None
+        self, uri: str, *, params: Dict[str, str | None] | None = None
     ) -> Awaitable[Tuple[Any, HttpResponse]]:
         """Perform a HEAD request."""
         return self._request("HEAD", self._base_uri + uri, params=params)
 
     def delete(
-        self, uri: str, *, params: Optional[Dict[str, Optional[str]]] = None
+        self, uri: str, *, params: Dict[str, str | None] | None = None
     ) -> Awaitable[Tuple[Any, HttpResponse]]:
         """Perform a DELETE request."""
         return self._request("DELETE", self._base_uri + uri, params=params)
@@ -192,8 +192,8 @@ class _AsyncHttpClientAtUri:
         self,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Awaitable[Tuple[Any, HttpResponse]]:
         """Perform a POST request."""
         return self._request("POST", self._base_uri + uri, params=params, data=data)
@@ -202,8 +202,8 @@ class _AsyncHttpClientAtUri:
         self,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Awaitable[Tuple[Any, HttpResponse]]:
         """Perform a PUT request."""
         return self._request("PUT", self._base_uri + uri, params=params, data=data)
@@ -212,8 +212,8 @@ class _AsyncHttpClientAtUri:
         self,
         uri: str,
         *,
-        params: Optional[Dict[str, Optional[str]]] = None,
-        data: Optional[Union[Dict[str, Any], Iterable[Any]]] = None
+        params: Dict[str, str | None] | None = None,
+        data: Dict[str, Any] | Iterable[Any] | None = None
     ) -> Awaitable[Tuple[Any, HttpResponse]]:
         """Perform a PATCH request."""
         return self._request("PATCH", self._base_uri + uri, params=params, data=data)
@@ -224,8 +224,8 @@ class _AsyncHttpClientAtUri:
 
 
 def _expand_uri_params(
-    uri: str, params: Optional[Dict[str, Optional[str]]]
-) -> Tuple[str, Optional[Dict[str, str]]]:
+    uri: str, params: Dict[str, str | None] | None
+) -> Tuple[str, Dict[str, str] | None]:
     """Expand any params in uri with a url-encoded version of the corresponding value in ``params``.
 
     Any matched params will be removed from params. Any unmatched params will be left

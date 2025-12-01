@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -10,8 +10,8 @@ class DeleteResultsPartialSuccess(JsonModel):
     ids: List[str]
     """The IDs of the results that were successfully deleted."""
 
-    failed: Optional[List[str]] = None
+    failed: List[str] | None = None
     """The IDs of the results that could not be deleted."""
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """The error that occurred when deleting the results."""

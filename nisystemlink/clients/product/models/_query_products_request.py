@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
@@ -42,7 +42,7 @@ class ProductProjection(str, Enum):
 
 
 class QueryProductsBase(JsonModel):
-    filter: Optional[str] = None
+    filter: str | None = None
     """
     The product query filter in Dynamic Linq format.
 
@@ -63,7 +63,7 @@ class QueryProductsBase(JsonModel):
     query string more simple and reusable.
     """
 
-    substitutions: Optional[List[str]] = None
+    substitutions: List[str] | None = None
     """String substitutions into the `filter`.
 
     Makes substitutions in the query filter expression. Substitutions for the query expression are
@@ -76,19 +76,19 @@ class QueryProductsBase(JsonModel):
 
 class QueryProductsRequest(QueryProductsBase):
 
-    order_by: Optional[ProductOrderBy] = Field(None, alias="orderBy")
+    order_by: ProductOrderBy | None = Field(None, alias="orderBy")
     """Specifies the fields to use to sort the products.
 
     By default, products are sorted by `id`
     """
 
-    descending: Optional[bool] = None
+    descending: bool | None = None
     """Specifies whether to return the products in descending order.
 
     By default, this value is `false` and products are sorted in ascending order.
     """
 
-    projection: Optional[List[ProductProjection]] = None
+    projection: List[ProductProjection] | None = None
     """Specifies the product fields to project.
 
     When a field value is given here, the corresponding field will be present in all returned products,
@@ -96,13 +96,13 @@ class QueryProductsRequest(QueryProductsBase):
     will be returned.
     """
 
-    take: Optional[int] = None
+    take: int | None = None
     """Maximum number of products to return in the current API response.
 
     Uses the default if the specified value is negative. The default value is `1000` products.
     """
 
-    continuation_token: Optional[str] = None
+    continuation_token: str | None = None
     """Allows users to continue the query at the next product that matches the given criteria.
 
     To retrieve the next page of products, pass the continuation token from the previous
@@ -111,7 +111,7 @@ class QueryProductsRequest(QueryProductsBase):
     token provided in each response.
     """
 
-    return_count: Optional[bool] = None
+    return_count: bool | None = None
     """If true, the response will include a count of all products matching the filter.
 
     By default, this value is `False` and count is not returned. Note that returning the count may
@@ -120,8 +120,8 @@ class QueryProductsRequest(QueryProductsBase):
 
 
 class QueryProductValuesRequest(QueryProductsBase):
-    field: Optional[ProductField] = None
+    field: ProductField | None = None
     """The product field to return for this query."""
 
-    starts_with: Optional[str] = None
+    starts_with: str | None = None
     """Only return string parameters prefixed by this value (case sensitive)."""

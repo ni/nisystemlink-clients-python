@@ -2,7 +2,7 @@
 
 """Implementation of HttpTagQueryResultCollection."""
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from nisystemlink.clients import tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient, HttpResponse
@@ -19,11 +19,11 @@ class HttpTagQueryResultCollection(tbase.TagQueryResultCollection):
     def __init__(
         self,
         client: HttpClient,
-        paths: Optional[str],
-        keywords: Optional[str],
-        properties: Optional[str],
+        paths: str | None,
+        keywords: str | None,
+        properties: str | None,
         skip: int,
-        take: Optional[int],
+        take: int | None,
         tag_query_result: Dict[str, Any],
         http_response: HttpResponse,
     ) -> None:

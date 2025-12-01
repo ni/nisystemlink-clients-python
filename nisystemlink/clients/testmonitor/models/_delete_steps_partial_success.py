@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -18,8 +18,8 @@ class DeleteStepsPartialSuccess(JsonModel):
     steps: List[StepIdResultIdPair]
     """The step_id and result_id pairs of the steps that were successfully deleted."""
 
-    failed: Optional[List[StepIdResultIdPair]] = None
+    failed: List[StepIdResultIdPair] | None = None
     """The step_id and result_id pairs of the steps that could not be deleted."""
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """The error that occurred when deleting the steps."""

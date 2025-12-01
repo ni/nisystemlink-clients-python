@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -36,7 +35,7 @@ class AssetPresenceWithSystemConnection(JsonModel):
     asset_presence: AssetPresenceStatus
     """Gets or sets the status of an asset's presence in a system."""
 
-    system_connection: Optional[SystemConnection] = None
+    system_connection: SystemConnection | None = None
     """Gets or sets whether or not the minion is connected to the server and has updated the server with its data."""
 
 
@@ -50,19 +49,19 @@ class AssetPresence(JsonModel):
 class _AssetLocation(JsonModel):
     """local model for information about the asset location, presence and the connection status of the system."""
 
-    minion_id: Optional[str] = None
+    minion_id: str | None = None
     """Gets or sets identifier of the minion where the asset is located."""
 
-    physical_location: Optional[str] = None
+    physical_location: str | None = None
     """Gets or sets the physical location of the asset."""
 
-    parent: Optional[str] = None
+    parent: str | None = None
     """Gets or sets the parent of the asset."""
 
-    resource_uri: Optional[str] = None
+    resource_uri: str | None = None
     """Gets or sets identifier of a resource."""
 
-    slot_number: Optional[int] = None
+    slot_number: int | None = None
     """Gets or sets the number of the slot in which the asset is located."""
 
 

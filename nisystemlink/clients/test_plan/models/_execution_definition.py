@@ -1,4 +1,4 @@
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Dict, List, Literal
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
@@ -29,7 +29,7 @@ class NotebookExecution(JsonModel):
     notebookId: str
     """ID of the notebook to execute."""
 
-    parameters: Optional[Dict[str, str]] = None
+    parameters: Dict[str, str] | None = None
     """	Dictionary of parameters that will be passed to the notebook when the execution is run."""
 
 
@@ -52,10 +52,10 @@ class JobExecution(JsonModel):
     type: Literal["JOB"] = Field(default="JOB")
     """Type of execution, default is 'JOB'."""
 
-    jobs: Optional[List[Job]] = None
+    jobs: List[Job] | None = None
     """List of jobs to execute."""
 
-    systemId: Optional[str] = None
+    systemId: str | None = None
     """Optional system ID where jobs will run."""
 
 
@@ -70,11 +70,6 @@ class NoneExecution(JsonModel):
 
 
 ExecutionDefinition = Annotated[
-    Union[
-        NotebookExecution,
-        ManualExecution,
-        JobExecution,
-        NoneExecution,
-    ],
+    NotebookExecution | ManualExecution | JobExecution | NoneExecution,
     Field(discriminator="type"),
 ]

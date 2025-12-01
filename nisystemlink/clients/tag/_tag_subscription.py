@@ -7,7 +7,7 @@ import contextlib
 import datetime
 import weakref
 from types import TracebackType
-from typing import Iterable, List, Optional, Type
+from typing import Iterable, List, Type
 
 import events
 from nisystemlink.clients import core, tag as tbase
@@ -30,7 +30,7 @@ class TagSubscription(events.Events, abc.ABC):
 
             Example::
 
-                def my_callback(tag: TagData, reader: Optional[TagValueReader]):
+                def my_callback(tag: TagData, reader: TagValueReader | None):
                     print("{} changed".format(tag.path))
                     if reader is None:
                         print(" - unknown data type")
@@ -53,7 +53,7 @@ class TagSubscription(events.Events, abc.ABC):
     """Send a heartbeat every 30 seconds based on a server-side expiration of 60 seconds."""
 
     def __init__(
-        self, paths: Iterable[str], heartbeat_timer: Optional[ManualResetTimer]
+        self, paths: Iterable[str], heartbeat_timer: ManualResetTimer | None
     ) -> None:
         """Initialize the instance.
 
@@ -211,15 +211,15 @@ class TagSubscription(events.Events, abc.ABC):
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> Optional[bool]:
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> bool | None:
         """Close server resources associated with the subscription.
 
         Further tag writes will not trigger new events.
         """
-        suppress: Optional[bool] = False
+        suppress: bool | None = False
         try:
             self.close()
         finally:
@@ -228,15 +228,15 @@ class TagSubscription(events.Events, abc.ABC):
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> Optional[bool]:
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> bool | None:
         """Asynchronously close server resources associated with the subscription.
 
         Further tag writes will not trigger new events.
         """
-        suppress: Optional[bool] = False
+        suppress: bool | None = False
         try:
             await self.close_async()
         finally:
@@ -244,7 +244,7 @@ class TagSubscription(events.Events, abc.ABC):
         return suppress
 
     def _on_tag_changed(
-        self, tag: tbase.TagData, value: Optional[tbase.TagValueReader]
+        self, tag: tbase.TagData, value: tbase.TagValueReader | None
     ) -> None:
         """Raise the :attr:`tag_changed` event.
 

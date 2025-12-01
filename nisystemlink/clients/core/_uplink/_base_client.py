@@ -1,6 +1,7 @@
 # mypy: disable-error-code = misc
 
-from typing import Any, Callable, Dict, get_origin, Optional, Type, Union
+from types import UnionType
+from typing import Any, Callable, Dict, get_origin, Type, Union
 
 import requests
 from nisystemlink.clients import core
@@ -13,7 +14,7 @@ from ._json_model import JsonModel
 
 
 @response_handler
-def _handle_http_status(response: Response) -> Optional[Response]:
+def _handle_http_status(response: Response) -> Response | None:
     """Checks an HTTP response's status code and raises an exception if necessary."""
     if 200 <= response.status_code < 300:
         # Return None for "204 No Content" responses.
@@ -52,7 +53,7 @@ class _JsonModelConverter(converters.Factory):
 
     def create_request_body_converter(
         self, _class: Type, _: commands.RequestDefinition
-    ) -> Optional[Callable[[JsonModel], Dict]]:
+    ) -> Callable[[JsonModel], Dict] | None:
         def encoder(model: JsonModel) -> Dict:
             return model.model_dump(mode="json", by_alias=True, exclude_unset=True)
 
@@ -63,8 +64,8 @@ class _JsonModelConverter(converters.Factory):
 
     def create_response_body_converter(
         self, _class: Type, _: commands.RequestDefinition
-    ) -> Optional[Callable[[Response], Any]]:
-        def decoder(response: Union[Response, Any]) -> Any:
+    ) -> Callable[[Response], Any] | None:
+        def decoder(response: Response | Any) -> Any:
             if response is None:
                 return None
 
@@ -78,7 +79,9 @@ class _JsonModelConverter(converters.Factory):
                 return adapter.validate_python(response, by_alias=True, strict=True)
 
         origin = get_origin(_class)
-        modelable_origin = origin is Union or origin is dict or origin is list
+        modelable_origin = (
+            origin is Union or origin is UnionType or origin is dict or origin is list
+        )
         if modelable_origin or utils.is_subclass(_class, JsonModel):
             if _type_adapters.get(_class) is None:
                 _type_adapters[_class] = TypeAdapter(_class)
@@ -99,7 +102,7 @@ class BaseClient(Consumer):
         """
         session = requests.Session()
         session.verify = configuration.verify
-        auth = None  # type: Optional[BasicAuth]
+        auth: BasicAuth | None = None
         if (configuration.username is not None) and (
             configuration.password is not None
         ):

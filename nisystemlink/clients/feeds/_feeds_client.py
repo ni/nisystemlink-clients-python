@@ -1,6 +1,6 @@
 """Implementation of SystemLink Feeds Client."""
 
-from typing import BinaryIO, List, Optional
+from typing import BinaryIO, List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -12,7 +12,7 @@ from . import models
 
 @retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class FeedsClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -47,14 +47,14 @@ class FeedsClient(BaseClient):
     @get("feeds", args=[Query, Query])
     def __query_feeds(
         self,
-        platform: Optional[str] = None,
-        workspace: Optional[str] = None,
+        platform: str | None = None,
+        workspace: str | None = None,
     ) -> models.QueryFeedsResponse:
         """Lists available feeds for the Platform `platform` under the Workspace `workspace`.
 
         Args:
-            platform (Optional[str]): Information about system platform. Defaults to None.
-            workspace (Optional[str]): Workspace id. Defaults to None.
+            platform (str | None): Information about system platform. Defaults to None.
+            workspace (str | None): Workspace id. Defaults to None.
 
         Returns:
             models.QueryFeedsResponse: List of feeds.
@@ -66,15 +66,15 @@ class FeedsClient(BaseClient):
 
     def query_feeds(
         self,
-        platform: Optional[models.Platform] = None,
-        workspace: Optional[str] = None,
+        platform: models.Platform | None = None,
+        workspace: str | None = None,
     ) -> List[models.Feed]:
         """Lists available feeds for the Platform `platform` under the Workspace `workspace`.
 
         Args:
-            platform (Optional[models.Platform]): Information about system platform.
+            platform (models.Platform | None): Information about system platform.
                 Defaults to None.
-            workspace (Optional[str]): Workspace id. Defaults to None.
+            workspace (str | None): Workspace id. Defaults to None.
 
         Returns:
             List[models.Feed]: List of feeds.

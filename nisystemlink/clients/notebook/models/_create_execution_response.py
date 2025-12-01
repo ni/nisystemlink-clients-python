@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -14,8 +14,8 @@ class CreatedExecution(Execution):
 class CreateExecutionsResponse(JsonModel):
     """Model for response to a request to create an execution."""
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """The error that occurred during the request, if any."""
 
-    executions: Optional[List[CreatedExecution]] = None
+    executions: List[CreatedExecution] | None = None
     """Gets or sets the collection of authorized executions."""

@@ -110,7 +110,10 @@ class TestSystemsClient:
         )
 
         assert query_virtual_system_response.data is not None
-        assert query_virtual_system_response.data[0]["id"] == minion_id
+        assert len(query_virtual_system_response.data) > 0
+        first_item = query_virtual_system_response.data[0]
+        assert first_item is not None
+        assert first_item["id"] == minion_id
 
     def test__remove_sytems(self, client: SystemsClient):
 
@@ -156,4 +159,7 @@ class TestSystemsClient:
         )
 
         assert response.data is not None
-        assert set(response.data[0].keys()) == {"id", "alias", "master", "host"}
+        assert len(response.data) > 0
+        first_item = response.data[0]
+        assert first_item is not None
+        assert set(first_item.keys()) == {"id", "alias", "master", "host"}

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
@@ -74,7 +74,7 @@ class ResultProjection(str, Enum):
 
 
 class QueryResultsBase(JsonModel):
-    filter: Optional[str] = None
+    filter: str | None = None
     """
     The result query filter in Dynamic Linq format.
     Allowed properties in the filter are:
@@ -102,7 +102,7 @@ class QueryResultsBase(JsonModel):
     query string more simple and reusable.
     """
 
-    substitutions: Optional[List[str]] = None
+    substitutions: List[str] | None = None
     """String substitutions into the `filter`.
     Makes substitutions in the query filter expression. Substitutions for the query expression are
     indicated by non-negative integers that are prefixed with the "at" symbol. Each substitution in
@@ -113,7 +113,7 @@ class QueryResultsBase(JsonModel):
 
 
 class QueryProductsBase(JsonModel):
-    product_filter: Optional[str] = None
+    product_filter: str | None = None
     """
     The product query filter in Dynamic Linq format.
     Allowed properties in the filter are:
@@ -131,7 +131,7 @@ class QueryProductsBase(JsonModel):
     query string more simple and reusable.
     """
 
-    product_substitutions: Optional[List[str]] = None
+    product_substitutions: List[str] | None = None
     """String substitutions into the `filter`.
     Makes substitutions in the query filter expression. Substitutions for the query expression are
     indicated by non-negative integers that are prefixed with the "at" symbol. Each substitution in
@@ -143,33 +143,33 @@ class QueryProductsBase(JsonModel):
 
 class QueryResultsRequest(QueryResultsBase, QueryProductsBase, WithPaging):
 
-    order_by: Optional[ResultOrderByField] = Field(None, alias="orderBy")
+    order_by: ResultOrderByField | None = Field(None, alias="orderBy")
     """Specifies the fields to use to sort the results.
     By default, results are sorted by `id`
     """
-    order_by_key: Optional[str] = Field(None, alias="orderByKey")
+    order_by_key: str | None = Field(None, alias="orderByKey")
     """Specifies the property to use to sort the results when ordering by PROPERTIES.
     Results that do not contain the orderByKey will be considered the smallest value.
     """
-    order_by_comparison_type: Optional[ComparisonType] = Field(
+    order_by_comparison_type: ComparisonType | None = Field(
         None, alias="orderByComparisonType"
     )
     """An enumeration of comparison types that can be used for ordered queries.
     For non-DEFAULT comparisons, values that cannot be converted will be considered the smallest value.
     """
-    descending: Optional[bool] = None
+    descending: bool | None = None
     """Specifies whether to return the results in descending order.
     By default, this value is `false` and results are sorted in ascending order.
     """
-    projection: Optional[List[ResultProjection]] = None
+    projection: List[ResultProjection] | None = None
     """Specifies the fields to include in the returned results.
     Fields you do not specify are excluded. Returns all fields if no value is specified.
     """
-    take: Optional[int] = None
+    take: int | None = None
     """Maximum number of results to return in the current API response.
     Uses the default if the specified value is negative. The default value is `1000` results.
     """
-    return_count: Optional[bool] = None
+    return_count: bool | None = None
     """If true, the response will include a count of all results matching the filter.
     By default, this value is `False` and count is not returned. Note that returning the count may
     incur performance penalties as the service may have to do a complete walk of the database to
@@ -177,8 +177,8 @@ class QueryResultsRequest(QueryResultsBase, QueryProductsBase, WithPaging):
 
 
 class QueryResultValuesRequest(QueryResultsBase):
-    field: Optional[ResultField] = None
+    field: ResultField | None = None
     """The result field to return for this query."""
 
-    starts_with: Optional[str] = None
+    starts_with: str | None = None
     """Only return string parameters prefixed by this value (case sensitive)."""
