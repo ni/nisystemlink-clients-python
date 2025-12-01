@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.20.0 (2025-12-01)
+
+### Feature
+
+* DFS support for test result ID, column name queries, and interactive queries ([#164](https://github.com/ni/nisystemlink-clients-python/issues/164)) ([`468ab06`](https://github.com/ni/nisystemlink-clients-python/commit/468ab06efd30179b5c2e0873c417afffe824292d))
+
 ## v2.19.5 (2025-12-01)
 
 ### Fix
