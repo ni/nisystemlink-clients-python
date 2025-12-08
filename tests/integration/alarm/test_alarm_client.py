@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import List
 
 import pytest
-from nisystemlink.clients.alarm._alarm_client import AlarmClient
+from nisystemlink.clients.alarm import AlarmClient
 from nisystemlink.clients.alarm.models import (
     AcknowledgeByInstanceIdRequest,
     AcknowledgeByInstanceIdResponse,
