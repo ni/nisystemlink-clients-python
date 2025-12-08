@@ -35,6 +35,13 @@ class ExportTableDataRequest(JsonModel):
     filtering do not need to be included in the columns list, in which case
     they are not included in the export."""
 
+    take: int | None = None
+    """The maximum number of rows to include in the export. If ``None``
+    (the default), all rows are included. Added in version 3 of the
+    :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.read_data`
+    operation. Older versions of the service will ignore this value and
+    always include rows."""
+
     response_format: ExportFormat
     """The format of the exported data. The only response format
     currently supported is ``CSV``."""
