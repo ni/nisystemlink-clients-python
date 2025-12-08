@@ -77,7 +77,6 @@ class TestAlarmClient:
     ):
         alarm_id = unique_identifier
         severity_level = 3
-        condition = "Test Condition"
 
         response: CreateOrUpdateAlarmResponse = create_alarms(alarm_id)
 
@@ -240,8 +239,6 @@ class TestAlarmClient:
             client.delete_instances_by_instance_id(delete_request)
         )
 
-        print(delete_response)
-        
         assert delete_response is not None
         assert instance_id1 in delete_response.deleted
         assert instance_id2 in delete_response.deleted

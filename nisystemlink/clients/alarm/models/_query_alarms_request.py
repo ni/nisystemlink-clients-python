@@ -30,37 +30,39 @@ class QueryWithFilterRequest(JsonModel):
 
     filter: Optional[str] = None
     """The alarm query filter in Dynamic Linq.
-    
-    Allowed properties in the filter are: acknowledged, acknowledgedAt, active, alarmId, 
-    channel, clear, createdBy, currentSeverityLevel, description, displayName, 
-    highestSeverityLevel, keywords, mostRecentSetOccurredAt, mostRecentTransitionOccurredAt, 
+
+    Allowed properties in the filter are: acknowledged, acknowledgedAt, active, alarmId,
+    channel, clear, createdBy, currentSeverityLevel, description, displayName,
+    highestSeverityLevel, keywords, mostRecentSetOccurredAt, mostRecentTransitionOccurredAt,
     occurredAt, occurredWithin, properties, resourceType, workspace, workspaceName.
-    
-    Allowed constants: RelativeTime.CurrentDay, RelativeTime.CurrentWeek, 
+
+    Allowed constants: RelativeTime.CurrentDay, RelativeTime.CurrentWeek,
     RelativeTime.CurrentMonth, RelativeTime.CurrentYear.
     """
 
     substitutions: Optional[List[Union[bool, int, str, None]]] = None
     """Makes substitutions in the query filter expression.
-    
-    Substitutions for the query expression are indicated by non-negative integers that are 
-    prefixed with the @ symbol. Each substitution in the given expression will be replaced by 
+
+    Substitutions for the query expression are indicated by non-negative integers that are
+    prefixed with the @ symbol. Each substitution in the given expression will be replaced by
     the element at the corresponding index (zero-based) in this list.
     """
 
     return_most_recently_occurred_only: bool = False
     """Whether or not the Alarm Service should group the alarms matched by this query by alarmId.
-    
-    When true, only return the most recent alarm for each grouping. In this context, recency is 
+
+    When true, only return the most recent alarm for each grouping. In this context, recency is
     based on when the alarm occurred, not when it was last updated.
     """
 
-    transition_inclusion_option: TransitionInclusionOption = TransitionInclusionOption.NONE
+    transition_inclusion_option: TransitionInclusionOption = (
+        TransitionInclusionOption.NONE
+    )
     """Determines which transitions to include in the query results, if any."""
 
     reference_time: Optional[datetime] = None
     """The date and time to use as the reference point for RelativeTime filters.
-    
+
     Includes time zone information. Defaults to the current time in UTC.
     """
 
@@ -69,25 +71,25 @@ class QueryWithFilterRequest(JsonModel):
 
     order_by: AlarmOrderBy = AlarmOrderBy.UPDATED_AT
     """The sort order of the returned list of alarms.
-    
+
     By default, alarms are sorted in ascending order based on the specified value.
     """
 
     order_by_descending: bool = False
     """Whether to sort descending instead of ascending.
-    
+
     The elements in the list are sorted ascending by default. If true, sorts descending.
     """
 
     continuation_token: Optional[str] = None
     """A token which allows the user to resume a query at the next item in the matching results.
-    
-    When querying, a token will be returned if a query may be continued. To obtain the next page 
+
+    When querying, a token will be returned if a query may be continued. To obtain the next page
     of results, pass the token to the service on a subsequent request.
     """
 
     return_count: bool = False
     """Whether to return the total number of alarms that match the provided filter.
-    
+
     This disregards the take value.
     """

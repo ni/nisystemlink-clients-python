@@ -5,7 +5,7 @@ from typing import Optional
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
-from uplink import Path, retry
+from uplink import retry
 
 from . import models
 
@@ -56,7 +56,7 @@ class AlarmClient(BaseClient):
     ) -> models.CreateOrUpdateAlarmResponse:
         """Creates or updates an instance, or occurrence, of an alarm.
 
-        Creates or updates an alarm based on the requested transition and the state 
+        Creates or updates an alarm based on the requested transition and the state
         of the current active alarm with the given alarmId.
 
         Args:
@@ -127,7 +127,7 @@ class AlarmClient(BaseClient):
             request: The request containing filter information and query options.
 
         Returns:
-            A response containing the list of alarms that match the query, along with 
+            A response containing the list of alarms that match the query, along with
             optional total count and continuation token for pagination.
 
         Raises:

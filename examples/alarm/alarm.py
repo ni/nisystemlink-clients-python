@@ -5,7 +5,6 @@ from nisystemlink.clients.alarm import AlarmClient
 from nisystemlink.clients.alarm.models import (
     AcknowledgeByInstanceIdRequest,
     CreateOrUpdateAlarmRequest,
-    DeleteByInstanceIdRequest,
     QueryWithFilterRequest,
 )
 from nisystemlink.clients.alarm.models._alarm import AlarmTransitionType
