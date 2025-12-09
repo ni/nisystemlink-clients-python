@@ -139,9 +139,10 @@ class TestDataFrame:
             if actual_row_count >= minimum_row_count:
                 return actual_row_count
 
-        assert (
-            False
-        ), f"Failed to get expected row count {minimum_row_count} after {max_attempts} attempts (last count: {actual_row_count})"
+        assert False, (
+            f"Failed to get expected row count {minimum_row_count} after "
+            f"{max_attempts} attempts (last count: {actual_row_count})"
+        )
 
     def _new_single_int_table(self, create_table, column_name: str = "a") -> str:
         return create_table(
