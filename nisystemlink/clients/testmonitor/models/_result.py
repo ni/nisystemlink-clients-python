@@ -39,7 +39,7 @@ class Result(JsonModel):
     total_time_in_seconds: float | None = None
     """The total time that the result took to run in seconds."""
 
-    keywords: List[str] | None = None
+    keywords: List[str | None] | None = None
     """A list of keywords that categorize this result."""
 
     properties: Dict[str, str | None] | None = None
@@ -48,10 +48,10 @@ class Result(JsonModel):
     operator: str | None = None
     """The operator that ran the result."""
 
-    file_ids: List[str] | None = None
+    file_ids: List[str | None] | None = None
     """A list of file ids that are attached to this result."""
 
-    data_table_ids: List[str] | None = None
+    data_table_ids: List[str | None] | None = None
     """A list of data table ids that are attached to this result."""
 
     status_type_summary: Dict[StatusType, int] | None = None

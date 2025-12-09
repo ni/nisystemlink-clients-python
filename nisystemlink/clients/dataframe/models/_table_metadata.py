@@ -39,5 +39,10 @@ class TableMetadata(JsonModel):
     supports_append: bool
     """Whether the table supports appending additional rows of data."""
 
+    test_result_id: str | None = None
+    """The ID of the test result associated with the table. Added in version 2 of the
+    :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.list_tables` operation. This
+    value will always be ``None`` when communicating with older versions of the service."""
+
     workspace: str
     """The workspace the table belongs to."""

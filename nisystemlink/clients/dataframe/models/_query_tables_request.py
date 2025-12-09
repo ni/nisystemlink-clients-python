@@ -17,6 +17,8 @@ class QueryTablesRequest(WithPaging):
 
     Allowed properties in the filter are:
 
+    * ``columns``: List of columns in the table (see below; requires version 2 of the
+      :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.list_tables` operation)
     * ``createdAt``: DateTime the table was created
     * ``createdWithin``: TimeSpan in which the table was created
     * ``id``: String value uniquely identifying the table
@@ -32,8 +34,14 @@ class QueryTablesRequest(WithPaging):
     * ``rowCount``: Int32 number of rows in the table
     * ``supportsAppend``: Boolean indicating whether or not the table supports
       appending additional rows of data
-    * ``workspace``: String value ID of the workspace the table belongs to
-    * ``workspaceName``: String value name of the workspace the table belongs to
+    * ``testResultId``: String ID of the test result associated with the table (requires version 2
+      of the :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.list_tables` operation)
+    * ``workspace``: String ID of the workspace the table belongs to
+    * ``workspaceName``: String name of the workspace the table belongs to
+
+    Allowed properties in the ``columns`` list are:
+
+    * ``name``: String name of the column (requires a ``testResultId`` filter)
 
     Allowed constants in the filter are:
 
@@ -76,3 +84,9 @@ class QueryTablesRequest(WithPaging):
     string. The elements in the list are sorted ascending if false and
     descending if true.
     """
+
+    interactive: bool | None = None
+    """Whether the query is being made within an interactive context, such as a web UI.
+    Interactive queries receive faster feedback for slow queries. Added in version 2 of the
+    :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.list_tables` operation.
+    Older versions of the service will ignore this value."""

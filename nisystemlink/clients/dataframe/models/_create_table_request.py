@@ -18,5 +18,11 @@ class CreateTableRequest(JsonModel):
     properties: Dict[str, str] | None = None
     """User-defined properties to associate with the table."""
 
+    test_result_id: str | None = None
+    """The ID of the test result associated with the table. A value of ``None`` or an empty string
+    indicates there is no associated test result. Added in version 2 of the
+    :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.create_tables` operation. Older
+    versions of the service will ignore this value."""
+
     workspace: str | None = None
     """The workspace to create the table in. Uses the default workspace when not specified."""

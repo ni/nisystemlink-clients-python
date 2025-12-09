@@ -11,8 +11,7 @@ class ColumnMetadataPatch(JsonModel):
 
     properties: Dict[str, str | None]
     """The properties to modify. A map of key value properties containing the metadata
-    to be added or modified. Setting a property value to ``None`` will delete the
-    property."""
+    to be added or modified. Set a property value to ``None`` to delete the property."""
 
 
 class ModifyTableRequest(JsonModel):
@@ -27,17 +26,23 @@ class ModifyTableRequest(JsonModel):
     state."""
 
     name: str | None = None
-    """The new name of the table. Setting to ``None`` will reset the name to the table's ID."""
+    """The new name of the table. Set to ``None`` to reset the name to the table's ID."""
+
+    test_result_id: str | None = None
+    """The new test result ID associated with the table. Set to ``None`` or an empty string to
+    remove the test result ID. Added in version 2 of the
+    :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.modify_metadata` operation. Older
+    versions of the service will ignore this value."""
 
     workspace: str | None = None
-    """The new workspace for the table. Setting to ``None`` will reset to the
+    """The new workspace for the table. Set to ``None`` to reset to the
     default workspace. Changing the workspace requires permission to delete the
     table in its current workspace and permission to create the table in its new
     workspace."""
 
     properties: Dict[str, str | None] | None = None
     """The properties to modify. A map of key value properties containing the
-    metadata to be added or modified. Setting a property value to ``None`` will
+    metadata to be added or modified. Set a property value to ``None`` to
     delete the property."""
 
     columns: List[ColumnMetadataPatch] | None = None

@@ -104,9 +104,6 @@ update_response = client.update_steps(
                         units="C",
                         comparisonType="Numeric",
                         spec_id="spec1",
-                        spec_info={
-                            "specKey": 10
-                        },  # will be converted to string as '{"specKey": 10}'
                     )
                 ],
             ),

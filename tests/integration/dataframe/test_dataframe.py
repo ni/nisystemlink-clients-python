@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+import warnings
 from datetime import datetime, timezone
-from typing import List
+from typing import Callable, List, TypedDict
 
 import pytest  # type: ignore
 import responses
@@ -29,6 +30,10 @@ from nisystemlink.clients.dataframe.models import (
     TableMetadataModification,
 )
 from responses import matchers
+
+_TestResultIdArg = TypedDict(
+    "_TestResultIdArg", {"test_result_id": str | None}, total=False
+)
 
 int_index_column = Column(
     name="index", data_type=DataType.Int32, column_type=ColumnType.Index
@@ -83,6 +88,21 @@ def test_tables(create_table):
     return ids
 
 
+@pytest.fixture(scope="class")
+def supports_test_result_id(client: DataFrameClient) -> bool:
+    """Fixture to determine if the server supports test result IDs."""
+    api_info = client.api_info()
+    result = api_info.operations.create_tables.version >= 2
+    if not result:
+        warnings.warn(
+            (
+                "The selected version of the DataFrame Service does not support test "
+                "result IDs. Tests will not attempt to set a test result ID."
+            )
+        )
+    return result
+
+
 @pytest.mark.enterprise
 @pytest.mark.integration
 class TestDataFrame:
@@ -125,6 +145,43 @@ class TestDataFrame:
                 properties={},
             ),
         ]
+        assert table_metadata.test_result_id is None
+
+    def test__create_table__supports_test_result(
+        self,
+        client: DataFrameClient,
+        create_table: Callable[[CreateTableRequest], str],
+        supports_test_result_id: bool,
+    ):
+        test_result_id = "Test result" if supports_test_result_id else None
+        id = create_table(
+            CreateTableRequest(
+                columns=[
+                    Column(
+                        name="index",
+                        data_type=DataType.Int32,
+                        column_type=ColumnType.Index,
+                    )
+                ],
+                name="Test table with test result ID",
+                test_result_id=test_result_id,
+            )
+        )
+
+        table = client.get_table_metadata(id)
+        assert table.test_result_id == test_result_id
+
+        page = client.list_tables(take=1, id=[id])
+        assert len(page.tables) == 1
+        assert page.tables[0].test_result_id == test_result_id
+        assert page.continuation_token is None
+
+        page = client.query_tables(
+            QueryTablesRequest(filter="id == @0", substitutions=[id], take=1)
+        )
+        assert len(page.tables) == 1
+        assert page.tables[0].test_result_id == test_result_id
+        assert page.continuation_token is None
 
     def test__get_table__correct_timestamp(self, client: DataFrameClient, create_table):
         id = create_table(basic_table_model)
@@ -187,7 +244,9 @@ class TestDataFrame:
         assert len(second_page.tables) == 1
         assert second_page.continuation_token is None
 
-    def test__modify_table__returns(self, client: DataFrameClient, create_table):
+    def test__modify_table__returns(
+        self, client: DataFrameClient, create_table, supports_test_result_id: bool
+    ):
         id = create_table(basic_table_model)
 
         client.modify_table(
@@ -199,12 +258,18 @@ class TestDataFrame:
                 columns=[
                     ColumnMetadataPatch(name="index", properties={"sheep": "baa"})
                 ],
+                **self._test_result_id_if_supported(
+                    "Test result", supports_test_result_id
+                ),
             ),
         )
         table = client.get_table_metadata(id)
 
         assert table.metadata_revision == 2
         assert table.name == "Modified table"
+        assert table.test_result_id == (
+            "Test result" if supports_test_result_id else None
+        )
         assert table.properties == {"cow": "moo"}
         assert table.columns[0].properties == {"sheep": "baa"}
 
@@ -213,6 +278,9 @@ class TestDataFrame:
 
         assert table.properties == {"cow": "moo", "bee": "buzz"}
         assert table.name == "Modified table"
+        assert table.test_result_id == (
+            "Test result" if supports_test_result_id else None
+        )
 
         client.modify_table(
             id,
@@ -221,14 +289,22 @@ class TestDataFrame:
                 name=None,
                 properties={"cow": None},
                 columns=[ColumnMetadataPatch(name="index", properties={"sheep": None})],
+                **self._test_result_id_if_supported(None, supports_test_result_id),
             ),
         )
         table = client.get_table_metadata(id)
 
         assert table.metadata_revision == 4
         assert table.name == id
+        assert table.test_result_id is None
         assert table.properties == {"bee": "buzz"}
         assert table.columns[0].properties == {}
+
+    @staticmethod
+    def _test_result_id_if_supported(
+        test_result_id: str | None, supports_test_result_id: bool
+    ) -> _TestResultIdArg:
+        return {"test_result_id": test_result_id} if supports_test_result_id else {}
 
     def test__delete_table__deletes(self, client: DataFrameClient):
         id = client.create_table(
@@ -258,13 +334,16 @@ class TestDataFrame:
         assert len(response.error.inner_errors) == 1
 
     def test__modify_tables__modifies_tables(
-        self, client: DataFrameClient, create_table
+        self, client: DataFrameClient, create_table, supports_test_result_id: bool
     ):
         ids = [create_table(basic_table_model) for _ in range(3)]
 
         updates = [
             TableMetadataModification(
-                id=id, name="Modified table", properties={"duck": "quack"}
+                id=id,
+                name="Modified table",
+                test_result_id="Test result" if supports_test_result_id else None,
+                properties={"duck": "quack"},
             )
             for id in ids
         ]
@@ -273,6 +352,9 @@ class TestDataFrame:
 
         for table in client.list_tables(id=ids).tables:
             assert table.name == "Modified table"
+            assert table.test_result_id == (
+                "Test result" if supports_test_result_id else None
+            )
             assert table.properties == {"duck": "quack"}
 
         updates = [
@@ -285,15 +367,34 @@ class TestDataFrame:
         )
 
         for table in client.list_tables(id=ids).tables:
+            assert table.name == "Modified table"
+            assert table.test_result_id == (
+                "Test result" if supports_test_result_id else None
+            )
             assert table.properties == {"pig": "oink"}
 
+        if supports_test_result_id:
+            updates = [
+                TableMetadataModification(id=id, test_result_id="") for id in ids
+            ]
+
+            assert client.modify_tables(ModifyTablesRequest(tables=updates)) is None
+
+            for table in client.list_tables(id=ids).tables:
+                assert table.name == "Modified table"
+                assert table.test_result_id is None
+
     def test__modify_tables__returns_partial_success(
-        self, client: DataFrameClient, create_table
+        self, client: DataFrameClient, create_table, supports_test_result_id: bool
     ):
         id = create_table(basic_table_model)
 
         updates = [
-            TableMetadataModification(id=id, name="Modified table")
+            TableMetadataModification(
+                id=id,
+                name="Modified table",
+                test_result_id="Test result" if supports_test_result_id else None,
+            )
             for id in [id, "invalid_id"]
         ]
 
