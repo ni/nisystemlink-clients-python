@@ -4,8 +4,7 @@
 
 import json
 import pathlib
-import typing
-from typing import Dict, Optional
+from typing import Dict
 
 import yaml
 from nisystemlink.clients import core
@@ -30,12 +29,12 @@ class HttpConfigurationManager:
     _SALT_GRAINS_WORKSPACE_KEY = "systemlink_workspace"
     """Key of Workspace ID stored in the salt grains config file."""
 
-    _configs: Optional[Dict[str, core.HttpConfiguration]] = None
-    _virtual_configs: Optional[Dict[str, core.HttpConfiguration]] = None
+    _configs: Dict[str, core.HttpConfiguration] | None = None
+    _virtual_configs: Dict[str, core.HttpConfiguration] | None = None
 
     @classmethod
     def get_configuration(
-        cls, id: Optional[str] = None, enable_fallbacks: Optional[bool] = True
+        cls, id: str | None = None, enable_fallbacks: bool | None = True
     ) -> core.HttpConfiguration:
         """Get the requested or default configuration.
 
@@ -77,7 +76,7 @@ class HttpConfigurationManager:
         raise core.ApiException("Configuration with ID {!r} was not found.".format(id))
 
     @classmethod
-    def _fallback(cls) -> Optional[core.HttpConfiguration]:
+    def _fallback(cls) -> core.HttpConfiguration | None:
         """Attempt to acquire fallback HTTP configurations.
 
         Returns:
@@ -110,7 +109,7 @@ class HttpConfigurationManager:
             A dictionary mapping each loaded configuration ID to its corresponding
             :class:`HttpConfiguration`.
         """
-        configurations = {}  # type: Dict[str, core.HttpConfiguration]
+        configurations: Dict[str, core.HttpConfiguration] = {}
         try:
             configurations[cls._HTTP_JUPYTER_CONFIGURATION_ID] = (
                 core.JupyterHttpConfiguration()
@@ -135,7 +134,7 @@ class HttpConfigurationManager:
             ApiException: if an OS or permission error prevents reading the directory
                 that contains HTTP configurations.
         """
-        configurations = {}  # type: Dict[str, core.HttpConfiguration]
+        configurations: Dict[str, core.HttpConfiguration] = {}
         path = cls._http_configurations_directory()
         if not path.exists():
             return configurations
@@ -162,13 +161,12 @@ class HttpConfigurationManager:
                 if not config_file.uri:
                     continue
 
-                cert_path = None  # type: Optional[pathlib.Path]
+                cert_path: pathlib.Path | None = None
                 if config_file.cert_path:
-                    cert_path = typing.cast(
-                        pathlib.Path,
+                    cert_path = (
                         PathConstants.application_data_directory
                         / "Certificates"
-                        / config_file.cert_path,
+                        / config_file.cert_path
                     )
                     if not cert_path.exists():
                         cert_path = None
@@ -192,7 +190,7 @@ class HttpConfigurationManager:
     @classmethod
     def _read_configuration_file(
         cls, path: pathlib.Path
-    ) -> Optional[HttpConfigurationFile]:
+    ) -> HttpConfigurationFile | None:
         """Parse a single SystemLink HTTP configuration file.
 
         Args:
@@ -238,7 +236,7 @@ class HttpConfigurationManager:
         return PathConstants.salt_data_directory / "conf" / "grains"
 
     @classmethod
-    def _read_system_workspace(cls) -> Optional[str]:
+    def _read_system_workspace(cls) -> str | None:
         """Get the workspace of the connected remote system.
 
         Reads workspace from `grains` file of SystemLink Client.

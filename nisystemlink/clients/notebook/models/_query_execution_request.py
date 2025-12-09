@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -69,10 +69,10 @@ class ExecutionField(str, Enum):
 class QueryExecutionsRequest(JsonModel):
     """Query for executions of Jupyter notebooks."""
 
-    filter: Optional[str] = None
+    filter: str | None = None
     """The query filter in Dynamic LINQ."""
 
-    order_by: Optional[ExecutionSortField] = None
+    order_by: ExecutionSortField | None = None
     """Possible fields used to sort executions."""
 
     descending: bool = False
@@ -85,14 +85,14 @@ class QueryExecutionsRequest(JsonModel):
 class _QueryExecutionsRequest(JsonModel):
     """Query for executions of Jupyter notebooks."""
 
-    filter: Optional[str] = None
+    filter: str | None = None
     """The query filter in Dynamic LINQ."""
 
-    order_by: Optional[ExecutionSortField] = None
+    order_by: ExecutionSortField | None = None
     """Possible fields used to sort executions."""
 
     descending: bool = False
     """Whether to return the executions in descending order."""
 
-    projection: Optional[str] = None
+    projection: str | None = None
     """The projection to be applied for the items in the provider."""

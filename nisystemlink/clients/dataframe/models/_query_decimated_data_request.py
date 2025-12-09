@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -28,22 +28,22 @@ class DecimationMethod(str, Enum):
 class DecimationOptions(JsonModel):
     """Contains the parameters to use for data decimation."""
 
-    x_column: Optional[str] = None
+    x_column: str | None = None
     """The name of the column that will be used as the x-axis for decimating the
     data. The column in the table that was specified as Index will be used if
     this field is excluded. Only numeric columns are supported. i.e. ``INT32``,
     ``INT64``, ``FLOAT32``, ``FLOAT64`` and ``TIMESTAMP``."""
 
-    y_columns: Optional[List[str]] = None
+    y_columns: List[str] | None = None
     """A list of columns to decimate by. This property is only needed when the
     specified method is ``MAX_MIN`` or ``ENTRY_EXIT``. Only numeric columns are
     supported. i.e. ``INT32``, ``INT64``, ``FLOAT32``, ``FLOAT64`` and
     ``TIMESTAMP``."""
 
-    intervals: Optional[int] = None
+    intervals: int | None = None
     """Number of intervals to use for decimation. Defaults to 1000."""
 
-    method: Optional[DecimationMethod] = None
+    method: DecimationMethod | None = None
     """Specifies the method used to decimate the data. Defaults to
     :class:`DecimationMethod.Lossy`"""
 
@@ -51,7 +51,7 @@ class DecimationOptions(JsonModel):
 class QueryDecimatedDataRequest(QueryTableDataBase):
     """Specifies the columns, filters and decimation parameters for a query."""
 
-    decimation: Optional[DecimationOptions] = None
+    decimation: DecimationOptions | None = None
     """The decimation options to use when querying data. If not specified, the
     default is to use :class:`DecimationMethod.Lossy` with 1000 intervals over
     the table's index column."""

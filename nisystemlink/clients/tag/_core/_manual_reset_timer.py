@@ -6,7 +6,7 @@ import datetime
 import threading
 import traceback
 from types import TracebackType
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, List, Type
 
 import events
 from nisystemlink.clients.core._internal._classproperty_support import (
@@ -41,7 +41,7 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
     elapsed = None  # type: events._EventSlot
     del elapsed
 
-    __null_timer_impl = None  # type: Optional[ManualResetTimer]
+    __null_timer_impl: "ManualResetTimer | None" = None
 
     @ClasspropertySupport.classproperty
     def null_timer(cls) -> "ManualResetTimer":
@@ -77,7 +77,7 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
         self._running = [None]  # used as mutable boolean; non-empty is True
         self._timer_start = threading.Event()
         self._timer_cancel = threading.Event()
-        self._thread = threading.Thread(
+        self._thread: threading.Thread | None = threading.Thread(
             target=self._run,
             args=[
                 self._running,
@@ -86,7 +86,7 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
                 self._timer_cancel,
                 self.elapsed,
             ],
-        )  # type: Optional[threading.Thread]
+        )
         self._thread.daemon = True
         self._thread.start()
 
@@ -135,9 +135,9 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> Literal[False]:
         self.stop()
         for handler in list(self.elapsed):
@@ -146,9 +146,9 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> Literal[False]:
         self.stop()
         for handler in list(self.elapsed):

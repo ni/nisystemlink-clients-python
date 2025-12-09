@@ -42,7 +42,7 @@ class TagBaseMixin:
         """Fixture to generate a tag path to be used within the scope of a single test.
 
         Args:
-            suffix (Optional[str]): Optional suffix to add to the tag for informational
+            suffix (str | None): Optional suffix to add to the tag for informational
                 purposes.
 
         Returns:

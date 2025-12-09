@@ -1,6 +1,6 @@
 """Implementation of AssetManagementClient."""
 
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
@@ -17,7 +17,7 @@ from . import models
     on_exception=retry.CONNECTION_ERROR,
 )
 class AssetManagementClient(BaseClient):
-    def __init__(self, configuration: Optional[HttpConfiguration] = None):
+    def __init__(self, configuration: HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -126,7 +126,7 @@ class AssetManagementClient(BaseClient):
     @post("assets/{assetId}/file", args=[Path("assetId"), Field("fileIds")])
     def link_files(
         self, asset_id: str, file_ids: List[str]
-    ) -> Optional[models.LinkFilesPartialSuccessResponse]:
+    ) -> models.LinkFilesPartialSuccessResponse | None:
         """Link files to an asset.
 
         Args:

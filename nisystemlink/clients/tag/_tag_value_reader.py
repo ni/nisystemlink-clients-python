@@ -2,7 +2,7 @@
 
 """Implementation of TagValueReader."""
 
-from typing import Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from nisystemlink.clients import core, tag as tbase
 
@@ -48,7 +48,7 @@ class TagValueReader(Generic[_Any]):
 
     def read(
         self, *, include_timestamp: bool = False, include_aggregates: bool = False
-    ) -> Optional[tbase.TagWithAggregates[_Any]]:
+    ) -> tbase.TagWithAggregates[_Any] | None:
         """Read the current value of the tag.
 
         Args:
@@ -79,7 +79,7 @@ class TagValueReader(Generic[_Any]):
 
     async def read_async(
         self, *, include_timestamp: bool = False, include_aggregates: bool = False
-    ) -> Optional[tbase.TagWithAggregates[_Any]]:
+    ) -> tbase.TagWithAggregates[_Any] | None:
         """Read the current value of the tag.
 
         Args:

@@ -1,6 +1,6 @@
 """Implementation of SpecClient"""
 
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -16,7 +16,7 @@ from . import models
     on_exception=retry.CONNECTION_ERROR,
 )
 class SpecClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -66,7 +66,7 @@ class SpecClient(BaseClient):
     @post("delete-specs", args=[Field("ids")])
     def delete_specs(
         self, ids: List[str]
-    ) -> Optional[models.DeleteSpecificationsPartialSuccess]:
+    ) -> models.DeleteSpecificationsPartialSuccess | None:
         """Deletes one or more specifications by global id.
 
         Args:
@@ -115,7 +115,7 @@ class SpecClient(BaseClient):
     @post("update-specs")
     def update_specs(
         self, specs: models.UpdateSpecificationsRequest
-    ) -> Optional[models.UpdateSpecificationsPartialSuccess]:
+    ) -> models.UpdateSpecificationsPartialSuccess | None:
         """Updates one or more specifications.
 
         Update requires that the version field matches the version being updated from.

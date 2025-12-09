@@ -7,7 +7,7 @@ import datetime
 import sys
 import threading
 from types import TracebackType
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, Type
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.tag._core._itime_stamper import ITimeStamper
@@ -45,9 +45,9 @@ class BufferedTagWriter(tbase.ITagWriter):
 
         self._closed = False
         self._num_buffered = 0
-        self._send_error = None  # type: Optional[core.ApiException]
+        self._send_error: core.ApiException | None = None
         self._timer_generation = 0
-        self._timer_handler = None  # type: Optional[Callable[[], None]]
+        self._timer_handler: Callable[[], None] | None = None
 
     @abc.abstractmethod
     def _buffer_value(self, path: str, value: Any) -> None:
@@ -79,7 +79,7 @@ class BufferedTagWriter(tbase.ITagWriter):
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: datetime.datetime | None = None,
     ) -> Any:
         """Return an item that can be placed into the buffer.
 
@@ -190,9 +190,9 @@ class BufferedTagWriter(tbase.ITagWriter):
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> bool:
         if self._closed:
             return False
@@ -205,9 +205,9 @@ class BufferedTagWriter(tbase.ITagWriter):
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> bool:
         if self._closed:
             return False
@@ -223,7 +223,7 @@ class BufferedTagWriter(tbase.ITagWriter):
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: datetime.datetime | None = None,
     ) -> None:
         """Write a tag's value that's been serialized to a string.
 
@@ -272,7 +272,7 @@ class BufferedTagWriter(tbase.ITagWriter):
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: datetime.datetime | None = None,
     ) -> None:
         """Asynchronously write a tag's value that's been serialized to a string.
 
@@ -324,7 +324,7 @@ class BufferedTagWriter(tbase.ITagWriter):
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: datetime.datetime | None = None,
     ) -> Any:
         if self._closed:
             raise ReferenceError("BufferedTagWriter")

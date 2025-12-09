@@ -5,21 +5,20 @@
 import abc
 import datetime
 import typing
-from typing import Any, Awaitable, Dict, Optional, Tuple, Union
+from typing import Any, Awaitable
 
 from nisystemlink.clients import tag as tbase
 from nisystemlink.clients.core._internal._timestamp_utilities import TimestampUtilities
 from typing_extensions import Literal
 
-
-_VALID_TYPES = {
+_VALID_TYPES: typing.Dict[tbase.DataType, type | typing.Tuple[type, type]] = {
     tbase.DataType.BOOLEAN: bool,
     tbase.DataType.DATE_TIME: datetime.datetime,
     tbase.DataType.DOUBLE: (float, int),
     tbase.DataType.INT32: int,
     tbase.DataType.UINT64: int,
     tbase.DataType.STRING: str,
-}  # type: Dict[tbase.DataType, Union[type, Tuple[type, type]]]
+}
 
 
 class _ITagWriterOverloads(abc.ABC):
@@ -105,9 +104,9 @@ class ITagWriter(_ITagWriterOverloads):
         self,
         path: str,
         data_type: tbase.DataType,
-        value: Union[bool, int, float, str, datetime.datetime],
+        value: bool | int | float | str | datetime.datetime,
         *,
-        timestamp: Optional[datetime.datetime] = None
+        timestamp: datetime.datetime | None = None
     ) -> None:
         """Write a tag's value.
 
@@ -141,7 +140,7 @@ class ITagWriter(_ITagWriterOverloads):
         data_type: tbase.DataType,
         value: str,
         *,
-        timestamp: Optional[datetime.datetime] = None
+        timestamp: datetime.datetime | None = None
     ) -> Awaitable[None]:
         """Asynchronously write a tag's value.
 
@@ -175,7 +174,7 @@ class ITagWriter(_ITagWriterOverloads):
     @classmethod
     def _validate_type(
         cls,
-        value: Union[bool, int, float, str, datetime.datetime],
+        value: bool | int | float | str | datetime.datetime,
         data_type: tbase.DataType,
     ) -> None:
         if data_type == tbase.DataType.UNKNOWN:
@@ -215,7 +214,7 @@ class ITagWriter(_ITagWriterOverloads):
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: datetime.datetime | None = None,
     ) -> None:
         """Write a tag's value that's been serialized to a string.
 
@@ -241,7 +240,7 @@ class ITagWriter(_ITagWriterOverloads):
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
+        timestamp: datetime.datetime | None = None,
     ) -> None:
         """Asynchronously write a tag's value that's been serialized to a string.
 

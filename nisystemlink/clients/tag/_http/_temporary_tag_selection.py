@@ -3,7 +3,7 @@
 """Implementation of TemporaryTagSelection."""
 
 from types import TracebackType
-from typing import Awaitable, List, Optional, Type
+from typing import Awaitable, List, Type
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient
@@ -60,10 +60,10 @@ class TemporaryTagSelection:
             magic == self.__MAGIC
         ), "Do not construct a TemporaryTagSelection directly. Use create() instead."
         self._api = client.at_uri("/nitag/v2/selections")
-        self._id = None  # type: Optional[str]
+        self._id: str | None = None
 
     @property
-    def id(self) -> Optional[str]:  # noqa: D401
+    def id(self) -> str | None:  # noqa: D401
         """The ID of the selection."""
         return self._id
 
@@ -103,17 +103,17 @@ class TemporaryTagSelection:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         self.close()
 
     def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: Type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> Awaitable[None]:
         return self.close_async()
 
