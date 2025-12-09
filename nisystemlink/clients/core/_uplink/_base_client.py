@@ -12,7 +12,7 @@ from uplink.auth import BasicAuth
 from ._json_model import JsonModel
 
 
-@response_handler
+@response_handler  # type: ignore[untyped-decorator]
 def _handle_http_status(response: Response) -> Optional[Response]:
     """Checks an HTTP response's status code and raises an exception if necessary."""
     if 200 <= response.status_code < 300:
