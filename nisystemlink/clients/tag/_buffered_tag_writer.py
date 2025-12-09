@@ -6,9 +6,8 @@ import abc
 import datetime
 import sys
 import threading
-import typing  # noqa: F401
 from types import TracebackType
-from typing import Any, Type
+from typing import Any, Callable, Type
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.tag._core._itime_stamper import ITimeStamper
@@ -48,7 +47,7 @@ class BufferedTagWriter(tbase.ITagWriter):
         self._num_buffered = 0
         self._send_error: core.ApiException | None = None
         self._timer_generation = 0
-        self._timer_handler: typing.Callable[[], None] | None = None
+        self._timer_handler: Callable[[], None] | None = None
 
     @abc.abstractmethod
     def _buffer_value(self, path: str, value: Any) -> None:

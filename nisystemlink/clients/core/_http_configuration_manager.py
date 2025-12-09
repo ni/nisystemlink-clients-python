@@ -4,7 +4,6 @@
 
 import json
 import pathlib
-import typing
 from typing import Dict
 
 import yaml
@@ -164,10 +163,11 @@ class HttpConfigurationManager:
 
                 cert_path: pathlib.Path | None = None
                 if config_file.cert_path:
-                    app_data_dir = typing.cast(
-                        pathlib.Path, PathConstants.application_data_directory
+                    cert_path = (
+                        PathConstants.application_data_directory
+                        / "Certificates"
+                        / config_file.cert_path
                     )
-                    cert_path = app_data_dir / "Certificates" / config_file.cert_path
                     if not cert_path.exists():
                         cert_path = None
                 configurations[config_file.id] = core.HttpConfiguration(
@@ -224,10 +224,7 @@ class HttpConfigurationManager:
         Returns:
             pathlib.Path: The path of the HTTP Configurations directory.
         """
-        app_data_dir = typing.cast(
-            pathlib.Path, PathConstants.application_data_directory
-        )
-        return app_data_dir / "HttpConfigurations"
+        return PathConstants.application_data_directory / "HttpConfigurations"
 
     @classmethod
     def _salt_grains_path(cls) -> pathlib.Path:
@@ -236,8 +233,7 @@ class HttpConfigurationManager:
         Returns:
             pathlib.Path: The path of SALT grains config file
         """
-        salt_data_dir = typing.cast(pathlib.Path, PathConstants.salt_data_directory)
-        return salt_data_dir / "conf" / "grains"
+        return PathConstants.salt_data_directory / "conf" / "grains"
 
     @classmethod
     def _read_system_workspace(cls) -> str | None:

@@ -6,7 +6,7 @@ import datetime
 import threading
 import traceback
 from types import TracebackType
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, List, Type
 
 import events
 from nisystemlink.clients.core._internal._classproperty_support import (
@@ -41,7 +41,7 @@ class ManualResetTimer(events.Events, metaclass=ClasspropertySupport):
     elapsed = None  # type: events._EventSlot
     del elapsed
 
-    __null_timer_impl: Optional["ManualResetTimer"] = None
+    __null_timer_impl: "ManualResetTimer | None" = None
 
     @ClasspropertySupport.classproperty
     def null_timer(cls) -> "ManualResetTimer":

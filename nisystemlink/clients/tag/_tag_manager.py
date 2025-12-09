@@ -4,7 +4,6 @@
 
 import asyncio
 import datetime
-import typing
 from typing import Any, Awaitable, Dict, Iterable, List, Sequence, Tuple
 
 from nisystemlink.clients import core, tag as tbase
@@ -698,7 +697,7 @@ class TagManager(tbase.ITagReader):
                 raise ValueError("max_buffer_time must be at least 1 millisecond")
             timer = ManualResetTimer(max_buffer_time)
         else:
-            timer = typing.cast(ManualResetTimer, ManualResetTimer.null_timer)
+            timer = ManualResetTimer.null_timer
 
         return HttpBufferedTagWriter(
             self._http_client, SystemTimeStamper(), buffer_size, timer

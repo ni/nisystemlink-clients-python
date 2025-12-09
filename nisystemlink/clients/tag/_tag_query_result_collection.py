@@ -3,7 +3,6 @@
 """Implementation of TagQueryResultCollection."""
 
 import abc
-import typing  # noqa: F401
 from typing import Iterable, List
 
 from nisystemlink.clients import core, tag as tbase
@@ -26,7 +25,7 @@ class TagQueryResultCollection(abc.ABC):
             total_count: The total number of results in the query.
             skip: The skip used for the first page of results.
         """
-        self._first_page: typing.List[tbase.TagData] | None = None
+        self._first_page: List[tbase.TagData] | None = None
         if first_page:
             if skip >= total_count:
                 raise core.ApiException(

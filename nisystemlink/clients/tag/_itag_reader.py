@@ -5,7 +5,7 @@
 import abc
 import datetime
 import typing
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._timestamp_utilities import TimestampUtilities
@@ -14,7 +14,7 @@ from nisystemlink.clients.tag._core._serialized_tag_with_aggregates import (
 )
 from typing_extensions import Literal
 
-_DESERIALIZERS = {
+_DESERIALIZERS: Dict[tbase.DataType, Callable[[str], Any]] = {
     tbase.DataType.BOOLEAN: {"True": True, "False": False}.get,
     tbase.DataType.DATE_TIME: TimestampUtilities.str_to_datetime,
     tbase.DataType.DOUBLE: float,
@@ -262,7 +262,7 @@ class ITagReader(_ITagReaderOverloads):
         if value is None:
             return None
         try:
-            deserializer = typing.cast(Callable[[str], Any], _DESERIALIZERS[data_type])
+            deserializer = _DESERIALIZERS[data_type]
         except KeyError:
             raise ValueError("data_type is unknown")
         try:
