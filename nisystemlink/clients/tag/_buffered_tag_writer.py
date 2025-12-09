@@ -45,9 +45,9 @@ class BufferedTagWriter(tbase.ITagWriter):
 
         self._closed = False
         self._num_buffered = 0
-        self._send_error = None  # type: Optional[core.ApiException]
+        self._send_error: Optional[core.ApiException] = None
         self._timer_generation = 0
-        self._timer_handler = None  # type: Optional[Callable[[], None]]
+        self._timer_handler: Optional[Callable[[], None]] = None
 
     @abc.abstractmethod
     def _buffer_value(self, path: str, value: Any) -> None:

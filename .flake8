@@ -6,9 +6,9 @@ max-line-length = 119
 
 ignore =
     # D400 and D205 are because we sometimes split the first line of the docstring
-    *.py E203, W503, D100,D101,D102,D105,D106,D107, D400,D205, D415
+    E203, W503, D100,D101,D102,D105,D106,D107, D400,D205, D415
     # temporary, until code is complete and stuff like ObjectDisposedException is gone:
-    *.py F821
+    F821
 
 # Config for flake8-docstrings
 docstring-convention = google

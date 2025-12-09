@@ -25,7 +25,7 @@ class TagQueryResultCollection(abc.ABC):
             total_count: The total number of results in the query.
             skip: The skip used for the first page of results.
         """
-        self._first_page = None  # type: Optional[List[tbase.TagData]]
+        self._first_page: Optional[List[tbase.TagData]] = None
         if first_page:
             if skip >= total_count:
                 raise core.ApiException(

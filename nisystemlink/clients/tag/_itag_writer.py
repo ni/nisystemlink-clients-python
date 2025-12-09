@@ -12,14 +12,14 @@ from nisystemlink.clients.core._internal._timestamp_utilities import TimestampUt
 from typing_extensions import Literal
 
 
-_VALID_TYPES = {
+_VALID_TYPES: Dict[tbase.DataType, Union[type, Tuple[type, type]]] = {
     tbase.DataType.BOOLEAN: bool,
     tbase.DataType.DATE_TIME: datetime.datetime,
     tbase.DataType.DOUBLE: (float, int),
     tbase.DataType.INT32: int,
     tbase.DataType.UINT64: int,
     tbase.DataType.STRING: str,
-}  # type: Dict[tbase.DataType, Union[type, Tuple[type, type]]]
+}
 
 
 class _ITagWriterOverloads(abc.ABC):
