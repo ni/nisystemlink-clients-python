@@ -4,7 +4,7 @@ from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class PartialSuccessResponseBase(JsonModel):
+class AlarmInstancesPartialSuccess(JsonModel):
     """Base class for partial success responses containing success/failure lists and error information."""
 
     failed: List[str]

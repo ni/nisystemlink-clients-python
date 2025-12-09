@@ -55,9 +55,7 @@ class QueryWithFilterRequest(JsonModel):
     based on when the alarm occurred, not when it was last updated.
     """
 
-    transition_inclusion_option: TransitionInclusionOption = (
-        TransitionInclusionOption.NONE
-    )
+    transition_inclusion_option: Optional[TransitionInclusionOption] = None
     """Determines which transitions to include in the query results, if any."""
 
     reference_time: Optional[datetime] = None
@@ -69,7 +67,7 @@ class QueryWithFilterRequest(JsonModel):
     take: Optional[int] = 1000
     """Limits the returned list to the specified number of results. Maximum is 1000."""
 
-    order_by: AlarmOrderBy = AlarmOrderBy.UPDATED_AT
+    order_by: Optional[AlarmOrderBy] = None
     """The sort order of the returned list of alarms.
 
     By default, alarms are sorted in ascending order based on the specified value.

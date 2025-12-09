@@ -5,11 +5,8 @@ from typing import List
 import pytest
 from nisystemlink.clients.alarm import AlarmClient
 from nisystemlink.clients.alarm.models import (
-    AcknowledgeByInstanceIdRequest,
     AcknowledgeByInstanceIdResponse,
     CreateOrUpdateAlarmRequest,
-    CreateOrUpdateAlarmResponse,
-    DeleteByInstanceIdRequest,
     DeleteByInstanceIdResponse,
     QueryWithFilterRequest,
     QueryWithFilterResponse,
@@ -22,6 +19,7 @@ from nisystemlink.clients.alarm.models._query_alarms_request import (
     AlarmOrderBy,
     TransitionInclusionOption,
 )
+from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
@@ -32,22 +30,29 @@ def client(enterprise_config: HttpConfiguration) -> AlarmClient:
 
 
 @pytest.fixture
-def unique_identifier() -> str:
+def unique_identifier():
     """Unique alarm id for this test."""
-    alarm_id = uuid.uuid1().hex
-    return alarm_id
+
+    def _unique_identifier():
+        return uuid.uuid1().hex
+
+    return _unique_identifier
 
 
 @pytest.fixture
 def create_alarms(client: AlarmClient):
-    """Fixture to return a factory that creates alarms."""
-    created_instance_ids: List[str] = []
+    """Fixture to return a factory that creates alarms.
+
+    Returns instance_id (referred to as 'id' in tests) for each created alarm.
+    """
+    created_ids: List[str] = []
 
     def _create_alarms(
         alarm_id: str,
         severity_level: int = 3,
         condition: str = "Test Condition",
-    ) -> CreateOrUpdateAlarmResponse:
+    ) -> str:
+        """Create an alarm and return its instance_id."""
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
             transition=CreateAlarmTransition(
@@ -57,54 +62,167 @@ def create_alarms(client: AlarmClient):
                 condition=condition,
             ),
         )
-        response = client.create_or_update_alarm(request)
-        created_instance_ids.append(response.instance_id)
-        return response
+        id = client.create_or_update_alarm(request)
+        created_ids.append(id)
+        return id
 
     yield _create_alarms
 
-    if created_instance_ids:
-        client.delete_instances_by_instance_id(
-            DeleteByInstanceIdRequest(instance_ids=created_instance_ids)
-        )
+    if created_ids:
+        client.delete_instances_by_instance_id(created_ids)
 
 
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestAlarmClient:
+
     def test__create_single_alarm__one_alarm_created_with_right_field_values(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self, client: AlarmClient, unique_identifier
     ):
-        alarm_id = unique_identifier
-        severity_level = 3
+        alarm_id = unique_identifier()
+        occurred_at = datetime.now(timezone.utc)
 
-        response: CreateOrUpdateAlarmResponse = create_alarms(alarm_id)
+        # Create alarm with all fields populated
+        request = CreateOrUpdateAlarmRequest(
+            alarm_id=alarm_id,
+            workspace=None,  # Use default workspace
+            transition=CreateAlarmTransition(
+                transition_type=AlarmTransitionType.SET,
+                occurred_at=occurred_at,
+                severity_level=3,
+                value="85.5",
+                condition="Temperature exceeded threshold",
+                short_text="High temp",
+                detail_text="Temperature sensor reading exceeded the configured threshold of 80°C",
+                keywords=["temperature", "sensor", "critical"],
+                properties={"sensor_id": "temp_001", "location": "server_room"},
+            ),
+            notification_strategy_ids=[],
+            created_by="test_automation",
+            channel="sensors/temperature/room1",
+            resource_type="temperature_sensor",
+            display_name="Server Room Temperature",
+            description="Monitors temperature in server room",
+            keywords=["monitoring", "infrastructure"],
+            properties={"department": "IT", "priority": "high"},
+        )
 
-        assert response is not None
-        assert response.instance_id is not None
+        id = client.create_or_update_alarm(request)
+        assert id is not None
+        assert isinstance(id, str)
+        assert len(id) > 0
 
-        alarm = client.get_alarm(response.instance_id)
+        # Get alarm and verify all fields
+        alarm = client.get_alarm(id)
+        assert alarm.instance_id == id
         assert alarm.alarm_id == alarm_id
-        assert alarm.current_severity_level == severity_level
+        assert alarm.workspace is not None
         assert alarm.active is True
         assert alarm.clear is False
+        assert alarm.acknowledged is False
+        assert alarm.acknowledged_at is None
+        assert alarm.acknowledged_by is None
+        assert alarm.occurred_at is not None
+        assert alarm.updated_at is not None
+        assert alarm.created_by == "test_automation"
+        assert len(alarm.transitions) >= 1
+        assert alarm.transition_overflow_count == 0
+        assert isinstance(alarm.notification_strategy_ids, list)
+        assert alarm.current_severity_level == 3
+        assert alarm.highest_severity_level == 3
+        assert alarm.most_recent_set_occurred_at is not None
+        assert alarm.most_recent_transition_occurred_at is not None
+        assert alarm.channel == "sensors/temperature/room1"
+        assert alarm.condition == "Temperature exceeded threshold"
+        assert alarm.display_name == "Server Room Temperature"
+        assert alarm.description == "Monitors temperature in server room"
+        assert "monitoring" in alarm.keywords
+        assert "infrastructure" in alarm.keywords
+        assert isinstance(alarm.notes, list)
+        assert "department" in alarm.properties
+        assert alarm.properties["department"] == "IT"
+        assert alarm.resource_type == "temperature_sensor"
 
-    def test__create_single_alarm_and_query_alarms__at_least_one_alarm_returned(
+        # Verify transition fields
+        transition = alarm.transitions[0]
+        assert transition.transition_type == AlarmTransitionType.SET
+        assert transition.occurred_at is not None
+        assert transition.severity_level == 3
+        assert transition.value == "85.5"
+        assert transition.condition == "Temperature exceeded threshold"
+        assert transition.short_text == "High temp"
+        assert (
+            transition.detail_text
+            == "Temperature sensor reading exceeded the configured threshold of 80°C"
+        )
+        assert "temperature" in transition.keywords
+        assert "sensor_id" in transition.properties
+
+        # Cleanup
+        client.delete_alarm(id)
+
+    def test__query_alarms_with_all_fields__returns_complete_response(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        create_alarms(unique_identifier)
+        # Create two alarms with different severity levels
+        alarm_id_1 = unique_identifier()
+        alarm_id_2 = unique_identifier()
+        create_alarms(alarm_id_1, severity_level=3, condition="Condition 1")
+        create_alarms(alarm_id_2, severity_level=4, condition="Condition 2")
 
-        query_request = QueryWithFilterRequest(filter=f'alarmId="{unique_identifier}"')
-        query_response = client.query_alarms(query_request)
+        # Add another transition to the first alarm
+        update_request = CreateOrUpdateAlarmRequest(
+            alarm_id=alarm_id_1,
+            transition=CreateAlarmTransition(
+                transition_type=AlarmTransitionType.SET,
+                occurred_at=datetime.now(timezone.utc),
+                severity_level=5,
+                condition="Condition 3",
+            ),
+        )
+        client.create_or_update_alarm(update_request)
 
+        # Query with all available fields, order by descending, and ALL transitions
+        query_request = QueryWithFilterRequest(
+            filter=f'alarmId="{alarm_id_1}" OR alarmId="{alarm_id_2}"',
+            substitutions=None,
+            return_most_recently_occurred_only=False,
+            transition_inclusion_option=TransitionInclusionOption.ALL,
+            reference_time=None,
+            take=10,
+            order_by=AlarmOrderBy.UPDATED_AT,
+            order_by_descending=True,
+            continuation_token=None,
+            return_count=True,
+        )
+        query_response: QueryWithFilterResponse = client.query_alarms(query_request)
+
+        # Assert all response fields
         assert query_response is not None
-        assert len(query_response.alarms) >= 1
+        assert isinstance(query_response.alarms, list)
+        assert len(query_response.alarms) == 2
+        assert query_response.total_count is not None
+        assert query_response.total_count == 2
+        assert hasattr(query_response, "continuation_token")
+
+        # Verify order_by_descending works (alarm_id_1 was updated last, should be first)
+        for i in range(len(query_response.alarms) - 1):
+            assert (
+                query_response.alarms[i].updated_at
+                >= query_response.alarms[i + 1].updated_at
+            )
+
+        # Verify all transitions are included (TransitionInclusionOption.ALL) for alarm_id_1
+        alarm_1_result = next(
+            a for a in query_response.alarms if a.alarm_id == alarm_id_1
+        )
+        assert len(alarm_1_result.transitions) == 2
 
     def test__create_multiple_alarms_and_query_alarms_with_take__only_take_returned(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        create_alarms(unique_identifier, severity_level=3)
-        create_alarms(unique_identifier, severity_level=4)
+        create_alarms(unique_identifier(), severity_level=3)
+        create_alarms(unique_identifier(), severity_level=4)
 
         query_request = QueryWithFilterRequest(take=1)
         query_response = client.query_alarms(query_request)
@@ -115,8 +233,8 @@ class TestAlarmClient:
     def test__create_multiple_alarms_and_query_alarms_with_count__at_least_one_count(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        create_alarms(unique_identifier, severity_level=3)
-        create_alarms(unique_identifier, severity_level=4)
+        create_alarms(unique_identifier(), severity_level=3)
+        create_alarms(unique_identifier(), severity_level=4)
 
         query_request = QueryWithFilterRequest(return_count=True)
         query_response: QueryWithFilterResponse = client.query_alarms(query_request)
@@ -125,24 +243,55 @@ class TestAlarmClient:
         assert query_response.total_count is not None
         assert query_response.total_count >= 1
 
-    def test__get_alarm_by_instance_id__alarm_matches_expected(
+    def test__get_alarm__returns_alarm_with_all_fields(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        alarm_id = unique_identifier
-        create_response: CreateOrUpdateAlarmResponse = create_alarms(alarm_id)
-        instance_id = create_response.instance_id
+        alarm_id = unique_identifier()
+        id = create_alarms(alarm_id)
 
-        alarm = client.get_alarm(instance_id)
+        alarm = client.get_alarm(id)
 
+        # Assert all Alarm fields are present
         assert alarm is not None
+        assert alarm.instance_id == id
         assert alarm.alarm_id == alarm_id
+        assert alarm.workspace is not None
+        assert isinstance(alarm.active, bool)
+        assert isinstance(alarm.clear, bool)
+        assert isinstance(alarm.acknowledged, bool)
+        assert alarm.acknowledged_at is None or isinstance(
+            alarm.acknowledged_at, datetime
+        )
+        assert alarm.acknowledged_by is None or isinstance(alarm.acknowledged_by, str)
+        assert isinstance(alarm.occurred_at, datetime)
+        assert isinstance(alarm.updated_at, datetime)
+        assert isinstance(alarm.created_by, str)
+        assert isinstance(alarm.transitions, list)
+        assert isinstance(alarm.transition_overflow_count, int)
+        assert isinstance(alarm.notification_strategy_ids, list)
+        assert isinstance(alarm.current_severity_level, int)
+        assert isinstance(alarm.highest_severity_level, int)
+        assert alarm.most_recent_set_occurred_at is None or isinstance(
+            alarm.most_recent_set_occurred_at, datetime
+        )
+        assert alarm.most_recent_transition_occurred_at is None or isinstance(
+            alarm.most_recent_transition_occurred_at, datetime
+        )
+        assert isinstance(alarm.channel, str)
+        assert isinstance(alarm.condition, str)
+        assert isinstance(alarm.display_name, str)
+        assert isinstance(alarm.description, str)
+        assert isinstance(alarm.keywords, list)
+        assert isinstance(alarm.notes, list)
+        assert isinstance(alarm.properties, dict)
+        assert isinstance(alarm.resource_type, str)
 
     def test__query_alarm_by_alarm_id__matches_expected(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        alarm_id = unique_identifier
-        create_response: CreateOrUpdateAlarmResponse = create_alarms(alarm_id)
-        assert create_response is not None
+        alarm_id = unique_identifier()
+        id = create_alarms(alarm_id)
+        assert id is not None
 
         query_request = QueryWithFilterRequest(
             filter=f'alarmId="{alarm_id}"', return_count=True
@@ -152,62 +301,53 @@ class TestAlarmClient:
         assert query_response.total_count == 1
         assert query_response.alarms[0].alarm_id == alarm_id
 
-    def test__acknowledge_single_alarm__alarm_acknowledged(
+    def test__acknowledge_alarm__verifies_all_response_fields(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        create_response = create_alarms(unique_identifier)
-        instance_id = create_response.instance_id
+        # Create multiple alarms
+        id1 = create_alarms(unique_identifier(), severity_level=3)
+        id2 = create_alarms(unique_identifier(), severity_level=4)
+        non_existent_id = uuid.uuid1().hex
 
-        ack_request = AcknowledgeByInstanceIdRequest(instance_ids=[instance_id])
-        ack_response: AcknowledgeByInstanceIdResponse = (
-            client.acknowledge_instances_by_instance_id(ack_request)
+        # Acknowledge with mix of valid and invalid IDs
+        ack_response: AcknowledgeByInstanceIdResponse = client.acknowledge_alarm(
+            [id1, id2, non_existent_id], force_clear=False
         )
 
+        # Assert all response fields
         assert ack_response is not None
-        assert instance_id in ack_response.acknowledged
-        assert len(ack_response.failed) == 0
+        assert isinstance(ack_response.acknowledged, list)
+        assert isinstance(ack_response.failed, list)
+        assert id1 in ack_response.acknowledged
+        assert id2 in ack_response.acknowledged
+        assert non_existent_id in ack_response.failed
+        assert len(ack_response.acknowledged) == 2
+        assert len(ack_response.failed) == 1
+        assert hasattr(ack_response, "error")
 
-    def test__acknowledge_multiple_alarms__all_acknowledged(
-        self, client: AlarmClient, create_alarms, unique_identifier
-    ):
-        instance_id1 = create_alarms(unique_identifier, severity_level=3).instance_id
-        instance_id2 = create_alarms(unique_identifier, severity_level=4).instance_id
-
-        ack_request = AcknowledgeByInstanceIdRequest(
-            instance_ids=[instance_id1, instance_id2]
-        )
-        ack_response: AcknowledgeByInstanceIdResponse = (
-            client.acknowledge_instances_by_instance_id(ack_request)
-        )
-
-        assert ack_response is not None
-        assert instance_id1 in ack_response.acknowledged
-        assert instance_id2 in ack_response.acknowledged
-        assert len(ack_response.failed) == 0
+        # Verify alarms were acknowledged
+        alarm1 = client.get_alarm(id1)
+        assert alarm1.acknowledged is True
+        assert alarm1.acknowledged_at is not None
+        assert alarm1.acknowledged_by is not None
 
     def test__acknowledge_alarm_with_force_clear__alarm_cleared(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        create_response = create_alarms(unique_identifier)
-        instance_id = create_response.instance_id
+        id = create_alarms(unique_identifier())
 
-        ack_request = AcknowledgeByInstanceIdRequest(
-            instance_ids=[instance_id], force_clear=True
-        )
-        ack_response: AcknowledgeByInstanceIdResponse = (
-            client.acknowledge_instances_by_instance_id(ack_request)
+        ack_response: AcknowledgeByInstanceIdResponse = client.acknowledge_alarm(
+            [id], force_clear=True
         )
 
         assert ack_response is not None
-        assert instance_id in ack_response.acknowledged
+        assert id in ack_response.acknowledged
 
-        alarm = client.get_alarm(instance_id)
+        alarm = client.get_alarm(id)
         assert alarm.clear is True
 
-    def test__delete_single_alarm__alarm_deleted(
-        self, client: AlarmClient, unique_identifier
-    ):
-        alarm_id = unique_identifier
+    def test__delete_alarm__returns_none(self, client: AlarmClient, unique_identifier):
+        alarm_id = unique_identifier()
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
             transition=CreateAlarmTransition(
@@ -217,39 +357,58 @@ class TestAlarmClient:
                 condition="Test Condition",
             ),
         )
-        create_response = client.create_or_update_alarm(request)
-        instance_id = create_response.instance_id
+        id = client.create_or_update_alarm(request)
 
-        client.delete_alarm(instance_id)
+        # Delete returns None on success
+        result = client.delete_alarm(id)
+        assert result is None
 
+        # Verify alarm is deleted
         query_request = QueryWithFilterRequest(filter=f'alarmId="{alarm_id}"')
         query_response = client.query_alarms(query_request)
         assert len(query_response.alarms) == 0
 
-    def test__delete_multiple_alarms__all_deleted(
+    def test__delete_instances_by_instance_id__verifies_all_response_fields(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        instance_id1 = create_alarms(unique_identifier, severity_level=3).instance_id
-        instance_id2 = create_alarms(unique_identifier, severity_level=4).instance_id
+        alarm_id1 = unique_identifier()
+        alarm_id2 = unique_identifier()
+        # Create multiple alarms with different alarm IDs
+        id1 = create_alarms(alarm_id1, severity_level=3)
+        id2 = create_alarms(alarm_id2, severity_level=4)
+        non_existent_id = uuid.uuid1().hex
 
-        delete_request = DeleteByInstanceIdRequest(
-            instance_ids=[instance_id1, instance_id2]
-        )
+        # Delete with mix of valid and invalid IDs
         delete_response: DeleteByInstanceIdResponse = (
-            client.delete_instances_by_instance_id(delete_request)
+            client.delete_instances_by_instance_id([id1, id2, non_existent_id])
         )
 
+        # Assert all response fields
         assert delete_response is not None
-        assert instance_id1 in delete_response.deleted
-        assert instance_id2 in delete_response.deleted
+        assert isinstance(delete_response.deleted, list)
+        assert isinstance(delete_response.failed, list)
+        assert id1 in delete_response.deleted
+        assert id2 in delete_response.deleted
+        assert non_existent_id in delete_response.failed
+        assert len(delete_response.deleted) == 2
+        assert len(delete_response.failed) == 1
+        assert hasattr(delete_response, "error")
+
+        # Verify alarms were deleted
+        query_request = QueryWithFilterRequest(
+            filter=f'alarmId="{alarm_id1}" or alarmId="{alarm_id2}"'
+        )
+        query_response = client.query_alarms(query_request)
+        assert len(query_response.alarms) == 0
 
     def test__update_alarm_severity__severity_updated(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        create_alarms(unique_identifier)
+        alarm_id = unique_identifier()
+        create_alarms(alarm_id)
 
         update_request = CreateOrUpdateAlarmRequest(
-            alarm_id=unique_identifier,
+            alarm_id=alarm_id,
             transition=CreateAlarmTransition(
                 transition_type=AlarmTransitionType.SET,
                 occurred_at=datetime.now(timezone.utc),
@@ -257,19 +416,20 @@ class TestAlarmClient:
                 condition="Updated Condition",
             ),
         )
-        update_response = client.create_or_update_alarm(update_request)
+        id = client.create_or_update_alarm(update_request)
 
-        assert update_response is not None
-        alarm = client.get_alarm(update_response.instance_id)
+        assert id is not None
+        alarm = client.get_alarm(id)
         assert alarm.current_severity_level == 5
 
     def test__clear_alarm__alarm_cleared(
         self, client: AlarmClient, create_alarms, unique_identifier
     ):
-        create_alarms(unique_identifier)
+        alarm_id = unique_identifier()
+        create_alarms(alarm_id)
 
         clear_request = CreateOrUpdateAlarmRequest(
-            alarm_id=unique_identifier,
+            alarm_id=alarm_id,
             transition=CreateAlarmTransition(
                 transition_type=AlarmTransitionType.CLEAR,
                 occurred_at=datetime.now(timezone.utc),
@@ -277,54 +437,76 @@ class TestAlarmClient:
                 condition="Cleared",
             ),
         )
-        clear_response = client.create_or_update_alarm(clear_request)
+        id = client.create_or_update_alarm(clear_request)
 
-        assert clear_response is not None
-        alarm = client.get_alarm(clear_response.instance_id)
+        assert id is not None
+        alarm = client.get_alarm(id)
         assert alarm.clear is True
 
-    def test__query_alarms_with_order_by_descending__alarms_ordered(
-        self, client: AlarmClient, create_alarms, unique_identifier
+    def test__get_alarm_with_invalid_instance_id__raises_ApiException_NotFound(
+        self, client: AlarmClient
     ):
-        create_alarms(unique_identifier, severity_level=3)
-        create_alarms(unique_identifier, severity_level=4)
+        with pytest.raises(ApiException):
+            client.get_alarm("invalid_instance_id")
 
+    def test__delete_alarm_with_invalid_instance_id__raises_ApiException_NotFound(
+        self, client: AlarmClient
+    ):
+        with pytest.raises(ApiException):
+            client.delete_alarm("invalid_instance_id")
+
+    def test__acknowledge_non_existent_alarm__returns_failed_list(
+        self, client: AlarmClient
+    ):
+        non_existent_id = uuid.uuid1().hex
+        ack_response: AcknowledgeByInstanceIdResponse = client.acknowledge_alarm(
+            [non_existent_id]
+        )
+
+        assert ack_response is not None
+        assert non_existent_id in ack_response.failed
+        assert len(ack_response.acknowledged) == 0
+
+    def test__delete_non_existent_alarm__returns_failed_list(self, client: AlarmClient):
+        non_existent_id = uuid.uuid1().hex
+        delete_response: DeleteByInstanceIdResponse = (
+            client.delete_instances_by_instance_id([non_existent_id])
+        )
+
+        assert delete_response is not None
+        assert non_existent_id in delete_response.failed
+        assert len(delete_response.deleted) == 0
+
+    def test__query_alarms_with_invalid_filter_syntax__raises_ApiException_BadRequest(
+        self, client: AlarmClient
+    ):
+        query_request = QueryWithFilterRequest(filter="invalid filter syntax")
+        with pytest.raises(ApiException, match="Bad Request"):
+            client.query_alarms(query_request)
+
+    def test__query_alarm_with_non_existent_alarm_id__returns_empty_list(
+        self, client: AlarmClient
+    ):
+        non_existent_alarm_id = f"non_existent_{uuid.uuid1().hex}"
         query_request = QueryWithFilterRequest(
-            order_by=AlarmOrderBy.UPDATED_AT,
-            order_by_descending=True,
+            filter=f'alarmId="{non_existent_alarm_id}"'
         )
         query_response = client.query_alarms(query_request)
 
         assert query_response is not None
-        assert len(query_response.alarms) >= 1
-        for i in range(len(query_response.alarms) - 1):
-            assert (
-                query_response.alarms[i].updated_at
-                >= query_response.alarms[i + 1].updated_at
-            )
+        assert len(query_response.alarms) == 0
 
-    def test__query_alarms_with_all_transitions__transitions_included(
-        self, client: AlarmClient, create_alarms, unique_identifier
+    def test__create_alarm_with_invalid_severity__raises_ApiException_BadRequest(
+        self, client: AlarmClient, unique_identifier
     ):
-        create_alarms(unique_identifier)
-
-        update_request = CreateOrUpdateAlarmRequest(
-            alarm_id=unique_identifier,
+        request = CreateOrUpdateAlarmRequest(
+            alarm_id=unique_identifier(),
             transition=CreateAlarmTransition(
                 transition_type=AlarmTransitionType.SET,
                 occurred_at=datetime.now(timezone.utc),
-                severity_level=4,
-                condition="Second SET",
+                severity_level=-999,
+                condition="Invalid Severity",
             ),
         )
-        client.create_or_update_alarm(update_request)
-
-        query_request = QueryWithFilterRequest(
-            filter=f'alarmId="{unique_identifier}"',
-            transition_inclusion_option=TransitionInclusionOption.ALL,
-        )
-        query_response = client.query_alarms(query_request)
-
-        assert query_response is not None
-        assert len(query_response.alarms) == 1
-        assert len(query_response.alarms[0].transitions) == 2
+        with pytest.raises(ApiException, match="Bad Request"):
+            client.create_or_update_alarm(request)

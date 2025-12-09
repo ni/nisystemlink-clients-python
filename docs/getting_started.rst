@@ -3,6 +3,55 @@
 Getting Started
 ===============
 
+Alarm API
+---------
+
+Overview
+~~~~~~~~
+
+The :class:`.AlarmClient` class is the primary entry point of the Alarm API.
+
+When constructing an :class:`.AlarmClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.AlarmClient` use the
+default connection. The default connection depends on your environment.
+
+With an :class:`.AlarmClient` object, you can:
+
+* Create and update alarm instances using :meth:`~.AlarmClient.create_or_update_alarm`
+
+  * Alarms have two key identifiers:
+  
+    * ``alarm_id``: A user-defined identifier for the alarm type
+    * ``instance_id``: A server-generated unique identifier for each alarm occurrence
+  
+  * Create alarm transitions (SET, CLEAR) to track alarm state changes
+
+* Query alarms with :meth:`~.AlarmClient.query_alarms`
+
+  * Filter alarms using Dynamic LINQ expressions
+  * Control which transitions are returned (most recent only or all)
+  * Sort and paginate results
+
+* Get a specific alarm by its instance_id using :meth:`~.AlarmClient.get_alarm`
+
+* Acknowledge alarms with :meth:`~.AlarmClient.acknowledge_alarm`
+
+  * Optionally force-clear alarms when acknowledging
+
+* Delete alarms using :meth:`~.AlarmClient.delete_alarm` or 
+  :meth:`~.AlarmClient.delete_instances_by_instance_id`
+
+Examples
+~~~~~~~~
+
+Create, query, acknowledge, and delete alarms
+
+.. literalinclude:: ../examples/alarm/alarm.py
+   :language: python
+   :linenos:
+
+
 Tag API
 -------
 
