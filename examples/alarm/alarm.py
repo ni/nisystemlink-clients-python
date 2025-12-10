@@ -63,8 +63,9 @@ query_request = QueryAlarmsWithFilterRequest(
 )
 query_response = client.query_alarms(query_request)
 
-# Acknowledge the alarm using its instance ID
-ack_response = client.acknowledge_alarms(ids=[id])
+# Acknowledge all queried alarms
+queried_alarm_ids = [alarm.instance_id for alarm in query_response.alarms]
+ack_response = client.acknowledge_alarms(ids=queried_alarm_ids)
 
 # Clear the alarm
 clear_request = CreateOrUpdateAlarmRequest(
