@@ -10,7 +10,7 @@ from nisystemlink.clients.alarm.models import (
     AlarmTransitionType,
     CreateAlarmTransition,
     CreateOrUpdateAlarmRequest,
-    DeleteByInstanceIdResponse,
+    DeleteAlarmsResponse,
     QueryAlarmsWithFilterRequest,
     QueryAlarmsWithFilterResponse,
     TransitionInclusionOption,
@@ -386,7 +386,7 @@ class TestAlarmClient:
         non_existent_id = uuid.uuid1().hex
 
         # Delete with mix of valid and invalid IDs
-        delete_response: DeleteByInstanceIdResponse = client.delete_alarms(
+        delete_response: DeleteAlarmsResponse = client.delete_alarms(
             ids=[id1, id2, non_existent_id]
         )
 
@@ -482,7 +482,7 @@ class TestAlarmClient:
 
     def test__delete_non_existent_alarm__returns_failed_list(self, client: AlarmClient):
         non_existent_id = uuid.uuid1().hex
-        delete_response: DeleteByInstanceIdResponse = client.delete_alarms(
+        delete_response: DeleteAlarmsResponse = client.delete_alarms(
             ids=[non_existent_id]
         )
 

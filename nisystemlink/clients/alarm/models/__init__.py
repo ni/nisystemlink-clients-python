@@ -4,7 +4,7 @@ from ._create_or_update_alarm_request import (
     CreateAlarmTransition,
     CreateOrUpdateAlarmRequest,
 )
-from ._delete_by_instance_id_response import DeleteByInstanceIdResponse
+from ._delete_alarms_response import DeleteAlarmsResponse
 from ._query_alarms_request import (
     AlarmOrderBy,
     QueryAlarmsWithFilterRequest,

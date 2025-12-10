@@ -11,7 +11,7 @@ nisystemlink.clients.alarm
    .. automethod:: get_alarm
    .. automethod:: delete_alarm
    .. automethod:: delete_alarms
-   .. automethod:: acknowledge_alarm
+   .. automethod:: acknowledge_alarms
    .. automethod:: query_alarms
 
 .. automodule:: nisystemlink.clients.alarm.models

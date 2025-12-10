@@ -35,7 +35,7 @@ With an :class:`.AlarmClient` object, you can:
 
 * Get a specific alarm by its instance_id using :meth:`~.AlarmClient.get_alarm`
 
-* Acknowledge alarms by its instance_id using :meth:`~.AlarmClient.acknowledge_alarm`
+* Acknowledge alarms by its instance_id using :meth:`~.AlarmClient.acknowledge_alarms`
 
   * Optionally force-clear alarms when acknowledging
 

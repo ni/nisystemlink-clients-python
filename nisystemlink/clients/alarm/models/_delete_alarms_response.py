@@ -5,7 +5,7 @@ from nisystemlink.clients.alarm.models._alarm_instances_partial_success import (
 )
 
 
-class DeleteByInstanceIdResponse(AlarmInstancesPartialSuccess):
+class DeleteAlarmsResponse(AlarmInstancesPartialSuccess):
     """Contains information about alarms that were deleted."""
 
     deleted: List[str]

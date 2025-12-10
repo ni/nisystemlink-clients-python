@@ -112,7 +112,7 @@ class AlarmClient(BaseClient):
         ...
 
     @post("delete-instances-by-instance-id", args=[Field("instanceIds")])
-    def delete_alarms(self, ids: List[str]) -> models.DeleteByInstanceIdResponse:
+    def delete_alarms(self, ids: List[str]) -> models.DeleteAlarmsResponse:
         """Deletes multiple alarm instances by their instance IDs.
 
         Args:
