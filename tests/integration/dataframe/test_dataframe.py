@@ -114,7 +114,7 @@ class TestDataFrame:
         table_id: str,
         minimum_row_count: int,
         index_column: str = "index",
-        max_attempts: int = 10,
+        timeout: float = 5.0,
         sleep_duration: float = 0.2,
     ) -> int:
         """Helper function to wait for table data to be available by polling get_table_data.
@@ -124,24 +124,27 @@ class TestDataFrame:
             table_id: ID of the table to check
             expected_row_count: Expected number of rows in the table
             index_column: Name of the index column to query (default: "index")
-            max_attempts: Maximum number of retry attempts (default: 10)
+            timeout: Maximum time to wait in seconds (default: 2.0)
             sleep_duration: Sleep duration between attempts in seconds (default: 0.2)
 
         Returns:
             The actual number of rows found in the table
         """
-        for attempt in range(max_attempts):
-            if attempt > 0:
-                time.sleep(sleep_duration)
+        start_time = time.time()
+
+        while True:
             response = client.get_table_data(table_id, columns=[index_column], take=1)
             actual_row_count = response.total_row_count
             if actual_row_count >= minimum_row_count:
                 return actual_row_count
 
-        assert False, (
-            f"Failed to get expected row count {minimum_row_count} after "
-            f"{max_attempts} attempts (last count: {actual_row_count})"
-        )
+            elapsed_time = time.time() - start_time
+            assert elapsed_time < timeout, (
+                f"Failed to get expected row count {minimum_row_count} after "
+                f"{elapsed_time:.2f} seconds (last count: {actual_row_count})"
+            )
+
+            time.sleep(sleep_duration)
 
     def _new_single_int_table(self, create_table, column_name: str = "a") -> str:
         return create_table(
