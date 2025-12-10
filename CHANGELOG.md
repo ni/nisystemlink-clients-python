@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.21.0 (2025-12-10)
+
+### Feature
+
+* Rev minimum python version to 3.10 and add python 3.14 ([#168](https://github.com/ni/nisystemlink-clients-python/issues/168)) ([`d414904`](https://github.com/ni/nisystemlink-clients-python/commit/d4149043ac2f1eff97cb7cf6e65b771839bd6e3c))
+
 ## v2.20.0 (2025-12-01)
 
 ### Feature
