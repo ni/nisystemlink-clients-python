@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import csv
+import io
+import re
 import time
 import warnings
 from datetime import datetime, timezone
@@ -7,6 +10,7 @@ from typing import Callable, List, TypedDict
 import pytest  # type: ignore
 import responses
 from nisystemlink.clients.core import ApiException
+from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import (
     AppendTableDataRequest,
@@ -40,6 +44,18 @@ _TestResultIdArg = TypedDict(
 int_index_column = Column(
     name="index", data_type=DataType.Int32, column_type=ColumnType.Index
 )
+
+table_with_data_columns = [
+    int_index_column,
+    Column(name="float", data_type=DataType.Float64),
+    Column(
+        name="int",
+        data_type=DataType.Int64,
+        column_type=ColumnType.Nullable,
+    ),
+    Column(name="bool", data_type=DataType.Bool),
+    Column(name="string", data_type=DataType.String),
+]
 
 basic_table_model = CreateTableRequest(columns=[int_index_column])
 
@@ -103,6 +119,26 @@ def supports_test_result_id(client: DataFrameClient) -> bool:
             )
         )
     return result
+
+
+@pytest.fixture(scope="class")
+def table_with_data(client: DataFrameClient, create_table) -> str:
+    """Fixture to create a table with data."""
+    id = create_table(CreateTableRequest(columns=table_with_data_columns))
+
+    frame = TestDataFrame._create_data_frame(
+        table_with_data_columns,
+        data=[
+            [1, 4.5, 30, False, "dog"],
+            [2, 3.5, None, True, "cat"],
+            [3, 2.5, 10, True, "bunny"],
+            [4, 1.5, 40, False, "cow"],
+        ],
+    )
+    client.append_table_data(id, AppendTableDataRequest(frame=frame, end_of_data=True))
+    TestDataFrame._wait_for_table_data(client, id, minimum_row_count=len(frame.data))
+
+    return id
 
 
 @pytest.mark.enterprise
@@ -235,6 +271,60 @@ class TestDataFrame:
             return datetime.fromisoformat(value)
         assert column.data_type == DataType.String
         return value
+
+    @staticmethod
+    def _read_exported_csv(
+        columns: List[Column], data: IteratorFileLike
+    ) -> tuple[List[str], _DataFrameData]:
+        column_map = {col.name: col for col in columns}
+        csv_content = data.read().decode("utf-8")
+
+        # The CSV reader doesn't distinguish between "" and an empty field (e.g., `,,`).
+        # The server returns the former for empty strings and the latter for null values
+        # (of any data type). So we replace empty fields with a placeholder value that
+        # we convert back to None below.
+        csv_content = re.sub(r"([,\n])([,\r])", r"\1NULL_PLACEHOLDER\2", csv_content)
+
+        text_stream = io.StringIO(csv_content, newline="")
+        reader = csv.reader(text_stream)
+
+        # Read the column names from the header row.
+        column_names = next(reader)
+        csv_columns = []
+        for name in column_names:
+            column = column_map.get(name)
+            assert column is not None, f"CSV includes unknown column {name}"
+            csv_columns.append(column)
+
+        rows = [
+            [
+                TestDataFrame._str_to_data_value(
+                    csv_columns[col_idx],
+                    value if value != "NULL_PLACEHOLDER" else None,
+                )
+                for col_idx, value in enumerate(row)
+            ]
+            for row in reader
+        ]
+
+        return (column_names, rows)
+
+    @staticmethod
+    def _create_expected_csv(columns: List[Column], data: _DataFrameData) -> str:
+        output = io.StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerow([col.name for col in columns])
+        writer.writerows(
+            (
+                # QUOTE_NONNUMERIC will convert None to an empty string. Instead,
+                # insert a placeholder that we delete below.
+                (value if value is not None else "NONE_PLACEHOLDER" for value in row)
+                for row in data
+            )
+        )
+        result = output.getvalue()
+        result = result.replace('"NONE_PLACEHOLDER"', "")
+        return result
 
     def test__api_info__returns(self, client):
         response = client.api_info()
@@ -522,40 +612,20 @@ class TestDataFrame:
         assert response.failed_modifications == [updates[1]]
         assert len(response.error.inner_errors) == 1
 
-    def test__read_and_write_data__works(self, client: DataFrameClient, create_table):
-        columns = [
-            int_index_column,
-            Column(
-                name="value",
-                data_type=DataType.Float64,
-                column_type=ColumnType.Nullable,
-            ),
-            Column(
-                name="ignore_me",
-                data_type=DataType.Bool,
-                column_type=ColumnType.Nullable,
-            ),
-        ]
-        id = create_table(CreateTableRequest(columns=columns))
-
-        frame = self._create_data_frame(
-            columns, data=[[1, 3.3, True], [2, None, False], [3, 1.1, True]]
-        )
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-        self._wait_for_table_data(client, id, minimum_row_count=3)
-
+    def test__get_table_data__returns_correct_data(
+        self, client: DataFrameClient, table_with_data: str
+    ):
         response = client.get_table_data(
-            id, columns=["index", "value"], order_by=["value"]
+            table_with_data, columns=["index", "float"], order_by=["float"]
         )
 
-        assert response.total_row_count == 3
-        assert response.frame.columns == ["index", "value"]
-        assert self._read_data_frame(columns, response.frame) == [
-            [3, 1.1],
-            [1, 3.3],
-            [2, None],
+        assert response.total_row_count == 4
+        assert response.frame.columns == ["index", "float"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [
+            [4, 1.5],
+            [3, 2.5],
+            [2, 3.5],
+            [1, 4.5],
         ]
 
     def test__write_invalid_data__raises(
@@ -571,71 +641,36 @@ class TestDataFrame:
         with pytest.raises(ApiException, match="400 Bad Request"):
             client.append_table_data(id, AppendTableDataRequest(frame=frame))
 
-    def test__query_table_data__sorts(self, client: DataFrameClient, create_table):
-        columns = [
-            int_index_column,
-            Column(name="col1", data_type=DataType.Float64),
-            Column(name="col2", data_type=DataType.Float64),
-        ]
-        id = create_table(CreateTableRequest(columns=columns))
-
-        frame = self._create_data_frame(
-            columns,
-            data=[[1, 2.5, 6.5], [2, 1.5, 5.5], [3, 2.5, 7.5]],
-        )
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-        self._wait_for_table_data(client, id, minimum_row_count=3)
-
+    def test__query_table_data__sorts(
+        self, client: DataFrameClient, table_with_data: str
+    ):
         response = client.query_table_data(
-            id,
+            table_with_data,
             QueryTableDataRequest(
+                columns=["index", "float"],
                 order_by=[
-                    ColumnOrderBy(column="col1"),
-                    ColumnOrderBy(column="col2", descending=True),
+                    ColumnOrderBy(column="bool"),
+                    ColumnOrderBy(column="float", descending=True),
                 ],
             ),
         )
 
-        assert response.total_row_count == 3
-        assert response.frame.columns == ["index", "col1", "col2"]
-        assert self._read_data_frame(columns, response.frame) == [
-            [2, 1.5, 5.5],
-            [3, 2.5, 7.5],
-            [1, 2.5, 6.5],
+        assert response.total_row_count == 4
+        assert response.frame.columns == ["index", "float"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [
+            [1, 4.5],  # bool=False
+            [4, 1.5],  # bool=False
+            [2, 3.5],  # bool=True
+            [3, 2.5],  # bool=True
         ]
 
-    def test__query_table_data__filters(self, client: DataFrameClient, create_table):
-        columns = [
-            int_index_column,
-            Column(name="float", data_type=DataType.Float64),
-            Column(
-                name="int",
-                data_type=DataType.Int64,
-                column_type=ColumnType.Nullable,
-            ),
-            Column(name="string", data_type=DataType.String),
-        ]
-        id = create_table(CreateTableRequest(columns=columns))
-
-        frame = self._create_data_frame(
-            columns,
-            data=[
-                [1, 1.5, 10, "dog"],
-                [2, 2.5, None, "cat"],
-                [3, 3.5, 30, "bunny"],
-                [4, 4.5, 40, "cow"],
-            ],
-        )
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-        self._wait_for_table_data(client, id, minimum_row_count=4)
-
+    def test__query_table_data__filters(
+        self, client: DataFrameClient, table_with_data: str
+    ):
         response = client.query_table_data(
-            id,
+            table_with_data,
             QueryTableDataRequest(
+                columns=["index"],
                 filters=[
                     ColumnFilter(
                         column="float",
@@ -652,81 +687,72 @@ class TestDataFrame:
                         operation=FilterOperation.NotContains,
                         value="bun",
                     ),
-                ]
+                ],
             ),
         )
 
-        assert self._read_data_frame(columns, response.frame) == [[4, 4.5, 40, "cow"]]
+        assert response.total_row_count == 1
+        assert response.frame.columns == ["index"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [[1]]
 
-    def test__query_decimated_data__works(self, client: DataFrameClient, create_table):
-        columns = [
-            int_index_column,
-            Column(name="col1", data_type=DataType.Float64),
-            Column(name="col2", data_type=DataType.Float64),
-        ]
-        id = create_table(CreateTableRequest(columns=columns))
-
-        frame = self._create_data_frame(
-            columns,
-            data=[
-                [1, 1.5, 3.5],
-                [2, 2.5, 2.5],
-                [3, 3.5, 1.5],
-                [4, 4.5, 4.5],
-            ],
-        )
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-        self._wait_for_table_data(client, id, minimum_row_count=4)
-
+    def test__query_decimated_data__works(
+        self, client: DataFrameClient, table_with_data: str
+    ):
         response = client.query_decimated_data(
-            id,
+            table_with_data,
             QueryDecimatedDataRequest(
+                columns=["index", "float"],
                 decimation=DecimationOptions(
                     x_column="index",
-                    y_columns=["col1"],
+                    y_columns=["float"],
                     intervals=1,
                     method=DecimationMethod.MaxMin,
-                )
+                ),
             ),
         )
 
-        assert self._read_data_frame(columns, response.frame) == [
-            [1, 1.5, 3.5],
-            [4, 4.5, 4.5],
+        assert response.frame.columns == ["index", "float"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [
+            [1, 4.5],
+            [4, 1.5],
         ]
 
-    def test__export_table_data__works(self, client: DataFrameClient, create_table):
-        columns = [
-            int_index_column,
-            Column(name="col1", data_type=DataType.Float64),
-            Column(name="col2", data_type=DataType.Float64),
-        ]
-        id = create_table(CreateTableRequest(columns=columns))
-
-        frame = self._create_data_frame(
-            columns,
-            data=[[1, 2.5, 6.5], [2, 1.5, 5.5], [3, 2.5, 7.5]],
-        )
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-        self._wait_for_table_data(client, id, minimum_row_count=3)
-
+    def test__export_table_data__includes_all_rows(
+        self, client: DataFrameClient, table_with_data: str
+    ):
         response = client.export_table_data(
-            id,
+            table_with_data,
             ExportTableDataRequest(
                 order_by=[ColumnOrderBy(column="index")],
                 response_format=ExportFormat.CSV,
             ),
         )
 
-        expected_csv_rows = "\r\n".join(
-            [",".join((value or "" for value in row)) for row in frame.data]
+        column_names, data = self._read_exported_csv(table_with_data_columns, response)
+        assert column_names == ["index", "float", "int", "bool", "string"]
+        assert data == [
+            [1, 4.5, 30, False, "dog"],
+            [2, 3.5, None, True, "cat"],
+            [3, 2.5, 10, True, "bunny"],
+            [4, 1.5, 40, False, "cow"],
+        ]
+
+    def test__export_table_data__limits_to_take_rows(
+        self, client: DataFrameClient, table_with_data: str
+    ):
+        response = client.export_table_data(
+            table_with_data,
+            ExportTableDataRequest(
+                columns=["index"],
+                order_by=[ColumnOrderBy(column="index", descending=True)],
+                take=2,
+                response_format=ExportFormat.CSV,
+            ),
         )
-        expected_csv = f'"index","col1","col2"\r\n{expected_csv_rows}\r\n'
-        assert response.read().decode("utf-8") == expected_csv
+
+        column_names, data = self._read_exported_csv(table_with_data_columns, response)
+        assert column_names == ["index"]
+        assert data == [[4], [3]]
 
     def test__append_table_data__append_request_success(
         self, client: DataFrameClient, create_table
