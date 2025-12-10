@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from typing import List
+from typing import Callable, Generator, List
 
 import pytest
 from nisystemlink.clients.alarm import AlarmClient
@@ -26,7 +26,7 @@ def client(enterprise_config: HttpConfiguration) -> AlarmClient:
 
 
 @pytest.fixture
-def unique_identifier():
+def unique_identifier() -> Callable[[], str]:
     """Unique alarm id for this test."""
 
     def _unique_identifier() -> str:
@@ -36,7 +36,9 @@ def unique_identifier():
 
 
 @pytest.fixture
-def create_alarms(client: AlarmClient):
+def create_alarms(
+    client: AlarmClient,
+) -> Generator[Callable[[str, int, str], str], None, None]:
     """Fixture to return a factory that creates alarms.
 
     Returns instance_id (referred to as 'id' in tests) for each created alarm.
@@ -73,7 +75,7 @@ def create_alarms(client: AlarmClient):
 class TestAlarmClient:
 
     def test__create_single_alarm__one_alarm_created_with_right_field_values(
-        self, client: AlarmClient, unique_identifier
+        self, client: AlarmClient, unique_identifier: Callable[[], str]
     ):
         alarm_id = unique_identifier()
         occurred_at = datetime.now(timezone.utc)
@@ -158,13 +160,16 @@ class TestAlarmClient:
         client.delete_alarm(id)
 
     def test__query_alarms_with_all_fields__returns_complete_response(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         # Create two alarms with different severity levels
         alarm_id_1 = unique_identifier()
         alarm_id_2 = unique_identifier()
-        create_alarms(alarm_id_1, severity_level=3, condition="Condition 1")
-        create_alarms(alarm_id_2, severity_level=4, condition="Condition 2")
+        create_alarms(alarm_id_1, 3, "Condition 1")
+        create_alarms(alarm_id_2, 4, "Condition 2")
 
         # Add another transition to the first alarm
         update_request = CreateOrUpdateAlarmRequest(
@@ -217,10 +222,13 @@ class TestAlarmClient:
         assert len(alarm_1_result.transitions) == 2
 
     def test__create_multiple_alarms_and_query_alarms_with_take__only_take_returned(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
-        create_alarms(unique_identifier(), severity_level=3)
-        create_alarms(unique_identifier(), severity_level=4)
+        create_alarms(unique_identifier(), 3, "Test Condition")
+        create_alarms(unique_identifier(), 4, "Test Condition")
 
         query_request = QueryAlarmsWithFilterRequest(take=1)
         query_response = client.query_alarms(query_request)
@@ -229,12 +237,15 @@ class TestAlarmClient:
         assert len(query_response.alarms) == 1
 
     def test__query_alarms_with_filter_and_count__returns_exact_count(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         alarm_id_1 = unique_identifier()
         alarm_id_2 = unique_identifier()
-        create_alarms(alarm_id_1, severity_level=3)
-        create_alarms(alarm_id_2, severity_level=4)
+        create_alarms(alarm_id_1, 3, "Test Condition")
+        create_alarms(alarm_id_2, 4, "Test Condition")
 
         query_request = QueryAlarmsWithFilterRequest(
             filter=f'alarmId="{alarm_id_1}" OR alarmId="{alarm_id_2}"',
@@ -249,10 +260,13 @@ class TestAlarmClient:
         assert query_response.total_count == 2
 
     def test__get_alarm__returns_alarm_with_all_fields(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         alarm_id = unique_identifier()
-        id = create_alarms(alarm_id)
+        id = create_alarms(alarm_id, 3, "Test Condition")
 
         alarm = client.get_alarm(id)
 
@@ -264,10 +278,13 @@ class TestAlarmClient:
         assert len(alarm.transitions) >= 1
 
     def test__query_alarm_by_alarm_id__matches_expected(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         alarm_id = unique_identifier()
-        id = create_alarms(alarm_id)
+        id = create_alarms(alarm_id, 3, "Test Condition")
         assert id is not None
 
         query_request = QueryAlarmsWithFilterRequest(
@@ -281,11 +298,14 @@ class TestAlarmClient:
         assert query_response.alarms[0].alarm_id == alarm_id
 
     def test__acknowledge_alarm__verifies_all_response_fields(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         # Create multiple alarms
-        id1 = create_alarms(unique_identifier(), severity_level=3)
-        id2 = create_alarms(unique_identifier(), severity_level=4)
+        id1 = create_alarms(unique_identifier(), 3, "Test Condition")
+        id2 = create_alarms(unique_identifier(), 4, "Test Condition")
         non_existent_id = uuid.uuid1().hex
 
         # Acknowledge with mix of valid and invalid IDs
@@ -311,9 +331,12 @@ class TestAlarmClient:
         assert alarm1.acknowledged_by is not None
 
     def test__acknowledge_alarm_with_force_clear__alarm_cleared(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
-        id = create_alarms(unique_identifier())
+        id = create_alarms(unique_identifier(), 3, "Test Condition")
 
         ack_response: AcknowledgeAlarmsResponse = client.acknowledge_alarms(
             ids=[id], force_clear=True
@@ -325,7 +348,9 @@ class TestAlarmClient:
         alarm = client.get_alarm(id)
         assert alarm.clear is True
 
-    def test__delete_alarm__returns_none(self, client: AlarmClient, unique_identifier):
+    def test__delete_alarm__returns_none(
+        self, client: AlarmClient, unique_identifier: Callable[[], str]
+    ):
         alarm_id = unique_identifier()
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
@@ -348,13 +373,16 @@ class TestAlarmClient:
         assert len(query_response.alarms) == 0
 
     def test__delete_alarms__verifies_all_response_fields(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         alarm_id1 = unique_identifier()
         alarm_id2 = unique_identifier()
         # Create multiple alarms with different alarm IDs
-        id1 = create_alarms(alarm_id1, severity_level=3)
-        id2 = create_alarms(alarm_id2, severity_level=4)
+        id1 = create_alarms(alarm_id1, 3, "Test Condition")
+        id2 = create_alarms(alarm_id2, 4, "Test Condition")
         non_existent_id = uuid.uuid1().hex
 
         # Delete with mix of valid and invalid IDs
@@ -381,10 +409,13 @@ class TestAlarmClient:
         assert len(query_response.alarms) == 0
 
     def test__update_alarm_severity__severity_updated(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         alarm_id = unique_identifier()
-        create_alarms(alarm_id)
+        create_alarms(alarm_id, 3, "Test Condition")
 
         update_request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
@@ -402,10 +433,13 @@ class TestAlarmClient:
         assert alarm.current_severity_level == 5
 
     def test__clear_alarm__alarm_cleared(
-        self, client: AlarmClient, create_alarms, unique_identifier
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
     ):
         alarm_id = unique_identifier()
-        create_alarms(alarm_id)
+        create_alarms(alarm_id, 3, "Test Condition")
 
         clear_request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
@@ -476,7 +510,7 @@ class TestAlarmClient:
         assert len(query_response.alarms) == 0
 
     def test__create_alarm_with_invalid_severity__raises_ApiException_BadRequest(
-        self, client: AlarmClient, unique_identifier
+        self, client: AlarmClient, unique_identifier: Callable[[], str]
     ):
         request = CreateOrUpdateAlarmRequest(
             alarm_id=unique_identifier(),
