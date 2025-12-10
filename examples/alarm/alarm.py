@@ -1,17 +1,13 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 
 from nisystemlink.clients.alarm import AlarmClient
 from nisystemlink.clients.alarm.models import (
-    CreateOrUpdateAlarmRequest,
-    QueryWithFilterRequest,
-)
-from nisystemlink.clients.alarm.models._alarm import AlarmTransitionType
-from nisystemlink.clients.alarm.models._create_or_update_alarm_request import (
-    CreateAlarmTransition,
-)
-from nisystemlink.clients.alarm.models._query_alarms_request import (
     AlarmOrderBy,
+    AlarmTransitionType,
+    CreateAlarmTransition,
+    CreateOrUpdateAlarmRequest,
+    QueryAlarmsWithFilterRequest,
     TransitionInclusionOption,
 )
 from nisystemlink.clients.core import HttpConfiguration
@@ -32,7 +28,7 @@ create_request = CreateOrUpdateAlarmRequest(
     alarm_id=alarm_id,
     transition=CreateAlarmTransition(
         transition_type=AlarmTransitionType.SET,
-        occurred_at=datetime.now(timezone.utc),
+        occurred_at=datetime.now(),
         severity_level=3,
         condition="Temperature exceeded threshold",
         message="Temperature sensor reading: 85°C",
@@ -49,7 +45,7 @@ update_request = CreateOrUpdateAlarmRequest(
     alarm_id=alarm_id,
     transition=CreateAlarmTransition(
         transition_type=AlarmTransitionType.SET,
-        occurred_at=datetime.now(timezone.utc),
+        occurred_at=datetime.now(),
         severity_level=5,
         condition="Temperature critically high",
         message="Temperature sensor reading: 95°C",
@@ -58,7 +54,7 @@ update_request = CreateOrUpdateAlarmRequest(
 client.create_or_update_alarm(update_request)
 
 # Query alarms with a filter (can filter by alarm_id to find all instances)
-query_request = QueryWithFilterRequest(
+query_request = QueryAlarmsWithFilterRequest(
     filter=f'alarmId="{alarm_id}"',
     transition_inclusion_option=TransitionInclusionOption.ALL,
     order_by=AlarmOrderBy.UPDATED_AT,
@@ -68,14 +64,14 @@ query_request = QueryWithFilterRequest(
 query_response = client.query_alarms(query_request)
 
 # Acknowledge the alarm using its instance ID
-ack_response = client.acknowledge_alarm([id])
+ack_response = client.acknowledge_alarms(ids=[id])
 
 # Clear the alarm
 clear_request = CreateOrUpdateAlarmRequest(
     alarm_id=alarm_id,
     transition=CreateAlarmTransition(
         transition_type=AlarmTransitionType.CLEAR,
-        occurred_at=datetime.now(timezone.utc),
+        occurred_at=datetime.now(),
         severity_level=0,
         condition="Temperature returned to normal",
     ),

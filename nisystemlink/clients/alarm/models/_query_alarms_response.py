@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._with_paging import WithPaging
 from ._alarm import Alarm
 
 
-class QueryWithFilterResponse(WithPaging):
+class QueryAlarmsWithFilterResponse(WithPaging):
     """Contains information about the alarms matched by a query."""
 
     alarms: List[Alarm]

@@ -25,7 +25,7 @@ class AlarmOrderBy(str, Enum):
     """The date and time the alarm was last updated."""
 
 
-class QueryWithFilterRequest(JsonModel):
+class QueryAlarmsWithFilterRequest(JsonModel):
     """Contains filter information for querying alarms."""
 
     filter: Optional[str] = None

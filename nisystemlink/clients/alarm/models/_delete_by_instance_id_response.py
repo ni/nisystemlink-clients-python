@@ -1,6 +1,6 @@
 from typing import List
 
-from nisystemlink.clients.alarm.models._partial_success_response_base import (
+from nisystemlink.clients.alarm.models._alarm_instances_partial_success import (
     AlarmInstancesPartialSuccess,
 )
 

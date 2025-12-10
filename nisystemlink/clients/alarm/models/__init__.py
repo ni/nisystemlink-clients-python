@@ -1,4 +1,4 @@
-from ._acknowledge_by_instance_id_response import AcknowledgeByInstanceIdResponse
+from ._acknowledge_alarms_response import AcknowledgeAlarmsResponse
 from ._alarm import Alarm, AlarmNote, AlarmTransition, AlarmTransitionType
 from ._create_or_update_alarm_request import (
     CreateAlarmTransition,
@@ -7,9 +7,9 @@ from ._create_or_update_alarm_request import (
 from ._delete_by_instance_id_response import DeleteByInstanceIdResponse
 from ._query_alarms_request import (
     AlarmOrderBy,
-    QueryWithFilterRequest,
+    QueryAlarmsWithFilterRequest,
     TransitionInclusionOption,
 )
-from ._query_alarms_response import QueryWithFilterResponse
+from ._query_alarms_response import QueryAlarmsWithFilterResponse
 
 # flake8: noqa

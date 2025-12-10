@@ -10,7 +10,7 @@ nisystemlink.clients.alarm
    .. automethod:: create_or_update_alarm
    .. automethod:: get_alarm
    .. automethod:: delete_alarm
-   .. automethod:: delete_instances_by_instance_id
+   .. automethod:: delete_alarms
    .. automethod:: acknowledge_alarm
    .. automethod:: query_alarms
 
