@@ -3,7 +3,6 @@
 """Implementation of SerializedTagWithAggregates."""
 
 import datetime
-from typing import Optional
 
 from nisystemlink.clients import tag as tbase
 from typing_extensions import final
@@ -28,11 +27,11 @@ class SerializedTagWithAggregates:
         path: str,
         data_type: tbase.DataType,
         value: str,
-        timestamp: Optional[datetime.datetime] = None,
-        count: Optional[int] = None,
-        min: Optional[str] = None,
-        max: Optional[str] = None,
-        mean: Optional[float] = None,
+        timestamp: datetime.datetime | None = None,
+        count: int | None = None,
+        min: str | None = None,
+        max: str | None = None,
+        mean: float | None = None,
     ) -> None:
         """Initialize an instance.
 
@@ -77,17 +76,17 @@ class SerializedTagWithAggregates:
         return self._value
 
     @property
-    def timestamp(self) -> Optional[datetime.datetime]:  # noqa: D401
+    def timestamp(self) -> datetime.datetime | None:  # noqa: D401
         """The timestamp associated with the value, if available."""
         return self._timestamp
 
     @property
-    def count(self) -> Optional[int]:  # noqa: D401
+    def count(self) -> int | None:  # noqa: D401
         """The number of times the tag has been written, or None if the tag is not collecting aggregates."""
         return self._count
 
     @property
-    def min(self) -> Optional[str]:  # noqa: D401
+    def min(self) -> str | None:  # noqa: D401
         """The minimum value of the tag serialized to a string, or None if the tag is
         not collecting aggregates or the data type of the tag does not track a minimum
         value.
@@ -95,7 +94,7 @@ class SerializedTagWithAggregates:
         return self._min
 
     @property
-    def max(self) -> Optional[str]:  # noqa: D401
+    def max(self) -> str | None:  # noqa: D401
         """The maximum value of the tag serialized to a string, or None if the tag is
         not collecting aggregates or the data type of the tag does not track a maximum
         value.
@@ -103,7 +102,7 @@ class SerializedTagWithAggregates:
         return self._max
 
     @property
-    def mean(self) -> Optional[float]:  # noqa: D401
+    def mean(self) -> float | None:  # noqa: D401
         """The mean value of the tag, or None if the tag is not collecting aggregates or
         the data type of the tag does not track a mean value.
         """

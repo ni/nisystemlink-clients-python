@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -11,5 +11,5 @@ class UpdateTestPlansRequest(JsonModel):
     test_plans: List[UpdateTestPlanRequest]
     """A list of test plans to update."""
 
-    replace: Optional[bool] = None
+    replace: bool | None = None
     """Whether to replace the existing test plans or update them."""

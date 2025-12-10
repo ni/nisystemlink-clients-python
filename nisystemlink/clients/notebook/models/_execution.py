@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
@@ -20,10 +20,10 @@ class Source(JsonModel):
     type: SourceType
     """Source type of an execution"""
 
-    routine_id: Optional[str] = None
+    routine_id: str | None = None
     """ID of the routine that triggered the execution"""
 
-    event_id: Optional[str] = None
+    event_id: str | None = None
     """Unique identifier of event that triggered the execution"""
 
 
@@ -111,70 +111,70 @@ class ExecutionErrorCode(str, Enum):
 class Execution(JsonModel):
     """Information about an execution of a Jupyter notebook that has the cachedResult field added."""
 
-    id: Optional[str] = None
+    id: str | None = None
     """The ID of the execution."""
 
-    notebook_id: Optional[str] = None
+    notebook_id: str | None = None
     """The ID of the executed notebook."""
 
-    organization_id: Optional[str] = Field(None, alias="orgId")
+    organization_id: str | None = Field(None, alias="orgId")
     """The org ID of the user creating the request."""
 
-    user_id: Optional[str] = None
+    user_id: str | None = None
     """The user ID of the user creating the request."""
 
-    parameters: Optional[Dict[str, Any]] = None
+    parameters: Dict[str, Any] | None = None
     """The input parameters for this execution of the notebook. The keys are strings and the values can be of any
     valid JSON type."""
 
-    workspace_id: Optional[str] = None
+    workspace_id: str | None = None
     """The ID of the workspace this execution belongs to."""
 
-    timeout: Optional[int] = None
+    timeout: int | None = None
     """The number of seconds the execution runs before it aborts if uncompleted. The timer starts once status is
     IN_PROGRESS. 0 means infinite."""
 
-    status: Optional[ExecutionStatus] = None
+    status: ExecutionStatus | None = None
     """Status of an execution."""
 
-    queued_at: Optional[datetime] = None
+    queued_at: datetime | None = None
     """Timestamp of when the notebook execution was queued."""
 
-    started_at: Optional[datetime] = None
+    started_at: datetime | None = None
     """Timestamp of when the notebook execution was started."""
 
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     """Timestamp of when the notebook execution was completed."""
 
-    last_updated_timestamp: Optional[datetime] = None
+    last_updated_timestamp: datetime | None = None
     """Timestamp of when the notebook execution was last updated."""
 
-    last_updated_by: Optional[str] = None
+    last_updated_by: str | None = None
     """"The user ID of the user who last updated the execution."""
 
-    retry_count: Optional[int] = None
+    retry_count: int | None = None
     """The number of manually retried attempts of the notebook execution."""
 
-    exception: Optional[str] = None
+    exception: str | None = None
     """Exception that occured during the execution. This is used only when status is FAILED."""
 
-    error_code: Optional[ExecutionErrorCode] = None
+    error_code: ExecutionErrorCode | None = None
     """Execution error code."""
 
-    report_id: Optional[str] = None
+    report_id: str | None = None
     """The ID of the report this execution generates."""
 
-    report_settings: Optional[ReportSettings] = None
+    report_settings: ReportSettings | None = None
     """Settings of the Report"""
 
-    result: Optional[Dict[str, Optional[object]]] = None
+    result: Dict[str, object | None] | None = None
     """Result of the execution. This is used only when status is SUCCEEDED."""
 
-    source: Optional[Source] = None
+    source: Source | None = None
     """An object that defines properties set by routine service"""
 
-    priority: Optional[ExecutionPriority] = None
+    priority: ExecutionPriority | None = None
     """Execution priority. Can be one of Low, Medium or High."""
 
-    resource_profile: Optional[ExecutionResourceProfile] = None
+    resource_profile: ExecutionResourceProfile | None = None
     """Resource profile of the execution."""

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -11,5 +11,5 @@ class ScheduleTestPlansRequest(JsonModel):
     test_plans: List[ScheduleTestPlanRequest]
     """List of test plan scheduling content objects."""
 
-    replace: Optional[bool] = None
+    replace: bool | None = None
     """(Optional) If true, replaces existing scheduled test plans."""

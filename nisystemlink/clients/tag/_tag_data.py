@@ -2,7 +2,7 @@
 
 """Implementation of TagData."""
 
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List
 
 from nisystemlink.clients import tag as tbase
 from typing_extensions import final
@@ -32,9 +32,9 @@ class TagData:
     def __init__(
         self,
         path: str,
-        data_type: Optional[tbase.DataType] = None,
-        keywords: Optional[Iterable[str]] = None,
-        properties: Optional[Dict[str, str]] = None,
+        data_type: tbase.DataType | None = None,
+        keywords: Iterable[str] | None = None,
+        properties: Dict[str, str] | None = None,
     ) -> None:
         """Initialize an instance.
 
@@ -48,11 +48,11 @@ class TagData:
         self._path = path
         self._data_type = tbase.DataType.UNKNOWN if data_type is None else data_type
         self._keywords = list(keywords) if keywords else []
-        self._properties = {}  # type: Dict[str, str]
+        self._properties: Dict[str, str] = {}
         self._collect_aggregates = False
         self._retention_type = tbase.RetentionType.NONE
-        self._retention_count = None  # type: Optional[int]
-        self._retention_days = None  # type: Optional[int]
+        self._retention_count: int | None = None
+        self._retention_days: int | None = None
         if properties:
             self.replace_properties(properties)
 
@@ -70,7 +70,7 @@ class TagData:
         if self.data_type == tbase.DataType.UNKNOWN:
             raise ValueError("Invalid tag data type")
 
-        data = {}  # type: Dict[str, Any]
+        data: Dict[str, Any] = {}
         data["path"] = self._path
         data["type"] = self._data_type.api_name
         data["collectAggregates"] = self.collect_aggregates
@@ -144,7 +144,7 @@ class TagData:
         self._retention_type = value
 
     @property
-    def retention_count(self) -> Optional[int]:  # noqa: D401
+    def retention_count(self) -> int | None:  # noqa: D401
         """The number of historical values to retain when :attr:`retention_type` is
         :attr:`RetentionType.COUNT`, or None to use the server-specified default of
         10000.
@@ -152,11 +152,11 @@ class TagData:
         return self._retention_count
 
     @retention_count.setter
-    def retention_count(self, value: Optional[int]) -> None:
+    def retention_count(self, value: int | None) -> None:
         self._retention_count = value
 
     @property
-    def retention_days(self) -> Optional[int]:  # noqa: D401
+    def retention_days(self) -> int | None:  # noqa: D401
         """The number of days to keep a tag's historical values when
         :attr:`retention_type` is :attr:`RetentionType.DURATION`, or None to use the
         server-specified default of 30 days.
@@ -164,7 +164,7 @@ class TagData:
         return self._retention_days
 
     @retention_days.setter
-    def retention_days(self, value: Optional[int]) -> None:
+    def retention_days(self, value: int | None) -> None:
         self._retention_days = value
 
     def replace_keywords(self, keywords: Iterable[str]) -> None:

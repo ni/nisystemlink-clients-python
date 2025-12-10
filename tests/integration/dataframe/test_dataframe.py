@@ -2,7 +2,7 @@
 import time
 import warnings
 from datetime import datetime, timezone
-from typing import Callable, List, Optional, TypedDict, Union
+from typing import Callable, List, TypedDict
 
 import pytest  # type: ignore
 import responses
@@ -31,11 +31,10 @@ from nisystemlink.clients.dataframe.models import (
     TableMetadataModification,
 )
 
-
-_DataElement = Optional[Union[str, float, int, bool, datetime]]
+_DataElement = str | float | int | bool | datetime | None
 _DataFrameData = List[List[_DataElement]]
 _TestResultIdArg = TypedDict(
-    "_TestResultIdArg", {"test_result_id": Optional[str]}, total=False
+    "_TestResultIdArg", {"test_result_id": str | None}, total=False
 )
 
 int_index_column = Column(
@@ -56,7 +55,7 @@ def create_table(client: DataFrameClient):
     """Fixture to return a factory that creates tables."""
     tables = []
 
-    def _create_table(table: Optional[CreateTableRequest] = None) -> str:
+    def _create_table(table: CreateTableRequest | None = None) -> str:
         id = client.create_table(table or basic_table_model)
         tables.append(id)
         return id
@@ -195,7 +194,7 @@ class TestDataFrame:
         ]
 
     @staticmethod
-    def _data_value_to_str(column: Column, value: _DataElement) -> Optional[str]:
+    def _data_value_to_str(column: Column, value: _DataElement) -> str | None:
         if value is None:
             assert column.column_type == ColumnType.Nullable
             return None
@@ -217,7 +216,7 @@ class TestDataFrame:
         return value
 
     @staticmethod
-    def _str_to_data_value(column: Column, value: Optional[str]) -> _DataElement:
+    def _str_to_data_value(column: Column, value: str | None) -> _DataElement:
         if value is None:
             assert column.column_type == ColumnType.Nullable
             return None
@@ -417,7 +416,7 @@ class TestDataFrame:
 
     @staticmethod
     def _test_result_id_if_supported(
-        test_result_id: Optional[str], supports_test_result_id: bool
+        test_result_id: str | None, supports_test_result_id: bool
     ) -> _TestResultIdArg:
         return {"test_result_id": test_result_id} if supports_test_result_id else {}
 

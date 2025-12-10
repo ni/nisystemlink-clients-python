@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Union
+from typing import List
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 from pydantic import StrictBool, StrictInt
@@ -55,7 +55,7 @@ class QueryTablesRequest(WithPaging):
       between now and the start of the current year
     """
 
-    substitutions: Optional[List[Union[StrictInt, StrictBool, str, None]]] = None
+    substitutions: List[StrictInt | StrictBool | str | None] | None = None
     """Make substitutions in the query filter expression.
 
     Substitutions for the query expression are indicated by non-negative
@@ -65,17 +65,17 @@ class QueryTablesRequest(WithPaging):
     replaced with the element at the zeroth index of the substitutions list.
     """
 
-    reference_time: Optional[datetime] = None
+    reference_time: datetime | None = None
     """The date and time to use as the reference point for `RelativeTime` filters,
     including time zone information. Defaults to the time on the server in UTC."""
 
-    take: Optional[int] = None
+    take: int | None = None
     """Limits the returned list to the specified number of results."""
 
-    order_by: Optional[OrderBy] = None
+    order_by: OrderBy | None = None
     """The sort order of the returned list of tables."""
 
-    order_by_descending: Optional[bool] = None
+    order_by_descending: bool | None = None
     """Whether to sort descending instead of ascending.
 
     The elements in the list are sorted ascending by default. If the
@@ -85,7 +85,7 @@ class QueryTablesRequest(WithPaging):
     descending if true.
     """
 
-    interactive: Optional[bool] = None
+    interactive: bool | None = None
     """Whether the query is being made within an interactive context, such as a web UI.
     Interactive queries receive faster feedback for slow queries. Added in version 2 of the
     :py:attr:`nisystemlink.clients.dataframe.models.OperationsV1.list_tables` operation.

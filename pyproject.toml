@@ -20,26 +20,23 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: System :: Hardware",
 ]
 
 [tool.poetry.dependencies]
-python   = "^3.9"
+python   = "^3.10"
 aenum    = "^3.1.11"
 Events   = "^0.4"
 httpx    = "^0.28.1"
 requests = "^2.28.1"
-uplink   = [
-  { version = "^0.10.0", extras = ["pydantic"], python = ">=3.10" },
-  { version = "^0.9.7", python = ">=3.9,<3.10" }
-]
+uplink   = { version = "^0.10.0", extras = ["pydantic"] }
 pydantic = "^2.11.3"
 pyyaml = "^6.0.1"
 pandas = "^2.1.0"
@@ -50,11 +47,11 @@ pyarrow = ["pyarrow"]
 
 [tool.poetry.group.dev.dependencies]
 black               = ">=22.10,<25.0"
-flake8              = "^5.0.4"
-flake8-import-order = "^0.18.1"
+flake8              = "^7.3.0"
+flake8-import-order = "^0.19.2"
 pytest              = "^7.2.0"
 pytest-asyncio      = "^0.20.1"
-mypy                = "^1.15.0"
+mypy                = "^1.18.2"
 flake8-docstrings   = "^1.6.0"
 poethepoet          = "^0.16.4"
 types-requests      = "^2.28.11.4"

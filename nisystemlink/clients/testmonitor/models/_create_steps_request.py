@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.testmonitor.models._named_value import NamedValue
@@ -8,43 +8,43 @@ from nisystemlink.clients.testmonitor.models._step_data import StepData
 
 
 class BaseStepRequest(JsonModel):
-    step_id: Optional[str]
+    step_id: str | None
     """Step ID."""
 
     result_id: str
     """Result ID."""
 
-    parent_id: Optional[str] = None
+    parent_id: str | None = None
     """Parent step ID."""
 
-    data: Optional[StepData] = None
+    data: StepData | None = None
     """Data returned by the test step."""
 
-    data_model: Optional[str] = None
+    data_model: str | None = None
     """Data model for the step."""
 
-    started_at: Optional[datetime] = None
+    started_at: datetime | None = None
     """ISO-8601 formatted timestamp indicating when the test result began."""
 
-    status: Optional[Status] = None
+    status: Status | None = None
     """The status of the step."""
 
-    step_type: Optional[str] = None
+    step_type: str | None = None
     """Step type."""
 
-    total_time_in_seconds: Optional[float] = None
+    total_time_in_seconds: float | None = None
     """Total number of seconds the step took to execute."""
 
-    inputs: Optional[List[NamedValue]] = None
+    inputs: List[NamedValue] | None = None
     """Inputs and their values passed to the test."""
 
-    outputs: Optional[List[NamedValue]] = None
+    outputs: List[NamedValue] | None = None
     """Outputs and their values logged by the test."""
 
-    keywords: Optional[List[str]] = None
+    keywords: List[str] | None = None
     """Words or phrases associated with the step."""
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """Test step properties."""
 
 
@@ -52,5 +52,5 @@ class CreateStepRequest(BaseStepRequest):
     name: str
     """Step name."""
 
-    children: Optional[List["CreateStepRequest"]] = None
+    children: List["CreateStepRequest"] | None = None
     """Nested child steps."""
