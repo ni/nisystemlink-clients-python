@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, List, Literal, Optional, Union
+from typing import Annotated, List, Literal
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import Field
@@ -8,13 +8,13 @@ from pydantic import Field
 class ExecutionEventBase(JsonModel):
     """Base class for execution events, containing common attributes such as action."""
 
-    action: Optional[str] = None
+    action: str | None = None
     """The user-defined action that initiated the event."""
 
-    triggered_at: Optional[datetime] = None
+    triggered_at: datetime | None = None
     """The time the event was triggered."""
 
-    triggered_by: Optional[str] = None
+    triggered_by: str | None = None
     """The user who triggered the event."""
 
 
@@ -24,7 +24,7 @@ class NotebookExecutionEvent(ExecutionEventBase):
     type: Literal["NOTEBOOK"] = Field(default="NOTEBOOK")
     """Represents an execution event triggered by a notebook."""
 
-    execution_id: Optional[str] = None
+    execution_id: str | None = None
     """Includes the type identifier and the execution ID."""
 
 
@@ -34,7 +34,7 @@ class JobExecutionEvent(ExecutionEventBase):
     type: Literal["JOB"] = Field(default="JOB")
     """Represents an execution event triggered by a job."""
 
-    job_ids: Optional[List[str]] = None
+    job_ids: List[str] | None = None
     """Includes the type identifier and a list of job IDs."""
 
 
@@ -46,10 +46,6 @@ class ManualExecutionEvent(ExecutionEventBase):
 
 
 ExecutionEvent = Annotated[
-    Union[
-        NotebookExecutionEvent,
-        ManualExecutionEvent,
-        JobExecutionEvent,
-    ],
+    NotebookExecutionEvent | ManualExecutionEvent | JobExecutionEvent,
     Field(discriminator="type"),
 ]

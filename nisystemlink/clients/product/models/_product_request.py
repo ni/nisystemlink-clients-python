@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -6,30 +6,30 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 class BaseProductRequest(JsonModel):
     """Contains information about a product."""
 
-    name: Optional[str] = None
+    name: str | None = None
     """The name of the product.
 
     Usually the name is used to refer to several part numbers that all have the same name but
     different revisions or versions.
     """
 
-    family: Optional[str] = None
+    family: str | None = None
     """The family that that this product belongs to.
 
     Usually the family is a grouping above product name. A family usually has multiple product
     names within it.
     """
 
-    file_ids: Optional[List[str]] = None
+    file_ids: List[str] | None = None
     """A list of file ids that are attached to this product."""
 
-    keywords: Optional[List[str]] = None
+    keywords: List[str] | None = None
     """A list of keywords that categorize this product."""
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """A list of custom properties for this product."""
 
-    workspace: Optional[str] = None
+    workspace: str | None = None
     """The id of the workspace that this product belongs to."""
 
 

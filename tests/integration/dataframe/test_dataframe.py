@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import warnings
 from datetime import datetime, timezone
-from typing import Callable, List, Optional, TypedDict
+from typing import Callable, List, TypedDict
 
 import pytest  # type: ignore
 import responses
@@ -31,9 +31,8 @@ from nisystemlink.clients.dataframe.models import (
 )
 from responses import matchers
 
-
 _TestResultIdArg = TypedDict(
-    "_TestResultIdArg", {"test_result_id": Optional[str]}, total=False
+    "_TestResultIdArg", {"test_result_id": str | None}, total=False
 )
 
 int_index_column = Column(
@@ -54,7 +53,7 @@ def create_table(client: DataFrameClient):
     """Fixture to return a factory that creates tables."""
     tables = []
 
-    def _create_table(table: Optional[CreateTableRequest] = None) -> str:
+    def _create_table(table: CreateTableRequest | None = None) -> str:
         id = client.create_table(table or basic_table_model)
         tables.append(id)
         return id
@@ -303,7 +302,7 @@ class TestDataFrame:
 
     @staticmethod
     def _test_result_id_if_supported(
-        test_result_id: Optional[str], supports_test_result_id: bool
+        test_result_id: str | None, supports_test_result_id: bool
     ) -> _TestResultIdArg:
         return {"test_result_id": test_result_id} if supports_test_result_id else {}
 

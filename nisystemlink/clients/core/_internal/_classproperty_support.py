@@ -4,7 +4,9 @@
 
 import abc
 import typing
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Dict, Tuple, TypeVar
+
+_T = TypeVar("_T")
 
 
 class ClasspropertySupport(abc.ABCMeta):
@@ -31,8 +33,8 @@ class ClasspropertySupport(abc.ABCMeta):
         )
 
     @classmethod
-    def classproperty(cls, f: Callable[[Any], Any]) -> property:
+    def classproperty(cls, f: Callable[[Any], _T]) -> _T:
         """Make a classproperty."""
-        # Cast to a property for the type checker, as we'll convert it to a property
-        # later, in the __new__ method
-        return typing.cast(property, cls._ClassProperty(f))
+        # Cast to preserve the original function's return type for the type checker.
+        # It'll get wrapped in a property in the __new__ method.
+        return typing.cast(_T, cls._ClassProperty(f))

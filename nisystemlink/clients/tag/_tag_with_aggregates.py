@@ -4,10 +4,9 @@
 
 import datetime
 import math
-from typing import Generic, Optional, TypeVar, Union
+from typing import Generic, TypeVar
 
 from nisystemlink.clients import core, tag as tbase
-
 
 _NUMERIC_TYPES = set(
     (tbase.DataType.DOUBLE, tbase.DataType.INT32, tbase.DataType.UINT64)
@@ -24,11 +23,11 @@ class TagWithAggregates(Generic[_Any]):
         path: str,
         data_type: tbase.DataType,
         value: _Any,
-        timestamp: Optional[datetime.datetime] = None,
-        count: Optional[int] = None,
-        min: Optional[Union[int, float]] = None,
-        max: Optional[Union[int, float]] = None,
-        mean: Optional[float] = None,
+        timestamp: datetime.datetime | None = None,
+        count: int | None = None,
+        min: int | float | None = None,
+        max: int | float | None = None,
+        mean: float | None = None,
     ) -> None:
         """Initialize an instance.
 
@@ -94,31 +93,31 @@ class TagWithAggregates(Generic[_Any]):
         return self._value
 
     @property
-    def timestamp(self) -> Optional[datetime.datetime]:  # noqa: D401
+    def timestamp(self) -> datetime.datetime | None:  # noqa: D401
         """The timestamp associated with the value, if available."""
         return self._timestamp
 
     @property
-    def count(self) -> Optional[int]:  # noqa: D401
+    def count(self) -> int | None:  # noqa: D401
         """The number of times the tag has been written, or None if the tag is not collecting aggregates."""
         return self._count
 
     @property
-    def min(self) -> Optional[Union[int, float]]:  # noqa: D401
+    def min(self) -> int | float | None:  # noqa: D401
         """The minimum value of the tag, or None if the tag is not collecting aggregates
         or the data type of the tag does not track a minimum value.
         """
         return self._min
 
     @property
-    def max(self) -> Optional[Union[int, float]]:  # noqa: D401
+    def max(self) -> int | float | None:  # noqa: D401
         """The maximum value of the tag, or None if the tag is not collecting aggregates
         or the data type of the tag does not track a maximum value.
         """
         return self._max
 
     @property
-    def mean(self) -> Optional[float]:  # noqa: D401
+    def mean(self) -> float | None:  # noqa: D401
         """The mean value of the tag, or None if the tag is not collecting aggregates or
         the data type of the tag does not track a mean value.
         """

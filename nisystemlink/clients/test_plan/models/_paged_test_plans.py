@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
@@ -13,5 +13,5 @@ class PagedTestPlans(WithPaging):
     test_plans: List[TestPlan]
     """A list of all the products in this page."""
 
-    total_count: Optional[int] = None
+    total_count: int | None = None
     """The total number of products that match the query."""

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -44,7 +44,7 @@ class UpdateSpecificationsRequestObject(SpecificationDefinition):
 
 class UpdateSpecificationsRequest(JsonModel):
 
-    specs: Optional[List[UpdateSpecificationsRequestObject]] = None
+    specs: List[UpdateSpecificationsRequestObject] | None = None
     """List of specifications to be updated."""
 
 
@@ -60,11 +60,11 @@ class UpdatedSpecification(BaseSpecificationResponse):
 
 class UpdateSpecificationsPartialSuccess(JsonModel):
 
-    updated_specs: Optional[List[UpdatedSpecification]] = None
+    updated_specs: List[UpdatedSpecification] | None = None
     """Information about each of the updated specification(s)."""
 
-    failed_specs: Optional[List[UpdateSpecificationsRequestObject]] = None
+    failed_specs: List[UpdateSpecificationsRequestObject] | None = None
     """Information about each of the specification request(s) that failed during the update."""
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """Any errors that occurred."""

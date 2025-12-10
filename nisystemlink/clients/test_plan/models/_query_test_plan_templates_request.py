@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
@@ -44,7 +44,7 @@ class TestPlanTemplateField(str, Enum):
 class QueryTestPlanTemplatesRequest(WithPaging):
     """Request information for the query test plan templates API."""
 
-    filter: Optional[str] = None
+    filter: str | None = None
     """The test plan template query filter in dynamic LINQ format.
 
     `id`: String representing the ID of a test plan template. Field supports only equals '=' and not
@@ -78,13 +78,13 @@ class QueryTestPlanTemplatesRequest(WithPaging):
     `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable."""
 
-    take: Optional[int] = None
+    take: int | None = None
     """The maximum number of test plan templates to return."""
 
-    order_by: Optional[TestPlanTemplateOrderBy] = None
+    order_by: TestPlanTemplateOrderBy | None = None
     """Field by which test plan templates can be ordered/sorted."""
 
-    substitutions: Optional[List[str]] = None
+    substitutions: List[str] | None = None
     """Makes substitutions in the query filter expression
     using non-negative integers. These integers
     use the @ symbol as a prefix. The filter
@@ -92,11 +92,11 @@ class QueryTestPlanTemplatesRequest(WithPaging):
     with the element at the corresponding
     index in this list. The index is zero-based."""
 
-    descending: Optional[bool] = None
+    descending: bool | None = None
     """Whether to return the test plan templates in the descending order. By default, test plan
     templates are sorted in the ascending order."""
 
-    projection: Optional[List[TestPlanTemplateField]] = None
+    projection: List[TestPlanTemplateField] | None = None
     """
     Gets or sets the projection to be used when retrieving the assets. If not specified,
     all properties will be returned.
