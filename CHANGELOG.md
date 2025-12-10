@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.22.0 (2025-12-10)
+
+### Feature
+
+* Add optional take to DataFrame Service export table data request model ([#177](https://github.com/ni/nisystemlink-clients-python/issues/177)) ([`2932991`](https://github.com/ni/nisystemlink-clients-python/commit/293299130297ef1ef800ebd94c4d0ab97ae06977))
+
 ## v2.21.0 (2025-12-10)
 
 ### Feature
