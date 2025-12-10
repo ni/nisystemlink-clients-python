@@ -8,6 +8,7 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
     AssetDiscoveryType,
     AssetField,
+    AssetIdentificationModel,
     AssetLocationForCreate,
     AssetPresence,
     AssetPresenceStatus,
@@ -15,10 +16,14 @@ from nisystemlink.clients.assetmanagement.models import (
     CreateAssetRequest,
     CreateAssetsPartialSuccessResponse,
     ExternalCalibration,
+    QueryAssetUtilizationHistoryRequest,
     QueryAssetsRequest,
     QueryAssetsResponse,
     SelfCalibration,
+    StartUtilizationRequest,
     TemperatureSensor,
+    UpdateUtilizationRequest,
+    UtilizationOrderBy,
 )
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
@@ -250,3 +255,225 @@ class TestAssetManagement:
             and asset.workspace is None
             for asset in response.assets
         )
+
+    def test__start_utilization__returns_success_response(
+        self, client: AssetManagementClient, create_asset
+    ):
+        # Create an asset to use for utilization tracking
+        self._create_assets_request[0].model_number = 105
+        create_response = create_asset(self._create_assets_request)
+        
+        assert create_response.assets is not None and len(create_response.assets) == 1
+        created_asset = create_response.assets[0]
+        
+        # Start utilization tracking
+        start_request = StartUtilizationRequest(
+            utilization_identifier="test-utilization-python-001",
+            minion_id="test-minion-python",
+            asset_identifications=[
+                AssetIdentificationModel(
+                    model_name=created_asset.model_name,
+                    model_number=created_asset.model_number,
+                    serial_number=created_asset.serial_number,
+                    vendor_name=created_asset.vendor_name,
+                    vendor_number=created_asset.vendor_number,
+                    bus_type=created_asset.bus_type,
+                )
+            ],
+            utilization_category="Testing",
+            task_name="PythonIntegrationTest",
+            user_name="test_user",
+            utilization_timestamp=datetime.now(timezone.utc),
+        )
+        
+        start_response = client.start_utilization(request=start_request)
+        
+        assert start_response is not None
+        assert start_response.assets_with_started_utilization is not None
+        assert len(start_response.assets_with_started_utilization) == 1
+        
+        # Verify the specific asset is in the response
+        started_asset = start_response.assets_with_started_utilization[0]
+        assert started_asset.model_name == created_asset.model_name
+        assert started_asset.model_number == created_asset.model_number
+        assert started_asset.serial_number == created_asset.serial_number
+        assert started_asset.vendor_name == created_asset.vendor_name
+        assert started_asset.vendor_number == created_asset.vendor_number
+        assert started_asset.bus_type == created_asset.bus_type
+
+    def test__utilization_heartbeat__returns_success_response(
+        self, client: AssetManagementClient, create_asset
+    ):
+        # Create an asset and start utilization
+        self._create_assets_request[0].model_number = 106
+        create_response = create_asset(self._create_assets_request)
+        
+        assert create_response.assets is not None and len(create_response.assets) == 1
+        created_asset = create_response.assets[0]
+        
+        utilization_id = "test-utilization-python-002"
+        
+        start_request = StartUtilizationRequest(
+            utilization_identifier=utilization_id,
+            minion_id="test-minion-python",
+            asset_identifications=[
+                AssetIdentificationModel(
+                    model_name=created_asset.model_name,
+                    model_number=created_asset.model_number,
+                    serial_number=created_asset.serial_number,
+                    vendor_name=created_asset.vendor_name,
+                    vendor_number=created_asset.vendor_number,
+                    bus_type=created_asset.bus_type,
+                )
+            ],
+            utilization_category="Testing",
+            task_name="PythonHeartbeatTest",
+            user_name="test_user",
+            utilization_timestamp=datetime.now(timezone.utc),
+        )
+        
+        start_response = client.start_utilization(request=start_request)
+        assert start_response is not None
+        assert start_response.assets_with_started_utilization is not None
+        assert len(start_response.assets_with_started_utilization) == 1
+        
+        # Send heartbeat
+        heartbeat_request = UpdateUtilizationRequest(
+            utilization_identifiers=[utilization_id],
+            utilization_timestamp=datetime.now(timezone.utc),
+        )
+        heartbeat_response = client.utilization_heartbeat(request=heartbeat_request)
+        
+        assert heartbeat_response is not None
+        assert heartbeat_response.updated_utilization_ids is not None
+        assert len(heartbeat_response.updated_utilization_ids) == 1
+        assert heartbeat_response.updated_utilization_ids[0] == utilization_id
+
+    def test__end_utilization__returns_success_response(
+        self, client: AssetManagementClient, create_asset
+    ):
+        # Create an asset and start utilization
+        self._create_assets_request[0].model_number = 107
+        create_response = create_asset(self._create_assets_request)
+        
+        assert create_response.assets is not None and len(create_response.assets) == 1
+        created_asset = create_response.assets[0]
+        
+        utilization_id = "test-utilization-python-003"
+        
+        start_request = StartUtilizationRequest(
+            utilization_identifier=utilization_id,
+            minion_id="test-minion-python",
+            asset_identifications=[
+                AssetIdentificationModel(
+                    model_name=created_asset.model_name,
+                    model_number=created_asset.model_number,
+                    serial_number=created_asset.serial_number,
+                    vendor_name=created_asset.vendor_name,
+                    vendor_number=created_asset.vendor_number,
+                    bus_type=created_asset.bus_type,
+                )
+            ],
+            utilization_category="Testing",
+            task_name="PythonEndTest",
+            user_name="test_user",
+            utilization_timestamp=datetime.now(timezone.utc),
+        )
+        
+        start_response = client.start_utilization(request=start_request)
+        assert start_response is not None
+        assert start_response.assets_with_started_utilization is not None
+        assert len(start_response.assets_with_started_utilization) == 1
+        
+        # End utilization
+        end_request = UpdateUtilizationRequest(
+            utilization_identifiers=[utilization_id],
+            utilization_timestamp=datetime.now(timezone.utc),
+        )
+        end_response = client.end_utilization(request=end_request)
+        
+        assert end_response is not None
+        assert end_response.updated_utilization_ids is not None
+        assert len(end_response.updated_utilization_ids) == 1
+        assert end_response.updated_utilization_ids[0] == utilization_id
+
+    def test__query_asset_utilization_history__returns_response(
+        self, client: AssetManagementClient, create_asset
+    ):
+        # Create an asset, start and end utilization to create history
+        self._create_assets_request[0].model_number = 108
+        create_response = create_asset(self._create_assets_request)
+        
+        assert create_response.assets is not None and len(create_response.assets) == 1
+        created_asset = create_response.assets[0]
+        
+        utilization_id = "test-utilization-python-004"
+        minion_id = "test-minion-python"
+        category = "Testing"
+        task_name = "PythonQueryTest"
+        user_name = "test_user"
+        
+        # Start utilization
+        start_request = StartUtilizationRequest(
+            utilization_identifier=utilization_id,
+            minion_id=minion_id,
+            asset_identifications=[
+                AssetIdentificationModel(
+                    model_name=created_asset.model_name,
+                    model_number=created_asset.model_number,
+                    serial_number=created_asset.serial_number,
+                    vendor_name=created_asset.vendor_name,
+                    vendor_number=created_asset.vendor_number,
+                    bus_type=created_asset.bus_type,
+                )
+            ],
+            utilization_category=category,
+            task_name=task_name,
+            user_name=user_name,
+            utilization_timestamp=datetime.now(timezone.utc),
+        )
+        
+        client.start_utilization(request=start_request)
+        
+        # End utilization
+        end_request = UpdateUtilizationRequest(
+            utilization_identifiers=[utilization_id],
+            utilization_timestamp=datetime.now(timezone.utc),
+        )
+        client.end_utilization(request=end_request)
+        
+        # Query utilization history
+        query_request = QueryAssetUtilizationHistoryRequest(
+            utilization_filter=f'UtilizationIdentifier = "{utilization_id}"',
+            order_by=UtilizationOrderBy.START_TIMESTAMP,
+            order_by_descending=True,
+            take=10,
+        )
+        
+        query_response = client.query_asset_utilization_history(request=query_request)
+        
+        assert query_response is not None
+        assert query_response.asset_utilizations is not None
+        assert len(query_response.asset_utilizations) >= 1
+        
+        # Verify continuation_token exists (from WithPaging)
+        assert hasattr(query_response, 'continuation_token')
+        
+        # Find our utilization record
+        utilization = query_response.asset_utilizations[0]
+        
+        # Verify the utilization data matches what we created
+        assert utilization.utilization_identifier == utilization_id
+        assert utilization.minion_id == minion_id
+        assert utilization.category == category
+        assert utilization.task_name == task_name
+        assert utilization.user_name == user_name
+        assert utilization.asset_identifier == created_asset.id
+        assert utilization.start_timestamp is not None
+        assert isinstance(utilization.start_timestamp, datetime)
+        assert utilization.end_timestamp is not None
+        assert isinstance(utilization.end_timestamp, datetime)
+        # Heartbeat timestamp may or may not be set
+        assert utilization.heartbeat_timestamp is None or isinstance(utilization.heartbeat_timestamp, datetime)
+
+

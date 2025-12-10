@@ -11,6 +11,10 @@ nisystemlink.clients.assetmanagement
    .. automethod:: query_assets
    .. automethod:: delete_assets
    .. automethod:: link_files
+   .. automethod:: start_utilization
+   .. automethod:: utilization_heartbeat
+   .. automethod:: end_utilization
+   .. automethod:: query_asset_utilization_history
 
 .. automodule:: nisystemlink.clients.assetmanagement.models
    :members:

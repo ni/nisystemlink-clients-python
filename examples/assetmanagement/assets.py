@@ -4,15 +4,20 @@ from nisystemlink.clients.assetmanagement import AssetManagementClient
 from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
     AssetDiscoveryType,
+    AssetIdentificationModel,
     AssetLocationForCreate,
     AssetPresence,
     AssetPresenceStatus,
     AssetType,
     CreateAssetRequest,
     ExternalCalibration,
+    QueryAssetUtilizationHistoryRequest,
     QueryAssetsRequest,
     SelfCalibration,
+    StartUtilizationRequest,
     TemperatureSensor,
+    UpdateUtilizationRequest,
+    UtilizationOrderBy,
 )
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
@@ -100,3 +105,56 @@ if created_asset_id:
 # Delete the created asset.
 if created_asset_id is not None:
     client.delete_assets(ids=[created_asset_id])
+
+# --- Asset Utilization Tracking Examples ---
+
+# Start asset utilization tracking
+start_utilization_request = StartUtilizationRequest(
+    utilization_identifier="test-utilization-001",
+    minion_id="test-minion-123",
+    asset_identifications=[
+        AssetIdentificationModel(
+            model_name="NI PXIe-6368",
+            model_number=4000,
+            serial_number="01BB877A",
+            vendor_name="NI",
+            vendor_number=4244,
+            bus_type=AssetBusType.ACCESSORY,
+        )
+    ],
+    utilization_category="Testing",
+    task_name="DUTTestingRoutine",
+    user_name="testUser",
+    utilization_timestamp=datetime.now(timezone.utc),
+)
+
+start_response = client.start_utilization(request=start_utilization_request)
+print(f"Started utilization for {len(start_response.assets_with_started_utilization or [])} assets")
+
+# Send heartbeat to keep utilization session alive
+if start_response.assets_with_started_utilization:
+    heartbeat_request = UpdateUtilizationRequest(
+        utilization_identifiers=["test-utilization-001"],
+        utilization_timestamp=datetime.now(timezone.utc),
+    )
+    heartbeat_response = client.utilization_heartbeat(request=heartbeat_request)
+    print(f"Heartbeat sent for {len(heartbeat_response.updated_utilization_ids or [])} utilization sessions")
+
+# End asset utilization tracking
+end_request = UpdateUtilizationRequest(
+    utilization_identifiers=["test-utilization-001"],
+    utilization_timestamp=datetime.now(timezone.utc),
+)
+end_response = client.end_utilization(request=end_request)
+print(f"Ended {len(end_response.updated_utilization_ids or [])} utilization sessions")
+
+# Query asset utilization history
+query_utilization_request = QueryAssetUtilizationHistoryRequest(
+    utilization_filter='Category = "Testing"',
+    asset_filter='ModelName = "NI PXIe-6368"',
+    order_by=UtilizationOrderBy.START_TIMESTAMP,
+    order_by_descending=True,
+    take=10,
+)
+
+utilization_history = client.query_asset_utilization_history(request=query_utilization_request)

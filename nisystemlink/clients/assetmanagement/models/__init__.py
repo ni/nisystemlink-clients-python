@@ -21,5 +21,20 @@ from ._asset_calibration import (
 )
 from ._asset_types import AssetBusType, AssetDiscoveryType, AssetType
 from ._link_files_partial_success_response import LinkFilesPartialSuccessResponse
+from ._query_asset_utilization_history_request import (
+    QueryAssetUtilizationHistoryRequest,
+    UtilizationOrderBy,
+)
+from ._asset_utilization_history_item import AssetUtilizationHistoryItem
+from ._asset_utilization_history_response import AssetUtilizationHistoryResponse
+from ._asset_identification_model import AssetIdentificationModel
+from ._start_utilization_request import StartUtilizationRequest
+from ._start_utilization_partial_success_response import (
+    StartUtilizationPartialSuccessResponse,
+)
+from ._update_utilization_request import UpdateUtilizationRequest
+from ._update_utilization_partial_success_response import (
+    UpdateUtilizationPartialSuccessResponse,
+)
 
 # flake8: noqa
