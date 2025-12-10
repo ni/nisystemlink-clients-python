@@ -191,7 +191,9 @@ class TestAlarmClient:
             continuation_token=None,
             return_count=True,
         )
-        query_response: QueryAlarmsWithFilterResponse = client.query_alarms(query_request)
+        query_response: QueryAlarmsWithFilterResponse = client.query_alarms(
+            query_request
+        )
 
         # Assert all response fields
         assert query_response is not None
@@ -236,9 +238,11 @@ class TestAlarmClient:
 
         query_request = QueryAlarmsWithFilterRequest(
             filter=f'alarmId="{alarm_id_1}" OR alarmId="{alarm_id_2}"',
-            return_count=True
+            return_count=True,
         )
-        query_response: QueryAlarmsWithFilterResponse = client.query_alarms(query_request)
+        query_response: QueryAlarmsWithFilterResponse = client.query_alarms(
+            query_request
+        )
 
         assert query_response is not None
         assert query_response.total_count is not None
@@ -269,7 +273,9 @@ class TestAlarmClient:
         query_request = QueryAlarmsWithFilterRequest(
             filter=f'alarmId="{alarm_id}"', return_count=True
         )
-        query_response: QueryAlarmsWithFilterResponse = client.query_alarms(query_request)
+        query_response: QueryAlarmsWithFilterResponse = client.query_alarms(
+            query_request
+        )
 
         assert query_response.total_count == 1
         assert query_response.alarms[0].alarm_id == alarm_id
@@ -352,8 +358,8 @@ class TestAlarmClient:
         non_existent_id = uuid.uuid1().hex
 
         # Delete with mix of valid and invalid IDs
-        delete_response: DeleteByInstanceIdResponse = (
-            client.delete_alarms(ids=[id1, id2, non_existent_id])
+        delete_response: DeleteByInstanceIdResponse = client.delete_alarms(
+            ids=[id1, id2, non_existent_id]
         )
 
         # Assert all response fields
@@ -442,8 +448,8 @@ class TestAlarmClient:
 
     def test__delete_non_existent_alarm__returns_failed_list(self, client: AlarmClient):
         non_existent_id = uuid.uuid1().hex
-        delete_response: DeleteByInstanceIdResponse = (
-            client.delete_alarms(ids=[non_existent_id])
+        delete_response: DeleteByInstanceIdResponse = client.delete_alarms(
+            ids=[non_existent_id]
         )
 
         assert delete_response is not None
