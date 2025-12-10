@@ -309,23 +309,6 @@ class TestDataFrame:
 
         return (column_names, rows)
 
-    @staticmethod
-    def _create_expected_csv(columns: List[Column], data: _DataFrameData) -> str:
-        output = io.StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-        writer.writerow([col.name for col in columns])
-        writer.writerows(
-            (
-                # QUOTE_NONNUMERIC will convert None to an empty string. Instead,
-                # insert a placeholder that we delete below.
-                (value if value is not None else "NONE_PLACEHOLDER" for value in row)
-                for row in data
-            )
-        )
-        result = output.getvalue()
-        result = result.replace('"NONE_PLACEHOLDER"', "")
-        return result
-
     def test__api_info__returns(self, client):
         response = client.api_info()
 
