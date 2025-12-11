@@ -141,3 +141,79 @@ class AssetManagementClient(BaseClient):
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
         """
         ...
+
+    @post("query-asset-utilization-history")
+    def query_asset_utilization_history(
+        self, request: models.QueryAssetUtilizationHistoryRequest
+    ) -> models.AssetUtilizationHistoryResponse:
+        """Query asset utilization history.
+
+        Args:
+            request: Object containing filters for asset utilization and assets, including
+                    utilization_filter, asset_filter, date range, and pagination options.
+
+        Returns:
+            AssetUtilizationHistoryResponse: Response containing the list of asset utilization
+            history records that match the query, along with optional continuation token for pagination.
+
+        Raises:
+            ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
+        """
+        ...
+
+    @post("assets/start-utilization")
+    def start_utilization(
+        self, request: models.StartUtilizationRequest
+    ) -> models.StartUtilizationPartialSuccessResponse:
+        """Start asset utilization tracking.
+
+        Args:
+            request: Object containing the utilization identifier, minion ID, asset identifications,
+                    utilization category, task name, user name, and utilization timestamp.
+
+        Returns:
+            StartUtilizationPartialSuccessResponse: Response containing arrays of assets that successfully
+            started utilization and those that failed, along with error information if any failures occurred.
+
+        Raises:
+            ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
+        """
+        ...
+
+    @post("assets/end-utilization")
+    def end_utilization(
+        self, request: models.UpdateUtilizationRequest
+    ) -> models.UpdateUtilizationPartialSuccessResponse:
+        """End asset utilization tracking.
+
+        Args:
+            request: Object containing the utilization identifiers and optional utilization timestamp
+                    to specify the end of utilization.
+
+        Returns:
+            UpdateUtilizationPartialSuccessResponse: Response containing arrays of utilization IDs that were
+            successfully updated and those that failed, along with error information if any failures occurred.
+
+        Raises:
+            ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
+        """
+        ...
+
+    @post("assets/utilization-heartbeat")
+    def utilization_heartbeat(
+        self, request: models.UpdateUtilizationRequest
+    ) -> models.UpdateUtilizationPartialSuccessResponse:
+        """Send utilization heartbeat to update asset utilization tracking.
+
+        Args:
+            request: Object containing the utilization identifiers and optional utilization timestamp
+                    to specify the heartbeat timestamp.
+
+        Returns:
+            UpdateUtilizationPartialSuccessResponse: Response containing arrays of utilization IDs that were
+            successfully updated and those that failed, along with error information if any failures occurred.
+
+        Raises:
+            ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
+        """
+        ...
