@@ -8,6 +8,7 @@ API Reference
    :caption: Table of Contents
 
    api_reference/core
+   api_reference/alarm
    api_reference/tag
    api_reference/product
    api_reference/testmonitor
