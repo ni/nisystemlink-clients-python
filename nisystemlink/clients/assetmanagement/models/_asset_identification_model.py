@@ -9,7 +9,7 @@ from ._asset_types import AssetBusType
 
 class AssetIdentificationModel(JsonModel):
     """Model for object containing properties which identify an asset.
-    
+
     An asset is uniquely identified by a combination of:
     - busType
     - modelName or modelNumber

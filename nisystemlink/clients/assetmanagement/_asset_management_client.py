@@ -1,6 +1,5 @@
 """Implementation of AssetManagementClient."""
 
-from datetime import datetime
 from typing import List, Optional
 
 from nisystemlink.clients import core

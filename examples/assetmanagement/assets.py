@@ -11,8 +11,8 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetType,
     CreateAssetRequest,
     ExternalCalibration,
-    QueryAssetUtilizationHistoryRequest,
     QueryAssetsRequest,
+    QueryAssetUtilizationHistoryRequest,
     SelfCalibration,
     StartUtilizationRequest,
     TemperatureSensor,
@@ -129,7 +129,6 @@ start_utilization_request = StartUtilizationRequest(
 )
 
 start_response = client.start_utilization(request=start_utilization_request)
-print(f"Started utilization for {len(start_response.assets_with_started_utilization or [])} assets")
 
 # Send heartbeat to keep utilization session alive
 if start_response.assets_with_started_utilization:
@@ -138,7 +137,6 @@ if start_response.assets_with_started_utilization:
         utilization_timestamp=datetime.now(timezone.utc),
     )
     heartbeat_response = client.utilization_heartbeat(request=heartbeat_request)
-    print(f"Heartbeat sent for {len(heartbeat_response.updated_utilization_ids or [])} utilization sessions")
 
 # End asset utilization tracking
 end_request = UpdateUtilizationRequest(
@@ -146,7 +144,6 @@ end_request = UpdateUtilizationRequest(
     utilization_timestamp=datetime.now(timezone.utc),
 )
 end_response = client.end_utilization(request=end_request)
-print(f"Ended {len(end_response.updated_utilization_ids or [])} utilization sessions")
 
 # Query asset utilization history
 query_utilization_request = QueryAssetUtilizationHistoryRequest(
@@ -157,4 +154,6 @@ query_utilization_request = QueryAssetUtilizationHistoryRequest(
     take=10,
 )
 
-utilization_history = client.query_asset_utilization_history(request=query_utilization_request)
+utilization_history = client.query_asset_utilization_history(
+    request=query_utilization_request
+)

@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List
+from typing import Callable, Generator, List
 
 import pytest
 from nisystemlink.clients.assetmanagement import AssetManagementClient
@@ -16,20 +16,25 @@ from nisystemlink.clients.assetmanagement.models import (
     CreateAssetRequest,
     CreateAssetsPartialSuccessResponse,
     ExternalCalibration,
-    QueryAssetUtilizationHistoryRequest,
     QueryAssetsRequest,
     QueryAssetsResponse,
+    QueryAssetUtilizationHistoryRequest,
     SelfCalibration,
     StartUtilizationRequest,
     TemperatureSensor,
     UpdateUtilizationRequest,
     UtilizationOrderBy,
 )
+from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
 
 @pytest.fixture
-def create_asset(client: AssetManagementClient):
+def create_asset(
+    client: AssetManagementClient,
+) -> Generator[
+    Callable[[List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse], None, None
+]:
     """Fixture to return a factory that creates assets."""
     responses: List[CreateAssetsPartialSuccessResponse] = []
 
@@ -114,7 +119,11 @@ class TestAssetManagement:
     """CreateAssetRequest object"""
 
     def test__create_asset__returns_created_asset(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         self._create_assets_request[0].model_number = 101
         create_response = create_asset(self._create_assets_request)
@@ -134,7 +143,11 @@ class TestAssetManagement:
         assert asset_id is not None
 
     def test__link_files__link_succeded(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         self._create_assets_request[0].model_number = 101
         create_response = create_asset(self._create_assets_request)
@@ -173,12 +186,17 @@ class TestAssetManagement:
         assert delete_response.ids[0] == asset_id
 
     def test__query_assets_with_take_value__returns_specific_number_of_assets(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         self._create_assets_request[0].model_number = 103
         create_assets_response = create_asset(self._create_assets_request)
 
         assert create_assets_response is not None
+        assert create_assets_response.assets is not None
         assert len(create_assets_response.assets) == 1
 
         asset_id = (
@@ -198,12 +216,17 @@ class TestAssetManagement:
         assert response.total_count is not None and response.total_count == 1
 
     def test_query_assets_with_projections__returns_the_assets_with_projected_properties(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         self._create_assets_request[0].model_number = 103
         create_assets_response = create_asset(self._create_assets_request)
 
         assert create_assets_response is not None
+        assert create_assets_response.assets is not None
         assert len(create_assets_response.assets) == 1
 
         asset_id = (
@@ -257,15 +280,19 @@ class TestAssetManagement:
         )
 
     def test__start_utilization__returns_success_response(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         # Create an asset to use for utilization tracking
         self._create_assets_request[0].model_number = 105
         create_response = create_asset(self._create_assets_request)
-        
+
         assert create_response.assets is not None and len(create_response.assets) == 1
         created_asset = create_response.assets[0]
-        
+
         # Start utilization tracking
         start_request = StartUtilizationRequest(
             utilization_identifier="test-utilization-python-001",
@@ -285,13 +312,13 @@ class TestAssetManagement:
             user_name="test_user",
             utilization_timestamp=datetime.now(timezone.utc),
         )
-        
+
         start_response = client.start_utilization(request=start_request)
-        
+
         assert start_response is not None
         assert start_response.assets_with_started_utilization is not None
         assert len(start_response.assets_with_started_utilization) == 1
-        
+
         # Verify the specific asset is in the response
         started_asset = start_response.assets_with_started_utilization[0]
         assert started_asset.model_name == created_asset.model_name
@@ -302,17 +329,21 @@ class TestAssetManagement:
         assert started_asset.bus_type == created_asset.bus_type
 
     def test__utilization_heartbeat__returns_success_response(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         # Create an asset and start utilization
         self._create_assets_request[0].model_number = 106
         create_response = create_asset(self._create_assets_request)
-        
+
         assert create_response.assets is not None and len(create_response.assets) == 1
         created_asset = create_response.assets[0]
-        
+
         utilization_id = "test-utilization-python-002"
-        
+
         start_request = StartUtilizationRequest(
             utilization_identifier=utilization_id,
             minion_id="test-minion-python",
@@ -331,36 +362,40 @@ class TestAssetManagement:
             user_name="test_user",
             utilization_timestamp=datetime.now(timezone.utc),
         )
-        
+
         start_response = client.start_utilization(request=start_request)
         assert start_response is not None
         assert start_response.assets_with_started_utilization is not None
         assert len(start_response.assets_with_started_utilization) == 1
-        
+
         # Send heartbeat
         heartbeat_request = UpdateUtilizationRequest(
             utilization_identifiers=[utilization_id],
             utilization_timestamp=datetime.now(timezone.utc),
         )
         heartbeat_response = client.utilization_heartbeat(request=heartbeat_request)
-        
+
         assert heartbeat_response is not None
         assert heartbeat_response.updated_utilization_ids is not None
         assert len(heartbeat_response.updated_utilization_ids) == 1
         assert heartbeat_response.updated_utilization_ids[0] == utilization_id
 
     def test__end_utilization__returns_success_response(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         # Create an asset and start utilization
         self._create_assets_request[0].model_number = 107
         create_response = create_asset(self._create_assets_request)
-        
+
         assert create_response.assets is not None and len(create_response.assets) == 1
         created_asset = create_response.assets[0]
-        
+
         utilization_id = "test-utilization-python-003"
-        
+
         start_request = StartUtilizationRequest(
             utilization_identifier=utilization_id,
             minion_id="test-minion-python",
@@ -379,40 +414,44 @@ class TestAssetManagement:
             user_name="test_user",
             utilization_timestamp=datetime.now(timezone.utc),
         )
-        
+
         start_response = client.start_utilization(request=start_request)
         assert start_response is not None
         assert start_response.assets_with_started_utilization is not None
         assert len(start_response.assets_with_started_utilization) == 1
-        
+
         # End utilization
         end_request = UpdateUtilizationRequest(
             utilization_identifiers=[utilization_id],
             utilization_timestamp=datetime.now(timezone.utc),
         )
         end_response = client.end_utilization(request=end_request)
-        
+
         assert end_response is not None
         assert end_response.updated_utilization_ids is not None
         assert len(end_response.updated_utilization_ids) == 1
         assert end_response.updated_utilization_ids[0] == utilization_id
 
     def test__query_asset_utilization_history__returns_response(
-        self, client: AssetManagementClient, create_asset
+        self,
+        client: AssetManagementClient,
+        create_asset: Callable[
+            [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+        ],
     ):
         # Create an asset, start and end utilization to create history
         self._create_assets_request[0].model_number = 108
         create_response = create_asset(self._create_assets_request)
-        
+
         assert create_response.assets is not None and len(create_response.assets) == 1
         created_asset = create_response.assets[0]
-        
+
         utilization_id = "test-utilization-python-004"
         minion_id = "test-minion-python"
         category = "Testing"
         task_name = "PythonQueryTest"
         user_name = "test_user"
-        
+
         # Start utilization
         start_request = StartUtilizationRequest(
             utilization_identifier=utilization_id,
@@ -430,38 +469,39 @@ class TestAssetManagement:
             utilization_category=category,
             task_name=task_name,
             user_name=user_name,
-            utilization_timestamp=datetime.now(timezone.utc),
+            utilization_timestamp=datetime.now(),
         )
-        
+
         client.start_utilization(request=start_request)
-        
+
         # End utilization
         end_request = UpdateUtilizationRequest(
             utilization_identifiers=[utilization_id],
-            utilization_timestamp=datetime.now(timezone.utc),
+            utilization_timestamp=datetime.now(),
         )
         client.end_utilization(request=end_request)
-        
-        # Query utilization history
+
+        # Query utilization history - filter by asset ID to limit scope
         query_request = QueryAssetUtilizationHistoryRequest(
             utilization_filter=f'UtilizationIdentifier = "{utilization_id}"',
+            asset_filter=f'AssetIdentifier = "{created_asset.id}"',
             order_by=UtilizationOrderBy.START_TIMESTAMP,
             order_by_descending=True,
             take=10,
         )
-        
+
         query_response = client.query_asset_utilization_history(request=query_request)
-        
+
         assert query_response is not None
         assert query_response.asset_utilizations is not None
         assert len(query_response.asset_utilizations) >= 1
-        
+
         # Verify continuation_token exists (from WithPaging)
-        assert hasattr(query_response, 'continuation_token')
-        
+        assert hasattr(query_response, "continuation_token")
+
         # Find our utilization record
         utilization = query_response.asset_utilizations[0]
-        
+
         # Verify the utilization data matches what we created
         assert utilization.utilization_identifier == utilization_id
         assert utilization.minion_id == minion_id
@@ -474,6 +514,63 @@ class TestAssetManagement:
         assert utilization.end_timestamp is not None
         assert isinstance(utilization.end_timestamp, datetime)
         # Heartbeat timestamp may or may not be set
-        assert utilization.heartbeat_timestamp is None or isinstance(utilization.heartbeat_timestamp, datetime)
+        assert isinstance(utilization.heartbeat_timestamp, datetime)
 
+    def test__start_utilization_with_nonexistent_asset__raises_ApiException(
+        self, client: AssetManagementClient
+    ):
+        start_request = StartUtilizationRequest(
+            utilization_identifier="test-utilization-nonexistent",
+            minion_id="test-minion",
+            asset_identifications=[
+                AssetIdentificationModel(
+                    model_name="TestModel",
+                    serial_number="TEST123",
+                    vendor_name="TestVendor",
+                    vendor_number=1234,
+                    bus_type=AssetBusType.ACCESSORY,
+                )
+            ],
+            utilization_timestamp=datetime.now(),
+        )
 
+        with pytest.raises(ApiException):
+            client.start_utilization(request=start_request)
+
+    def test__heartbeat_with_nonexistent_utilization_id__returns_empty_list(
+        self, client: AssetManagementClient
+    ):
+        heartbeat_request = UpdateUtilizationRequest(
+            utilization_identifiers=["nonexistent-utilization-id"],
+            utilization_timestamp=datetime.now(),
+        )
+
+        response = client.utilization_heartbeat(request=heartbeat_request)
+
+        assert response is not None
+        assert response.updated_utilization_ids is not None
+        assert len(response.updated_utilization_ids) == 0
+
+    def test__end_utilization_with_nonexistent_utilization_id__returns_empty_list(
+        self, client: AssetManagementClient
+    ):
+        end_request = UpdateUtilizationRequest(
+            utilization_identifiers=["nonexistent-utilization-id"],
+            utilization_timestamp=datetime.now(),
+        )
+
+        response = client.end_utilization(request=end_request)
+
+        assert response is not None
+        assert response.updated_utilization_ids is not None
+        assert len(response.updated_utilization_ids) == 0
+
+    def test__query_utilization_history_with_invalid_filter__raises_ApiException(
+        self, client: AssetManagementClient
+    ):
+        query_request = QueryAssetUtilizationHistoryRequest(
+            utilization_filter="InvalidField = 'test'",
+        )
+
+        with pytest.raises(ApiException):
+            client.query_asset_utilization_history(request=query_request)
