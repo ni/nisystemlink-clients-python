@@ -339,21 +339,7 @@ default connection. The default connection depends on your environment.
 With a :class:`.AssetManagementClient` object, you can:
 
 * Create, delete, query assets and link files to assets.
-* Track asset utilization with start, heartbeat, and end operations.
-* Query asset utilization history with filtering, date ranges, and pagination.
-
-Asset Utilization Tracking
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Asset utilization tracking allows you to monitor when and how assets are being used:
-
-1. **Start Utilization** - Call :meth:`~.AssetManagementClient.start_utilization` to begin tracking asset usage. Provide asset identifications, utilization category, task name, user information, and an optional utilization identifier.
-
-2. **Send Heartbeat** - Use :meth:`~.AssetManagementClient.utilization_heartbeat` to periodically update the heartbeat timestamp for active utilization sessions. This keeps long-running utilization sessions alive.
-
-3. **End Utilization** - Call :meth:`~.AssetManagementClient.end_utilization` when asset usage is complete to record the end timestamp.
-
-4. **Query History** - Use :meth:`~.AssetManagementClient.query_asset_utilization_history` to retrieve historical utilization records. Supports filtering by utilization properties (category, task name, user) and asset properties, date range filtering, sorting, and pagination with continuation tokens.
+* Track asset utilization with start, heartbeat, end, and query history operations.
 
 Examples
 ~~~~~~~~

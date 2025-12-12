@@ -1,5 +1,6 @@
 """Implementation of AssetManagementClient."""
 
+from datetime import datetime
 from typing import List, Optional
 
 from nisystemlink.clients import core
@@ -181,14 +182,22 @@ class AssetManagementClient(BaseClient):
         ...
 
     @post("assets/end-utilization")
-    def end_utilization(
+    def __end_utilization(
         self, request: models.UpdateUtilizationRequest
+    ) -> models.UpdateUtilizationPartialSuccessResponse: ...
+
+    def end_utilization(
+        self,
+        ids: List[str],
+        timestamp: Optional[datetime] = None,
     ) -> models.UpdateUtilizationPartialSuccessResponse:
         """End asset utilization tracking.
 
         Args:
-            request: Object containing the utilization identifiers and optional utilization timestamp
-                    to specify the end of utilization.
+            ids: Array of utilization identifiers representing the unique identifier
+                of asset utilization history records to end.
+            timestamp: The timestamp to use when ending the utilization.
+                If not provided, the current server time will be used.
 
         Returns:
             UpdateUtilizationPartialSuccessResponse: Response containing arrays of utilization IDs that were
@@ -197,17 +206,29 @@ class AssetManagementClient(BaseClient):
         Raises:
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
         """
-        ...
+        request = models.UpdateUtilizationRequest(
+            utilization_identifiers=ids,
+            utilization_timestamp=timestamp,
+        )
+        return self.__end_utilization(request)
 
     @post("assets/utilization-heartbeat")
-    def utilization_heartbeat(
+    def __utilization_heartbeat(
         self, request: models.UpdateUtilizationRequest
+    ) -> models.UpdateUtilizationPartialSuccessResponse: ...
+
+    def utilization_heartbeat(
+        self,
+        ids: List[str],
+        timestamp: Optional[datetime] = None,
     ) -> models.UpdateUtilizationPartialSuccessResponse:
         """Send utilization heartbeat to update asset utilization tracking.
 
         Args:
-            request: Object containing the utilization identifiers and optional utilization timestamp
-                    to specify the heartbeat timestamp.
+            ids: Array of utilization identifiers representing the unique identifier
+                of asset utilization history records to update.
+            timestamp: The timestamp to use for the heartbeat.
+                If not provided, the current server time will be used.
 
         Returns:
             UpdateUtilizationPartialSuccessResponse: Response containing arrays of utilization IDs that were
@@ -216,4 +237,8 @@ class AssetManagementClient(BaseClient):
         Raises:
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
         """
-        ...
+        request = models.UpdateUtilizationRequest(
+            utilization_identifiers=ids,
+            utilization_timestamp=timestamp,
+        )
+        return self.__utilization_heartbeat(request)
