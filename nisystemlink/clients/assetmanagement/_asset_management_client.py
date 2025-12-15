@@ -184,7 +184,16 @@ class AssetManagementClient(BaseClient):
     @post("assets/end-utilization")
     def __end_utilization(
         self, request: models.UpdateUtilizationRequest
-    ) -> models.UpdateUtilizationPartialSuccessResponse: ...
+    ) -> models.UpdateUtilizationPartialSuccessResponse:
+        """End asset utilization tracking.
+
+        Args:
+            request: The request object containing utilization identifiers and timestamp.
+
+        Returns:
+            UpdateUtilizationPartialSuccessResponse: Response containing updated utilization IDs.
+        """
+        ...
 
     def end_utilization(
         self,
@@ -215,7 +224,16 @@ class AssetManagementClient(BaseClient):
     @post("assets/utilization-heartbeat")
     def __utilization_heartbeat(
         self, request: models.UpdateUtilizationRequest
-    ) -> models.UpdateUtilizationPartialSuccessResponse: ...
+    ) -> models.UpdateUtilizationPartialSuccessResponse:
+        """Send utilization heartbeat.
+
+        Args:
+            request: The request object containing utilization identifiers and timestamp.
+
+        Returns:
+            UpdateUtilizationPartialSuccessResponse: Response containing updated utilization IDs.
+        """
+        ...
 
     def utilization_heartbeat(
         self,
