@@ -7,7 +7,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from ._asset_types import AssetBusType
 
 
-class AssetIdentificationModel(JsonModel):
+class AssetIdentification(JsonModel):
     """Model for object containing properties which identify an asset.
 
     An asset is uniquely identified by a combination of:

@@ -27,7 +27,7 @@ from ._query_asset_utilization_history_request import (
 )
 from ._asset_utilization_history_item import AssetUtilizationHistoryItem
 from ._asset_utilization_history_response import AssetUtilizationHistoryResponse
-from ._asset_identification_model import AssetIdentificationModel
+from ._asset_identification import AssetIdentification
 from ._start_utilization_request import StartUtilizationRequest
 from ._start_utilization_partial_success_response import (
     StartUtilizationPartialSuccessResponse,

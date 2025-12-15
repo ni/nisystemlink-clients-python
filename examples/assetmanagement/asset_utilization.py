@@ -6,7 +6,7 @@ from uuid import uuid4
 from nisystemlink.clients.assetmanagement import AssetManagementClient
 from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
-    AssetIdentificationModel,
+    AssetIdentification,
     StartUtilizationRequest,
 )
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
@@ -24,7 +24,7 @@ utilization_id = str(uuid4())
 
 # Define the assets being used in the test
 test_assets = [
-    AssetIdentificationModel(
+    AssetIdentification(
         model_name="NI PXIe-6368",
         model_number=4000,
         serial_number="01BB877A",
@@ -32,7 +32,7 @@ test_assets = [
         vendor_number=4244,
         bus_type=AssetBusType.ACCESSORY,
     ),
-    AssetIdentificationModel(
+    AssetIdentification(
         model_name="NI PXIe-5163",
         model_number=5000,
         serial_number="02CC988B",
@@ -66,9 +66,12 @@ else:
 
 
 # Heartbeat mechanism using a background thread
-# IMPORTANT: Heartbeats must be sent at least every 5 minutes to keep assets
-# marked as "in use" in the SystemLink UI. If heartbeats stop, the assets
-# will no longer appear as actively utilized.
+# IMPORTANT: Heartbeats are for UI purposes only, to keep assets visually
+# marked as "in use" in the SystemLink UI. This applies only to utilizations
+# that have not been ended. While the standard heartbeat interval is 5 minutes,
+# the UI requires heartbeats at least every 10 minutes to continue showing
+# assets as actively utilized. If heartbeats stop, the assets will no longer
+# appear as "in use" in the UI.
 heartbeat_interval = 300  # 5 minutes in seconds
 is_active = True
 
@@ -76,9 +79,10 @@ is_active = True
 def heartbeat_loop():
     """Background thread that sends periodic heartbeats.
 
-    This keeps the asset marked as "in use" in the SystemLink UI.
-    Without periodic heartbeats (at least every 5 minutes), the UI
-    will no longer show the asset as actively utilized.
+    This keeps the asset visually marked as "in use" in the SystemLink UI
+    (for UI purposes only). Applies only to utilizations that have not been ended.
+    The UI requires heartbeats at least every 10 minutes to continue displaying
+    the asset as actively utilized.
     """
     while is_active:
         heartbeat_response = client.utilization_heartbeat(

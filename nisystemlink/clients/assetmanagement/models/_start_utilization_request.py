@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._asset_identification_model import AssetIdentificationModel
+from ._asset_identification import AssetIdentification
 
 
 class StartUtilizationRequest(JsonModel):
@@ -17,7 +17,7 @@ class StartUtilizationRequest(JsonModel):
     minion_id: Optional[str] = None
     """Identifier of the minion where the utilized assets are located."""
 
-    asset_identifications: Optional[List[AssetIdentificationModel]] = None
+    asset_identifications: Optional[List[AssetIdentification]] = None
     """Array of the identification information for the assets which are utilized.
     The maximum number of asset identifications allowed per request is 100."""
 

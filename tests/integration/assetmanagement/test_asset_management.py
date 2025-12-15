@@ -9,7 +9,7 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
     AssetDiscoveryType,
     AssetField,
-    AssetIdentificationModel,
+    AssetIdentification,
     AssetLocationForCreate,
     AssetPresence,
     AssetPresenceStatus,
@@ -84,7 +84,7 @@ def start_utilization(
         user_name: str,
     ) -> None:
         asset_identifications = [
-            AssetIdentificationModel(
+            AssetIdentification(
                 model_name=asset.model_name,
                 model_number=asset.model_number,
                 serial_number=asset.serial_number,
@@ -534,7 +534,7 @@ class TestAssetManagement:
             utilization_identifier=unique_identifier,
             minion_id="test-minion",
             asset_identifications=[
-                AssetIdentificationModel(
+                AssetIdentification(
                     model_name="TestModel",
                     serial_number="TEST123",
                     vendor_name="TestVendor",
