@@ -18,6 +18,10 @@ from nisystemlink.clients.spec.models._specification import (
     SpecificationType,
 )
 from nisystemlink.clients.spec.utilities import convert_specs_to_dataframe
+from nisystemlink.clients.spec.utilities._constants import (
+    TempNumericCondition,
+    TempStringCondition,
+)
 from nisystemlink.clients.spec.utilities._dataframe_utilities import (
     normalize_conditions_per_column,
     normalize_conditions_per_row,
@@ -277,16 +281,16 @@ class TestSpecDataframeUtilities:
         conditions_dict = [
             [
                 {
-                    "condition_Temperature": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition_Temperature": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                         ],
                         discrete=[1.3, 1.5, 1.7],
                         unit="C",
                     ),
-                    "condition_Package": StringConditionValue(
-                        condition_type=ConditionType.STRING,
+                    "condition_Package": TempStringCondition(
+                        condition_type=ConditionType.STRING.value,
                         discrete=["D", "QFIN"],
                     ),
                     "condition_Supply Voltage": None,
@@ -294,8 +298,8 @@ class TestSpecDataframeUtilities:
             ],
             [
                 {
-                    "condition_Temperature": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition_Temperature": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                             ConditionRange(min=-10, step=10),
@@ -303,8 +307,8 @@ class TestSpecDataframeUtilities:
                         unit="C",
                     ),
                     "condition_Package": None,
-                    "condition_Supply Voltage": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition_Supply Voltage": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         discrete=[1.3, 1.5, 1.7],
                         unit="mV",
                     ),
@@ -357,8 +361,8 @@ class TestSpecDataframeUtilities:
             [
                 {
                     "condition.name": "Temperature",
-                    "condition.value": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition.value": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                         ],
@@ -368,8 +372,8 @@ class TestSpecDataframeUtilities:
                 },
                 {
                     "condition.name": "Package",
-                    "condition.value": StringConditionValue(
-                        condition_type=ConditionType.STRING,
+                    "condition.value": TempStringCondition(
+                        condition_type=ConditionType.STRING.value,
                         discrete=["D", "QFIN"],
                     ),
                 },
@@ -377,8 +381,8 @@ class TestSpecDataframeUtilities:
             [
                 {
                     "condition.name": "Temperature",
-                    "condition.value": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition.value": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                             ConditionRange(min=-10, step=10),
@@ -388,8 +392,8 @@ class TestSpecDataframeUtilities:
                 },
                 {
                     "condition.name": "Supply Voltage",
-                    "condition.value": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition.value": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         discrete=[1.3, 1.5, 1.7],
                         unit="mV",
                     ),
@@ -491,32 +495,32 @@ class TestSpecDataframeUtilities:
         expected_conditions_dict = [
             [
                 {
-                    "condition_Temperature": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition_Temperature": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                         ],
                         discrete=[1.3, 1.5, 1.7],
                         unit="C",
                     ),
-                    "condition_Package": StringConditionValue(
-                        condition_type=ConditionType.STRING,
+                    "condition_Package": TempStringCondition(
+                        condition_type=ConditionType.STRING.value,
                         discrete=["D", "QFIN"],
                     ),
                 }
             ],
             [
                 {
-                    "condition_Temperature": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition_Temperature": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                             ConditionRange(min=-10, step=10),
                         ],
                         unit="C",
                     ),
-                    "condition_Supply Voltage": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition_Supply Voltage": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         discrete=[1.3, 1.5, 1.7],
                         unit="mV",
                     ),
@@ -539,8 +543,8 @@ class TestSpecDataframeUtilities:
             [
                 {
                     "condition.name": "Temperature",
-                    "condition.value": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition.value": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                         ],
@@ -550,8 +554,8 @@ class TestSpecDataframeUtilities:
                 },
                 {
                     "condition.name": "Package",
-                    "condition.value": StringConditionValue(
-                        condition_type=ConditionType.STRING,
+                    "condition.value": TempStringCondition(
+                        condition_type=ConditionType.STRING.value,
                         discrete=["D", "QFIN"],
                     ),
                 },
@@ -559,8 +563,8 @@ class TestSpecDataframeUtilities:
             [
                 {
                     "condition.name": "Temperature",
-                    "condition.value": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition.value": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         range=[
                             ConditionRange(min=-25, step=20, max=85),
                             ConditionRange(min=-10, step=10),
@@ -570,8 +574,8 @@ class TestSpecDataframeUtilities:
                 },
                 {
                     "condition.name": "Supply Voltage",
-                    "condition.value": NumericConditionValue(
-                        condition_type=ConditionType.NUMERIC,
+                    "condition.value": TempNumericCondition(
+                        condition_type=ConditionType.NUMERIC.value,
                         discrete=[1.3, 1.5, 1.7],
                         unit="mV",
                     ),
