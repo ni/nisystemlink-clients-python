@@ -26,7 +26,7 @@ filter_value = (
     "0001-01-01T00:00:00Z" if index_column.data_type == DataType.Timestamp else "0"
 )
 
-# Export table data with query options
+# Export the first 100,000 rows of table data with query options
 request = ExportTableDataRequest(
     columns=[index_column.name],
     order_by=[ColumnOrderBy(column=order_column.name, descending=True)],
@@ -37,6 +37,7 @@ request = ExportTableDataRequest(
             value=filter_value,
         )
     ],
+    take=100000,
     response_format=ExportFormat.CSV,
 )
 

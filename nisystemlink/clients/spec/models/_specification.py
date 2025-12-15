@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -14,16 +14,16 @@ class SpecificationLimit(JsonModel):
     determine the health or pass/fail status of that measurement.
     """
 
-    min: Optional[float] = None
+    min: float | None = None
     """Minimum limit of the specification.
 
     All measurements that map to this specification should be > this limit.
     """
 
-    typical: Optional[float] = None
+    typical: float | None = None
     """Typical value of the specification."""
 
-    max: Optional[float] = None
+    max: float | None = None
     """Maximum value of the specification.
 
     All measurements that map to this specification should be < this limit.
@@ -42,49 +42,49 @@ class SpecificationType(Enum):
 
 class SpecificationDefinition(JsonModel):
 
-    product_id: Optional[str] = None
+    product_id: str | None = None
     """Id of the product to which the specification will be associated."""
 
-    spec_id: Optional[str] = None
+    spec_id: str | None = None
     """User provided value using which the specification will be identified.
 
     This should be unique for a product and workspace combination.
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     """Name of the specification."""
 
-    category: Optional[str] = None
+    category: str | None = None
     """Category of the specification."""
 
-    type: Optional[SpecificationType] = None
+    type: SpecificationType | None = None
     """Type of the specification."""
 
-    symbol: Optional[str] = None
+    symbol: str | None = None
     """Short form identifier of the specification."""
 
-    block: Optional[str] = None
+    block: str | None = None
     """Block name of the specification.
 
     Typically a block is one of the subsystems of the overall product being specified.
     """
 
-    limit: Optional[SpecificationLimit] = None
+    limit: SpecificationLimit | None = None
     """The limits for this spec."""
 
-    unit: Optional[str] = None
+    unit: str | None = None
     """Unit of the specification."""
 
-    conditions: Optional[List[Condition]] = None
+    conditions: List[Condition] | None = None
     """Conditions associated with the specification."""
 
-    keywords: Optional[List[str]] = None
+    keywords: List[str] | None = None
     """Keywords or phrases associated with the specification."""
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """Additional properties associated with the specification."""
 
-    workspace: Optional[str] = None
+    workspace: str | None = None
     """Id of the workspace to which the specification will be associated.
 
     Default workspace will be taken if the value is not given.
@@ -94,22 +94,22 @@ class SpecificationDefinition(JsonModel):
 class Specification(SpecificationDefinition):
     """The complete definition of a specification."""
 
-    id: Optional[str] = None
+    id: str | None = None
     """The global Id of the specification."""
 
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
     """ISO-8601 formatted timestamp indicating when the specification was created."""
 
-    created_by: Optional[str] = None
+    created_by: str | None = None
     """Id of the user who created the specification."""
 
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
     """ISO-8601 formatted timestamp indicating when the specification was last updated."""
 
-    updated_by: Optional[str] = None
+    updated_by: str | None = None
     """Id of the user who last updated the specification."""
 
-    version: Optional[int] = None
+    version: int | None = None
     """
     Current version of the specification.
 

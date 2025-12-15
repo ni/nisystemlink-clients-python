@@ -1,7 +1,7 @@
 """Implementation of FileClient."""
 
 import json
-from typing import BinaryIO, Dict, List, Optional
+from typing import BinaryIO, Dict, List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -32,7 +32,7 @@ def _file_uri_response_handler(response: Response) -> str:
 
 @retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class FileClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -74,9 +74,9 @@ class FileClient(BaseClient):
         self,
         skip: int = 0,
         take: int = 0,
-        order_by: Optional[str] = None,
-        order_by_descending: Optional[str] = "false",
-        ids: Optional[str] = None,
+        order_by: str | None = None,
+        order_by_descending: str | None = "false",
+        ids: str | None = None,
     ) -> models.FileQueryResponse:
         """Lists available files on the SystemLink File service.
         Use the skip and take parameters to return paged responses.
@@ -102,9 +102,9 @@ class FileClient(BaseClient):
         self,
         skip: int = 0,
         take: int = 0,
-        order_by: Optional[models.FileQueryOrderBy] = None,
-        order_by_descending: Optional[bool] = False,
-        ids: Optional[List[str]] = None,
+        order_by: models.FileQueryOrderBy | None = None,
+        order_by_descending: bool | None = False,
+        ids: List[str] | None = None,
     ) -> models.FileQueryResponse:
         """Lists available files on the SystemLink File service.
         Use the skip and take parameters to return paged responses.
@@ -231,9 +231,9 @@ class FileClient(BaseClient):
     def upload_file(
         self,
         file: BinaryIO,
-        metadata: Optional[Dict[str, str]] = None,
-        id: Optional[str] = None,
-        workspace: Optional[str] = None,
+        metadata: Dict[str, str] | None = None,
+        id: str | None = None,
+        workspace: str | None = None,
     ) -> str:
         """Uploads a file to the File Service.
 

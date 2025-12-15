@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -12,11 +12,11 @@ class CreateTestPlansPartialSuccessResponse(JsonModel):
     failed test plans, and any associated errors.
     """
 
-    created_test_plans: Optional[List[TestPlan]] = None
+    created_test_plans: List[TestPlan] | None = None
     """List of test plans that were successfully created."""
 
-    failed_test_plans: Optional[List[CreateTestPlanRequest]] = None
+    failed_test_plans: List[CreateTestPlanRequest] | None = None
     """List of test plans that failed to be created, with their request body content."""
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """The error that occurred when creating the test plans."""

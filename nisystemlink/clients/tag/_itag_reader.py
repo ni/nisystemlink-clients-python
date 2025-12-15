@@ -5,7 +5,7 @@
 import abc
 import datetime
 import typing
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._timestamp_utilities import TimestampUtilities
@@ -14,8 +14,7 @@ from nisystemlink.clients.tag._core._serialized_tag_with_aggregates import (
 )
 from typing_extensions import Literal
 
-
-_DESERIALIZERS = {
+_DESERIALIZERS: Dict[tbase.DataType, Callable[[str], Any]] = {
     tbase.DataType.BOOLEAN: {"True": True, "False": False}.get,
     tbase.DataType.DATE_TIME: TimestampUtilities.str_to_datetime,
     tbase.DataType.DOUBLE: float,
@@ -110,7 +109,7 @@ class ITagReader(_ITagReaderOverloads):
         *,
         include_timestamp: bool = False,
         include_aggregates: bool = False
-    ) -> Optional[tbase.TagWithAggregates]:
+    ) -> tbase.TagWithAggregates | None:
         """Retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist.
@@ -158,7 +157,7 @@ class ITagReader(_ITagReaderOverloads):
         *,
         include_timestamp: bool = False,
         include_aggregates: bool = False
-    ) -> Optional[tbase.TagWithAggregates]:
+    ) -> tbase.TagWithAggregates | None:
         """Asynchronously retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist.
@@ -203,7 +202,7 @@ class ITagReader(_ITagReaderOverloads):
     @abc.abstractmethod
     def _read(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[SerializedTagWithAggregates]:
+    ) -> SerializedTagWithAggregates | None:
         """Retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist. Clients
@@ -232,7 +231,7 @@ class ITagReader(_ITagReaderOverloads):
     @abc.abstractmethod
     async def _read_async(
         self, path: str, include_timestamp: bool, include_aggregates: bool
-    ) -> Optional[SerializedTagWithAggregates]:
+    ) -> SerializedTagWithAggregates | None:
         """Asynchronously retrieve the current value of the tag with the given ``path`` from the server.
 
         Optionally retrieves the aggregate values as well. The tag must exist. Clients
@@ -259,11 +258,11 @@ class ITagReader(_ITagReaderOverloads):
         ...
 
     @classmethod
-    def _deserialize_value(cls, value: Optional[str], data_type: tbase.DataType) -> Any:
+    def _deserialize_value(cls, value: str | None, data_type: tbase.DataType) -> Any:
         if value is None:
             return None
         try:
-            deserializer = typing.cast(Callable[[str], Any], _DESERIALIZERS[data_type])
+            deserializer = _DESERIALIZERS[data_type]
         except KeyError:
             raise ValueError("data_type is unknown")
         try:

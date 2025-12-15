@@ -1,6 +1,6 @@
 """Implementation of TestMonitor Client"""
 
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -23,7 +23,7 @@ class TestMonitorClient(BaseClient):
     # prevent pytest from thinking this is a test class
     __test__ = False
 
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -75,9 +75,9 @@ class TestMonitorClient(BaseClient):
     )
     def get_results(
         self,
-        continuation_token: Optional[str] = None,
-        take: Optional[int] = None,
-        return_count: Optional[bool] = None,
+        continuation_token: str | None = None,
+        take: int | None = None,
+        return_count: bool | None = None,
     ) -> models.PagedResults:
         """Reads a list of results.
 
@@ -184,7 +184,7 @@ class TestMonitorClient(BaseClient):
     @post("delete-results", args=[Field("ids")])
     def delete_results(
         self, ids: List[str]
-    ) -> Optional[models.DeleteResultsPartialSuccess]:
+    ) -> models.DeleteResultsPartialSuccess | None:
         """Deletes multiple results.
 
         Args:
@@ -228,7 +228,7 @@ class TestMonitorClient(BaseClient):
     @post("delete-steps", args=[Field("steps")])
     def delete_steps(
         self, steps: List[models.StepIdResultIdPair]
-    ) -> Optional[models.DeleteStepsPartialSuccess]:
+    ) -> models.DeleteStepsPartialSuccess | None:
         """Deletes one or more steps by global ID.
 
         Args:
@@ -252,7 +252,7 @@ class TestMonitorClient(BaseClient):
         self,
         result_id: str,
         step_id: str,
-        update_result_total_time: Optional[bool] = False,
+        update_result_total_time: bool | None = False,
     ) -> None:
         """Deletes a single step.
 
@@ -333,9 +333,9 @@ class TestMonitorClient(BaseClient):
     )
     def get_steps(
         self,
-        continuation_token: Optional[str] = None,
-        take: Optional[int] = None,
-        return_count: Optional[bool] = None,
+        continuation_token: str | None = None,
+        take: int | None = None,
+        return_count: bool | None = None,
     ) -> models.PagedSteps:
         """Reads a list of steps.
 

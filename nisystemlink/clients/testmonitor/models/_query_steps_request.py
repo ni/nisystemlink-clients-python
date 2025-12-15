@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
@@ -69,10 +69,10 @@ class StepProjection(str, Enum):
 
 
 class QueryStepsBase(JsonModel):
-    filter: Optional[str] = None
+    filter: str | None = None
     """The step query filter in Dynamic Linq format."""
 
-    substitutions: Optional[List[str]] = None
+    substitutions: List[str] | None = None
     """String substitutions into the `filter`.
 
     Makes substitutions in the query filter expression. Substitutions for the query expression are
@@ -84,16 +84,16 @@ class QueryStepsBase(JsonModel):
 
 
 class QueryStepsRequest(QueryStepsBase, WithPaging):
-    order_by: Optional[StepOrderBy] = None
+    order_by: StepOrderBy | None = None
     """Specifies the fields to use to sort the steps."""
 
-    descending: Optional[bool] = None
+    descending: bool | None = None
     """Specifies whether to return the steps in descending order."""
 
-    take: Optional[int] = None
+    take: int | None = None
     """Maximum number of steps to return in the current API response."""
 
-    return_count: Optional[bool] = None
+    return_count: bool | None = None
     """If true, the response will include a count of all steps matching the filter.
 
     By default, this value is `False` and count is not returned. Note that returning the count may
@@ -101,13 +101,13 @@ class QueryStepsRequest(QueryStepsBase, WithPaging):
     compute count.
     """
 
-    result_filter: Optional[str] = None
+    result_filter: str | None = None
     """The result query filter in Dynamic Linq format."""
 
-    result_substitutions: Optional[List[str]] = None
+    result_substitutions: List[str] | None = None
     """String substitutions into the `result_filter`."""
 
-    projection: Optional[List[StepProjection]] = None
+    projection: List[StepProjection] | None = None
     """Specifies the step fields to project. When a field value is given here,
     the corresponding field will be present in all returned steps, and all
     unspecified fields will be excluded. If no projection is specified,
@@ -119,5 +119,5 @@ class QueryStepValuesRequest(QueryStepsBase):
     field: StepField
     """The step field to return for this query."""
 
-    starts_with: Optional[str] = None
+    starts_with: str | None = None
     """Only return string parameters prefixed by this value (case sensitive)."""

@@ -1,5 +1,5 @@
 import io
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._api_error import ApiError
@@ -22,7 +22,7 @@ from . import models
 
 @retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class NotebookClient(BaseClient):
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -80,8 +80,8 @@ class NotebookClient(BaseClient):
     def update_notebook(
         self,
         id: str,
-        metadata: Optional[models.NotebookMetadata] = None,
-        content: Optional[io.BufferedReader] = None,
+        metadata: models.NotebookMetadata | None = None,
+        content: io.BufferedReader | None = None,
     ) -> models.NotebookMetadata:
         """Updates a notebook metadata by ID.
 
@@ -287,7 +287,7 @@ class NotebookClient(BaseClient):
         return self.__query_executions(query=query_request)
 
     @post("ninbexecution/v1/retry-executions", return_key="error")
-    def retry_executions(self, ids: List[str]) -> Optional[ApiError]:
+    def retry_executions(self, ids: List[str]) -> ApiError | None:
         """Retries existing executions based on failed, canceled or timed-out executions.
 
         Args:
@@ -304,7 +304,7 @@ class NotebookClient(BaseClient):
         ...
 
     @post("ninbexecution/v1/cancel-executions", return_key="error")
-    def cancel_executions(self, ids: List[str]) -> Optional[ApiError]:
+    def cancel_executions(self, ids: List[str]) -> ApiError | None:
         """Cancel queued and in-progress executions.
 
         Args:

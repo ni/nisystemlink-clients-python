@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+import csv
+import io
+import re
+import time
 import warnings
 from datetime import datetime, timezone
-from typing import Callable, List, Optional, TypedDict
+from typing import Callable, List, TypedDict
 
 import pytest  # type: ignore
 import responses
 from nisystemlink.clients.core import ApiException
+from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import (
     AppendTableDataRequest,
@@ -29,16 +34,28 @@ from nisystemlink.clients.dataframe.models import (
     QueryTablesRequest,
     TableMetadataModification,
 )
-from responses import matchers
 
-
+_DataElement = str | float | int | bool | datetime | None
+_DataFrameData = List[List[_DataElement]]
 _TestResultIdArg = TypedDict(
-    "_TestResultIdArg", {"test_result_id": Optional[str]}, total=False
+    "_TestResultIdArg", {"test_result_id": str | None}, total=False
 )
 
 int_index_column = Column(
     name="index", data_type=DataType.Int32, column_type=ColumnType.Index
 )
+
+table_with_data_columns = [
+    int_index_column,
+    Column(name="float", data_type=DataType.Float64),
+    Column(
+        name="int",
+        data_type=DataType.Int64,
+        column_type=ColumnType.Nullable,
+    ),
+    Column(name="bool", data_type=DataType.Bool),
+    Column(name="string", data_type=DataType.String),
+]
 
 basic_table_model = CreateTableRequest(columns=[int_index_column])
 
@@ -54,7 +71,7 @@ def create_table(client: DataFrameClient):
     """Fixture to return a factory that creates tables."""
     tables = []
 
-    def _create_table(table: Optional[CreateTableRequest] = None) -> str:
+    def _create_table(table: CreateTableRequest | None = None) -> str:
         id = client.create_table(table or basic_table_model)
         tables.append(id)
         return id
@@ -104,9 +121,67 @@ def supports_test_result_id(client: DataFrameClient) -> bool:
     return result
 
 
+@pytest.fixture(scope="class")
+def table_with_data(client: DataFrameClient, create_table) -> str:
+    """Fixture to create a table with data."""
+    id = create_table(CreateTableRequest(columns=table_with_data_columns))
+
+    frame = TestDataFrame._create_data_frame(
+        table_with_data_columns,
+        data=[
+            [1, 4.5, 30, False, "dog"],
+            [2, 3.5, None, True, "cat"],
+            [3, 2.5, 10, True, "bunny"],
+            [4, 1.5, 40, False, "cow"],
+        ],
+    )
+    client.append_table_data(id, AppendTableDataRequest(frame=frame, end_of_data=True))
+    TestDataFrame._wait_for_table_data(client, id, minimum_row_count=len(frame.data))
+
+    return id
+
+
 @pytest.mark.enterprise
 @pytest.mark.integration
 class TestDataFrame:
+    @staticmethod
+    def _wait_for_table_data(
+        client: DataFrameClient,
+        table_id: str,
+        minimum_row_count: int,
+        index_column: str = "index",
+        timeout: float = 5.0,
+        sleep_duration: float = 0.2,
+    ) -> int:
+        """Helper function to wait for table data to be available by polling get_table_data.
+
+        Args:
+            client: The DataFrameClient to use for checking data availability
+            table_id: ID of the table to check
+            expected_row_count: Expected number of rows in the table
+            index_column: Name of the index column to query (default: "index")
+            timeout: Maximum time to wait in seconds (default: 2.0)
+            sleep_duration: Sleep duration between attempts in seconds (default: 0.2)
+
+        Returns:
+            The actual number of rows found in the table
+        """
+        start_time = time.time()
+
+        while True:
+            response = client.get_table_data(table_id, columns=[index_column], take=1)
+            actual_row_count = response.total_row_count
+            if actual_row_count >= minimum_row_count:
+                return actual_row_count
+
+            elapsed_time = time.time() - start_time
+            assert elapsed_time < timeout, (
+                f"Failed to get expected row count {minimum_row_count} after "
+                f"{elapsed_time:.2f} seconds (last count: {actual_row_count})"
+            )
+
+            time.sleep(sleep_duration)
+
     def _new_single_int_table(self, create_table, column_name: str = "a") -> str:
         return create_table(
             CreateTableRequest(
@@ -119,6 +194,120 @@ class TestDataFrame:
                 ]
             )
         )
+
+    @staticmethod
+    def _create_data_frame(
+        columns: List[Column],
+        data: _DataFrameData,
+        include_column_names: bool = False,
+    ) -> DataFrame:
+        column_names = [col.name for col in columns] if include_column_names else None
+        converted_data = [
+            [
+                TestDataFrame._data_value_to_str(columns[col_idx], value)
+                for col_idx, value in enumerate(row)
+            ]
+            for row in data
+        ]
+        return DataFrame(columns=column_names, data=converted_data)
+
+    @staticmethod
+    def _read_data_frame(
+        columns: List[Column],
+        frame: DataFrame,
+    ) -> _DataFrameData:
+        frame_columns = (
+            frame.columns
+            if frame.columns is not None
+            else [col.name for col in columns]
+        )
+        column_map = {col.name: col for col in columns}
+        return [
+            [
+                TestDataFrame._str_to_data_value(
+                    column_map[frame_columns[col_idx]], value
+                )
+                for col_idx, value in enumerate(row)
+            ]
+            for row in frame.data
+        ]
+
+    @staticmethod
+    def _data_value_to_str(column: Column, value: _DataElement) -> str | None:
+        if value is None:
+            assert column.column_type == ColumnType.Nullable
+            return None
+        if isinstance(value, bool):
+            assert column.data_type == DataType.Bool
+            return "true" if value else "false"
+        if isinstance(value, int):
+            assert column.data_type in (DataType.Int32, DataType.Int64)
+            return str(value)
+        if isinstance(value, float):
+            if column.data_type == DataType.Float32:
+                return f"{value:.9g}"
+            assert column.data_type == DataType.Float64
+            return f"{value:.17g}"
+        if isinstance(value, datetime):
+            assert column.data_type == DataType.Timestamp
+            return value.isoformat()
+        assert isinstance(value, str) and column.data_type == DataType.String
+        return value
+
+    @staticmethod
+    def _str_to_data_value(column: Column, value: str | None) -> _DataElement:
+        if value is None:
+            assert column.column_type == ColumnType.Nullable
+            return None
+        if column.data_type == DataType.Bool:
+            result = value.lower() == "true"
+            assert result or value.lower() == "false"
+            return result
+        if column.data_type in (DataType.Int32, DataType.Int64):
+            return int(value)
+        if column.data_type in (DataType.Float32, DataType.Float64):
+            return float(value)
+        if column.data_type == DataType.Timestamp:
+            return datetime.fromisoformat(value)
+        assert column.data_type == DataType.String
+        return value
+
+    @staticmethod
+    def _read_exported_csv(
+        columns: List[Column], data: IteratorFileLike
+    ) -> tuple[List[str], _DataFrameData]:
+        column_map = {col.name: col for col in columns}
+        csv_content = data.read().decode("utf-8")
+
+        # The CSV reader doesn't distinguish between "" and an empty field (e.g., `,,`).
+        # The server returns the former for empty strings and the latter for null values
+        # (of any data type). So we replace empty fields with a placeholder value that
+        # we convert back to None below.
+        csv_content = re.sub(r"([,\n])([,\r])", r"\1NULL_PLACEHOLDER\2", csv_content)
+
+        text_stream = io.StringIO(csv_content, newline="")
+        reader = csv.reader(text_stream)
+
+        # Read the column names from the header row.
+        column_names = next(reader)
+        csv_columns = []
+        for name in column_names:
+            column = column_map.get(name)
+            assert column is not None, f"CSV includes unknown column {name}"
+            csv_columns.append(column)
+
+        rows = [
+            [
+                TestDataFrame._str_to_data_value(
+                    csv_columns[col_idx],
+                    value if value != "NULL_PLACEHOLDER" else None,
+                )
+                for col_idx, value in enumerate(row)
+            ]
+            for row in reader
+        ]
+
+        return (column_names, rows)
 
     def test__api_info__returns(self, client):
         response = client.api_info()
@@ -303,7 +492,7 @@ class TestDataFrame:
 
     @staticmethod
     def _test_result_id_if_supported(
-        test_result_id: Optional[str], supports_test_result_id: bool
+        test_result_id: str | None, supports_test_result_id: bool
     ) -> _TestResultIdArg:
         return {"test_result_id": test_result_id} if supports_test_result_id else {}
 
@@ -406,58 +595,21 @@ class TestDataFrame:
         assert response.failed_modifications == [updates[1]]
         assert len(response.error.inner_errors) == 1
 
-    def test__read_and_write_data__works(self, client: DataFrameClient, create_table):
-        id = create_table(
-            CreateTableRequest(
-                columns=[
-                    int_index_column,
-                    Column(
-                        name="value",
-                        data_type=DataType.Float64,
-                        column_type=ColumnType.Nullable,
-                    ),
-                    Column(
-                        name="ignore_me",
-                        data_type=DataType.Bool,
-                        column_type=ColumnType.Nullable,
-                    ),
-                ]
-            )
+    def test__get_table_data__returns_correct_data(
+        self, client: DataFrameClient, table_with_data: str
+    ):
+        response = client.get_table_data(
+            table_with_data, columns=["index", "float"], order_by=["float"]
         )
 
-        frame = DataFrame(
-            columns=["index", "value", "ignore_me"],
-            data=[["1", "3.3", "True"], ["2", None, "False"], ["3", "1.1", "True"]],
-        )
-
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-
-        # TODO: Remove mock when service supports flushing
-        with responses.RequestsMock() as rsps:
-            rsps.add(
-                responses.GET,
-                f"{client.session.base_url}tables/{id}/data",
-                json={
-                    "frame": {
-                        "columns": ["index", "value"],
-                        "data": [["3", "1.1"], ["1", "3.3"], ["2", None]],
-                    },
-                    "totalRowCount": 3,
-                    "continuationToken": None,
-                },
-            )
-
-            response = client.get_table_data(
-                id, columns=["index", "value"], order_by=["value"]
-            )
-
-            assert response.total_row_count == 3
-            assert response.frame == DataFrame(
-                columns=["index", "value"],
-                data=[["3", "1.1"], ["1", "3.3"], ["2", None]],
-            )
+        assert response.total_row_count == 4
+        assert response.frame.columns == ["index", "float"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [
+            [4, 1.5],
+            [3, 2.5],
+            [2, 3.5],
+            [1, 4.5],
+        ]
 
     def test__write_invalid_data__raises(
         self, client: DataFrameClient, test_tables: List[str]
@@ -472,263 +624,118 @@ class TestDataFrame:
         with pytest.raises(ApiException, match="400 Bad Request"):
             client.append_table_data(id, AppendTableDataRequest(frame=frame))
 
-    def test__query_table_data__sorts(self, client: DataFrameClient, create_table):
-        id = create_table(
-            CreateTableRequest(
-                columns=[
-                    int_index_column,
-                    Column(name="col1", data_type=DataType.Float64),
-                    Column(name="col2", data_type=DataType.Float64),
-                ]
-            )
-        )
-
-        frame = DataFrame(
-            data=[["1", "2.5", "6.5"], ["2", "1.5", "5.5"], ["3", "2.5", "7.5"]],
-        )
-
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-
-        # TODO: Remove mock when service supports flushing
-        with responses.RequestsMock() as rsps:
-            rsps.add(
-                responses.POST,
-                f"{client.session.base_url}tables/{id}/query-data",
-                json={
-                    "frame": {
-                        "columns": ["index", "col1", "col2"],
-                        "data": [
-                            ["2", "1.5", "5.5"],
-                            ["3", "2.5", "7.5"],
-                            ["1", "2.5", "6.5"],
-                        ],
-                    },
-                    "totalRowCount": 3,
-                    "continuationToken": None,
-                },
-                match=[
-                    matchers.json_params_matcher(
-                        {
-                            "orderBy": [
-                                {"column": "col1"},
-                                {"column": "col2", "descending": True},
-                            ]
-                        }
-                    )
+    def test__query_table_data__sorts(
+        self, client: DataFrameClient, table_with_data: str
+    ):
+        response = client.query_table_data(
+            table_with_data,
+            QueryTableDataRequest(
+                columns=["index", "float"],
+                order_by=[
+                    ColumnOrderBy(column="bool"),
+                    ColumnOrderBy(column="float", descending=True),
                 ],
-            )
+            ),
+        )
 
-            response = client.query_table_data(
-                id,
-                QueryTableDataRequest(
-                    order_by=[
-                        ColumnOrderBy(column="col1"),
-                        ColumnOrderBy(column="col2", descending=True),
-                    ],
-                ),
-            )
+        assert response.total_row_count == 4
+        assert response.frame.columns == ["index", "float"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [
+            [1, 4.5],  # bool=False
+            [4, 1.5],  # bool=False
+            [2, 3.5],  # bool=True
+            [3, 2.5],  # bool=True
+        ]
 
-            assert response.total_row_count == 3
-            assert response.frame.data == [
-                ["2", "1.5", "5.5"],
-                ["3", "2.5", "7.5"],
-                ["1", "2.5", "6.5"],
-            ]
-
-    def test__query_table_data__filters(self, client: DataFrameClient, create_table):
-        id = create_table(
-            CreateTableRequest(
-                columns=[
-                    int_index_column,
-                    Column(name="float", data_type=DataType.Float64),
-                    Column(
-                        name="int",
-                        data_type=DataType.Int64,
-                        column_type=ColumnType.Nullable,
+    def test__query_table_data__filters(
+        self, client: DataFrameClient, table_with_data: str
+    ):
+        response = client.query_table_data(
+            table_with_data,
+            QueryTableDataRequest(
+                columns=["index"],
+                filters=[
+                    ColumnFilter(
+                        column="float",
+                        operation=FilterOperation.GreaterThan,
+                        value="1.5",
                     ),
-                    Column(name="string", data_type=DataType.String),
-                ]
-            )
-        )
-
-        frame = DataFrame(
-            data=[
-                ["1", "1.5", "10", "dog"],
-                ["2", "2.5", None, "cat"],
-                ["3", "3.5", "30", "bunny"],
-                ["4", "4.5", "40", "cow"],
-            ],
-        )
-
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-
-        # TODO: Remove mock when service supports flushing
-        with responses.RequestsMock() as rsps:
-            rsps.add(
-                responses.POST,
-                f"{client.session.base_url}tables/{id}/query-data",
-                json={
-                    "frame": {
-                        "columns": ["index", "float", "int", "string"],
-                        "data": [["4", "4.5", "40", "cow"]],
-                    },
-                    "totalRowCount": 1,
-                    "continuationToken": None,
-                },
-                match=[
-                    matchers.json_params_matcher(
-                        {
-                            "filters": [
-                                {
-                                    "column": "float",
-                                    "operation": "GREATER_THAN",
-                                    "value": "1.5",
-                                },
-                                {
-                                    "column": "int",
-                                    "operation": "NOT_EQUALS",
-                                    "value": None,
-                                },
-                                {
-                                    "column": "string",
-                                    "operation": "NOT_CONTAINS",
-                                    "value": "bun",
-                                },
-                            ]
-                        }
-                    )
+                    ColumnFilter(
+                        column="int",
+                        operation=FilterOperation.NotEquals,
+                        value=None,
+                    ),
+                    ColumnFilter(
+                        column="string",
+                        operation=FilterOperation.NotContains,
+                        value="bun",
+                    ),
                 ],
-            )
+            ),
+        )
 
-            response = client.query_table_data(
-                id,
-                QueryTableDataRequest(
-                    filters=[
-                        ColumnFilter(
-                            column="float",
-                            operation=FilterOperation.GreaterThan,
-                            value="1.5",
-                        ),
-                        ColumnFilter(
-                            column="int",
-                            operation=FilterOperation.NotEquals,
-                            value=None,
-                        ),
-                        ColumnFilter(
-                            column="string",
-                            operation=FilterOperation.NotContains,
-                            value="bun",
-                        ),
-                    ]
+        assert response.total_row_count == 1
+        assert response.frame.columns == ["index"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [[1]]
+
+    def test__query_decimated_data__works(
+        self, client: DataFrameClient, table_with_data: str
+    ):
+        response = client.query_decimated_data(
+            table_with_data,
+            QueryDecimatedDataRequest(
+                columns=["index", "float"],
+                decimation=DecimationOptions(
+                    x_column="index",
+                    y_columns=["float"],
+                    intervals=1,
+                    method=DecimationMethod.MaxMin,
                 ),
-            )
-
-            assert response.frame.data == [["4", "4.5", "40", "cow"]]
-
-    def test__query_decimated_data__works(self, client: DataFrameClient, create_table):
-        id = create_table(
-            CreateTableRequest(
-                columns=[
-                    int_index_column,
-                    Column(name="col1", data_type=DataType.Float64),
-                    Column(name="col2", data_type=DataType.Float64),
-                ]
-            )
+            ),
         )
 
-        frame = DataFrame(
-            data=[
-                ["1", "1.5", "3.5"],
-                ["2", "2.5", "2.5"],
-                ["3", "3.5", "1.5"],
-                ["4", "4.5", "4.5"],
-            ],
+        assert response.frame.columns == ["index", "float"]
+        assert self._read_data_frame(table_with_data_columns, response.frame) == [
+            [1, 4.5],
+            [4, 1.5],
+        ]
+
+    def test__export_table_data__includes_all_rows(
+        self, client: DataFrameClient, table_with_data: str
+    ):
+        response = client.export_table_data(
+            table_with_data,
+            ExportTableDataRequest(
+                order_by=[ColumnOrderBy(column="index")],
+                response_format=ExportFormat.CSV,
+            ),
         )
 
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
+        column_names, data = self._read_exported_csv(table_with_data_columns, response)
+        assert column_names == ["index", "float", "int", "bool", "string"]
+        assert data == [
+            [1, 4.5, 30, False, "dog"],
+            [2, 3.5, None, True, "cat"],
+            [3, 2.5, 10, True, "bunny"],
+            [4, 1.5, 40, False, "cow"],
+        ]
+
+    def test__export_table_data__limits_to_take_rows(
+        self, client: DataFrameClient, table_with_data: str
+    ):
+        response = client.export_table_data(
+            table_with_data,
+            ExportTableDataRequest(
+                columns=["index"],
+                order_by=[ColumnOrderBy(column="index", descending=True)],
+                take=2,
+                response_format=ExportFormat.CSV,
+            ),
         )
 
-        # TODO: Remove mock when service supports flushing
-        with responses.RequestsMock() as rsps:
-            rsps.add(
-                responses.POST,
-                f"{client.session.base_url}tables/{id}/query-decimated-data",
-                json={
-                    "frame": {
-                        "columns": ["index", "col1", "col2"],
-                        "data": [["1", "1.5", "3.5"], ["4", "4.5", "4.5"]],
-                    },
-                },
-                match=[
-                    matchers.json_params_matcher(
-                        {
-                            "decimation": {
-                                "xColumn": "index",
-                                "yColumns": ["col1"],
-                                "intervals": 1,
-                                "method": "MAX_MIN",
-                            }
-                        }
-                    )
-                ],
-            )
-
-            response = client.query_decimated_data(
-                id,
-                QueryDecimatedDataRequest(
-                    decimation=DecimationOptions(
-                        x_column="index",
-                        y_columns=["col1"],
-                        intervals=1,
-                        method=DecimationMethod.MaxMin,
-                    )
-                ),
-            )
-
-            assert response.frame.data == [["1", "1.5", "3.5"], ["4", "4.5", "4.5"]]
-
-    def test__export_table_data__works(self, client: DataFrameClient, create_table):
-        id = create_table(
-            CreateTableRequest(
-                columns=[
-                    int_index_column,
-                    Column(name="col1", data_type=DataType.Float64),
-                    Column(name="col2", data_type=DataType.Float64),
-                ]
-            )
-        )
-
-        frame = DataFrame(
-            data=[["1", "2.5", "6.5"], ["2", "1.5", "5.5"], ["3", "2.5", "7.5"]],
-        )
-
-        client.append_table_data(
-            id, AppendTableDataRequest(frame=frame, end_of_data=True)
-        )
-
-        # TODO: Remove mock when service supports flushing
-        with responses.RequestsMock() as rsps:
-            rsps.add(
-                responses.POST,
-                f"{client.session.base_url}tables/{id}/export-data",
-                body=b'"col1","col2","col3"\r\n1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5',
-                match=[matchers.json_params_matcher({"responseFormat": "CSV"})],
-            )
-
-            response = client.export_table_data(
-                id,
-                ExportTableDataRequest(response_format=ExportFormat.CSV),
-            )
-
-            assert (
-                response.read()
-                == b'"col1","col2","col3"\r\n1,2.5,6.5\r\n2,1.5,5.5\r\n3,2.5,7.5'
-            )
+        column_names, data = self._read_exported_csv(table_with_data_columns, response)
+        assert column_names == ["index"]
+        assert data == [[4], [3]]
 
     def test__append_table_data__append_request_success(
         self, client: DataFrameClient, create_table
