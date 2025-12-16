@@ -31,7 +31,6 @@ create_request = CreateOrUpdateAlarmRequest(
         occurred_at=datetime.now(),
         severity_level=AlarmSeverityLevel.HIGH,
         condition="Temperature exceeded threshold",
-        message="Temperature sensor reading: 85°C",
     ),
 )
 # Returns instance_id - a server-generated unique identifier for this specific alarm occurrence
@@ -49,7 +48,6 @@ update_request = CreateOrUpdateAlarmRequest(
         occurred_at=datetime.now(),
         severity_level=AlarmSeverityLevel.CRITICAL,
         condition="Temperature critically high",
-        message="Temperature sensor reading: 95°C",
     ),
 )
 client.create_or_update_alarm(update_request)
