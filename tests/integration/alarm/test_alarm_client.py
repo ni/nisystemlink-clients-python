@@ -454,3 +454,56 @@ class TestAlarmClient:
         )
         with pytest.raises(ApiException, match="Bad Request"):
             client.create_or_update_alarm(request)
+
+    def test__create_or_update_alarm_with_conflict_and_ignore_conflict_true__returns_none(
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
+    ):
+        """Test that ignore_conflict=True returns None on 409 Conflict."""
+        alarm_id = unique_identifier()
+
+        # Create an alarm
+        create_alarms(alarm_id, AlarmSeverityLevel.HIGH, "Initial Condition")
+
+        # Try to create another alarm with the same alarm_id and same severity (would cause 409)
+        duplicate_request = CreateOrUpdateAlarmRequest(
+            alarm_id=alarm_id,
+            transition=SetAlarmTransition(
+                occurred_at=datetime.now(timezone.utc),
+                severity_level=AlarmSeverityLevel.HIGH,
+                condition="Initial Condition",
+            ),
+        )
+
+        # With ignore_conflict=True, should return None instead of raising exception
+        result = client.create_or_update_alarm(duplicate_request, ignore_conflict=True)
+        assert result is None
+
+    def test__create_or_update_alarm_with_conflict_and_ignore_conflict_false__raises_exception(
+        self,
+        client: AlarmClient,
+        create_alarms: Callable[[str, int, str], str],
+        unique_identifier: Callable[[], str],
+    ):
+        """Test that ignore_conflict=False (default) raises ApiException on 409 Conflict."""
+        alarm_id = unique_identifier()
+
+        # Create an alarm
+        create_alarms(alarm_id, AlarmSeverityLevel.HIGH, "Initial Condition")
+
+        # Try to create another alarm with the same alarm_id and same severity (would cause 409)
+        duplicate_request = CreateOrUpdateAlarmRequest(
+            alarm_id=alarm_id,
+            transition=SetAlarmTransition(
+                occurred_at=datetime.now(timezone.utc),
+                severity_level=AlarmSeverityLevel.HIGH,
+                condition="Initial Condition",
+            ),
+        )
+
+        # With ignore_conflict=False (default), should raise ApiException
+        with pytest.raises(ApiException) as exc_info:
+            client.create_or_update_alarm(duplicate_request, ignore_conflict=False)
+        assert exc_info.value.http_status_code == 409

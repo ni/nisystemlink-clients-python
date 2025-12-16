@@ -11,7 +11,7 @@ from nisystemlink.clients.alarm.models import (
     SetAlarmTransition,
     TransitionInclusionOption,
 )
-from nisystemlink.clients.core import HttpConfiguration
+from nisystemlink.clients.core import ApiException, HttpConfiguration
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
 server_configuration = HttpConfiguration(
@@ -75,7 +75,11 @@ for alarm in query_response.alarms:
 # Acknowledge the alarm
 client.acknowledge_alarms(ids=[id])
 
-# Clear the alarm
+# Clear the alarm with 409 conflict handling - Method 1: Manual exception handling
+# A 409 Conflict response indicates that the requested transition would not change the alarm's state.
+# This allows stateless applications to simply attempt state transitions without first checking
+# the current state. For example, a monitoring system can repeatedly try to CLEAR an alarm
+# when conditions return to normal, and the API will return 409 if already cleared.
 clear_request = CreateOrUpdateAlarmRequest(
     alarm_id=alarm_id,
     transition=ClearAlarmTransition(
@@ -83,7 +87,23 @@ clear_request = CreateOrUpdateAlarmRequest(
         condition="Temperature returned to normal",
     ),
 )
-client.create_or_update_alarm(clear_request)
+try:
+    client.create_or_update_alarm(clear_request)
+    print("Alarm cleared successfully")
+except ApiException as e:
+    if e.http_status_code == 409:
+        print("Alarm is already in the requested state (409 Conflict)")
+    else:
+        raise
+
+# Clear the alarm with 409 conflict handling - Method 2: Using ignore_conflict parameter
+# This approach is cleaner for stateless applications that don't care about 409 errors.
+# Returns None if the alarm is already in the requested state.
+result = client.create_or_update_alarm(clear_request, ignore_conflict=True)
+if result is None:
+    print("No state change needed (alarm already in requested state)")
+else:
+    print(f"Alarm cleared successfully: {result}")
 
 # Delete the alarm by its instance ID
 client.delete_alarm(id)

@@ -59,8 +59,9 @@ class AlarmClient(BaseClient):
         """
         ...
 
-    @post("instances", return_key="instanceId")
-    def create_or_update_alarm(self, request: models.CreateOrUpdateAlarmRequest) -> str:
+    def create_or_update_alarm(
+        self, request: models.CreateOrUpdateAlarmRequest, *, ignore_conflict: bool = False
+    ) -> str | None:
         """Creates or updates an instance, or occurrence, of an alarm.
 
         Creates or updates an alarm based on the requested transition and the state
@@ -70,17 +71,38 @@ class AlarmClient(BaseClient):
         Args:
             request: The request containing alarm_id (user-defined identifier),
                     transition details, and other alarm properties.
+            ignore_conflict: If True, 409 Conflict errors will be ignored and None will be returned.
+                           If False (default), 409 errors will raise an ApiException.
+                           Setting this to True is useful for stateless applications that want to
+                           attempt state transitions without checking the current alarm state first.
 
         Returns:
             The instance_id (unique occurrence identifier) of the created or modified alarm.
             Use this ID for operations like get_alarm(), delete_alarm(), or acknowledge.
+            Returns None if ignore_conflict is True and a 409 Conflict occurs.
 
         Raises:
             ApiException: if unable to communicate with the `/nialarm` Service or provided invalid arguments.
                 A 409 Conflict error occurs when the request does not represent a valid transition
                 for an existing alarm, such as attempting to clear an alarm which is already clear,
                 or attempting to set an alarm which is already set at the given severity level.
+                This error can be suppressed by setting ignore_conflict=True.
         """
+        if ignore_conflict:
+            try:
+                return self._create_or_update_alarm(request)
+            except core.ApiException as e:
+                if e.http_status_code == 409:
+                    return None
+                raise
+        else:
+            return self._create_or_update_alarm(request)
+
+    @post("instances", return_key="instanceId")
+    def _create_or_update_alarm(
+        self, request: models.CreateOrUpdateAlarmRequest
+    ) -> str:
+        """Internal implementation of create_or_update_alarm."""
         ...
 
     @get("instances/{instance_id}", args=[Path("instance_id")])
