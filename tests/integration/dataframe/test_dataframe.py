@@ -177,7 +177,7 @@ class TestDataFrame:
             elapsed_time = time.time() - start_time
             assert elapsed_time < timeout, (
                 f"Failed to get expected row count {minimum_row_count} after "
-                f"{elapsed_time:.2f} seconds (last count: {actual_row_count})"
+                f"{elapsed_time: .2f} seconds (last count: {actual_row_count})"
             )
 
             time.sleep(sleep_duration)
@@ -245,9 +245,9 @@ class TestDataFrame:
             return str(value)
         if isinstance(value, float):
             if column.data_type == DataType.Float32:
-                return f"{value:.9g}"
+                return f"{value: .9g}"
             assert column.data_type == DataType.Float64
-            return f"{value:.17g}"
+            return f"{value: .17g}"
         if isinstance(value, datetime):
             assert column.data_type == DataType.Timestamp
             return value.isoformat()
