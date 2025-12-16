@@ -5,5 +5,7 @@ from ._link import Link
 from ._operations import V1Operations
 from ._update_metadata import UpdateMetadataRequest
 from ._file_linq_query import FileLinqQueryRequest, FileLinqQueryResponse
+from ._search_files_request import SearchFilesRequest
+from ._search_files_response import SearchFilesResponse, SearchFileMetadata
 
 # flake8: noqa

@@ -163,6 +163,23 @@ class FileClient(BaseClient):
         """
         ...
 
+    @post("service-groups/Default/search-files")
+    def search_files(
+        self, request: models.SearchFilesRequest
+    ) -> models.SearchFilesResponse:
+        """Search for files based on filter criteria.
+
+        Args:
+            request: The search request containing filter, pagination, and sorting parameters.
+
+        Returns:
+            SearchFilesResponse: Response containing matching files and total count.
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """
+        ...
+
     @params({"force": True})  # type: ignore
     @delete("service-groups/Default/files/{id}", args=[Path])
     def delete_file(self, id: str) -> None:

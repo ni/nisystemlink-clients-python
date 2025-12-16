@@ -6,12 +6,14 @@ from datetime import datetime
 from random import choices, randint
 from typing import BinaryIO
 
+import backoff  # type: ignore
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
 from nisystemlink.clients.file.models import (
     FileLinqQueryOrderBy,
     FileLinqQueryRequest,
+    SearchFilesRequest,
     UpdateMetadataRequest,
 )
 from nisystemlink.clients.file.utilities import rename_file
@@ -263,3 +265,89 @@ class TestFileClient:
         assert response.total_count is not None
         assert response.total_count.value == 0
         assert response.total_count.relation == "eq"
+
+    @backoff.on_exception(
+        backoff.expo,
+        AssertionError,
+        max_tries=5,
+        max_time=5,
+    )
+    def test__search_files__succeeds(
+        self, client: FileClient, test_file, random_filename_extension: str
+    ):
+        """Test search_files with filtering, pagination, and ordering."""
+        # Upload 5 files to test various scenarios
+        NUM_FILES = 5
+        file_ids = []
+        file_prefix = f"{PREFIX}search_test_{randint(1000, 9999)}"
+        
+        for i in range(NUM_FILES):
+            file_name = f"{file_prefix}_{i}.bin"
+            file_id = test_file(file_name=file_name)
+            file_ids.append(file_id)
+
+        # Search with filter (by name pattern), pagination, and ordering
+        search_request = SearchFilesRequest(
+            filter=f'(name:("{file_prefix}*"))',
+            skip=1,
+            take=3,
+            order_by="name",
+            order_by_descending=True,
+        )
+        response = client.search_files(request=search_request)
+        
+        assert response.available_files is not None
+        assert response.total_count is not None
+        assert response.total_count.value == 5
+        assert response.total_count.relation is not None
+        assert len(response.available_files) == 3  # skip=1, take=3
+        
+        # Verify all fields in response
+        for file_metadata in response.available_files:
+            assert file_metadata.id in file_ids
+            assert file_metadata.name is not None
+            assert file_metadata.name.startswith(file_prefix)
+            assert file_metadata.created is not None
+            assert isinstance(file_metadata.created, datetime)
+            assert file_metadata.updated is not None
+            assert isinstance(file_metadata.updated, datetime)
+            assert file_metadata.workspace is not None
+            assert file_metadata.size is not None
+            assert file_metadata.properties is not None
+            assert "Name" in file_metadata.properties
+        
+        # Verify descending order by name
+        returned_names = [f.name for f in response.available_files]
+        assert returned_names == sorted(returned_names, reverse=True)
+
+    def test__search_files__no_filter_succeeds(self, client: FileClient, test_file):
+        file_id = test_file()
+
+        search_request = SearchFilesRequest(skip=0, take=10)
+        response = client.search_files(request=search_request)
+
+        assert response.available_files is not None
+        assert response.total_count is not None
+        assert response.total_count.value >= 1
+        assert len(response.available_files) >= 1
+
+    def test__search_files__invalid_filter_raises(self, client: FileClient):
+        search_request = SearchFilesRequest(filter="invalid filter syntax")
+
+        with pytest.raises(ApiException):
+            client.search_files(request=search_request)
+
+    def test__search_files__filter_returns_no_results(self, client: FileClient):
+        unique_nonexistent_name = (
+            f"{PREFIX}nonexistent_search_file_{randint(100000, 999999)}.random_ext"
+        )
+
+        search_request = SearchFilesRequest(
+            filter=f'(name:("{unique_nonexistent_name}"))', skip=0, take=10
+        )
+        response = client.search_files(request=search_request)
+
+        assert response.available_files is not None
+        assert len(response.available_files) == 0
+        assert response.total_count is not None
+        assert response.total_count.value == 0
