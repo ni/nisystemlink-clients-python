@@ -9,4 +9,4 @@ class AssetUtilizationHistoryResponse(WithPaging):
     """Response model for asset utilization history query."""
 
     asset_utilizations: Optional[List[AssetUtilizationHistoryItem]] = None
-    """Gets or sets array of asset utilizations."""
+    """Array of asset utilizations."""

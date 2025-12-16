@@ -31,5 +31,4 @@ class StartUtilizationRequest(JsonModel):
     """String representing the name of the operator who utilized the asset."""
 
     utilization_timestamp: Optional[datetime] = None
-    """A date time value which can be used to specify the start of an utilization.
-    This parameter must have the "ISO 8601" format in order to be considered valid."""
+    """A date time value which can be used to specify the start of an utilization."""

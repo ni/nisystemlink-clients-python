@@ -11,10 +11,11 @@ class AssetIdentification(JsonModel):
     """Model for object containing properties which identify an asset.
 
     An asset is uniquely identified by a combination of:
-    - busType
-    - modelName or modelNumber
-    - vendorName or vendorNumber
-    - serialNumber or minionId (part of the Location)
+
+    * ``bus_type``
+    * ``model_name`` or ``model_number``
+    * ``vendor_name`` or ``vendor_number``
+    * ``serial_number``
     """
 
     model_name: Optional[str] = None

@@ -16,28 +16,28 @@ class QueryAssetUtilizationHistoryRequest(WithPaging):
 
     utilization_filter: Optional[str] = None
     """
-    Gets or sets the filter criteria for asset utilization. Consists of a string of queries
+    The filter criteria for asset utilization. Consists of a string of queries
     composed using AND/OR operators. Valid properties: MinionId, Category, UserName, TaskName,
     StartTimestamp, EndTimestamp.
     """
 
     asset_filter: Optional[str] = None
     """
-    Gets or sets the filter criteria for assets. Consists of a string of queries composed
+    The filter criteria for assets. Consists of a string of queries composed
     using AND/OR operators. Valid properties include AssetIdentifier, SerialNumber, ModelName,
     VendorName, Location.MinionId, and many others.
     """
 
     take: Optional[int] = None
-    """Gets or sets the maximum number of asset utilization history records to return."""
+    """The maximum number of asset utilization history records to return."""
 
     order_by: Optional[UtilizationOrderBy] = None
     """
-    Gets or sets the field to order results by. If not provided, default ordering is applied.
+    The field to order results by. If not provided, default ordering is applied.
     """
 
     order_by_descending: Optional[bool] = None
-    """Gets or sets whether to return the asset utilization history records in descending order."""
+    """Whether to return the asset utilization history records in descending order."""
 
     start_time: Optional[datetime] = None
     """Start of the date range. Defaults to 90 days ago."""

@@ -13,5 +13,4 @@ class UpdateUtilizationRequest(JsonModel):
     """Array representing the unique identifier of an asset utilization history record."""
 
     utilization_timestamp: Optional[datetime] = None
-    """A date time value which can be used to specify the heartbeat timestamp.
-    This parameter must have the "ISO 8601" format in order to be considered valid."""
+    """A date time value which can be used to specify the heartbeat timestamp."""
