@@ -2,12 +2,10 @@
 
 """Helper function to get minion ID from Salt configuration."""
 
-from typing import Optional
-
 from nisystemlink.clients.core._internal._path_constants import PathConstants
 
 
-def read_minion_id() -> Optional[str]:
+def read_minion_id() -> str | None:
     """Read the minion ID from the Salt configuration.
 
     Returns:
