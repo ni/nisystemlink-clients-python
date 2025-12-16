@@ -60,7 +60,10 @@ class AlarmClient(BaseClient):
         ...
 
     def create_or_update_alarm(
-        self, request: models.CreateOrUpdateAlarmRequest, *, ignore_conflict: bool = False
+        self,
+        request: models.CreateOrUpdateAlarmRequest,
+        *,
+        ignore_conflict: bool = False,
     ) -> str | None:
         """Creates or updates an instance, or occurrence, of an alarm.
 

@@ -38,7 +38,8 @@ create_request = CreateOrUpdateAlarmRequest(
 id = client.create_or_update_alarm(create_request)
 
 # Get the alarm by its instance ID (the unique occurrence identifier)
-alarm = client.get_alarm(id)
+if id:
+    alarm = client.get_alarm(id)
 print(f"Retrieved alarm: {alarm.alarm_id}, Condition: {alarm.condition}")
 
 # Update the alarm with a higher severity (same alarm_id, updates the same instance)
@@ -70,10 +71,11 @@ print(f"Total alarms found: {query_response.total_count}")
 for alarm in query_response.alarms:
     print(f"  Alarm ID: {alarm.alarm_id}, Transitions: {len(alarm.transitions)}")
     for transition in alarm.transitions:
-        print(f"    - {transition.transition_type}: {transition.condition}")
+        print(f"- {transition.transition_type}: {transition.condition}")
 
-# Acknowledge the alarm
-client.acknowledge_alarms(ids=[id])
+if id:
+    # Acknowledge the alarm
+    client.acknowledge_alarms(ids=[id])
 
 # Clear the alarm with 409 conflict handling - Method 1: Manual exception handling
 # A 409 Conflict response indicates that the requested transition would not change the alarm's state.
@@ -105,5 +107,6 @@ if result is None:
 else:
     print(f"Alarm cleared successfully: {result}")
 
-# Delete the alarm by its instance ID
-client.delete_alarm(id)
+if id:
+    # Delete the alarm by its instance ID
+    client.delete_alarm(id)

@@ -40,7 +40,7 @@ def unique_identifier() -> Callable[[], str]:
 @pytest.fixture
 def create_alarms(
     client: AlarmClient,
-) -> Generator[Callable[[str, int, str], str], None, None]:
+) -> Generator[Callable[[str, int, str], str | None], None, None]:
     """Fixture to return a factory that creates alarms.
 
     Returns instance_id (referred to as 'id' in tests) for each created alarm.
@@ -51,7 +51,7 @@ def create_alarms(
         alarm_id: str,
         severity_level: int = 3,
         condition: str = "Test Condition",
-    ) -> str:
+    ) -> str | None:
         """Create an alarm and return its instance_id."""
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
@@ -62,7 +62,8 @@ def create_alarms(
             ),
         )
         id = client.create_or_update_alarm(request)
-        created_ids.append(id)
+        if id:
+            created_ids.append(id)
         return id
 
     yield _create_alarms
@@ -320,6 +321,7 @@ class TestAlarmClient:
         )
         id = client.create_or_update_alarm(request)
 
+        assert id is not None
         # Delete returns None on success
         result = client.delete_alarm(id)
         assert result is None
