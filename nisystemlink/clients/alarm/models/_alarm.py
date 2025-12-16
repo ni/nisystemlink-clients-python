@@ -1,8 +1,31 @@
 from datetime import datetime
-from enum import Enum
-from typing import Dict, List, Optional
+from enum import Enum, IntEnum
+from typing import Any, Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+
+class AlarmSeverityLevel(IntEnum):
+    """Well-known alarm severity levels.
+
+    The service supports custom severity levels greater than 4, but it is generally discouraged.
+    The SystemLink Alarm UI only has display strings for severity levels in the range [1, 4].
+    """
+
+    CLEAR = -1
+    """Indicates an alarm clearance."""
+
+    LOW = 1
+    """Low severity level."""
+
+    MODERATE = 2
+    """Moderate severity level."""
+
+    HIGH = 3
+    """High severity level."""
+
+    CRITICAL = 4
+    """Critical severity level."""
 
 
 class AlarmTransitionType(str, Enum):
@@ -32,7 +55,7 @@ class AlarmTransition(JsonModel):
     """The severity of the transition.
 
     Valid values for CLEAR transitions are [-1, -1].
-    Valid values for SET transitions are [1, infinity].
+    Valid values for SET transitions are [1, 2147483647].
     Note that the SystemLink Alarm UI only has display strings for SET severities in the range [1, 4].
     """
 
@@ -61,22 +84,6 @@ class AlarmTransition(JsonModel):
     Useful for attaching additional metadata to a transition which could aid in an investigation
     into an alarm's root cause in the future. Property keys must be between 1 and 255 characters.
     """
-
-
-class AlarmNote(JsonModel):
-    """Information about a particular alarm instance.
-
-    Such as a description of the root cause of the alarm.
-    """
-
-    note: str
-    """Information about a particular alarm instance, such as a description of the root cause of the alarm."""
-
-    created_at: Optional[datetime] = None
-    """The date and time when the note was created."""
-
-    user: Optional[str] = None
-    """The userId of the person who created the note."""
 
 
 class Alarm(JsonModel):
@@ -125,13 +132,13 @@ class Alarm(JsonModel):
     (active=False). This field is automatically reset to false when the alarm's highestSeverityLevel field increases.
     """
 
-    acknowledged_at: Optional[datetime]
+    acknowledged_at: datetime | None
     """The date and time when the alarm instance was acknowledged.
 
     This field will be cleared when the alarm's highestSeverityLevel field increases.
     """
 
-    acknowledged_by: Optional[str]
+    acknowledged_by: str | None
     """The userId of the individual who acknowledged the alarm.
 
     This field will be cleared when the alarm's highestSeverityLevel field increases.
@@ -176,13 +183,13 @@ class Alarm(JsonModel):
     highest_severity_level: int
     """The highest severity level that the alarm has ever been in."""
 
-    most_recent_set_occurred_at: Optional[datetime]
+    most_recent_set_occurred_at: datetime | None
     """The date and time of the most recent occurrence of a SET transition.
 
     This property only considers transitions that cause an alarm state change.
     """
 
-    most_recent_transition_occurred_at: Optional[datetime]
+    most_recent_transition_occurred_at: datetime | None
     """The date and time of the most recent occurrence of a transition.
 
     This property only considers transitions that cause an alarm state change.
@@ -206,10 +213,10 @@ class Alarm(JsonModel):
     Alarms can be tagged with keywords to make it easier to find them with queries.
     """
 
-    notes: List[AlarmNote]
+    notes: List[Any]
     """A collection of notes for a given alarm instance.
 
-    Notes are set by humans to record information such as the root cause of the alarm.
+    Notes are not currently supported and this will always be an empty list.
     """
 
     properties: Dict[str, str]

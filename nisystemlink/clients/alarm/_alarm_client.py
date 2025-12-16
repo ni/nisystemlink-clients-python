@@ -1,6 +1,6 @@
 """Implementation of Alarm Client"""
 
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -17,7 +17,7 @@ from . import models
 )
 class AlarmClient(BaseClient):
 
-    def __init__(self, configuration: Optional[core.HttpConfiguration] = None):
+    def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
 
         Args:
@@ -39,7 +39,7 @@ class AlarmClient(BaseClient):
         args=[Field("instanceIds"), Field("forceClear")],
     )
     def acknowledge_alarms(
-        self, ids: List[str], force_clear: bool = False
+        self, ids: List[str], *, force_clear: bool = False
     ) -> models.AcknowledgeAlarmsResponse:
         """Acknowledges one or more alarm instances by their instance IDs.
 
@@ -77,6 +77,9 @@ class AlarmClient(BaseClient):
 
         Raises:
             ApiException: if unable to communicate with the `/nialarm` Service or provided invalid arguments.
+                A 409 Conflict error occurs when the request does not represent a valid transition
+                for an existing alarm, such as attempting to clear an alarm which is already clear,
+                or attempting to set an alarm which is already set at the given severity level.
         """
         ...
 

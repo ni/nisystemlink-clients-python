@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from pydantic import model_validator
 
 from ._alarm import AlarmTransitionType
 
@@ -12,43 +13,74 @@ class CreateAlarmTransition(JsonModel):
     transition_type: AlarmTransitionType
     """Specifies a type of alarm transition: CLEAR or SET."""
 
-    occurred_at: Optional[datetime] = None
+    occurred_at: datetime | None = None
     """The date and time when the transition occurred."""
 
-    severity_level: Optional[int] = 2
+    severity_level: int | None = 2
     """The severity of the transition.
 
     Valid values for CLEAR transitions are [-1, -1].
-    Valid values for SET transitions are [1, infinity].
+    Valid values for SET transitions are [1, 2147483647].
     Note that the SystemLink Alarm UI only has display strings for SET severities in the range [1, 4].
     """
 
-    value: Optional[str] = None
+    value: str | None = None
     """The value that caused the alarm to transition."""
 
-    condition: Optional[str] = None
+    condition: str | None = None
     """A description of the condition associated with the transition."""
 
-    short_text: Optional[str] = None
+    short_text: str | None = None
     """A short description of the condition."""
 
-    detail_text: Optional[str] = None
+    detail_text: str | None = None
     """A detailed description of the condition."""
 
-    keywords: Optional[List[str]] = None
+    keywords: List[str] | None = None
     """Words or phrases associated with a transition.
 
     Useful for attaching metadata to a transition which could aid in an investigation
     into an alarm's root cause in the future.
     """
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """Key-value pair metadata associated with a transition.
 
     Useful for attaching additional metadata to a transition which could aid in an investigation
     into an alarm's root cause in the future. Property keys must be between 1 and 255 characters.
     Property values can be up to 1000 characters.
     """
+
+
+class SetAlarmTransition(CreateAlarmTransition):
+    """Contains information about a SET transition used to create or update an instance of an alarm.
+
+    This is a convenience class that automatically sets transition_type to SET.
+    """
+
+    transition_type: AlarmTransitionType = AlarmTransitionType.SET
+
+    @model_validator(mode="after")
+    def _set_transition_type(self) -> "SetAlarmTransition":
+        self.transition_type = AlarmTransitionType.SET
+        return self
+
+
+class ClearAlarmTransition(CreateAlarmTransition):
+    """Contains information about a CLEAR transition used to clear an instance of an alarm.
+
+    This is a convenience class that automatically sets transition_type to CLEAR
+    and severity_level to -1 (CLEAR severity).
+    """
+
+    transition_type: AlarmTransitionType = AlarmTransitionType.CLEAR
+    severity_level: int | None = -1
+
+    @model_validator(mode="after")
+    def _set_clear_defaults(self) -> "ClearAlarmTransition":
+        self.transition_type = AlarmTransitionType.CLEAR
+        self.severity_level = -1
+        return self
 
 
 class CreateOrUpdateAlarmRequest(JsonModel):
@@ -64,7 +96,7 @@ class CreateOrUpdateAlarmRequest(JsonModel):
     concatenation of the path of the tag which caused the rule to be triggered and the ID of the rule.
     """
 
-    workspace: Optional[str] = None
+    workspace: str | None = None
     """The ID of the workspace in which to create or update the alarm.
 
     When not specified, the default workspace is used based on the requesting user.
@@ -73,38 +105,38 @@ class CreateOrUpdateAlarmRequest(JsonModel):
     transition: CreateAlarmTransition
     """Contains information about a transition used to create or update an instance of an alarm."""
 
-    notification_strategy_ids: Optional[List[str]] = None
+    notification_strategy_ids: List[str] | None = None
     """The IDs of the notification strategies which should be triggered.
 
     These are triggered if this request results in an alarm being created or
     transitioning to a new highest severity.
     """
 
-    created_by: Optional[str] = None
+    created_by: str | None = None
     """An identifier for who or what created the alarm.
 
     This is usually used to identify the particular rule engine which requested
     that the alarm be created.
     """
 
-    channel: Optional[str] = None
+    channel: str | None = None
     """An identifier for the tag or resource associated with the alarm."""
 
-    resource_type: Optional[str] = None
+    resource_type: str | None = None
     """The type of resource associated with the alarm."""
 
-    display_name: Optional[str] = None
+    display_name: str | None = None
     """Optional display name for the alarm. Display names do not need to be unique."""
 
-    description: Optional[str] = None
+    description: str | None = None
     """Optional description text for the alarm."""
 
-    keywords: Optional[List[str]] = None
+    keywords: List[str] | None = None
     """Words or phrases associated with the alarm.
 
     Alarms can be tagged with keywords to make it easier to find them with queries.
     """
 
-    properties: Optional[Dict[str, str]] = None
+    properties: Dict[str, str] | None = None
     """The alarm's custom properties. Property keys must be between 1 and 255 characters.
     Property values can be up to 1000 characters."""

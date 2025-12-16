@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
@@ -11,5 +11,5 @@ class QueryAlarmsWithFilterResponse(WithPaging):
     alarms: List[Alarm]
     """The list of alarms returned by the query."""
 
-    total_count: Optional[int] = None
+    total_count: int | None = None
     """The total number of alarms which matched the query, if requested."""

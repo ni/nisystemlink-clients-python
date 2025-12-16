@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -28,19 +28,47 @@ class AlarmOrderBy(str, Enum):
 class QueryAlarmsWithFilterRequest(JsonModel):
     """Contains filter information for querying alarms."""
 
-    filter: Optional[str] = None
-    """The alarm query filter in Dynamic Linq.
+    filter: str | None = None
+    """The alarm query filter in `Dynamic LINQ`_ format.
 
-    Allowed properties in the filter are: acknowledged, acknowledgedAt, active, alarmId,
-    channel, clear, createdBy, currentSeverityLevel, description, displayName,
-    highestSeverityLevel, keywords, mostRecentSetOccurredAt, mostRecentTransitionOccurredAt,
-    occurredAt, occurredWithin, properties, resourceType, workspace, workspaceName.
+    .. _Dynamic LINQ: https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language
 
-    Allowed constants: RelativeTime.CurrentDay, RelativeTime.CurrentWeek,
-    RelativeTime.CurrentMonth, RelativeTime.CurrentYear.
+    Allowed properties in the filter are:
+
+    * ``acknowledged``: Boolean value that indicates an alarm acknowledgment
+    * ``acknowledgedAt``: DateTime value that represents when the alarm was acknowledged
+    * ``active``: Boolean value that indicates an active alarm
+    * ``alarmId``: String value that identifies the process or condition tracked by the alarm
+    * ``channel``: String value that identifies the tag or resource associated with the alarm
+    * ``clear``: Boolean value that indicates an alarm clearance
+    * ``createdBy``: String value that identifies the user that created the alarm
+    * ``currentSeverityLevel``: Int32 value that represents the severity level of the alarm
+    * ``description``: String value that describes the alarm
+    * ``displayName``: String value that represents the alarm name in the user interface
+    * ``highestSeverityLevel``: Int32 value that represents the highest severity level of the alarm
+    * ``keywords``: List of string values associated with the alarm
+    * ``mostRecentSetOccurredAt``: DateTime value that represents when the most recent set transition occurred
+    * ``mostRecentTransitionOccurredAt``: DateTime value that represents when the most recent transition occurred
+    * ``occurredAt``: DateTime value that represents when the alarm was created or first occurred
+    * ``occurredWithin``: TimeSpan value that represents when the alarm was created or first occurred
+    * ``properties``: Dictionary that contains the string keys and values representing alarm metadata
+    * ``resourceType``: String value that represents the resource type of the alarm
+    * ``workspace``: String ID of the workspace to use in the query
+    * ``workspaceName``: String name of the workspace of the alarm
+
+    Allowed constants in the filter are:
+
+    * ``RelativeTime.CurrentDay``: TimeSpan representing the elapsed time between now and
+      the start of the current day
+    * ``RelativeTime.CurrentWeek``: TimeSpan representing the elapsed time between now and
+      the start of the current week
+    * ``RelativeTime.CurrentMonth``: TimeSpan representing the elapsed time between now and
+      the start of the current month
+    * ``RelativeTime.CurrentYear``: TimeSpan representing the elapsed time between now and
+      the start of the current year
     """
 
-    substitutions: Optional[List[Union[bool, int, str, None]]] = None
+    substitutions: List[bool | int | str | None] | None = None
     """Makes substitutions in the query filter expression.
 
     Substitutions for the query expression are indicated by non-negative integers that are
@@ -55,19 +83,19 @@ class QueryAlarmsWithFilterRequest(JsonModel):
     based on when the alarm occurred, not when it was last updated.
     """
 
-    transition_inclusion_option: Optional[TransitionInclusionOption] = None
+    transition_inclusion_option: TransitionInclusionOption | None = None
     """Determines which transitions to include in the query results, if any."""
 
-    reference_time: Optional[datetime] = None
+    reference_time: datetime | None = None
     """The date and time to use as the reference point for RelativeTime filters.
 
     Includes time zone information. Defaults to the current time in UTC.
     """
 
-    take: Optional[int] = 1000
+    take: int | None = 1000
     """Limits the returned list to the specified number of results. Maximum is 1000."""
 
-    order_by: Optional[AlarmOrderBy] = None
+    order_by: AlarmOrderBy | None = None
     """The sort order of the returned list of alarms.
 
     By default, alarms are sorted in ascending order based on the specified value.
@@ -79,7 +107,7 @@ class QueryAlarmsWithFilterRequest(JsonModel):
     The elements in the list are sorted ascending by default. If true, sorts descending.
     """
 
-    continuation_token: Optional[str] = None
+    continuation_token: str | None = None
     """A token which allows the user to resume a query at the next item in the matching results.
 
     When querying, a token will be returned if a query may be continued. To obtain the next page

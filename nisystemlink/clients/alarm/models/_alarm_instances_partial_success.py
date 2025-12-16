@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
@@ -10,5 +10,5 @@ class AlarmInstancesPartialSuccess(JsonModel):
     failed: List[str]
     """The instanceIds that failed the operation."""
 
-    error: Optional[ApiError] = None
+    error: ApiError | None = None
     """The error that occurred during the operation."""

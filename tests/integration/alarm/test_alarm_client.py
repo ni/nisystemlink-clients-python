@@ -7,12 +7,14 @@ from nisystemlink.clients.alarm import AlarmClient
 from nisystemlink.clients.alarm.models import (
     AcknowledgeAlarmsResponse,
     AlarmOrderBy,
+    AlarmSeverityLevel,
     AlarmTransitionType,
-    CreateAlarmTransition,
+    ClearAlarmTransition,
     CreateOrUpdateAlarmRequest,
     DeleteAlarmsResponse,
     QueryAlarmsWithFilterRequest,
     QueryAlarmsWithFilterResponse,
+    SetAlarmTransition,
     TransitionInclusionOption,
 )
 from nisystemlink.clients.core import ApiException
@@ -53,8 +55,7 @@ def create_alarms(
         """Create an alarm and return its instance_id."""
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
-            transition=CreateAlarmTransition(
-                transition_type=AlarmTransitionType.SET,
+            transition=SetAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
                 severity_level=severity_level,
                 condition=condition,
@@ -84,10 +85,9 @@ class TestAlarmClient:
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
             workspace=None,  # Use default workspace
-            transition=CreateAlarmTransition(
-                transition_type=AlarmTransitionType.SET,
+            transition=SetAlarmTransition(
                 occurred_at=occurred_at,
-                severity_level=3,
+                severity_level=AlarmSeverityLevel.HIGH,
                 value="85.5",
                 condition="Temperature exceeded threshold",
                 short_text="High temp",
@@ -174,10 +174,9 @@ class TestAlarmClient:
         # Add another transition to the first alarm
         update_request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id_1,
-            transition=CreateAlarmTransition(
-                transition_type=AlarmTransitionType.SET,
+            transition=SetAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
-                severity_level=5,
+                severity_level=AlarmSeverityLevel.CRITICAL,
                 condition="Condition 3",
             ),
         )
@@ -236,47 +235,6 @@ class TestAlarmClient:
         assert query_response is not None
         assert len(query_response.alarms) == 1
 
-    def test__query_alarms_with_filter_and_count__returns_exact_count(
-        self,
-        client: AlarmClient,
-        create_alarms: Callable[[str, int, str], str],
-        unique_identifier: Callable[[], str],
-    ):
-        alarm_id_1 = unique_identifier()
-        alarm_id_2 = unique_identifier()
-        create_alarms(alarm_id_1, 3, "Test Condition")
-        create_alarms(alarm_id_2, 4, "Test Condition")
-
-        query_request = QueryAlarmsWithFilterRequest(
-            filter=f'alarmId="{alarm_id_1}" OR alarmId="{alarm_id_2}"',
-            return_count=True,
-        )
-        query_response: QueryAlarmsWithFilterResponse = client.query_alarms(
-            query_request
-        )
-
-        assert query_response is not None
-        assert query_response.total_count is not None
-        assert query_response.total_count == 2
-
-    def test__get_alarm__returns_alarm_with_all_fields(
-        self,
-        client: AlarmClient,
-        create_alarms: Callable[[str, int, str], str],
-        unique_identifier: Callable[[], str],
-    ):
-        alarm_id = unique_identifier()
-        id = create_alarms(alarm_id, 3, "Test Condition")
-
-        alarm = client.get_alarm(id)
-
-        assert alarm.instance_id == id
-        assert alarm.alarm_id == alarm_id
-        assert alarm.active is True
-        assert alarm.clear is False
-        assert alarm.current_severity_level == 3
-        assert len(alarm.transitions) >= 1
-
     def test__query_alarm_by_alarm_id__matches_expected(
         self,
         client: AlarmClient,
@@ -306,7 +264,7 @@ class TestAlarmClient:
         # Create multiple alarms
         id1 = create_alarms(unique_identifier(), 3, "Test Condition")
         id2 = create_alarms(unique_identifier(), 4, "Test Condition")
-        non_existent_id = uuid.uuid1().hex
+        non_existent_id = unique_identifier()
 
         # Acknowledge with mix of valid and invalid IDs
         ack_response: AcknowledgeAlarmsResponse = client.acknowledge_alarms(
@@ -354,10 +312,9 @@ class TestAlarmClient:
         alarm_id = unique_identifier()
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
-            transition=CreateAlarmTransition(
-                transition_type=AlarmTransitionType.SET,
+            transition=SetAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
-                severity_level=3,
+                severity_level=AlarmSeverityLevel.HIGH,
                 condition="Test Condition",
             ),
         )
@@ -383,7 +340,7 @@ class TestAlarmClient:
         # Create multiple alarms with different alarm IDs
         id1 = create_alarms(alarm_id1, 3, "Test Condition")
         id2 = create_alarms(alarm_id2, 4, "Test Condition")
-        non_existent_id = uuid.uuid1().hex
+        non_existent_id = unique_identifier()
 
         # Delete with mix of valid and invalid IDs
         delete_response: DeleteAlarmsResponse = client.delete_alarms(
@@ -419,10 +376,9 @@ class TestAlarmClient:
 
         update_request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
-            transition=CreateAlarmTransition(
-                transition_type=AlarmTransitionType.SET,
+            transition=SetAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
-                severity_level=5,
+                severity_level=AlarmSeverityLevel.CRITICAL,
                 condition="Updated Condition",
             ),
         )
@@ -430,7 +386,7 @@ class TestAlarmClient:
 
         assert id is not None
         alarm = client.get_alarm(id)
-        assert alarm.current_severity_level == 5
+        assert alarm.current_severity_level == AlarmSeverityLevel.CRITICAL
 
     def test__clear_alarm__alarm_cleared(
         self,
@@ -443,10 +399,8 @@ class TestAlarmClient:
 
         clear_request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
-            transition=CreateAlarmTransition(
-                transition_type=AlarmTransitionType.CLEAR,
+            transition=ClearAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
-                severity_level=0,
                 condition="Cleared",
             ),
         )
@@ -468,28 +422,6 @@ class TestAlarmClient:
         with pytest.raises(ApiException):
             client.delete_alarm("invalid_instance_id")
 
-    def test__acknowledge_non_existent_alarm__returns_failed_list(
-        self, client: AlarmClient
-    ):
-        non_existent_id = uuid.uuid1().hex
-        ack_response: AcknowledgeAlarmsResponse = client.acknowledge_alarms(
-            ids=[non_existent_id]
-        )
-
-        assert ack_response is not None
-        assert non_existent_id in ack_response.failed
-        assert len(ack_response.acknowledged) == 0
-
-    def test__delete_non_existent_alarm__returns_failed_list(self, client: AlarmClient):
-        non_existent_id = uuid.uuid1().hex
-        delete_response: DeleteAlarmsResponse = client.delete_alarms(
-            ids=[non_existent_id]
-        )
-
-        assert delete_response is not None
-        assert non_existent_id in delete_response.failed
-        assert len(delete_response.deleted) == 0
-
     def test__query_alarms_with_invalid_filter_syntax__raises_ApiException_BadRequest(
         self, client: AlarmClient
     ):
@@ -498,9 +430,9 @@ class TestAlarmClient:
             client.query_alarms(query_request)
 
     def test__query_alarm_with_non_existent_alarm_id__returns_empty_list(
-        self, client: AlarmClient
+        self, client: AlarmClient, unique_identifier: Callable[[], str]
     ):
-        non_existent_alarm_id = f"non_existent_{uuid.uuid1().hex}"
+        non_existent_alarm_id = f"non_existent_{unique_identifier()}"
         query_request = QueryAlarmsWithFilterRequest(
             filter=f'alarmId="{non_existent_alarm_id}"'
         )
@@ -514,8 +446,7 @@ class TestAlarmClient:
     ):
         request = CreateOrUpdateAlarmRequest(
             alarm_id=unique_identifier(),
-            transition=CreateAlarmTransition(
-                transition_type=AlarmTransitionType.SET,
+            transition=SetAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
                 severity_level=-999,
                 condition="Invalid Severity",

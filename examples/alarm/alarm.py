@@ -4,18 +4,18 @@ from datetime import datetime
 from nisystemlink.clients.alarm import AlarmClient
 from nisystemlink.clients.alarm.models import (
     AlarmOrderBy,
-    AlarmTransitionType,
-    CreateAlarmTransition,
+    AlarmSeverityLevel,
+    ClearAlarmTransition,
     CreateOrUpdateAlarmRequest,
     QueryAlarmsWithFilterRequest,
-    TransitionInclusionOption,
+    SetAlarmTransition,
 )
 from nisystemlink.clients.core import HttpConfiguration
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
 server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
+    server_uri="https://test-api.lifecyclesolutions.ni.com/",
+    api_key="oVu4EpiijnlgwjPlY58lke8H1xv2XLuCo1QmAvveMI",
 )
 client = AlarmClient(configuration=server_configuration)
 
@@ -26,10 +26,9 @@ alarm_id = f"example_alarm_{uuid.uuid1().hex}"
 # Create an alarm with a SET transition
 create_request = CreateOrUpdateAlarmRequest(
     alarm_id=alarm_id,
-    transition=CreateAlarmTransition(
-        transition_type=AlarmTransitionType.SET,
+    transition=SetAlarmTransition(
         occurred_at=datetime.now(),
-        severity_level=3,
+        severity_level=AlarmSeverityLevel.HIGH,
         condition="Temperature exceeded threshold",
         message="Temperature sensor reading: 85°C",
     ),
@@ -39,14 +38,14 @@ id = client.create_or_update_alarm(create_request)
 
 # Get the alarm by its instance ID (the unique occurrence identifier)
 alarm = client.get_alarm(id)
+print(f"Retrieved alarm: {alarm.alarm_id}, Condition: {alarm.condition}")
 
 # Update the alarm with a higher severity (same alarm_id, updates the same instance)
 update_request = CreateOrUpdateAlarmRequest(
     alarm_id=alarm_id,
-    transition=CreateAlarmTransition(
-        transition_type=AlarmTransitionType.SET,
+    transition=SetAlarmTransition(
         occurred_at=datetime.now(),
-        severity_level=5,
+        severity_level=AlarmSeverityLevel.CRITICAL,
         condition="Temperature critically high",
         message="Temperature sensor reading: 95°C",
     ),
@@ -55,25 +54,21 @@ client.create_or_update_alarm(update_request)
 
 # Query alarms with a filter (can filter by alarm_id to find all instances)
 query_request = QueryAlarmsWithFilterRequest(
-    filter=f'alarmId="{alarm_id}"',
-    transition_inclusion_option=TransitionInclusionOption.ALL,
+    filter="alarmId=@0",
+    substitutions=[alarm_id],
     order_by=AlarmOrderBy.UPDATED_AT,
     order_by_descending=True,
-    return_count=True,
 )
 query_response = client.query_alarms(query_request)
 
-# Acknowledge all queried alarms
-queried_alarm_ids = [alarm.instance_id for alarm in query_response.alarms]
-ack_response = client.acknowledge_alarms(ids=queried_alarm_ids)
+# Acknowledge the alarm
+client.acknowledge_alarms(ids=[id])
 
 # Clear the alarm
 clear_request = CreateOrUpdateAlarmRequest(
     alarm_id=alarm_id,
-    transition=CreateAlarmTransition(
-        transition_type=AlarmTransitionType.CLEAR,
+    transition=ClearAlarmTransition(
         occurred_at=datetime.now(),
-        severity_level=0,
         condition="Temperature returned to normal",
     ),
 )
