@@ -9,13 +9,14 @@ from nisystemlink.clients.alarm.models import (
     CreateOrUpdateAlarmRequest,
     QueryAlarmsWithFilterRequest,
     SetAlarmTransition,
+    TransitionInclusionOption,
 )
 from nisystemlink.clients.core import HttpConfiguration
 
 # Setup the server configuration to point to your instance of SystemLink Enterprise
 server_configuration = HttpConfiguration(
-    server_uri="https://test-api.lifecyclesolutions.ni.com/",
-    api_key="oVu4EpiijnlgwjPlY58lke8H1xv2XLuCo1QmAvveMI",
+    server_uri="https://yourserver.yourcompany.com",
+    api_key="YourAPIKeyGeneratedFromSystemLink",
 )
 client = AlarmClient(configuration=server_configuration)
 
@@ -53,13 +54,23 @@ update_request = CreateOrUpdateAlarmRequest(
 client.create_or_update_alarm(update_request)
 
 # Query alarms with a filter (can filter by alarm_id to find all instances)
+# Include all transitions to see the full alarm history
 query_request = QueryAlarmsWithFilterRequest(
     filter="alarmId=@0",
     substitutions=[alarm_id],
     order_by=AlarmOrderBy.UPDATED_AT,
     order_by_descending=True,
+    transition_inclusion_option=TransitionInclusionOption.ALL,
+    return_count=True,
 )
 query_response = client.query_alarms(query_request)
+
+# Display query results
+print(f"Total alarms found: {query_response.total_count}")
+for alarm in query_response.alarms:
+    print(f"  Alarm ID: {alarm.alarm_id}, Transitions: {len(alarm.transitions)}")
+    for transition in alarm.transitions:
+        print(f"    - {transition.transition_type}: {transition.condition}")
 
 # Acknowledge the alarm
 client.acknowledge_alarms(ids=[id])
