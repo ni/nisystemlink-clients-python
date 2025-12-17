@@ -273,7 +273,7 @@ class TestFileClient:
         # Upload 5 files to test various scenarios
         NUM_FILES = 5
         file_ids = []
-        
+
         for i in range(NUM_FILES):
             file_name = f"{PREFIX}_{i}.bin"
             file_id = test_file(file_name=file_name)
@@ -286,28 +286,29 @@ class TestFileClient:
             max_tries=5,
             max_time=10,
         )
-        def search_and_verify():
+        def search_and_verify() -> None:
             # Search with filter (by name pattern), pagination, and ordering
             search_request = SearchFilesRequest(
-                filter=f'(name:("{PREFIX}*"))',
+                filter=f'(name: ("{PREFIX}*"))',
                 skip=1,
                 take=3,
                 order_by="name",
                 order_by_descending=True,
             )
             response = client.search_files(request=search_request)
-            
+
             assert response.available_files is not None
             assert response.total_count is not None
             assert response.total_count.value == 3
             assert response.total_count.relation is not None
             assert len(response.available_files) == 3  # skip=1, take=3
-            
+
             # Verify all fields in response
             for file_metadata in response.available_files:
                 assert file_metadata.id in file_ids
+                assert file_metadata.properties is not None
                 assert file_metadata.properties.get("Name") is not None
-                assert file_metadata.properties.get("Name").startswith(PREFIX)
+                assert file_metadata.properties.get("Name", "").startswith(PREFIX)
                 assert file_metadata.created is not None
                 assert isinstance(file_metadata.created, datetime)
                 assert file_metadata.updated is not None
@@ -316,15 +317,19 @@ class TestFileClient:
                 assert file_metadata.size is not None
                 assert file_metadata.properties is not None
                 assert "Name" in file_metadata.properties
-            
+
             # Verify descending order by name
-            returned_names = [f.properties.get("Name") for f in response.available_files]
+            returned_names = [
+                f.properties.get("Name", "")
+                for f in response.available_files
+                if f.properties
+            ]
             assert returned_names == sorted(returned_names, reverse=True)
-        
+
         search_and_verify()
 
     def test__search_files__no_filter_succeeds(self, client: FileClient, test_file):
-        file_id = test_file()
+        test_file()
 
         search_request = SearchFilesRequest(skip=0, take=10)
         response = client.search_files(request=search_request)
@@ -346,7 +351,7 @@ class TestFileClient:
         )
 
         search_request = SearchFilesRequest(
-            filter=f'(name:("{unique_nonexistent_name}"))', skip=0, take=10
+            filter=f'(name: ("{unique_nonexistent_name}"))', skip=0, take=10
         )
         response = client.search_files(request=search_request)
 
