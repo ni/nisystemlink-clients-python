@@ -17,8 +17,8 @@ from nisystemlink.clients.core import HttpConfiguration
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
-    server_uri="https://test-api.lifecyclesolutions.ni.com/",
-    api_key="RdnPNeaxJvODqVjR5Ch8LTPm-FfvbQisAkgOdEu4Uz",
+    server_uri="https://yourserver.yourcompany.com",
+    api_key="YourAPIKeyGeneratedFromSystemLink",
 )
 
 client = AssetManagementClient(configuration=server_configuration)
