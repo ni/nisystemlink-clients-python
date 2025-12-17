@@ -273,9 +273,10 @@ class TestFileClient:
         # Upload 5 files to test various scenarios
         NUM_FILES = 5
         file_ids = []
+        file_prefix = f"{PREFIX}search_test_"
 
         for i in range(NUM_FILES):
-            file_name = f"{PREFIX}_{i}.bin"
+            file_name = f"{file_prefix}_{i}.bin"
             file_id = test_file(file_name=file_name)
             file_ids.append(file_id)
 
@@ -289,7 +290,7 @@ class TestFileClient:
         def search_and_verify() -> None:
             # Search with filter (by name pattern), pagination, and ordering
             search_request = SearchFilesRequest(
-                filter=f'(name: ("{PREFIX}*"))',
+                filter=f'(name: ("{file_prefix}*"))',
                 skip=1,
                 take=3,
                 order_by="name",
@@ -308,7 +309,7 @@ class TestFileClient:
                 assert file_metadata.id in file_ids
                 assert file_metadata.properties is not None
                 assert file_metadata.properties.get("Name") is not None
-                assert file_metadata.properties.get("Name", "").startswith(PREFIX)
+                assert file_metadata.properties.get("Name", "").startswith(file_prefix)
                 assert file_metadata.created is not None
                 assert isinstance(file_metadata.created, datetime)
                 assert file_metadata.updated is not None
