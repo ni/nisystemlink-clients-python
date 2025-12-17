@@ -5,7 +5,7 @@ from datetime import datetime
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class UpdateUtilizationRequest(JsonModel):
+class _UpdateUtilizationRequest(JsonModel):
     """Request model for updating utilization (heartbeat or end)."""
 
     utilization_identifiers: list[str] | None = None

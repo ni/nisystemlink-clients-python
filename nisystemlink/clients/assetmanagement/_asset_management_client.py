@@ -4,6 +4,9 @@ from datetime import datetime
 from typing import List, Optional
 
 from nisystemlink.clients import core
+from nisystemlink.clients.assetmanagement.models._update_utilization_request import (
+    _UpdateUtilizationRequest,
+)
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import post
@@ -183,7 +186,7 @@ class AssetManagementClient(BaseClient):
 
     @post("assets/end-utilization")
     def __end_utilization(
-        self, request: models.UpdateUtilizationRequest
+        self, request: _UpdateUtilizationRequest
     ) -> models.UpdateUtilizationPartialSuccessResponse:
         """End asset utilization tracking.
 
@@ -215,7 +218,7 @@ class AssetManagementClient(BaseClient):
         Raises:
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
         """
-        request = models.UpdateUtilizationRequest(
+        request = _UpdateUtilizationRequest(
             utilization_identifiers=ids,
             utilization_timestamp=timestamp,
         )
@@ -223,7 +226,7 @@ class AssetManagementClient(BaseClient):
 
     @post("assets/utilization-heartbeat")
     def __utilization_heartbeat(
-        self, request: models.UpdateUtilizationRequest
+        self, request: _UpdateUtilizationRequest
     ) -> models.UpdateUtilizationPartialSuccessResponse:
         """Send utilization heartbeat.
 
@@ -255,7 +258,7 @@ class AssetManagementClient(BaseClient):
         Raises:
             ApiException: If unable to communicate with the asset management service or if there are invalid arguments.
         """
-        request = models.UpdateUtilizationRequest(
+        request = _UpdateUtilizationRequest(
             utilization_identifiers=ids,
             utilization_timestamp=timestamp,
         )

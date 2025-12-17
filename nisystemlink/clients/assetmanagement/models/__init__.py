@@ -32,7 +32,6 @@ from ._start_utilization_request import StartUtilizationRequest
 from ._start_utilization_partial_success_response import (
     StartUtilizationPartialSuccessResponse,
 )
-from ._update_utilization_request import UpdateUtilizationRequest
 from ._update_utilization_partial_success_response import (
     UpdateUtilizationPartialSuccessResponse,
 )

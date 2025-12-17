@@ -1,6 +1,6 @@
 """Model for update utilization partial success response."""
 
-from nisystemlink.clients.core._api_error import ApiError
+from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 

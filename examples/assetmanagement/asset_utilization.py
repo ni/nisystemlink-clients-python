@@ -9,7 +9,7 @@ from nisystemlink.clients.assetmanagement.models import (
     AssetIdentification,
     StartUtilizationRequest,
 )
-from nisystemlink.clients.core._http_configuration import HttpConfiguration
+from nisystemlink.clients.core import HttpConfiguration
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(

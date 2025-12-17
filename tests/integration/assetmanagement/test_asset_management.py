@@ -28,13 +28,17 @@ from nisystemlink.clients.assetmanagement.models import (
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 
+# Type aliases for fixtures
+CreateAssetFixture = Callable[
+    [List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse
+]
+StartUtilizationFixture = Callable[[str, List[Asset], str, str, str, str], None]
+
 
 @pytest.fixture
 def create_asset(
     client: AssetManagementClient,
-) -> Generator[
-    Callable[[List[CreateAssetRequest]], CreateAssetsPartialSuccessResponse], None, None
-]:
+) -> Generator[CreateAssetFixture, None, None]:
     """Fixture to return a factory that creates assets."""
     responses: List[CreateAssetsPartialSuccessResponse] = []
 
@@ -71,7 +75,7 @@ def unique_identifier() -> str:
 @pytest.fixture
 def start_utilization(
     client: AssetManagementClient,
-) -> Generator[Callable[[str, List[Asset], str, str, str, str], None], None, None]:
+) -> Generator[StartUtilizationFixture, None, None]:
     """Fixture to start utilization and automatically clean up."""
     started_utilizations: List[str] = []
 
