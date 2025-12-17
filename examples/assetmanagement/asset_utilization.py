@@ -7,14 +7,18 @@ from nisystemlink.clients.assetmanagement import AssetManagementClient
 from nisystemlink.clients.assetmanagement.models import (
     AssetBusType,
     AssetIdentification,
+    AssetLocationForCreate,
+    AssetPresence,
+    AssetPresenceStatus,
+    CreateAssetRequest,
     StartUtilizationRequest,
 )
 from nisystemlink.clients.core import HttpConfiguration
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
-    server_uri="https://lifecycle.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
+    server_uri="https://test-api.lifecyclesolutions.ni.com/",
+    api_key="RdnPNeaxJvODqVjR5Ch8LTPm-FfvbQisAkgOdEu4Uz",
 )
 
 client = AssetManagementClient(configuration=server_configuration)
@@ -22,7 +26,48 @@ client = AssetManagementClient(configuration=server_configuration)
 # Generate a unique identifier for this utilization session
 utilization_id = str(uuid4())
 
-# Define the assets being used in the test
+# Create the assets first
+# Define the assets to be created and used in the test
+create_assets_request = [
+    CreateAssetRequest(
+        model_name="NI PXIe-6368",
+        model_number=4000,
+        serial_number="01BB877A",
+        vendor_name="NI",
+        vendor_number=4244,
+        bus_type=AssetBusType.ACCESSORY,
+        name="DAQ Device - 01BB877A",
+        location=AssetLocationForCreate(
+            state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
+        ),
+    ),
+    CreateAssetRequest(
+        model_name="NI PXIe-5163",
+        model_number=5000,
+        serial_number="02CC988B",
+        vendor_name="NI",
+        vendor_number=4244,
+        bus_type=AssetBusType.ACCESSORY,
+        name="Oscilloscope - 02CC988B",
+        location=AssetLocationForCreate(
+            state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
+        ),
+    ),
+]
+
+# Create the assets in SystemLink
+create_assets_response = client.create_assets(assets=create_assets_request)
+
+if create_assets_response.assets:
+    print(f"Created {len(create_assets_response.assets)} asset(s)")
+    created_asset_ids = [
+        asset.id for asset in create_assets_response.assets if asset.id
+    ]
+else:
+    print("Failed to create assets")
+    exit(1)
+
+# Define the asset identifications for utilization tracking
 test_assets = [
     AssetIdentification(
         model_name="NI PXIe-6368",
@@ -56,6 +101,8 @@ start_utilization_request = StartUtilizationRequest(
 
 start_utilization_response = client.start_utilization(request=start_utilization_request)
 
+print(start_utilization_response)
+
 # Verify utilization started successfully
 if start_utilization_response.assets_with_started_utilization:
     print(
@@ -73,7 +120,7 @@ else:
 # assets as actively utilized. If heartbeats stop, the assets will no longer
 # appear as "in use" in the UI.
 heartbeat_interval = 300  # 5 minutes in seconds
-is_active = True
+stop_event = threading.Event()
 
 
 def heartbeat_loop():
@@ -84,7 +131,7 @@ def heartbeat_loop():
     The UI requires heartbeats at least every 10 minutes to continue displaying
     the asset as actively utilized.
     """
-    while is_active:
+    while not stop_event.wait(heartbeat_interval):
         heartbeat_response = client.utilization_heartbeat(
             ids=[utilization_id],
             timestamp=datetime.now(),
@@ -94,8 +141,6 @@ def heartbeat_loop():
             print(
                 f"Heartbeat sent at {datetime.now().strftime('%H:%M:%S')} - asset remains 'in use'"
             )
-
-        time.sleep(heartbeat_interval)
 
 
 # Start the heartbeat thread
@@ -110,8 +155,8 @@ print("Waiting for 10 minutes to demonstrate heartbeats...\n")
 time.sleep(600)  # Wait 10 minutes
 
 # Stop the heartbeat thread
-is_active = False
-heartbeat_thread.join(timeout=1)
+stop_event.set()
+heartbeat_thread.join()
 
 # End asset utilization tracking
 end_utilization_response = client.end_utilization(
@@ -121,3 +166,8 @@ end_utilization_response = client.end_utilization(
 
 if end_utilization_response.updated_utilization_ids:
     print("\nUtilization ended - asset(s) released")
+
+# Clean up: delete the created assets
+if created_asset_ids:
+    client.delete_assets(ids=created_asset_ids)
+    print(f"Deleted {len(created_asset_ids)} asset(s)")
