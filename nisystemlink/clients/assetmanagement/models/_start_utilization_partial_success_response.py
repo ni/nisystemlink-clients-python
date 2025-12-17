@@ -1,5 +1,7 @@
 """Model for start utilization partial success response."""
 
+from typing import List
+
 from nisystemlink.clients.core import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -12,8 +14,8 @@ class StartUtilizationPartialSuccessResponse(JsonModel):
     error: ApiError | None = None
     """Error information if any failures occurred."""
 
-    assets_with_started_utilization: list[AssetIdentification] | None = None
+    assets_with_started_utilization: List[AssetIdentification] | None = None
     """Array containing the asset identification data for the assets that started being utilized."""
 
-    failed: list[AssetIdentification] | None = None
+    failed: List[AssetIdentification] | None = None
     """Array containing the asset identification data for the assets that failed to start being utilized."""

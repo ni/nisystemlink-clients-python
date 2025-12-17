@@ -345,7 +345,7 @@ With a :class:`.AssetManagementClient` object, you can:
 Examples
 ~~~~~~~~
 
-Create, delete, and query assets
+Create, delete, and query assets and link files to assets.
 
 .. literalinclude:: ../examples/assetmanagement/assets.py
    :language: python

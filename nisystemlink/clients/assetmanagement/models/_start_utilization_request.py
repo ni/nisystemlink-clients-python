@@ -1,6 +1,7 @@
 """Model for start utilization request."""
 
 from datetime import datetime
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -16,7 +17,7 @@ class StartUtilizationRequest(JsonModel):
     minion_id: str | None = None
     """Identifier of the minion where the utilized assets are located."""
 
-    asset_identifications: list[AssetIdentification] | None = None
+    asset_identifications: List[AssetIdentification] | None = None
     """Array of the identification information for the assets which are utilized.
     The maximum number of asset identifications allowed per request is 100."""
 
