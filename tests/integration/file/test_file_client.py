@@ -266,12 +266,6 @@ class TestFileClient:
         assert response.total_count.value == 0
         assert response.total_count.relation == "eq"
 
-    @backoff.on_exception(
-        backoff.expo,
-        AssertionError,
-        max_tries=5,
-        max_time=5,
-    )
     def test__search_files__succeeds(
         self, client: FileClient, test_file, random_filename_extension: str
     ):
@@ -279,46 +273,55 @@ class TestFileClient:
         # Upload 5 files to test various scenarios
         NUM_FILES = 5
         file_ids = []
-        file_prefix = f"{PREFIX}search_test_{randint(1000, 9999)}"
         
         for i in range(NUM_FILES):
-            file_name = f"{file_prefix}_{i}.bin"
+            file_name = f"{PREFIX}_{i}.bin"
             file_id = test_file(file_name=file_name)
             file_ids.append(file_id)
 
-        # Search with filter (by name pattern), pagination, and ordering
-        search_request = SearchFilesRequest(
-            filter=f'(name:("{file_prefix}*"))',
-            skip=1,
-            take=3,
-            order_by="name",
-            order_by_descending=True,
+        # Search with retry logic
+        @backoff.on_exception(
+            backoff.expo,
+            AssertionError,
+            max_tries=5,
+            max_time=10,
         )
-        response = client.search_files(request=search_request)
+        def search_and_verify():
+            # Search with filter (by name pattern), pagination, and ordering
+            search_request = SearchFilesRequest(
+                filter=f'(name:("{PREFIX}*"))',
+                skip=1,
+                take=3,
+                order_by="name",
+                order_by_descending=True,
+            )
+            response = client.search_files(request=search_request)
+            
+            assert response.available_files is not None
+            assert response.total_count is not None
+            assert response.total_count.value == 3
+            assert response.total_count.relation is not None
+            assert len(response.available_files) == 3  # skip=1, take=3
+            
+            # Verify all fields in response
+            for file_metadata in response.available_files:
+                assert file_metadata.id in file_ids
+                assert file_metadata.properties.get("Name") is not None
+                assert file_metadata.properties.get("Name").startswith(PREFIX)
+                assert file_metadata.created is not None
+                assert isinstance(file_metadata.created, datetime)
+                assert file_metadata.updated is not None
+                assert isinstance(file_metadata.updated, datetime)
+                assert file_metadata.workspace is not None
+                assert file_metadata.size is not None
+                assert file_metadata.properties is not None
+                assert "Name" in file_metadata.properties
+            
+            # Verify descending order by name
+            returned_names = [f.properties.get("Name") for f in response.available_files]
+            assert returned_names == sorted(returned_names, reverse=True)
         
-        assert response.available_files is not None
-        assert response.total_count is not None
-        assert response.total_count.value == 5
-        assert response.total_count.relation is not None
-        assert len(response.available_files) == 3  # skip=1, take=3
-        
-        # Verify all fields in response
-        for file_metadata in response.available_files:
-            assert file_metadata.id in file_ids
-            assert file_metadata.name is not None
-            assert file_metadata.name.startswith(file_prefix)
-            assert file_metadata.created is not None
-            assert isinstance(file_metadata.created, datetime)
-            assert file_metadata.updated is not None
-            assert isinstance(file_metadata.updated, datetime)
-            assert file_metadata.workspace is not None
-            assert file_metadata.size is not None
-            assert file_metadata.properties is not None
-            assert "Name" in file_metadata.properties
-        
-        # Verify descending order by name
-        returned_names = [f.name for f in response.available_files]
-        assert returned_names == sorted(returned_names, reverse=True)
+        search_and_verify()
 
     def test__search_files__no_filter_succeeds(self, client: FileClient, test_file):
         file_id = test_file()

@@ -41,11 +41,6 @@ class BaseFileMetadata(JsonModel):
     this value is -1 and the size64 parameter contains the correct value.
     """
 
-    size64: int | None = None
-    """
-    The 64-bit file size in bytes
-    """
-
     workspace: str | None = None
     """
     The workspace the file belongs to
@@ -53,6 +48,11 @@ class BaseFileMetadata(JsonModel):
 
 
 class FileMetadata(BaseFileMetadata):
+
+    size64: int | None = None
+    """
+    The 64-bit file size in bytes
+    """
 
     field_links: Dict[str, Link] | None = Field(None, alias="_links")
     """
@@ -87,6 +87,11 @@ class FileMetadata(BaseFileMetadata):
 
 class LinqQueryFileMetadata(BaseFileMetadata):
     """Metadata for a file returned by a LINQ query."""
+
+    size64: int | None = None
+    """
+    The 64-bit file size in bytes
+    """
 
     updated: datetime | None = None
     """
