@@ -9,8 +9,8 @@ from nisystemlink.clients.file.models import UpdateMetadataRequest
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
+    server_uri="https://test-api.lifecyclesolutions.ni.com/",
+    api_key="9voCglXGPBxU6-ZIQyFEwmIAymkdn_ynqOO7t52q2v",
 )
 
 client = FileClient(configuration=server_configuration)
@@ -100,10 +100,8 @@ file_id_2 = client.upload_file(file=test_file_2)
 custom_metadata = UpdateMetadataRequest(
     replace_existing=False,
     properties={
-        "Department": "Engineering",
-        "Project": "TestAutomation",
-        "Status": "Active",
-        "Version": "1.0",
+        "TestProperty1": "TestValue1",
+        "TestProperty2": "TestValue2",
     },
 )
 client.update_metadata(metadata=custom_metadata, id=file_id_2)
@@ -114,7 +112,7 @@ time.sleep(5)
 
 # Search by multiple custom properties using AND operator
 search_request = models.SearchFilesRequest(
-    filter='(properties.Department:"Engineering") AND (properties.Project:"TestAutomation")',
+    filter='(properties.TestProperty1:"TestValue1") AND (properties.TestProperty2:"TestValue2")',
     skip=0,
     take=10,
 )
@@ -122,15 +120,14 @@ search_request = models.SearchFilesRequest(
 response = client.search_files(search_request)
 print(
     f"Found {response.total_count.value if response.total_count else 0} file(s) with "
-    "Department=Engineering AND Project=TestAutomation"
+    "TestProperty1=TestValue1 AND TestProperty2=TestValue2"
 )
 if response.available_files:
     for file in response.available_files:
         if file.properties:
             print(f"- {file.properties.get('Name')}")
-            print(f"  Department: {file.properties.get('Department')}")
-            print(f"  Project: {file.properties.get('Project')}")
-            print(f"  Status: {file.properties.get('Status')}")
+            print(f"  TestProperty1: {file.properties.get('TestProperty1')}")
+            print(f"  TestProperty2: {file.properties.get('TestProperty2')}")
 
 # Clean up: delete both test files
 print("\nCleaning up...")
