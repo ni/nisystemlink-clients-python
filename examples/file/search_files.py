@@ -9,8 +9,8 @@ from nisystemlink.clients.file.models import UpdateMetadataRequest
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
-    server_uri="https://test-api.lifecyclesolutions.ni.com/",
-    api_key="9voCglXGPBxU6-ZIQyFEwmIAymkdn_ynqOO7t52q2v",
+    server_uri="https://yourserver.yourcompany.com",
+    api_key="YourAPIKeyGeneratedFromSystemLink",
 )
 
 client = FileClient(configuration=server_configuration)
@@ -26,7 +26,6 @@ print(f"Uploaded test file with ID: {file_id}")
 
 # Wait for the file to be indexed for search
 # Note: Files may take a few seconds to appear in search results after upload
-print("Waiting 5 seconds for file to be indexed for search...")
 time.sleep(5)
 print()
 
@@ -89,14 +88,9 @@ if response.available_files:
 
 # Example 4: Search by multiple custom properties
 print("\nExample 4: Search by multiple custom properties")
-# First upload a file with custom properties for demonstration
-print("Uploading file with custom properties...")
-test_file_2 = io.BytesIO(b"Custom properties test file")
-test_file_2.name = "custom-props-test.txt"
-file_id_2 = client.upload_file(file=test_file_2)
+print("Adding custom properties to existing file...")
 
-# Update the file with custom properties
-
+# Update the existing file with custom properties
 custom_metadata = UpdateMetadataRequest(
     replace_existing=False,
     properties={
@@ -104,10 +98,9 @@ custom_metadata = UpdateMetadataRequest(
         "TestProperty2": "TestValue2",
     },
 )
-client.update_metadata(metadata=custom_metadata, id=file_id_2)
+client.update_metadata(metadata=custom_metadata, id=file_id)
 
 # Wait for indexing
-print("Waiting 5 seconds for custom properties to be indexed...")
 time.sleep(5)
 
 # Search by multiple custom properties using AND operator
@@ -129,8 +122,7 @@ if response.available_files:
             print(f"  TestProperty1: {file.properties.get('TestProperty1')}")
             print(f"  TestProperty2: {file.properties.get('TestProperty2')}")
 
-# Clean up: delete both test files
+# Clean up: delete the test file
 print("\nCleaning up...")
 client.delete_file(id=file_id)
-client.delete_file(id=file_id_2)
-print(f"Deleted test files with IDs: {file_id}, {file_id_2}")
+print(f"Deleted test file with ID: {file_id}")

@@ -1,4 +1,4 @@
-from ._file_metadata import FileMetadata, LinqQueryFileMetadata
+from ._file_metadata import FileMetadata
 from ._file_query_order_by import FileQueryOrderBy, FileLinqQueryOrderBy
 from ._file_query_response import FileQueryResponse
 from ._link import Link

@@ -86,7 +86,7 @@ class FileMetadata(BaseFileMetadata):
 
 
 class LinqQueryFileMetadata(BaseFileMetadata):
-    """Metadata for a file returned by a query or search operation."""
+    """Metadata for a file returned by a LINQ query."""
 
     updated: datetime | None = None
     """
