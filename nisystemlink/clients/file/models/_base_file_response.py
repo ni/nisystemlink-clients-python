@@ -2,7 +2,7 @@ from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._file_metadata import FileQueryMetadata
+from ._file_metadata import LinqQueryFileMetadata
 
 
 class TotalCount(JsonModel):
@@ -28,7 +28,7 @@ class TotalCount(JsonModel):
 class BaseFileResponse(JsonModel):
     """Base class for file response models containing a list of files and total count."""
 
-    available_files: List[FileQueryMetadata]
+    available_files: List[LinqQueryFileMetadata]
     """The list of files returned by the query"""
 
     total_count: TotalCount

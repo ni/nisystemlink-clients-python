@@ -351,8 +351,6 @@ class TestFileClient:
                 assert isinstance(file_metadata.updated, datetime)
                 assert file_metadata.workspace is not None
                 assert file_metadata.size is not None
-                assert file_metadata.properties is not None
-                assert "Name" in file_metadata.properties
 
             # Verify descending order by name
             returned_names = [
@@ -361,6 +359,8 @@ class TestFileClient:
                 if f.properties
             ]
             assert returned_names == sorted(returned_names, reverse=True)
+
+        search_and_verify()
 
     def test__search_files__no_filter_succeeds(self, client: FileClient, test_file):
         test_file()

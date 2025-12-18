@@ -5,6 +5,7 @@ import time
 
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.file import FileClient, models
+from nisystemlink.clients.file.models import UpdateMetadataRequest
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
@@ -86,7 +87,53 @@ if response.available_files:
         if file.properties:
             print(f"- {file.properties.get('Name')} (Size: {file.size} bytes)")
 
-# Clean up: delete the test file
+# Example 4: Search by multiple custom properties
+print("\nExample 4: Search by multiple custom properties")
+# First upload a file with custom properties for demonstration
+print("Uploading file with custom properties...")
+test_file_2 = io.BytesIO(b"Custom properties test file")
+test_file_2.name = "custom-props-test.txt"
+file_id_2 = client.upload_file(file=test_file_2)
+
+# Update the file with custom properties
+
+custom_metadata = UpdateMetadataRequest(
+    replace_existing=False,
+    properties={
+        "Department": "Engineering",
+        "Project": "TestAutomation",
+        "Status": "Active",
+        "Version": "1.0",
+    },
+)
+client.update_metadata(metadata=custom_metadata, id=file_id_2)
+
+# Wait for indexing
+print("Waiting 5 seconds for custom properties to be indexed...")
+time.sleep(5)
+
+# Search by multiple custom properties using AND operator
+search_request = models.SearchFilesRequest(
+    filter='(properties.Department:"Engineering") AND (properties.Project:"TestAutomation")',
+    skip=0,
+    take=10,
+)
+
+response = client.search_files(search_request)
+print(
+    f"Found {response.total_count.value if response.total_count else 0} file(s) with "
+    "Department=Engineering AND Project=TestAutomation"
+)
+if response.available_files:
+    for file in response.available_files:
+        if file.properties:
+            print(f"- {file.properties.get('Name')}")
+            print(f"  Department: {file.properties.get('Department')}")
+            print(f"  Project: {file.properties.get('Project')}")
+            print(f"  Status: {file.properties.get('Status')}")
+
+# Clean up: delete both test files
 print("\nCleaning up...")
 client.delete_file(id=file_id)
-print(f"Deleted test file with ID: {file_id}")
+client.delete_file(id=file_id_2)
+print(f"Deleted test files with IDs: {file_id}, {file_id_2}")

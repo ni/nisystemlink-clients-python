@@ -1,4 +1,4 @@
-from ._file_metadata import FileMetadata, FileQueryMetadata
+from ._file_metadata import FileMetadata, LinqQueryFileMetadata
 from ._file_query_order_by import FileQueryOrderBy, FileLinqQueryOrderBy
 from ._file_query_response import FileQueryResponse
 from ._link import Link
@@ -8,5 +8,6 @@ from ._file_linq_query import FileLinqQueryRequest, FileLinqQueryResponse
 from ._search_files_request import SearchFilesRequest
 from ._search_files_response import SearchFilesResponse
 from ._base_file_response import BaseFileResponse, TotalCount
+from ._base_file_request import BaseFileRequest
 
 # flake8: noqa
