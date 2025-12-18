@@ -24,7 +24,7 @@ class SearchFilesRequest(JsonModel):
     The name of the metadata field to sort by.
     """
 
-    order_by_descending: bool | None = None
+    order_by_descending: bool | None = False
     """
     Whether to sort in descending order.
     """
