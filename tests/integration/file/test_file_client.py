@@ -327,7 +327,7 @@ class TestFileClient:
         @backoff.on_exception(
             backoff.expo,
             (AssertionError, ApiException),
-            max_tries=3,
+            max_tries=5,
             max_time=10,
         )
         def search_and_verify() -> None:
