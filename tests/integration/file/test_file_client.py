@@ -13,6 +13,7 @@ from nisystemlink.clients.file import FileClient
 from nisystemlink.clients.file.models import (
     FileLinqQueryOrderBy,
     FileLinqQueryRequest,
+    SearchFilesOrderBy,
     SearchFilesRequest,
     UpdateMetadataRequest,
 )
@@ -319,7 +320,7 @@ class TestFileClient:
             filter=f'(name: ("{file_prefix}*"))',
             skip=1,
             take=3,
-            order_by="name",
+            order_by=SearchFilesOrderBy.NAME,
             order_by_descending=True,
         )
 

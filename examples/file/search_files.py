@@ -5,7 +5,7 @@ import time
 
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.file import FileClient, models
-from nisystemlink.clients.file.models import UpdateMetadataRequest
+from nisystemlink.clients.file.models import SearchFilesOrderBy, UpdateMetadataRequest
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
@@ -54,7 +54,7 @@ search_request = models.SearchFilesRequest(
     filter='name:("search-example*")',
     skip=0,
     take=20,
-    order_by="created",
+    order_by=SearchFilesOrderBy.CREATED,
     order_by_descending=True,
 )
 
