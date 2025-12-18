@@ -263,3 +263,20 @@ class TestFileClient:
         assert response.total_count is not None
         assert response.total_count.value == 0
         assert response.total_count.relation == "eq"
+
+    def test__start_upload_session__returns_session_id(self, client: FileClient):
+        response = client.start_upload_session()
+
+        assert response is not None
+        assert response.id is not None
+        assert isinstance(response.id, str)
+        assert response.created_at is not None
+        assert isinstance(response.created_at, datetime)
+
+    def test__start_upload_session__with_invalid_workspace__raises(
+        self, client: FileClient
+    ):
+        invalid_workspace_id = "invalid-workspace-id"
+
+        with pytest.raises(ApiException):
+            client.start_upload_session(workspace=invalid_workspace_id)

@@ -275,3 +275,19 @@ class FileClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
+
+    @post("service-groups/Default/upload-sessions/start", args=[Query(name="workspace")])
+    def start_upload_session(
+        self, workspace: str | None = None
+    ) -> models.UploadSessionStartResponse:
+        """Start an upload session for uploading a file in chunks.
+
+        Args:
+            workspace: The id of the workspace the file belongs to. Defaults to None.
+
+        Returns:
+            Upload session information including the session ID.
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """

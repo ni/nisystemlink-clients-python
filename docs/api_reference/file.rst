@@ -15,6 +15,7 @@ nisystemlink.clients.file
    .. automethod:: upload_file
    .. automethod:: download_file
    .. automethod:: update_metadata
+   .. automethod:: start_upload_session
 
 .. automodule:: nisystemlink.clients.file.models
    :members:

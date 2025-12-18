@@ -5,5 +5,6 @@ from ._link import Link
 from ._operations import V1Operations
 from ._update_metadata import UpdateMetadataRequest
 from ._file_linq_query import FileLinqQueryRequest, FileLinqQueryResponse
+from ._upload_session_start_response import UploadSessionStartResponse
 
 # flake8: noqa
