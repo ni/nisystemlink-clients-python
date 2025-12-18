@@ -286,13 +286,14 @@ class TestFileClient:
             skip=1,
             take=3,
             order_by="name",
+            order_by_descending=True,
         )
 
         # Search with retry logic
         @backoff.on_exception(
             backoff.expo,
-            AssertionError,
-            max_tries=5,
+            (AssertionError, ApiException),
+            max_tries=3,
             max_time=10,
         )
         def search_and_verify() -> None:
@@ -320,19 +321,12 @@ class TestFileClient:
                 assert "Name" in file_metadata.properties
 
             # Verify descending order by name
-            # returned_names = [
-            #     f.properties.get("Name", "")
-            #     for f in response.available_files
-            #     if f.properties
-            # ]
-            # assert returned_names == sorted(returned_names, reverse=True)
-
-        try:
-            search_and_verify()
-        except ApiException as exception:
-            raise Exception(
-                f"Request body: {search_request.model_dump()}"
-            ) from exception
+            returned_names = [
+                f.properties.get("Name", "")
+                for f in response.available_files
+                if f.properties
+            ]
+            assert returned_names == sorted(returned_names, reverse=True)
 
     def test__search_files__no_filter_succeeds(self, client: FileClient, test_file):
         test_file()
