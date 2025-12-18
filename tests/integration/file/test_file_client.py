@@ -266,6 +266,40 @@ class TestFileClient:
         assert response.total_count.value == 0
         assert response.total_count.relation == "eq"
 
+    def test__query_files_linq__skip_and_take_pagination(
+        self, client: FileClient, test_file
+    ):
+        """Test query_files_linq with skip and take for pagination."""
+        # Upload 5 files to test pagination
+        NUM_FILES = 5
+        file_ids = []
+        file_prefix = f"{PREFIX}pagination_test_"
+
+        for i in range(NUM_FILES):
+            file_name = f"{file_prefix}{i:02d}.bin"
+            file_id = test_file(file_name=file_name)
+            file_ids.append(file_id)
+
+        # Query with skip=1, take=3
+        query_request = FileLinqQueryRequest(
+            filter=f'name.StartsWith("{file_prefix}")',
+            skip=1,
+            take=3,
+            order_by=FileLinqQueryOrderBy.CREATED,
+            order_by_descending=False,
+        )
+        response = client.query_files_linq(query=query_request)
+
+        assert response.available_files is not None
+        assert response.total_count is not None
+        assert response.total_count.value == 3  # skip=1, take=3
+        assert len(response.available_files) == 3
+
+        # Verify that we skipped the first file
+        returned_ids = [f.id for f in response.available_files]
+        for file_id in returned_ids:
+            assert file_id in file_ids
+
     def test__search_files__succeeds(
         self, client: FileClient, test_file, random_filename_extension: str
     ):

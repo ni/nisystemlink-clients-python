@@ -13,6 +13,11 @@ class FileLinqQueryRequest(JsonModel):
     Example Filter syntax: '[property name][operator][operand] and [property name][operator][operand]'
     """
 
+    skip: int | None = None
+    """
+    How many files to skip in the result when paging.
+    """
+
     order_by: FileLinqQueryOrderBy | None = None
     """The property by which to order the files in the response."""
 
