@@ -13,7 +13,7 @@ class AlarmSeverityLevel(IntEnum):
     """
 
     CLEAR = -1
-    """Indicates an alarm clearance."""
+    """Severity level for cleared alarms."""
 
     LOW = 1
     """Low severity level."""
@@ -57,6 +57,7 @@ class AlarmTransition(JsonModel):
     Valid values for CLEAR transitions are [-1, -1].
     Valid values for SET transitions are [1, 2147483647].
     Note that the SystemLink Alarm UI only has display strings for SET severities in the range [1, 4].
+    The AlarmSeverityLevel enum provides values for standard severity levels.
     """
 
     value: str

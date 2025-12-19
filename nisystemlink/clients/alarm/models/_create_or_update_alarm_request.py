@@ -4,7 +4,7 @@ from typing import Dict, List
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from pydantic import model_validator
 
-from ._alarm import AlarmTransitionType
+from ._alarm import AlarmSeverityLevel, AlarmTransitionType
 
 
 class CreateAlarmTransition(JsonModel):
@@ -22,6 +22,7 @@ class CreateAlarmTransition(JsonModel):
     Valid values for CLEAR transitions are [-1, -1].
     Valid values for SET transitions are [1, 2147483647].
     Note that the SystemLink Alarm UI only has display strings for SET severities in the range [1, 4].
+    The AlarmSeverityLevel enum provides values for standard severity levels.
     """
 
     value: str | None = None
@@ -74,12 +75,12 @@ class ClearAlarmTransition(CreateAlarmTransition):
     """
 
     transition_type: AlarmTransitionType = AlarmTransitionType.CLEAR
-    severity_level: int | None = -1
+    severity_level: int | None = AlarmSeverityLevel.CLEAR
 
     @model_validator(mode="after")
     def _set_clear_defaults(self) -> "ClearAlarmTransition":
         self.transition_type = AlarmTransitionType.CLEAR
-        self.severity_level = -1
+        self.severity_level = AlarmSeverityLevel.CLEAR
         return self
 
 
@@ -103,7 +104,11 @@ class CreateOrUpdateAlarmRequest(JsonModel):
     """
 
     transition: CreateAlarmTransition
-    """Contains information about a transition used to create or update an instance of an alarm."""
+    """Contains information about a transition used to create or update an instance of an alarm.
+
+    Consider using SetAlarmTransition to trigger an alarm or ClearAlarmTransition to clear an alarm.
+    These convenience classes automatically set the appropriate transition type and severity level.
+    """
 
     notification_strategy_ids: List[str] | None = None
     """The IDs of the notification strategies which should be triggered.

@@ -30,15 +30,17 @@ create_request = CreateOrUpdateAlarmRequest(
     transition=SetAlarmTransition(
         occurred_at=datetime.now(),
         severity_level=AlarmSeverityLevel.HIGH,
-        condition="Temperature exceeded threshold",
+        value="85",
+        condition="Greater than 80",
+        short_text="Temperature is high",
+        detail_text="Temperature sensor reading is 85°C (higher than the configured threshold of 80°C)",
     ),
 )
 # Returns instance_id - a server-generated unique identifier for this specific alarm occurrence
 id = client.create_or_update_alarm(create_request)
 
 # Get the alarm by its instance ID (the unique occurrence identifier)
-if id:
-    alarm = client.get_alarm(id)
+alarm = client.get_alarm(instance_id=id)
 print(f"Retrieved alarm: {alarm.alarm_id}, Condition: {alarm.condition}")
 
 # Update the alarm with a higher severity (same alarm_id, updates the same instance)
@@ -47,7 +49,10 @@ update_request = CreateOrUpdateAlarmRequest(
     transition=SetAlarmTransition(
         occurred_at=datetime.now(),
         severity_level=AlarmSeverityLevel.CRITICAL,
-        condition="Temperature critically high",
+        value="95",
+        condition="Greater than 90",
+        short_text="Temperature is critical",
+        detail_text="Temperature sensor reading is 95°C (higher than the configured threshold of 90°C)",
     ),
 )
 client.create_or_update_alarm(update_request)
@@ -71,9 +76,8 @@ for alarm in query_response.alarms:
     for transition in alarm.transitions:
         print(f"- {transition.transition_type}: {transition.condition}")
 
-if id:
-    # Acknowledge the alarm
-    client.acknowledge_alarms(ids=[id])
+# Acknowledge the alarm
+client.acknowledge_alarms(instance_ids=[id])
 
 # Clear the alarm with 409 conflict handling - Method 1: Manual exception handling
 # A 409 Conflict response indicates that the requested transition would not change the alarm's state.
@@ -105,6 +109,5 @@ if result is None:
 else:
     print(f"Alarm cleared successfully: {result}")
 
-if id:
-    # Delete the alarm by its instance ID
-    client.delete_alarm(id)
+# Delete the alarm by its instance ID
+client.delete_alarm(instance_id=id)

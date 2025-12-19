@@ -40,7 +40,7 @@ def unique_identifier() -> Callable[[], str]:
 @pytest.fixture
 def create_alarms(
     client: AlarmClient,
-) -> Generator[Callable[[str, int, str], str | None], None, None]:
+) -> Generator[Callable[[str, int, str], str], None, None]:
     """Fixture to return a factory that creates alarms.
 
     Returns instance_id (referred to as 'id' in tests) for each created alarm.
@@ -51,7 +51,7 @@ def create_alarms(
         alarm_id: str,
         severity_level: int = 3,
         condition: str = "Test Condition",
-    ) -> str | None:
+    ) -> str:
         """Create an alarm and return its instance_id."""
         request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
@@ -69,7 +69,7 @@ def create_alarms(
     yield _create_alarms
 
     if created_ids:
-        client.delete_alarms(ids=created_ids)
+        client.delete_alarms(instance_ids=created_ids)
 
 
 @pytest.mark.integration
@@ -112,7 +112,7 @@ class TestAlarmClient:
         assert len(id) > 0
 
         # Get alarm and verify all fields
-        alarm = client.get_alarm(id)
+        alarm = client.get_alarm(instance_id=id)
         assert alarm.instance_id == id
         assert alarm.alarm_id == alarm_id
         assert alarm.workspace is not None
@@ -158,7 +158,7 @@ class TestAlarmClient:
         assert "sensor_id" in transition.properties
 
         # Cleanup
-        client.delete_alarm(id)
+        client.delete_alarm(instance_id=id)
 
     def test__query_alarms_with_all_fields__returns_complete_response(
         self,
@@ -269,7 +269,7 @@ class TestAlarmClient:
 
         # Acknowledge with mix of valid and invalid IDs
         ack_response: AcknowledgeAlarmsResponse = client.acknowledge_alarms(
-            ids=[id1, id2, non_existent_id], force_clear=False
+            instance_ids=[id1, id2, non_existent_id], force_clear=False
         )
 
         # Assert all response fields
@@ -284,7 +284,7 @@ class TestAlarmClient:
         assert hasattr(ack_response, "error")
 
         # Verify alarms were acknowledged
-        alarm1 = client.get_alarm(id1)
+        alarm1 = client.get_alarm(instance_id=id1)
         assert alarm1.acknowledged is True
         assert alarm1.acknowledged_at is not None
         assert alarm1.acknowledged_by is not None
@@ -298,13 +298,13 @@ class TestAlarmClient:
         id = create_alarms(unique_identifier(), 3, "Test Condition")
 
         ack_response: AcknowledgeAlarmsResponse = client.acknowledge_alarms(
-            ids=[id], force_clear=True
+            instance_ids=[id], force_clear=True
         )
 
         assert ack_response is not None
         assert id in ack_response.acknowledged
 
-        alarm = client.get_alarm(id)
+        alarm = client.get_alarm(instance_id=id)
         assert alarm.clear is True
 
     def test__delete_alarm__returns_none(
@@ -323,7 +323,7 @@ class TestAlarmClient:
 
         assert id is not None
         # Delete returns None on success
-        result = client.delete_alarm(id)
+        result = client.delete_alarm(instance_id=id)
         assert result is None
 
         # Verify alarm is deleted
@@ -346,7 +346,7 @@ class TestAlarmClient:
 
         # Delete with mix of valid and invalid IDs
         delete_response: DeleteAlarmsResponse = client.delete_alarms(
-            ids=[id1, id2, non_existent_id]
+            instance_ids=[id1, id2, non_existent_id]
         )
 
         # Assert all response fields
@@ -387,7 +387,7 @@ class TestAlarmClient:
         id = client.create_or_update_alarm(update_request)
 
         assert id is not None
-        alarm = client.get_alarm(id)
+        alarm = client.get_alarm(instance_id=id)
         assert alarm.current_severity_level == AlarmSeverityLevel.CRITICAL
 
     def test__clear_alarm__alarm_cleared(
@@ -409,20 +409,20 @@ class TestAlarmClient:
         id = client.create_or_update_alarm(clear_request)
 
         assert id is not None
-        alarm = client.get_alarm(id)
+        alarm = client.get_alarm(instance_id=id)
         assert alarm.clear is True
 
     def test__get_alarm_with_invalid_instance_id__raises_ApiException_NotFound(
         self, client: AlarmClient
     ):
         with pytest.raises(ApiException):
-            client.get_alarm("invalid_instance_id")
+            client.get_alarm(instance_id="invalid_instance_id")
 
     def test__delete_alarm_with_invalid_instance_id__raises_ApiException_NotFound(
         self, client: AlarmClient
     ):
         with pytest.raises(ApiException):
-            client.delete_alarm("invalid_instance_id")
+            client.delete_alarm(instance_id="invalid_instance_id")
 
     def test__query_alarms_with_invalid_filter_syntax__raises_ApiException_BadRequest(
         self, client: AlarmClient
@@ -460,52 +460,42 @@ class TestAlarmClient:
     def test__create_or_update_alarm_with_conflict_and_ignore_conflict_true__returns_none(
         self,
         client: AlarmClient,
-        create_alarms: Callable[[str, int, str], str],
         unique_identifier: Callable[[], str],
     ):
         """Test that ignore_conflict=True returns None on 409 Conflict."""
         alarm_id = unique_identifier()
 
-        # Create an alarm
-        create_alarms(alarm_id, AlarmSeverityLevel.HIGH, "Initial Condition")
-
-        # Try to create another alarm with the same alarm_id and same severity (would cause 409)
-        duplicate_request = CreateOrUpdateAlarmRequest(
+        # Try to clear an alarm that doesn't exist (causes 409)
+        clear_request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
-            transition=SetAlarmTransition(
+            transition=ClearAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
-                severity_level=AlarmSeverityLevel.HIGH,
-                condition="Initial Condition",
+                condition="Clearing non-existent alarm",
             ),
         )
 
         # With ignore_conflict=True, should return None instead of raising exception
-        result = client.create_or_update_alarm(duplicate_request, ignore_conflict=True)
+        result = client.create_or_update_alarm(clear_request, ignore_conflict=True)
         assert result is None
 
     def test__create_or_update_alarm_with_conflict_and_ignore_conflict_false__raises_exception(
         self,
         client: AlarmClient,
-        create_alarms: Callable[[str, int, str], str],
         unique_identifier: Callable[[], str],
     ):
         """Test that ignore_conflict=False (default) raises ApiException on 409 Conflict."""
         alarm_id = unique_identifier()
 
-        # Create an alarm
-        create_alarms(alarm_id, AlarmSeverityLevel.HIGH, "Initial Condition")
-
-        # Try to create another alarm with the same alarm_id and same severity (would cause 409)
-        duplicate_request = CreateOrUpdateAlarmRequest(
+        # Try to clear an alarm that doesn't exist (causes 409)
+        clear_request = CreateOrUpdateAlarmRequest(
             alarm_id=alarm_id,
-            transition=SetAlarmTransition(
+            transition=ClearAlarmTransition(
                 occurred_at=datetime.now(timezone.utc),
-                severity_level=AlarmSeverityLevel.HIGH,
-                condition="Initial Condition",
+                condition="Clearing non-existent alarm",
             ),
         )
 
         # With ignore_conflict=False (default), should raise ApiException
         with pytest.raises(ApiException) as exc_info:
-            client.create_or_update_alarm(duplicate_request, ignore_conflict=False)
+            client.create_or_update_alarm(clear_request, ignore_conflict=False)
         assert exc_info.value.http_status_code == 409

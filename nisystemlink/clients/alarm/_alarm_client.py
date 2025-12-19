@@ -1,6 +1,6 @@
 """Implementation of Alarm Client"""
 
-from typing import List
+from typing import List, Literal, overload
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
@@ -39,12 +39,12 @@ class AlarmClient(BaseClient):
         args=[Field("instanceIds"), Field("forceClear")],
     )
     def acknowledge_alarms(
-        self, ids: List[str], *, force_clear: bool = False
+        self, instance_ids: List[str], *, force_clear: bool = False
     ) -> models.AcknowledgeAlarmsResponse:
         """Acknowledges one or more alarm instances by their instance IDs.
 
         Args:
-            ids: List of instance IDs (unique occurrence identifiers) of the alarms to acknowledge.
+            instance_ids: List of instance IDs (unique occurrence identifiers) of the alarms to acknowledge.
                  These are the server-generated IDs returned when creating/updating alarms,
                  not the user-defined alarm_id.
             force_clear: Whether or not the affected alarms should have their clear field set to true.
@@ -58,6 +58,22 @@ class AlarmClient(BaseClient):
             ApiException: if unable to communicate with the `/nialarm` Service or provided invalid arguments.
         """
         ...
+
+    @overload
+    def create_or_update_alarm(  # noqa: E704
+        self,
+        request: models.CreateOrUpdateAlarmRequest,
+        *,
+        ignore_conflict: Literal[False] = False,
+    ) -> str: ...
+
+    @overload
+    def create_or_update_alarm(  # noqa: E704
+        self,
+        request: models.CreateOrUpdateAlarmRequest,
+        *,
+        ignore_conflict: Literal[True],
+    ) -> str | None: ...
 
     def create_or_update_alarm(
         self,
@@ -91,15 +107,12 @@ class AlarmClient(BaseClient):
                 or attempting to set an alarm which is already set at the given severity level.
                 This error can be suppressed by setting ignore_conflict=True.
         """
-        if ignore_conflict:
-            try:
-                return self._create_or_update_alarm(request)
-            except core.ApiException as e:
-                if e.http_status_code == 409:
-                    return None
-                raise
-        else:
+        try:
             return self._create_or_update_alarm(request)
+        except core.ApiException as e:
+            if ignore_conflict and e.http_status_code == 409:
+                return None
+            raise
 
     @post("instances", return_key="instanceId")
     def _create_or_update_alarm(
@@ -109,11 +122,11 @@ class AlarmClient(BaseClient):
         ...
 
     @get("instances/{instance_id}", args=[Path("instance_id")])
-    def get_alarm(self, id: str) -> models.Alarm:
+    def get_alarm(self, instance_id: str) -> models.Alarm:
         """Gets an alarm by its instance_id.
 
         Args:
-            id: The unique instance ID (occurrence identifier) of the alarm to retrieve.
+            instance_id: The unique instance ID (occurrence identifier) of the alarm to retrieve.
                 This is the server-generated ID returned from create_or_update_alarm(),
                 not the user-defined alarm_id.
 
@@ -126,11 +139,11 @@ class AlarmClient(BaseClient):
         ...
 
     @delete("instances/{instance_id}", args=[Path("instance_id")])
-    def delete_alarm(self, id: str) -> None:
+    def delete_alarm(self, instance_id: str) -> None:
         """Deletes an alarm by its instance_id.
 
         Args:
-            id: The unique instance ID (occurrence identifier) of the alarm to delete.
+            instance_id: The unique instance ID (occurrence identifier) of the alarm to delete.
                 This is the server-generated ID returned from create_or_update_alarm(),
                 not the user-defined alarm_id.
 
@@ -140,11 +153,11 @@ class AlarmClient(BaseClient):
         ...
 
     @post("delete-instances-by-instance-id", args=[Field("instanceIds")])
-    def delete_alarms(self, ids: List[str]) -> models.DeleteAlarmsResponse:
+    def delete_alarms(self, instance_ids: List[str]) -> models.DeleteAlarmsResponse:
         """Deletes multiple alarm instances by their instance IDs.
 
         Args:
-            ids: List of instance IDs (unique occurrence identifiers) of the alarms to delete.
+            instance_ids: List of instance IDs (unique occurrence identifiers) of the alarms to delete.
                  These are the server-generated IDs returned when creating/updating alarms,
                  not the user-defined alarm_id.
 
