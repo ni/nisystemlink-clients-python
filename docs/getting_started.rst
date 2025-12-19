@@ -204,7 +204,7 @@ default connection. The default connection depends on your environment.
 With a :class:`.FileClient` object, you can:
 
 * Get the list of files, download and delete files.
-* Start upload sessions for chunked file uploads.
+* Start upload sessions, upload file chunks, and finish sessions for large file uploads.
 
 Examples
 ~~~~~~~~
