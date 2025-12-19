@@ -351,7 +351,7 @@ Create, delete, and query assets and link files to assets.
    :language: python
    :linenos:
 
-Track asset utilization
+Track asset utilization.
 
 .. literalinclude:: ../examples/assetmanagement/asset_utilization.py
    :language: python
