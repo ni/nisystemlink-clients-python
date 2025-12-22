@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.23.0 (2025-12-22)
+
+### Feature
+
+* Read Minion ID from Client's salt conf ([#179](https://github.com/ni/nisystemlink-clients-python/issues/179)) ([`c8c05b3`](https://github.com/ni/nisystemlink-clients-python/commit/c8c05b37d33b6f6a91fc2508d5dd25ddb0e699c7))
+
 ## v2.22.0 (2025-12-10)
 
 ### Feature
