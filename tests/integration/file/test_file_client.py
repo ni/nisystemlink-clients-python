@@ -285,25 +285,25 @@ class TestFileClient:
 
         # Verify session response
         assert session_response is not None
-        assert session_response.id is not None
-        assert isinstance(session_response.id, str)
+        assert session_response.session_id is not None
+        assert isinstance(session_response.session_id, str)
         assert session_response.created_at is not None
         assert isinstance(session_response.created_at, datetime)
 
-        session_id = session_response.id
+        session_id = session_response.session_id
         file_id = None
 
         try:
             # Upload first chunk
             first_chunk = BytesIO(test_content[:chunk_size])
             client.append_to_upload_session(
-                session_id=session_id, chunk=1, file=first_chunk
+                session_id=session_id, chunk_index=1, file=first_chunk
             )
 
             # Upload second chunk (last chunk)
             second_chunk = BytesIO(test_content[chunk_size:])
             client.append_to_upload_session(
-                session_id=session_id, chunk=2, file=second_chunk, close=True
+                session_id=session_id, chunk_index=2, file=second_chunk, close=True
             )
 
             # Finish the upload session
@@ -312,7 +312,6 @@ class TestFileClient:
                 session_id=session_id,
                 name=file_name,
                 properties={
-                    "Name": file_name,
                     "Test": "ChunkedUpload",
                     "Description": "Test file from chunked upload",
                 },
@@ -335,7 +334,6 @@ class TestFileClient:
             downloaded_data = client.download_file(id=file_id)
             assert downloaded_data.read() == test_content
         except ApiException as api_exception:
-            raise api_exception
             # Finish the upload session if it failed during chunk upload
             if not file_id:
                 file_name = f"{PREFIX}chunked_upload_test.bin"

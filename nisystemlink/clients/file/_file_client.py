@@ -307,9 +307,9 @@ class FileClient(BaseClient):
     def append_to_upload_session(
         self,
         session_id: str,
-        chunk: int,
+        chunk_index: int,
         file: BinaryIO,
-        close: bool | None = False,
+        close: bool = False,
     ) -> None:
         """Append a chunk to an upload session.
 
@@ -319,7 +319,7 @@ class FileClient(BaseClient):
 
         Args:
             session_id: The id of the upload session.
-            chunk: The number of the chunk uploaded (0-based indexing).
+            chunk_index: The 0-based index of the chunk to be uploaded.
             file: The chunk data to upload.
             close: Set the current chunk as the last chunk to be uploaded. Defaults to False.
 
