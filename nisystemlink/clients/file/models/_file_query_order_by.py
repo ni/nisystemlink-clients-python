@@ -10,13 +10,7 @@ class FileQueryOrderBy(Enum):
     LAST_UPDATED_TIMESTAMP = "lastUpdatedTimestamp"
 
 
-class BaseFileOrderBy(Enum):
-    """Base enum for file ordering options."""
-
-    pass
-
-
-class FileLinqQueryOrderBy(BaseFileOrderBy):
+class FileLinqQueryOrderBy(str, Enum):
     """Order Files LINQ Query by Metadata for POST /query-files-linq endpoint."""
 
     NAME = "name"
@@ -27,7 +21,7 @@ class FileLinqQueryOrderBy(BaseFileOrderBy):
     WORKSPACE = "workspace"
 
 
-class SearchFilesOrderBy(BaseFileOrderBy):
+class SearchFilesOrderBy(str, Enum):
     """Order Files Search by Metadata for POST /search-files endpoint."""
 
     NAME = "name"

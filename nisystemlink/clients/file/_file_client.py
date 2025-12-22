@@ -169,6 +169,11 @@ class FileClient(BaseClient):
     ) -> models.SearchFilesResponse:
         """Search for files based on filter criteria.
 
+        Note:
+            This endpoint requires Elasticsearch to be available in the SystemLink cluster.
+            If Elasticsearch is not configured, this method will fail with an ApiException.
+            For deployments without Elasticsearch, use `query_files_linq()` instead.
+
         Args:
             request: The search request containing filter, pagination, and sorting parameters.
 
@@ -176,7 +181,8 @@ class FileClient(BaseClient):
             SearchFilesResponse: Response containing matching files and total count.
 
         Raises:
-            ApiException: if unable to communicate with the File Service.
+            ApiException: if unable to communicate with the File Service or if Elasticsearch
+                is not available in the cluster.
         """
         ...
 

@@ -15,6 +15,7 @@ from nisystemlink.clients.file.models import (
     FileLinqQueryRequest,
     SearchFilesOrderBy,
     SearchFilesRequest,
+    TotalCountRelation,
     UpdateMetadataRequest,
 )
 from nisystemlink.clients.file.utilities import rename_file
@@ -230,7 +231,7 @@ class TestFileClient:
         assert response.available_files is not None
         assert response.total_count is not None
         assert response.total_count.value == 1
-        assert response.total_count.relation == "eq"
+        assert response.total_count.relation == TotalCountRelation.EQUALS
         assert len(response.available_files) == 1
         assert response.available_files[0].id == file_id
         assert response.available_files[0].created is not None
@@ -265,7 +266,7 @@ class TestFileClient:
         assert len(response.available_files) == 0
         assert response.total_count is not None
         assert response.total_count.value == 0
-        assert response.total_count.relation == "eq"
+        assert response.total_count.relation == TotalCountRelation.EQUALS
 
     def test__query_files_linq__skip_and_take_pagination(
         self, client: FileClient, test_file
@@ -300,6 +301,15 @@ class TestFileClient:
         returned_ids = [f.id for f in response.available_files]
         for file_id in returned_ids:
             assert file_id in file_ids
+
+        # Verify skip=1 excluded the first file in creation order
+        returned_names = [
+            f.properties.get("Name", "")
+            for f in response.available_files
+            if f.properties
+        ]
+        expected_skipped_file = f"{file_prefix}00.bin"
+        assert expected_skipped_file not in returned_names
 
     def test__search_files__succeeds(
         self, client: FileClient, test_file, random_filename_extension: str
@@ -360,6 +370,10 @@ class TestFileClient:
                 if f.properties
             ]
             assert returned_names == sorted(returned_names, reverse=True)
+
+            # Verify skip=1 excluded the first file in descending order
+            expected_skipped_file = f"{file_prefix}_4.bin"
+            assert expected_skipped_file not in returned_names
 
         search_and_verify()
 

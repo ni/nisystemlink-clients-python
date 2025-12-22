@@ -1,6 +1,6 @@
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._file_query_order_by import BaseFileOrderBy
+from ._file_query_order_by import FileLinqQueryOrderBy, SearchFilesOrderBy
 
 
 class BaseFileRequest(JsonModel):
@@ -21,7 +21,7 @@ class BaseFileRequest(JsonModel):
     How many files to return in the result.
     """
 
-    order_by: BaseFileOrderBy | None = None
+    order_by: FileLinqQueryOrderBy | SearchFilesOrderBy | None = None
     """
     The property by which to order the files in the response.
     """
