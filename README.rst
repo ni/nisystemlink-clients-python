@@ -12,6 +12,9 @@ created and supports this package.
 
 .. image:: https://badge.fury.io/py/nisystemlink-clients.svg
     :target: https://badge.fury.io/py/nisystemlink-clients
+.. image:: https://img.shields.io/pypi/pyversions/nisystemlink-clients
+   :alt: PyPI - Python Version
+
 
 Requirements
 ============
