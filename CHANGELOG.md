@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v2.24.0 (2025-12-22)
+
+### Feature
+
+* Add Client for Alarm API ([#173](https://github.com/ni/nisystemlink-clients-python/issues/173)) ([`722b849`](https://github.com/ni/nisystemlink-clients-python/commit/722b849d6c1eef504f216dba196b9e797a6e4b83))
+
+## v2.23.0 (2025-12-22)
+
+### Feature
+
+* Read Minion ID from Client's salt conf ([#179](https://github.com/ni/nisystemlink-clients-python/issues/179)) ([`c8c05b3`](https://github.com/ni/nisystemlink-clients-python/commit/c8c05b37d33b6f6a91fc2508d5dd25ddb0e699c7))
+
 ## v2.22.0 (2025-12-10)
 
 ### Feature

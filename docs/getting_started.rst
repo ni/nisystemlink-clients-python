@@ -3,6 +3,55 @@
 Getting Started
 ===============
 
+Alarm API
+---------
+
+Overview
+~~~~~~~~
+
+The :class:`.AlarmClient` class is the primary entry point of the Alarm API.
+
+When constructing an :class:`.AlarmClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.AlarmClient` use the
+default connection. The default connection depends on your environment.
+
+With an :class:`.AlarmClient` object, you can:
+
+* Create and update alarm instances using :meth:`~.AlarmClient.create_or_update_alarm`
+
+  * Alarms have two key identifiers:
+  
+    * ``alarm_id``: A user-defined identifier for the alarm type
+    * ``instance_id``: A server-generated unique identifier for each alarm occurrence
+  
+  * Create alarm transitions (SET, CLEAR) to track alarm state changes
+
+* Query alarms with :meth:`~.AlarmClient.query_alarms`
+
+  * Filter alarms using Dynamic LINQ expressions
+  * Control which transitions are returned (most recent only or all)
+  * Sort and paginate results
+
+* Get a specific alarm by its instance_id using :meth:`~.AlarmClient.get_alarm`
+
+* Acknowledge alarms by its instance_id using :meth:`~.AlarmClient.acknowledge_alarms`
+
+  * Optionally force-clear alarms when acknowledging
+
+* Delete alarms using :meth:`~.AlarmClient.delete_alarm` or 
+  :meth:`~.AlarmClient.delete_alarms`
+
+Examples
+~~~~~~~~
+
+Create, query, acknowledge, and delete alarms
+
+.. literalinclude:: ../examples/alarm/alarm.py
+   :language: python
+   :linenos:
+
+
 Tag API
 -------
 
@@ -346,14 +395,22 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.AssetManagementClient` object, you can:
 
-* Create, delete, get the list of assets and link files to assets.
+* Create, delete, query assets and link files to assets.
+
+* Track asset utilization with start, heartbeat, end, and query history operations.
 
 Examples
 ~~~~~~~~
 
-create, delete, query asset and link files to assets.
+Create, delete, and query assets and link files to assets.
 
 .. literalinclude:: ../examples/assetmanagement/assets.py
+   :language: python
+   :linenos:
+
+Track asset utilization.
+
+.. literalinclude:: ../examples/assetmanagement/asset_utilization.py
    :language: python
    :linenos:
 
