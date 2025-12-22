@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.25.0 (2025-12-22)
+
+### Feature
+
+* Asset Utilization API methods ([#178](https://github.com/ni/nisystemlink-clients-python/issues/178)) ([`83b5f45`](https://github.com/ni/nisystemlink-clients-python/commit/83b5f45db8a5c45507cf0b8a1bae8d6ff5a539de))
+
 ## v2.24.0 (2025-12-22)
 
 ### Feature
