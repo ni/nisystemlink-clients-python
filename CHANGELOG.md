@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.24.0 (2025-12-22)
+
+### Feature
+
+* Add Client for Alarm API ([#173](https://github.com/ni/nisystemlink-clients-python/issues/173)) ([`722b849`](https://github.com/ni/nisystemlink-clients-python/commit/722b849d6c1eef504f216dba196b9e797a6e4b83))
+
 ## v2.23.0 (2025-12-22)
 
 ### Feature
