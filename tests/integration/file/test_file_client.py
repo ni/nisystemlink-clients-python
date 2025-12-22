@@ -314,7 +314,12 @@ class TestFileClient:
     def test__search_files__succeeds(
         self, client: FileClient, test_file, random_filename_extension: str
     ):
-        """Test search_files with filtering, pagination, and ordering."""
+        """Test search_files with filtering, pagination, and ordering.
+
+        Note: search_files() is not guaranteed to return newly created files immediately
+        due to indexing delay (a few seconds). Retry logic with backoff is used to handle
+        this eventual consistency behavior.
+        """
         # Upload 5 files to test various scenarios
         NUM_FILES = 5
         file_ids = []
