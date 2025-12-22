@@ -91,7 +91,7 @@ test_assets = [
 # Start asset utilization tracking
 # This marks the assets as "in use" in the SystemLink UI
 # Read the minion ID from the Salt configuration
-minion_id = read_minion_id() or "test-station-01"
+minion_id = read_minion_id() or "test-station-01"  # Fallback minion ID if not found
 
 start_utilization_request = StartUtilizationRequest(
     utilization_identifier=utilization_id,
