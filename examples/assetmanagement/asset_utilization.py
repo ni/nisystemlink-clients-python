@@ -14,6 +14,7 @@ from nisystemlink.clients.assetmanagement.models import (
     StartUtilizationRequest,
 )
 from nisystemlink.clients.core import HttpConfiguration
+from nisystemlink.clients.core.helpers import read_minion_id
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
@@ -89,9 +90,12 @@ test_assets = [
 
 # Start asset utilization tracking
 # This marks the assets as "in use" in the SystemLink UI
+# Read the minion ID from the Salt configuration
+minion_id = read_minion_id() or "test-station-01"
+
 start_utilization_request = StartUtilizationRequest(
     utilization_identifier=utilization_id,
-    minion_id="test-station-01",
+    minion_id=minion_id,
     asset_identifications=test_assets,
     utilization_category="Automated Testing",
     task_name="DUT Validation Suite",
