@@ -387,14 +387,22 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.AssetManagementClient` object, you can:
 
-* Create, delete, get the list of assets and link files to assets.
+* Create, delete, query assets and link files to assets.
+
+* Track asset utilization with start, heartbeat, end, and query history operations.
 
 Examples
 ~~~~~~~~
 
-create, delete, query asset and link files to assets.
+Create, delete, and query assets and link files to assets.
 
 .. literalinclude:: ../examples/assetmanagement/assets.py
+   :language: python
+   :linenos:
+
+Track asset utilization.
+
+.. literalinclude:: ../examples/assetmanagement/asset_utilization.py
    :language: python
    :linenos:
 
