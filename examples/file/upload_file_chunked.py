@@ -11,8 +11,8 @@ from nisystemlink.clients.file import FileClient
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
-    server_uri="https://test-api.lifecyclesolutions.ni.com/",
-    api_key="zr7fUQj3R2zSBt6b46LGquPkPZJ8wll_wg6oqRLQn2",
+    server_uri="https://yourserver.yourcompany.com",
+    api_key="YourAPIKeyGeneratedFromSystemLink",
 )
 
 client = FileClient(configuration=server_configuration)
