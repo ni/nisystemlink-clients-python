@@ -319,7 +319,7 @@ class FileClient(BaseClient):
 
         Args:
             session_id: The id of the upload session.
-            chunk_index: The 0-based index of the chunk to be uploaded.
+            chunk_index: The 1-based index of the chunk to be uploaded.
             file: The chunk data to upload.
             close: Set the current chunk as the last chunk to be uploaded. Defaults to False.
 
