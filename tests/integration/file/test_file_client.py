@@ -268,6 +268,28 @@ class TestFileClient:
         assert response.total_count.value == 0
         assert response.total_count.relation == TotalCountRelation.EQUALS
 
+    def test__query_files_linq__total_count_relation_accepts_string(
+        self, client: FileClient, test_file, random_filename_extension
+    ):
+        """Test backward compatibility: TotalCountRelation should accept string values.
+
+        TotalCountRelation was previously a plain str type. This test ensures that string
+        values like 'eq' and 'gte' are still accepted for backward compatibility.
+        """
+        test_file(file_name=random_filename_extension)
+
+        query_request = FileLinqQueryRequest(
+            filter=f'name == "{random_filename_extension}"',
+        )
+        response = client.query_files_linq(query=query_request)
+
+        assert response.total_count is not None
+        # Test that the relation can be compared with string values
+        assert response.total_count.relation == "eq"
+        assert response.total_count.relation in ["eq", "gte"]
+        # Also verify enum comparison still works
+        assert response.total_count.relation == TotalCountRelation.EQUALS  # type: ignore[comparison-overlap]
+
     def test__query_files_linq__skip_and_take_pagination(
         self, client: FileClient, test_file
     ):
