@@ -308,7 +308,7 @@ class FileClient(BaseClient):
         self,
         session_id: str,
         chunk_index: int,
-        file: BinaryIO,
+        chunk: BinaryIO,
         close: bool = False,
     ) -> None:
         """Append a chunk to an upload session.

@@ -297,13 +297,13 @@ class TestFileClient:
             # Upload first chunk
             first_chunk = BytesIO(test_content[:chunk_size])
             client.append_to_upload_session(
-                session_id=session_id, chunk_index=1, file=first_chunk
+                session_id=session_id, chunk_index=1, chunk=first_chunk
             )
 
             # Upload second chunk (last chunk)
             second_chunk = BytesIO(test_content[chunk_size:])
             client.append_to_upload_session(
-                session_id=session_id, chunk_index=2, file=second_chunk, close=True
+                session_id=session_id, chunk_index=2, chunk=second_chunk, close=True
             )
 
             # Finish the upload session
