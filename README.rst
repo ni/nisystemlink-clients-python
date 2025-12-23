@@ -1,7 +1,22 @@
-===========  ====================================================
-Info         NI SystemLink API Clients for Python
-Author       National Instruments
-===========  ====================================================
+.. image:: https://img.shields.io/pypi/v/nisystemlink-clients.svg
+    :target: https://pypi.org/project/nisystemlink-clients
+    :alt: PyPI version
+
+
+.. image:: https://img.shields.io/pypi/pyversions/nisystemlink-clients.svg
+    :target: https://pypi.org/project/nisystemlink-clients
+    :alt: Python versions
+
+
+.. image:: https://img.shields.io/pypi/l/nisystemlink-clients.svg
+    :target: https://github.com/ni/nisystemlink-clients-python/blob/master/LICENSE
+    :alt: License
+
+
+.. image:: https://img.shields.io/pypi/dm/nisystemlink-clients.svg
+    :target: https://pypi.org/project/nisystemlink-clients
+    :alt: Downloads
+
 
 About
 =====
@@ -10,8 +25,11 @@ Interface) for `SystemLink <https://ni.com/systemlink>`_ that uses HTTP to
 interact with a SystemLink Server. The package is implemented in Python. NI
 created and supports this package.
 
-.. image:: https://badge.fury.io/py/nisystemlink-clients.svg
-    :target: https://badge.fury.io/py/nisystemlink-clients
+
+===========  ====================================================
+Info         NI SystemLink API Clients for Python
+Author       National Instruments
+===========  ====================================================
 
 Requirements
 ============
