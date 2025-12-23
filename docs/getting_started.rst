@@ -252,7 +252,7 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.FileClient` object, you can:
 
-* Get the list of files, download and delete files
+* Get the list of files, query and search for files, download and delete files
 
 Examples
 ~~~~~~~~
@@ -266,6 +266,14 @@ Get the metadata of a File using its Id and download it.
 Upload a File from disk or memory to SystemLink
 
 .. literalinclude:: ../examples/file/upload_file.py
+   :language: python
+   :linenos:
+
+Search for files with filtering and pagination
+
+.. literalinclude:: ../examples/file/search_files.py
+   :language: python
+   :linenos:
 
 Feeds API
 -------
