@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.25.1 (2025-12-23)
+
+### Fix
+
+* Alarm Client Severity Level Documentation Changes ([#184](https://github.com/ni/nisystemlink-clients-python/issues/184)) ([`9282075`](https://github.com/ni/nisystemlink-clients-python/commit/9282075f9ec01d614ec2c21f884f7c8940f856c9))
+
 ## v2.25.0 (2025-12-22)
 
 ### Feature
