@@ -333,16 +333,20 @@ class TestFileClient:
             # Verify file content
             downloaded_data = client.download_file(id=file_id)
             assert downloaded_data.read() == test_content
-        except ApiException as api_exception:
+        except ApiException:
             # Finish the upload session if it failed during chunk upload
             if not file_id:
                 file_name = f"{PREFIX}chunked_upload_test.bin"
-                file_id = client.finish_upload_session(
-                    session_id=session_id,
-                    name=file_name,
-                    properties={"Name": file_name, "Test": "ChunkedUpload"},
-                )
-            raise api_exception
+                try:
+                    file_id = client.finish_upload_session(
+                        session_id=session_id,
+                        name=file_name,
+                        properties={"Name": file_name, "Test": "ChunkedUpload"},
+                    )
+                except ApiException:
+                    pass
+
+            raise
         finally:
             # Clean up
             if file_id:
