@@ -170,7 +170,7 @@ class FileClient(BaseClient):
         """Search for files based on filter criteria.
 
         Note:
-            This endpoint requires Elasticsearch to be available in the SystemLink cluster.
+            This endpoint requires Elasticsearch to be configured in the SystemLink cluster.
             If Elasticsearch is not configured, this method will fail with an ApiException.
             For deployments without Elasticsearch, use `query_files_linq()` instead.
 
@@ -182,7 +182,7 @@ class FileClient(BaseClient):
 
         Raises:
             ApiException: if unable to communicate with the File Service or if Elasticsearch
-                is not available in the cluster.
+                is not configured in the cluster.
         """
         ...
 
