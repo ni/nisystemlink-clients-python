@@ -95,7 +95,9 @@ class TestPaginate:
 
         # Act
         result = list(
-            paginate(mock_fetch, "items", take=10, filter="status==PASSED", return_count=True)
+            paginate(
+                mock_fetch, "items", take=10, filter="status==PASSED", return_count=True
+            )
         )
 
         # Assert
