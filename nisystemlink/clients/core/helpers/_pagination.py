@@ -1,29 +1,26 @@
 # -*- coding: utf-8 -*-
-from typing import Any, Callable, Generator, TypeVar
+from typing import Any, Callable, Generator
 
-ItemType = TypeVar("ItemType")
+from nisystemlink.clients.core._uplink._with_paging import WithPaging
 
 
 def paginate(
-    fetch_function: Callable[..., Any],
-    items_field: str = "items",
-    continuation_token_field: str = "continuation_token",
+    fetch_function: Callable[..., WithPaging],
+    items_field: str,
     **fetch_kwargs: Any,
-) -> Generator[ItemType, None, None]:
+) -> Generator[Any, None, None]:
     """Generate items from paginated API responses using continuation tokens.
 
     This helper function provides a convenient way to iterate over all items
     from a paginated API endpoint that uses continuation tokens. It automatically
-    handles fetching subsequent pages until all results are retrieved.
+    handles fetching subsequent pages until all items are retrieved.
 
     Args:
-        fetch_function: The API function to call to fetch each page of results.
-            Must accept a ``continuation_token`` parameter (or a parameter name
-            matching ``continuation_token_field``).
+        fetch_function: The API function to call to fetch each page of items.
+            Must accept a ``continuation_token`` parameter and return a response
+            that derives from ``WithPaging``.
         items_field: The name of the field in the response object that contains
-            the list of items to yield. Defaults to "items".
-        continuation_token_field: The name of the field in the response object
-            that contains the continuation token. Defaults to "continuation_token".
+            the list of items to yield.
         **fetch_kwargs: Additional keyword arguments to pass to the fetch function
             on every call (e.g., filters, take limits, etc.).
 
@@ -31,15 +28,15 @@ def paginate(
         Individual items from each page of results.
 
     Note:
-        The fetch function will be called with the continuation_token parameter
-        set to None on the first call, then with each subsequent token until
-        the response contains a None continuation token.
+        The fetch function will be called with the `continuation_token` parameter
+        set to `None` on the first call, then with each subsequent token until
+        the response contains a `None` continuation token.
     """
     continuation_token = None
 
     while True:
         # Set the continuation token parameter for this page
-        fetch_kwargs[continuation_token_field] = continuation_token
+        fetch_kwargs["continuation_token"] = continuation_token
 
         # Fetch the current page
         response = fetch_function(**fetch_kwargs)
@@ -52,8 +49,14 @@ def paginate(
             yield item
 
         # Get the continuation token for the next page
-        continuation_token = getattr(response, continuation_token_field, None)
+        next_continuation_token = response.continuation_token
 
         # Stop if there are no more pages
-        if continuation_token is None:
+        if next_continuation_token is None:
             break
+
+        # Guard against infinite loop if continuation token doesn't change
+        if next_continuation_token == continuation_token:
+            raise RuntimeError("Continuation token did not change between iterations.")
+
+        continuation_token = next_continuation_token
