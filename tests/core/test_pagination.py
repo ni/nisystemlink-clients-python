@@ -5,7 +5,6 @@ from typing import Any, List
 from unittest.mock import MagicMock
 
 import pytest
-
 from nisystemlink.clients.core.helpers import paginate
 
 
