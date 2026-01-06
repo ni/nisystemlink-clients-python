@@ -4,6 +4,8 @@
 from typing import Any, List
 from unittest.mock import MagicMock
 
+import pytest
+
 from nisystemlink.clients.core.helpers import paginate
 
 
@@ -18,9 +20,9 @@ class MockResponse:
 class MockResponseCustomFields:
     """Mock API response with custom field names."""
 
-    def __init__(self, results: List[Any], next_token: str | None = None):
+    def __init__(self, results: List[Any], continuation_token: str | None = None):
         self.results = results
-        self.next_token = next_token
+        self.continuation_token = continuation_token
 
 
 class TestPaginate:
@@ -33,7 +35,7 @@ class TestPaginate:
         mock_fetch = MagicMock(return_value=MockResponse(items, None))
 
         # Act
-        result = list(paginate(mock_fetch))
+        result = list(paginate(mock_fetch, "items"))
 
         # Assert
         assert result == items
@@ -56,7 +58,7 @@ class TestPaginate:
         )
 
         # Act
-        result = list(paginate(mock_fetch))
+        result = list(paginate(mock_fetch, "items"))
 
         # Assert
         assert result == [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -65,8 +67,8 @@ class TestPaginate:
         assert mock_fetch.call_args_list[1][1]["continuation_token"] == "token1"
         assert mock_fetch.call_args_list[2][1]["continuation_token"] == "token2"
 
-    def test__paginate_with_custom_field_names__yields_all_items(self):
-        """Test pagination with custom field names."""
+    def test__paginate_with_custom_items_field__yields_all_items(self):
+        """Test pagination with custom items field name."""
         # Arrange
         page1_results = ["a", "b"]
         page2_results = ["c", "d"]
@@ -79,11 +81,7 @@ class TestPaginate:
         )
 
         # Act
-        result = list(
-            paginate(
-                mock_fetch, items_field="results", continuation_token_field="next_token"
-            )
-        )
+        result = list(paginate(mock_fetch, items_field="results"))
 
         # Assert
         assert result == ["a", "b", "c", "d"]
@@ -97,7 +95,7 @@ class TestPaginate:
 
         # Act
         result = list(
-            paginate(mock_fetch, take=10, filter="status==PASSED", return_count=True)
+            paginate(mock_fetch, "items", take=10, filter="status==PASSED", return_count=True)
         )
 
         # Assert
@@ -112,7 +110,7 @@ class TestPaginate:
         mock_fetch = MagicMock(return_value=MockResponse([], None))
 
         # Act
-        result = list(paginate(mock_fetch))
+        result = list(paginate(mock_fetch, "items"))
 
         # Assert
         assert result == []
@@ -134,7 +132,7 @@ class TestPaginate:
         )
 
         # Act
-        result = list(paginate(mock_fetch))
+        result = list(paginate(mock_fetch, "items"))
 
         # Assert
         assert result == [1, 2, 3, 4, 5]
@@ -154,7 +152,7 @@ class TestPaginate:
 
         # Act
         collected = []
-        for item in paginate(mock_fetch):
+        for item in paginate(mock_fetch, "items"):
             collected.append(item * 2)
 
         # Assert
@@ -173,7 +171,7 @@ class TestPaginate:
         )
 
         # Act
-        gen = paginate(mock_fetch)
+        gen = paginate(mock_fetch, "items")
         assert mock_fetch.call_count == 0  # Nothing called yet
 
         first_item = next(gen)
@@ -205,9 +203,42 @@ class TestPaginate:
         )
 
         # Act
-        list(paginate(mock_fetch, take=100, filter="active==true"))
+        list(paginate(mock_fetch, "items", take=100, filter="active==true"))
 
         # Assert
         for call in mock_fetch.call_args_list:
             assert call[1]["take"] == 100
             assert call[1]["filter"] == "active==true"
+
+    def test__paginate_missing_items_field__yields_nothing(self):
+        """Test pagination when the items field doesn't exist on the response."""
+        # Arrange
+        mock_response = MockResponse([], None)
+        # Remove the items field
+        delattr(mock_response, "items")
+        mock_fetch = MagicMock(return_value=mock_response)
+
+        # Act
+        result = list(paginate(mock_fetch, "items"))
+
+        # Assert
+        assert result == []
+        assert mock_fetch.call_count == 1
+
+    def test__paginate_continuation_token_unchanged__raises_runtime_error(self):
+        """Test that an error is raised if the continuation token doesn't change."""
+        # Arrange
+        # First call returns token1, second call returns token1 again (infinite loop)
+        mock_fetch = MagicMock(
+            side_effect=[
+                MockResponse([1, 2], "token1"),
+                MockResponse([3, 4], "token1"),  # Same token - should raise error
+            ]
+        )
+
+        # Act & Assert
+        with pytest.raises(RuntimeError, match="Continuation token did not change"):
+            list(paginate(mock_fetch, "items"))
+
+        # Should have made 2 calls before detecting the issue
+        assert mock_fetch.call_count == 2
