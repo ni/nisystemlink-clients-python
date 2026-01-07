@@ -25,7 +25,7 @@ print("Example 1: Iterating through all results")
 print("-" * 50)
 result: Result
 for result in paginate(client.get_results, items_field="results", take=100):
-    print(f"Result ID: {result.id}, Status: {result.status.status_type}")  # type: ignore[attr-defined]
+    print(f"Result ID: {result.id}, Status: {result.status.status_type}")  # type: ignore[union-attr]
 
 # Example 2: Collect all results into a list
 print("\nExample 2: Collecting all results into a list")
