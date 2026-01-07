@@ -233,7 +233,9 @@ class TestPaginate:
         mock_fetch = MagicMock(
             side_effect=[
                 MockResponseWithItems([1, 2], "token1"),
-                MockResponseWithItems([3, 4], "token1"),  # Same token - should raise error
+                MockResponseWithItems(
+                    [3, 4], "token1"
+                ),  # Same token - should raise error
             ]
         )
 
