@@ -8,16 +8,16 @@ import pytest
 from nisystemlink.clients.core.helpers import paginate
 
 
-class MockResponse:
-    """Mock API response object for testing pagination."""
+class MockResponseWithItems:
+    """Mock API response object with 'items' field for testing pagination."""
 
     def __init__(self, items: List[Any], continuation_token: str | None = None):
         self.items = items
         self.continuation_token = continuation_token
 
 
-class MockResponseCustomFields:
-    """Mock API response with custom field names."""
+class MockResponseWithResults:
+    """Mock API response object with 'results' field for testing pagination."""
 
     def __init__(self, results: List[Any], continuation_token: str | None = None):
         self.results = results
@@ -31,7 +31,7 @@ class TestPaginate:
         """Test pagination with a single page of results."""
         # Arrange
         items = [1, 2, 3, 4, 5]
-        mock_fetch = MagicMock(return_value=MockResponse(items, None))
+        mock_fetch = MagicMock(return_value=MockResponseWithItems(items, None))
 
         # Act
         result = list(paginate(mock_fetch, "items"))
@@ -50,9 +50,9 @@ class TestPaginate:
 
         mock_fetch = MagicMock(
             side_effect=[
-                MockResponse(page1_items, "token1"),
-                MockResponse(page2_items, "token2"),
-                MockResponse(page3_items, None),
+                MockResponseWithItems(page1_items, "token1"),
+                MockResponseWithItems(page2_items, "token2"),
+                MockResponseWithItems(page3_items, None),
             ]
         )
 
@@ -66,16 +66,16 @@ class TestPaginate:
         assert mock_fetch.call_args_list[1][1]["continuation_token"] == "token1"
         assert mock_fetch.call_args_list[2][1]["continuation_token"] == "token2"
 
-    def test__paginate_with_custom_items_field__yields_all_items(self):
-        """Test pagination with custom items field name."""
+    def test__paginate_with_results_field__yields_all_items(self):
+        """Test pagination with 'results' as the items field name."""
         # Arrange
         page1_results = ["a", "b"]
         page2_results = ["c", "d"]
 
         mock_fetch = MagicMock(
             side_effect=[
-                MockResponseCustomFields(page1_results, "next1"),
-                MockResponseCustomFields(page2_results, None),
+                MockResponseWithResults(page1_results, "next1"),
+                MockResponseWithResults(page2_results, None),
             ]
         )
 
@@ -90,7 +90,7 @@ class TestPaginate:
         """Test that additional keyword arguments are passed to the fetch function."""
         # Arrange
         items = [1, 2, 3]
-        mock_fetch = MagicMock(return_value=MockResponse(items, None))
+        mock_fetch = MagicMock(return_value=MockResponseWithItems(items, None))
 
         # Act
         result = list(
@@ -108,7 +108,7 @@ class TestPaginate:
     def test__paginate_empty_results__returns_empty(self):
         """Test pagination with no results."""
         # Arrange
-        mock_fetch = MagicMock(return_value=MockResponse([], None))
+        mock_fetch = MagicMock(return_value=MockResponseWithItems([], None))
 
         # Act
         result = list(paginate(mock_fetch, "items"))
@@ -126,9 +126,9 @@ class TestPaginate:
 
         mock_fetch = MagicMock(
             side_effect=[
-                MockResponse(page1_items, "token1"),
-                MockResponse(page2_items, "token2"),
-                MockResponse(page3_items, None),
+                MockResponseWithItems(page1_items, "token1"),
+                MockResponseWithItems(page2_items, "token2"),
+                MockResponseWithItems(page3_items, None),
             ]
         )
 
@@ -146,8 +146,8 @@ class TestPaginate:
         page2_items = [3, 4]
         mock_fetch = MagicMock(
             side_effect=[
-                MockResponse(page1_items, "token1"),
-                MockResponse(page2_items, None),
+                MockResponseWithItems(page1_items, "token1"),
+                MockResponseWithItems(page2_items, None),
             ]
         )
 
@@ -166,8 +166,8 @@ class TestPaginate:
         page2_items = [4, 5, 6]
         mock_fetch = MagicMock(
             side_effect=[
-                MockResponse(page1_items, "token1"),
-                MockResponse(page2_items, None),
+                MockResponseWithItems(page1_items, "token1"),
+                MockResponseWithItems(page2_items, None),
             ]
         )
 
@@ -198,8 +198,8 @@ class TestPaginate:
         # Arrange
         mock_fetch = MagicMock(
             side_effect=[
-                MockResponse([1, 2], "token1"),
-                MockResponse([3, 4], None),
+                MockResponseWithItems([1, 2], "token1"),
+                MockResponseWithItems([3, 4], None),
             ]
         )
 
@@ -214,7 +214,7 @@ class TestPaginate:
     def test__paginate_missing_items_field__yields_nothing(self):
         """Test pagination when the items field doesn't exist on the response."""
         # Arrange
-        mock_response = MockResponse([], None)
+        mock_response = MockResponseWithItems([], None)
         # Remove the items field
         delattr(mock_response, "items")
         mock_fetch = MagicMock(return_value=mock_response)
@@ -232,8 +232,8 @@ class TestPaginate:
         # First call returns token1, second call returns token1 again (infinite loop)
         mock_fetch = MagicMock(
             side_effect=[
-                MockResponse([1, 2], "token1"),
-                MockResponse([3, 4], "token1"),  # Same token - should raise error
+                MockResponseWithItems([1, 2], "token1"),
+                MockResponseWithItems([3, 4], "token1"),  # Same token - should raise error
             ]
         )
 
