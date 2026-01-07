@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.26.0 (2026-01-07)
+
+### Feature
+
+* Pagination helper ([#185](https://github.com/ni/nisystemlink-clients-python/issues/185)) ([`1479b6f`](https://github.com/ni/nisystemlink-clients-python/commit/1479b6f3defdafe8023b29d89548d11527a69d96))
+
 ## v2.25.1 (2025-12-23)
 
 ### Fix
