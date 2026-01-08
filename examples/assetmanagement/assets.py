@@ -14,14 +14,21 @@ from nisystemlink.clients.assetmanagement.models import (
     SelfCalibration,
     TemperatureSensor,
 )
-from nisystemlink.clients.core._http_configuration import HttpConfiguration
+from nisystemlink.clients.core import HttpConfiguration
 
 # workspace where the asset will be created
 workspace_id = "yourWorkspaceId"
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
+
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
+server_configuration: HttpConfiguration | None = None
+
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="",
+# )
+
 client = AssetManagementClient(configuration=server_configuration)
 
 create_assets_request = [

@@ -1,18 +1,20 @@
 from typing import cast
 
+from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
     CreateStepRequest,
+    Measurement,
     NamedValue,
     QueryStepsRequest,
     QueryStepValuesRequest,
+    Status,
+    StepData,
     StepField,
     StepIdResultIdPair,
     UpdateStepRequest,
 )
-from nisystemlink.clients.testmonitor.models._status import Status
-from nisystemlink.clients.testmonitor.models._step_data import Measurement, StepData
 
 
 def create_test_result():
@@ -31,13 +33,14 @@ def create_test_result():
     return create_response
 
 
-# Server configuration is not required when used with Systemlink Client or run throught Jupyter on SLE
-server_configuration = None
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
+server_configuration: HttpConfiguration | None = None
 
-# # Example of setting up the server configuration to point to your instance of SystemLink Enterprise
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
 # server_configuration = HttpConfiguration(
 #     server_uri="https://yourserver.yourcompany.com",
-#     api_key="YourAPIKeyGeneratedFromSystemLink",
+#     api_key="",
 # )
 
 client = TestMonitorClient(configuration=server_configuration)

@@ -1,18 +1,20 @@
-from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.systems._systems_client import SystemsClient
-from nisystemlink.clients.systems.models._create_virtual_systems_request import (
+from nisystemlink.clients.core import HttpConfiguration
+from nisystemlink.clients.systems import SystemsClient
+from nisystemlink.clients.systems.models import (
     CreateVirtualSystemRequest,
-)
-from nisystemlink.clients.systems.models._query_systems_request import (
     QuerySystemsRequest,
 )
 
-# Setup the server configuration to point to your instance of
-# SystemLink Enterprise.
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
+server_configuration: HttpConfiguration | None = None
+
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="",
+# )
+
 client = SystemsClient(configuration=server_configuration)
 
 # Systems request metadata.

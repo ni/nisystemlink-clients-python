@@ -1,3 +1,4 @@
+from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
@@ -39,12 +40,13 @@ def create_some_results():
 
 
 # Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
-server_configuration = None
+server_configuration: HttpConfiguration | None = None
 
-# # Example of setting up the server configuration to point to your instance of SystemLink Enterprise
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
 # server_configuration = HttpConfiguration(
 #     server_uri="https://yourserver.yourcompany.com",
-#     api_key="YourAPIKeyGeneratedFromSystemLink",
+#     api_key="",
 # )
 
 client = TestMonitorClient(configuration=server_configuration)

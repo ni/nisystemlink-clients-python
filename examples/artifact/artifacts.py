@@ -3,12 +3,16 @@ import io
 from nisystemlink.clients.artifact import ArtifactClient
 from nisystemlink.clients.core import HttpConfiguration
 
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
+server_configuration: HttpConfiguration | None = None
 
-# Setup the server configuration to point to your instance of SystemLink Enterprise
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="",
+# )
+
 client = ArtifactClient(configuration=server_configuration)
 
 # Define the workspace and artifact content

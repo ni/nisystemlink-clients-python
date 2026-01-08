@@ -12,11 +12,16 @@ from nisystemlink.clients.spec.models import (
     SpecificationType,
 )
 
-# Setup the server configuration to point to your instance of SystemLink Enterprise
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
+server_configuration: HttpConfiguration | None = None
+
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="",
+# )
+
 client = SpecClient(configuration=server_configuration)
 
 # Create the spec requests
