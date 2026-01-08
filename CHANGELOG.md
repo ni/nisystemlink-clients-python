@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.26.1 (2026-01-08)
+
+### Fix
+
+* Bump urllib3 from 2.6.0 to 2.6.3 ([#187](https://github.com/ni/nisystemlink-clients-python/issues/187)) ([`663c6b3`](https://github.com/ni/nisystemlink-clients-python/commit/663c6b33171f35bae8b154235666aef335dcc78c))
+
 ## v2.26.0 (2026-01-07)
 
 ### Feature
