@@ -5,15 +5,16 @@ from nisystemlink.clients.testmonitor import TestMonitorClient
 from nisystemlink.clients.testmonitor.models import (
     CreateResultRequest,
     CreateStepRequest,
+    Measurement,
     NamedValue,
     QueryStepsRequest,
     QueryStepValuesRequest,
+    Status,
+    StepData,
     StepField,
     StepIdResultIdPair,
     UpdateStepRequest,
 )
-from nisystemlink.clients.testmonitor.models._status import Status
-from nisystemlink.clients.testmonitor.models._step_data import Measurement, StepData
 
 
 def create_test_result():

@@ -1,7 +1,7 @@
 """Functionality of creating feeds APIs."""
 
 from nisystemlink.clients.core import ApiException, HttpConfiguration
-from nisystemlink.clients.feeds._feeds_client import FeedsClient
+from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import (
     CreateFeedRequest,
     Platform,

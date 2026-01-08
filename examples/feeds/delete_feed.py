@@ -1,9 +1,9 @@
 """Functionality of deleting feed API."""
 
 from nisystemlink.clients.core import ApiException, HttpConfiguration
-from nisystemlink.clients.feeds._feeds_client import FeedsClient
+from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import Platform
-from nisystemlink.clients.feeds.utilities._get_feed_details import get_feed_by_name
+from nisystemlink.clients.feeds.utilities import get_feed_by_name
 
 # Update the constants.
 FEED_NAME = ""

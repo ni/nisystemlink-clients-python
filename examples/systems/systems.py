@@ -1,9 +1,7 @@
 from nisystemlink.clients.core import HttpConfiguration
-from nisystemlink.clients.systems._systems_client import SystemsClient
-from nisystemlink.clients.systems.models._create_virtual_systems_request import (
+from nisystemlink.clients.systems import SystemsClient
+from nisystemlink.clients.systems.models import (
     CreateVirtualSystemRequest,
-)
-from nisystemlink.clients.systems.models._query_systems_request import (
     QuerySystemsRequest,
 )
 
