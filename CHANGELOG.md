@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.26.2 (2026-01-08)
+
+### Fix
+
+* Standardize HttpConfiguration use within examples ([#188](https://github.com/ni/nisystemlink-clients-python/issues/188)) ([`990a1b6`](https://github.com/ni/nisystemlink-clients-python/commit/990a1b6b99d440fbed291e96c43687838c266ae6))
+
 ## v2.26.1 (2026-01-08)
 
 ### Fix
