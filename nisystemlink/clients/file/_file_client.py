@@ -173,6 +173,8 @@ class FileClient(BaseClient):
             This endpoint requires Elasticsearch to be configured in the SystemLink cluster.
             If Elasticsearch is not configured, this method will fail with an ApiException.
             For deployments without Elasticsearch, use `query_files_linq()` instead.
+            You can call `api_info()` to check if the `search_files` operation is available
+            in your deployment.
 
         Args:
             request: The search request containing filter, pagination, and sorting parameters.
