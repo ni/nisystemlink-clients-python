@@ -15,8 +15,8 @@ from nisystemlink.clients.file.models import SearchFilesOrderBy, UpdateMetadataR
 
 # Configure connection to SystemLink server
 server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
+    server_uri="",  # https://yourserver.yourcompany.com
+    api_key="",  # YourAPIKeyGeneratedFromSystemLink
 )
 
 client = FileClient(configuration=server_configuration)
