@@ -6,6 +6,14 @@ from nisystemlink.clients.file.models._file_query_order_by import FileLinqQueryO
 class FileLinqQueryRequest(BaseFileRequest):
     """Request model for LINQ query operations."""
 
+    filter: str | None = None
+    """
+    The filter criteria for files. Consists of a string of queries composed using AND/OR operators.
+    String values and date strings need to be enclosed in double quotes. Parentheses can be used
+    around filters to better define the order of operations.
+    Example Filter syntax: '[property name][operator][operand] and [property name][operator][operand]'
+    """
+
     order_by: FileLinqQueryOrderBy | None = None
     """
     The property by which to order the files in the response.

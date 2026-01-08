@@ -1,4 +1,10 @@
-"""Example demonstrating how to search for files using the File API."""
+"""Example demonstrating how to search for files using the File API.
+
+Note:
+    This example requires Elasticsearch to be configured in the SystemLink cluster.
+    If Elasticsearch is not configured, this example will fail with an ApiException.
+    For deployments without Elasticsearch, use query_files_linq() instead.
+"""
 
 import io
 import time
