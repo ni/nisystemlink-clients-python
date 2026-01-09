@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.27.0 (2026-01-09)
+
+### Feature
+
+* Elastic Search (search-files) API Endpoint ([#180](https://github.com/ni/nisystemlink-clients-python/issues/180)) ([`db1b5d9`](https://github.com/ni/nisystemlink-clients-python/commit/db1b5d9882e529e7b703d102f4b5f24ed4c04b12))
+
 ## v2.26.2 (2026-01-08)
 
 ### Fix
