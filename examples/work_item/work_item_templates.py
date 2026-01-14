@@ -71,7 +71,7 @@ create_work_item_template_request = [
         workspace="your_workspace_id",
         properties={"env": "staging", "priority": "high"},
         dashboard=Dashboard(
-            id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
+            id="DashboardId", variables={"product": "PXIe-4080", "location": "Lab1"}
         ),
     )
 ]
@@ -81,13 +81,8 @@ create_work_item_template_response = client.create_work_item_templates(
     work_item_templates=create_work_item_template_request
 )
 
-create_work_item_template_id = None
-
-if (
-    create_work_item_template_response.created_work_item_templates
-    and create_work_item_template_response.created_work_item_templates[0].id
-):
-    create_work_item_template_id = str(
+if create_work_item_template_response.created_work_item_templates:
+    create_work_item_template_id = (
         create_work_item_template_response.created_work_item_templates[0].id
     )
 
@@ -95,7 +90,6 @@ if (
 query_work_item_template_request = QueryWorkItemTemplatesRequest(
     filter=f'id="{create_work_item_template_id}"', take=1
 )
-
 client.query_work_item_templates(
     query_work_item_templates=query_work_item_template_request
 )
@@ -115,6 +109,4 @@ if create_work_item_template_id is not None:
 
 # Delete work item template
 if create_work_item_template_id is not None:
-    client.delete_work_item_templates(
-        work_item_template_ids=[create_work_item_template_id]
-    )
+    client.delete_work_item_templates(ids=[create_work_item_template_id])

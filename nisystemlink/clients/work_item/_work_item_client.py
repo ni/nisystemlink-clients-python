@@ -39,7 +39,7 @@ class WorkItemClient(BaseClient):
             work_item_id: The ID of the work item to retrieve.
 
         Returns:
-            The WorkItem object corresponding to the given ID.
+            The work item corresponding to the given ID.
 
         Raises:
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
@@ -57,24 +57,6 @@ class WorkItemClient(BaseClient):
 
         Returns:
             A list of created work items, work items that failed to create, and errors for failures.
-
-        Raises:
-            ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
-        """
-        ...
-
-    @post("delete-workitems", args=[Field("ids")])
-    def delete_work_items(
-        self, work_item_ids: List[str]
-    ) -> models.DeleteWorkItemsPartialSuccessResponse | None:
-        """Delete one or more work items by IDs.
-
-        Args:
-            work_item_ids: A list of work item IDs to delete.
-
-        Returns:
-            A partial success if any work items failed to delete, or None if all
-            work items were deleted successfully.
 
         Raises:
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
@@ -132,6 +114,24 @@ class WorkItemClient(BaseClient):
         """
         ...
 
+    @post("delete-workitems", args=[Field("ids")])
+    def delete_work_items(
+        self, ids: List[str]
+    ) -> models.DeleteWorkItemsPartialSuccessResponse | None:
+        """Delete one or more work items by IDs.
+
+        Args:
+            ids: A list of work item IDs to delete.
+
+        Returns:
+            A partial success if any work items failed to delete, or None if all
+            work items were deleted successfully.
+
+        Raises:
+            ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
+        """
+        ...
+
     @post("workitem-templates", args=[Field("workItemTemplates")])
     def create_work_item_templates(
         self, work_item_templates: List[models.CreateWorkItemTemplateRequest]
@@ -166,24 +166,6 @@ class WorkItemClient(BaseClient):
         """
         ...
 
-    @post("delete-workitem-templates", args=[Field("ids")])
-    def delete_work_item_templates(
-        self, work_item_template_ids: List[str]
-    ) -> models.DeleteWorkItemTemplatesPartialSuccessResponse | None:
-        """Deletes one or more work item templates.
-
-        Args:
-            work_item_template_ids: A list of work item template IDs to delete.
-
-        Returns:
-            A partial success if any work item templates failed to delete, or None if all
-            work item templates were deleted successfully.
-
-        Raises:
-            ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
-        """
-        ...
-
     @post("update-workitem-templates")
     def update_work_item_templates(
         self, update_work_item_templates: models.UpdateWorkItemTemplatesRequest
@@ -195,6 +177,24 @@ class WorkItemClient(BaseClient):
 
         Returns:
             A list of updated work item templates, templates that failed to update, and errors for failures.
+
+        Raises:
+            ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
+        """
+        ...
+
+    @post("delete-workitem-templates", args=[Field("ids")])
+    def delete_work_item_templates(
+        self, ids: List[str]
+    ) -> models.DeleteWorkItemTemplatesPartialSuccessResponse | None:
+        """Deletes one or more work item templates.
+
+        Args:
+            ids: A list of work item template IDs to delete.
+
+        Returns:
+            A partial success if any work item templates failed to delete, or None if all
+            work item templates were deleted successfully.
 
         Raises:
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.

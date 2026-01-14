@@ -68,7 +68,7 @@ def create_work_items(client: WorkItemClient):
             created_work_items += response.created_work_items
 
     client.delete_work_items(
-        work_item_ids=[
+        ids=[
             work_item.id for work_item in created_work_items if work_item.id is not None
         ]
     )
@@ -96,7 +96,7 @@ def create_work_item_templates(client: WorkItemClient):
             created_work_item_templates += response.created_work_item_templates
 
     client.delete_work_item_templates(
-        work_item_template_ids=[
+        ids=[
             work_item_template.id
             for work_item_template in created_work_item_templates
             if work_item_template.id is not None
@@ -113,13 +113,13 @@ class TestWorkItemClient:
     for creating a workspace has not been added yet"""
 
     _dashboard = Dashboard(
-        id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
+        id="DashboardId", variables={"product": "PXIe-4080", "location": "Lab1"}
     )
 
     _execution_actions: List[ExecutionDefinition] = [
         ManualExecution(action="START", type="MANUAL"),
         JobExecution(
-            action="ABORT",
+            action="PAUSE",
             type="JOB",
             jobs=[
                 Job(
@@ -153,9 +153,9 @@ class TestWorkItemClient:
                     selections=[
                         ResourceSelectionDefinition(
                             id="asset-001",
-                            target_location_id="loc-001",
-                            target_system_id="sys-001",
-                            target_parent_id=None,
+                            target_location_id="location-003",
+                            target_system_id="system-001",
+                            target_parent_id="parent-002",
                         )
                     ],
                     filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
@@ -164,9 +164,9 @@ class TestWorkItemClient:
                     selections=[
                         ResourceSelectionDefinition(
                             id="dut-001",
-                            target_location_id="loc-002",
-                            target_system_id="sys-002",
-                            target_parent_id=None,
+                            target_location_id="location-003",
+                            target_system_id="system-001",
+                            target_parent_id="parent-002",
                         )
                     ],
                     filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
@@ -175,9 +175,9 @@ class TestWorkItemClient:
                     selections=[
                         ResourceSelectionDefinition(
                             id="fixture-001",
-                            target_location_id="loc-003",
-                            target_system_id="sys-003",
-                            target_parent_id=None,
+                            target_location_id="location-003",
+                            target_system_id="system-001",
+                            target_parent_id="parent-002",
                         )
                     ],
                     filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
@@ -186,7 +186,7 @@ class TestWorkItemClient:
                     selections=[
                         SystemResourceSelectionDefinition(
                             id="system-001",
-                            target_location_id="loc-004",
+                            target_location_id="location-001",
                         )
                     ],
                     filter="os:linux AND arch:x64",
@@ -259,7 +259,7 @@ class TestWorkItemClient:
         assert created_work_item.type == "testplan"
         assert created_work_item.part_number == "px40482"
         delete_work_item_template_response = client.delete_work_item_templates(
-            work_item_template_ids=[template_id]
+            ids=[template_id]
         )
         assert delete_work_item_template_response is None
 
@@ -273,7 +273,6 @@ class TestWorkItemClient:
         get_work_item_response = client.get_work_item(work_item_id=created_work_item_id)
 
         assert get_work_item_response is not None
-        assert isinstance(get_work_item_response, WorkItem)
         assert get_work_item_response.id == created_work_item_id
 
     def test__update_work_item__returns_updated_work_item(
@@ -364,7 +363,7 @@ class TestWorkItemClient:
         assert queried_work_items_response is not None
         assert queried_work_items_response.work_items[0].id == created_work_item.id
         assert queried_work_items_response.total_count is not None
-        assert queried_work_items_response.total_count > 0
+        assert queried_work_items_response.total_count == 1
 
     def test__query_work_items_with_projections__returns_the_work_items_with_projected_properties(
         self, client: WorkItemClient, create_work_items
@@ -412,7 +411,7 @@ class TestWorkItemClient:
         assert create_work_item_response.created_work_items is not None
         created_work_item = create_work_item_response.created_work_items[0]
 
-        client.delete_work_items(work_item_ids=[created_work_item.id])
+        client.delete_work_items(ids=[created_work_item.id])
 
         query_deleted_work_item_response = client.query_work_items(
             query_work_items=QueryWorkItemsRequest(
@@ -486,7 +485,6 @@ class TestWorkItemClient:
         created_work_item_template = (
             create_work_item_template_response.created_work_item_templates[0]
         )
-        assert created_work_item_template is not None
 
         query = QueryWorkItemTemplatesRequest(
             filter=f'id="{created_work_item_template.id}"', take=1
@@ -514,7 +512,6 @@ class TestWorkItemClient:
         created_work_item_template = (
             create_work_item_template_response.created_work_item_templates[0]
         )
-        assert created_work_item_template is not None
 
         query = QueryWorkItemTemplatesRequest(
             filter=f'id="{created_work_item_template.id}"',
@@ -557,9 +554,7 @@ class TestWorkItemClient:
             create_work_item_template_response.created_work_item_templates[0]
         )
 
-        client.delete_work_item_templates(
-            work_item_template_ids=[created_work_item_template.id]
-        )
+        client.delete_work_item_templates(ids=[created_work_item_template.id])
 
         query_deleted_work_item_template_response = client.query_work_item_templates(
             query_work_item_templates=QueryWorkItemTemplatesRequest(

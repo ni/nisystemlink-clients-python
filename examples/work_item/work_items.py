@@ -64,10 +64,6 @@ create_work_items_request = [
                         id="system-001",
                         target_location_id="location-001",
                     ),
-                    SystemResourceSelectionDefinition(
-                        id="system-002",
-                        target_location_id="location-002",
-                    ),
                 ],
                 filter='properties.data["Lab"] = "Battery Pack Lab"',
             ),
@@ -77,7 +73,7 @@ create_work_items_request = [
                         id="dut-001",
                         target_location_id="location-001",
                         target_system_id="system-001",
-                        target_parent_id="parent-asset-001",
+                        target_parent_id="parent-001",
                     ),
                 ],
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
@@ -88,7 +84,7 @@ create_work_items_request = [
                         id="asset-001",
                         target_location_id="location-003",
                         target_system_id="system-001",
-                        target_parent_id="parent-asset-002",
+                        target_parent_id="parent-002",
                     ),
                 ],
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
@@ -106,7 +102,7 @@ create_work_items_request = [
         ),
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(
-            id="DashBoardId", variables={"product": "PXIe-4080", "location": "Lab1"}
+            id="DashboardId", variables={"product": "PXIe-4080", "location": "Lab1"}
         ),
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
@@ -189,4 +185,4 @@ scheduled_work_items = client.schedule_work_items(
 )
 
 # Delete work item
-client.delete_work_items(work_item_ids=[created_work_item_id])
+client.delete_work_items(ids=[created_work_item_id])
