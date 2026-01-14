@@ -110,9 +110,11 @@ if create_work_item_template_id is not None:
         ]
     )
     updated_work_item_templates = client.update_work_item_templates(
-        update_request=update_work_item_template_request
+        update_work_item_templates=update_work_item_template_request
     )
 
 # Delete work item template
 if create_work_item_template_id is not None:
-    client.delete_work_item_templates(ids=[create_work_item_template_id])
+    client.delete_work_item_templates(
+        work_item_template_ids=[create_work_item_template_id]
+    )

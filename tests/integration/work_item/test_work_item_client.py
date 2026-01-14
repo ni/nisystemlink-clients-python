@@ -337,10 +337,14 @@ class TestWorkItemClient:
         assert schedule_work_items_response.scheduled_work_items is not None
         scheduled_work_item = schedule_work_items_response.scheduled_work_items[0]
         assert scheduled_work_item.id == created_work_item.id
+        assert scheduled_work_item.schedule is not None
         assert (
             scheduled_work_item.schedule.planned_start_date_time
             == datetime.strptime("2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ")
         )
+        assert scheduled_work_item.resources is not None
+        assert scheduled_work_item.resources.systems is not None
+        assert scheduled_work_item.resources.systems.selections is not None
         assert scheduled_work_item.resources.systems.selections[0].id == "fake-system"
 
     def test__query_work_items__return_queried_work_item(

@@ -152,7 +152,9 @@ update_work_items_request = UpdateWorkItemsRequest(
         UpdateWorkItemRequest(id=created_work_item_id, name="Updated Work Item")
     ]
 )
-updated_work_items = client.update_work_items(update_request=update_work_items_request)
+updated_work_items = client.update_work_items(
+    update_work_items=update_work_items_request
+)
 
 # Schedule work item
 schedule_work_items_request = ScheduleWorkItemsRequest(
@@ -183,8 +185,8 @@ schedule_work_items_request = ScheduleWorkItemsRequest(
     replace=True,
 )
 scheduled_work_items = client.schedule_work_items(
-    schedule_request=schedule_work_items_request
+    schedule_work_items=schedule_work_items_request
 )
 
 # Delete work item
-client.delete_work_items(ids=[created_work_item_id])
+client.delete_work_items(work_item_ids=[created_work_item_id])
