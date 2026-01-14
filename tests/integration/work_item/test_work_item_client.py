@@ -1,44 +1,44 @@
+import copy
 from datetime import datetime
 from typing import List
-import copy
 
 import pytest
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
+    CreateWorkItemRequest,
+    CreateWorkItemsPartialSuccessResponse,
+    CreateWorkItemTemplateRequest,
+    CreateWorkItemTemplatesPartialSuccessResponse,
     Dashboard,
     ExecutionDefinition,
     Job,
     JobExecution,
     ManualExecution,
-    WorkItemTemplate,
-    WorkItemTemplateField,
+    QueryWorkItemsRequest,
+    QueryWorkItemTemplatesRequest,
     ResourceDefinition,
     ResourcesDefinition,
     ResourceSelectionDefinition,
     ScheduleDefinition,
     ScheduleResourcesDefinition,
     ScheduleSystemResourceDefinition,
+    ScheduleWorkItemRequest,
+    ScheduleWorkItemsRequest,
     SystemResourceDefinition,
     SystemResourceSelectionDefinition,
     TemplateResourceDefinition,
     TemplateResourcesDefinition,
     TemplateTimelineDefinition,
     TimelineDefinition,
-    CreateWorkItemRequest,
-    CreateWorkItemsPartialSuccessResponse,
-    CreateWorkItemTemplatesPartialSuccessResponse,
-    CreateWorkItemTemplateRequest,
-    QueryWorkItemsRequest,
-    QueryWorkItemTemplatesRequest,
-    ScheduleWorkItemRequest,
-    ScheduleWorkItemsRequest,
     UpdateWorkItemRequest,
     UpdateWorkItemsRequest,
     UpdateWorkItemTemplateRequest,
     UpdateWorkItemTemplatesRequest,
     WorkItem,
     WorkItemField,
+    WorkItemTemplate,
+    WorkItemTemplateField,
 )
 
 
@@ -69,9 +69,7 @@ def create_work_items(client: WorkItemClient):
 
     client.delete_work_items(
         work_item_ids=[
-            work_item.id
-            for work_item in created_work_items
-            if work_item.id is not None
+            work_item.id for work_item in created_work_items if work_item.id is not None
         ]
     )
 
@@ -160,7 +158,7 @@ class TestWorkItemClient:
                             target_parent_id=None,
                         )
                     ],
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'"
+                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
                 ),
                 duts=ResourceDefinition(
                     selections=[
@@ -171,7 +169,7 @@ class TestWorkItemClient:
                             target_parent_id=None,
                         )
                     ],
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'"
+                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
                 ),
                 fixtures=ResourceDefinition(
                     selections=[
@@ -182,7 +180,7 @@ class TestWorkItemClient:
                             target_parent_id=None,
                         )
                     ],
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'"
+                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
                 ),
                 systems=SystemResourceDefinition(
                     selections=[
@@ -191,13 +189,13 @@ class TestWorkItemClient:
                             target_location_id="loc-004",
                         )
                     ],
-                    filter="os:linux AND arch:x64"
+                    filter="os:linux AND arch:x64",
                 ),
             ),
             file_ids_from_template=["file1", "file2"],
             properties={"env": "staging", "priority": "high"},
             dashboard=_dashboard,
-            execution_actions=_execution_actions
+            execution_actions=_execution_actions,
         )
     ]
     """create work item request object."""
@@ -225,9 +223,7 @@ class TestWorkItemClient:
                 fixtures=TemplateResourceDefinition(
                     filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'"
                 ),
-                systems=TemplateResourceDefinition(
-                    filter="os:linux AND arch:x64"
-                ),
+                systems=TemplateResourceDefinition(filter="os:linux AND arch:x64"),
             ),
             execution_actions=_execution_actions,
             file_ids=["file1", "file2"],
@@ -326,15 +322,13 @@ class TestWorkItemClient:
                     resources=ScheduleResourcesDefinition(
                         systems=ScheduleSystemResourceDefinition(
                             selections=[
-                                SystemResourceSelectionDefinition(
-                                    id="fake-system"
-                                )
+                                SystemResourceSelectionDefinition(id="fake-system")
                             ]
                         ),
                     ),
                 )
             ],
-            replace=True
+            replace=True,
         )
         schedule_work_items_response = client.schedule_work_items(
             schedule_work_items=schedule_work_items_request
@@ -343,8 +337,9 @@ class TestWorkItemClient:
         assert schedule_work_items_response.scheduled_work_items is not None
         scheduled_work_item = schedule_work_items_response.scheduled_work_items[0]
         assert scheduled_work_item.id == created_work_item.id
-        assert scheduled_work_item.schedule.planned_start_date_time == datetime.strptime(
-            "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+        assert (
+            scheduled_work_item.schedule.planned_start_date_time
+            == datetime.strptime("2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ")
         )
         assert scheduled_work_item.resources.systems.selections[0].id == "fake-system"
 
@@ -416,7 +411,9 @@ class TestWorkItemClient:
         client.delete_work_items(work_item_ids=[created_work_item.id])
 
         query_deleted_work_item_response = client.query_work_items(
-            query_work_items=QueryWorkItemsRequest(filter=f'id="{created_work_item.id}"', take=1)
+            query_work_items=QueryWorkItemsRequest(
+                filter=f'id="{created_work_item.id}"', take=1
+            )
         )
         assert len(query_deleted_work_item_response.work_items) == 0
 
@@ -427,10 +424,16 @@ class TestWorkItemClient:
             self._create_work_item_template_request
         )
 
-        assert create_work_item_template_response.created_work_item_templates is not None
-        created_work_item_template = create_work_item_template_response.created_work_item_templates[0]
+        assert (
+            create_work_item_template_response.created_work_item_templates is not None
+        )
+        created_work_item_template = (
+            create_work_item_template_response.created_work_item_templates[0]
+        )
         assert created_work_item_template is not None
-        assert created_work_item_template.name == "Python integration work item template"
+        assert (
+            created_work_item_template.name == "Python integration work item template"
+        )
         assert created_work_item_template.type == "testplan"
 
     def test__update_work_item_template__returns_updated_work_item_template(
@@ -439,8 +442,12 @@ class TestWorkItemClient:
         create_work_item_template_response = create_work_item_templates(
             self._create_work_item_template_request
         )
-        assert create_work_item_template_response.created_work_item_templates is not None
-        created_work_item_template = create_work_item_template_response.created_work_item_templates[0]
+        assert (
+            create_work_item_template_response.created_work_item_templates is not None
+        )
+        created_work_item_template = (
+            create_work_item_template_response.created_work_item_templates[0]
+        )
 
         update_work_item_templates_request = UpdateWorkItemTemplatesRequest(
             work_item_templates=[
@@ -454,8 +461,12 @@ class TestWorkItemClient:
             update_work_item_templates=update_work_item_templates_request
         )
 
-        assert update_work_item_templates_response.updated_work_item_templates is not None
-        updated_work_item_template = update_work_item_templates_response.updated_work_item_templates[0]
+        assert (
+            update_work_item_templates_response.updated_work_item_templates is not None
+        )
+        updated_work_item_template = (
+            update_work_item_templates_response.updated_work_item_templates[0]
+        )
         assert updated_work_item_template.id == created_work_item_template.id
         assert updated_work_item_template.name == "Updated Work Item Template"
 
@@ -465,18 +476,27 @@ class TestWorkItemClient:
         create_work_item_template_response = create_work_item_templates(
             self._create_work_item_template_request
         )
-        assert create_work_item_template_response.created_work_item_templates is not None
-        created_work_item_template = create_work_item_template_response.created_work_item_templates[0]
+        assert (
+            create_work_item_template_response.created_work_item_templates is not None
+        )
+        created_work_item_template = (
+            create_work_item_template_response.created_work_item_templates[0]
+        )
         assert created_work_item_template is not None
 
-        query = QueryWorkItemTemplatesRequest(filter=f'id="{created_work_item_template.id}"', take=1)
+        query = QueryWorkItemTemplatesRequest(
+            filter=f'id="{created_work_item_template.id}"', take=1
+        )
         query_work_item_template_response = client.query_work_item_templates(
             query_work_item_templates=query
         )
 
         assert query_work_item_template_response is not None
         assert len(query_work_item_template_response.work_item_templates) == 1
-        assert query_work_item_template_response.work_item_templates[0].id == created_work_item_template.id
+        assert (
+            query_work_item_template_response.work_item_templates[0].id
+            == created_work_item_template.id
+        )
 
     def test__query_work_item_templates_with_projections__returns_work_item_templates_with_projected_properties(
         self, client: WorkItemClient, create_work_item_templates
@@ -484,8 +504,12 @@ class TestWorkItemClient:
         create_work_item_template_response = create_work_item_templates(
             self._create_work_item_template_request
         )
-        assert create_work_item_template_response.created_work_item_templates is not None
-        created_work_item_template = create_work_item_template_response.created_work_item_templates[0]
+        assert (
+            create_work_item_template_response.created_work_item_templates is not None
+        )
+        created_work_item_template = (
+            create_work_item_template_response.created_work_item_templates[0]
+        )
         assert created_work_item_template is not None
 
         query = QueryWorkItemTemplatesRequest(
@@ -516,14 +540,26 @@ class TestWorkItemClient:
             and work_item_template.dashboard is None
         )
 
-    def test__delete_work_item_template(self, client: WorkItemClient, create_work_item_templates):
-        create_work_item_template_response = create_work_item_templates(self._create_work_item_template_request)
-        assert create_work_item_template_response.created_work_item_templates is not None
-        created_work_item_template = create_work_item_template_response.created_work_item_templates[0]
+    def test__delete_work_item_template(
+        self, client: WorkItemClient, create_work_item_templates
+    ):
+        create_work_item_template_response = create_work_item_templates(
+            self._create_work_item_template_request
+        )
+        assert (
+            create_work_item_template_response.created_work_item_templates is not None
+        )
+        created_work_item_template = (
+            create_work_item_template_response.created_work_item_templates[0]
+        )
 
-        client.delete_work_item_templates(work_item_template_ids=[created_work_item_template.id])
+        client.delete_work_item_templates(
+            work_item_template_ids=[created_work_item_template.id]
+        )
 
         query_deleted_work_item_template_response = client.query_work_item_templates(
-            query_work_item_templates=QueryWorkItemTemplatesRequest(filter=f'id="{created_work_item_template.id}"', take=1)
+            query_work_item_templates=QueryWorkItemTemplatesRequest(
+                filter=f'id="{created_work_item_template.id}"', take=1
+            )
         )
         assert len(query_deleted_work_item_template_response.work_item_templates) == 0

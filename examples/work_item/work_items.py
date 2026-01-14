@@ -4,26 +4,24 @@ from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
-    QueryWorkItemsRequest,
-    ScheduleWorkItemRequest,
-    ScheduleWorkItemsRequest,
-    UpdateWorkItemRequest,
-    UpdateWorkItemsRequest,
-    TimelineDefinition,
-    ResourcesDefinition,
-    ResourceDefinition,
-    SystemResourceDefinition,
-    ResourceSelectionDefinition,
-    SystemResourceSelectionDefinition,
-    ScheduleDefinition,
-    ScheduleResourcesDefinition,
-    ScheduleSystemResourceDefinition,
-    ResourceSelectionDefinition,
-    SystemResourceSelectionDefinition,
     Dashboard,
     Job,
     JobExecution,
-    ManualExecution
+    ManualExecution,
+    QueryWorkItemsRequest,
+    ResourceDefinition,
+    ResourcesDefinition,
+    ResourceSelectionDefinition,
+    ScheduleDefinition,
+    ScheduleResourcesDefinition,
+    ScheduleSystemResourceDefinition,
+    ScheduleWorkItemRequest,
+    ScheduleWorkItemsRequest,
+    SystemResourceDefinition,
+    SystemResourceSelectionDefinition,
+    TimelineDefinition,
+    UpdateWorkItemRequest,
+    UpdateWorkItemsRequest,
 )
 
 # Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
@@ -71,7 +69,7 @@ create_work_items_request = [
                         target_location_id="location-002",
                     ),
                 ],
-                filter='properties.data["Lab"] = "Battery Pack Lab"'
+                filter='properties.data["Lab"] = "Battery Pack Lab"',
             ),
             duts=ResourceDefinition(
                 selections=[
@@ -82,7 +80,7 @@ create_work_items_request = [
                         target_parent_id="parent-asset-001",
                     ),
                 ],
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
+                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
             ),
             assets=ResourceDefinition(
                 selections=[
@@ -93,7 +91,7 @@ create_work_items_request = [
                         target_parent_id="parent-asset-002",
                     ),
                 ],
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
+                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
             ),
             fixtures=ResourceDefinition(
                 selections=[
@@ -103,7 +101,7 @@ create_work_items_request = [
                         target_system_id="system-001",
                     ),
                 ],
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
+                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
             ),
         ),
         file_ids_from_template=["file1", "file2"],
@@ -122,14 +120,16 @@ create_work_items_request = [
                         metadata={"env": "staging"},
                     )
                 ],
-                systemId="system-001"
+                systemId="system-001",
             ),
         ],
     )
 ]
 
 # create a work item
-created_work_items_response = client.create_work_items(work_items=create_work_items_request)
+created_work_items_response = client.create_work_items(
+    work_items=create_work_items_request
+)
 
 if created_work_items_response.created_work_items:
     created_work_item_id = created_work_items_response.created_work_items[0].id
@@ -137,9 +137,9 @@ if created_work_items_response.created_work_items:
 # Query work items using id.
 query_work_items_request = QueryWorkItemsRequest(
     filter=f'id = "{created_work_item_id}"',
-    take=1, 
-    descending=False, 
-    return_count=False
+    take=1,
+    descending=False,
+    return_count=False,
 )
 client.query_work_items(query_work_items=query_work_items_request)
 
@@ -149,10 +149,7 @@ get_work_item = client.get_work_item(work_item_id=created_work_item_id)
 # Update work item
 update_work_items_request = UpdateWorkItemsRequest(
     work_items=[
-        UpdateWorkItemRequest(
-            id=created_work_item_id,
-            name="Updated Work Item"
-        )
+        UpdateWorkItemRequest(id=created_work_item_id, name="Updated Work Item")
     ]
 )
 updated_work_items = client.update_work_items(update_request=update_work_items_request)
@@ -164,11 +161,11 @@ schedule_work_items_request = ScheduleWorkItemsRequest(
             id=created_work_item_id,
             schedule=ScheduleDefinition(
                 planned_start_date_time=datetime.strptime(
-                "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
+                    "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                ),
                 planned_end_date_time=datetime.strptime(
-                "2025-05-22T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
+                    "2025-05-22T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                ),
                 planned_duration_in_seconds=172800,
             ),
             resources=ScheduleResourcesDefinition(
@@ -180,10 +177,10 @@ schedule_work_items_request = ScheduleWorkItemsRequest(
                         )
                     ]
                 )
-            )
+            ),
         )
     ],
-    replace=True
+    replace=True,
 )
 scheduled_work_items = client.schedule_work_items(
     schedule_request=schedule_work_items_request

@@ -13,4 +13,3 @@ class ScheduleWorkItemsRequest(JsonModel):
 
     replace: bool | None = None
     """If true, replaces existing scheduled work items."""
-

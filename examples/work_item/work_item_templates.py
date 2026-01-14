@@ -2,16 +2,16 @@ from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplateRequest,
-    QueryWorkItemTemplatesRequest,
-    TemplateTimelineDefinition,
-    TemplateResourcesDefinition,
-    TemplateResourceDefinition,
-    UpdateWorkItemTemplatesRequest,
-    UpdateWorkItemTemplateRequest,
     Dashboard,
     Job,
     JobExecution,
-    ManualExecution
+    ManualExecution,
+    QueryWorkItemTemplatesRequest,
+    TemplateResourceDefinition,
+    TemplateResourcesDefinition,
+    TemplateTimelineDefinition,
+    UpdateWorkItemTemplateRequest,
+    UpdateWorkItemTemplatesRequest,
 )
 
 # Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
@@ -37,9 +37,7 @@ create_work_item_template_request = [
         summary="Template for running integration work items",
         description="This template defines execution steps for integration workflows.",
         test_program="TP-INT-002",
-        timeline=TemplateTimelineDefinition(
-            estimated_duration_in_seconds=86400
-        ),
+        timeline=TemplateTimelineDefinition(estimated_duration_in_seconds=86400),
         resources=TemplateResourcesDefinition(
             systems=TemplateResourceDefinition(
                 filter='properties.data["Lab"] = "Battery Pack Lab" && state = "Available"'
@@ -107,8 +105,7 @@ if create_work_item_template_id is not None:
     update_work_item_template_request = UpdateWorkItemTemplatesRequest(
         work_item_templates=[
             UpdateWorkItemTemplateRequest(
-                id=create_work_item_template_id,
-                name="Updated Work Item Template"
+                id=create_work_item_template_id, name="Updated Work Item Template"
             )
         ]
     )

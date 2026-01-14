@@ -6,10 +6,10 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from ._dashboard import DashboardUrl
 from ._execution_definition import ExecutionDefinition
 from ._execution_event import ExecutionEvent
+from ._resources_definition import ResourcesDefinition
+from ._schedule_definition import ScheduleDefinition
 from ._state import State
 from ._timeline_definition import TimelineDefinition
-from ._schedule_definition import ScheduleDefinition
-from ._resources_definition import ResourcesDefinition
 
 
 class WorkItem(JsonModel):

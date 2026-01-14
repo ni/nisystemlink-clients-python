@@ -4,8 +4,8 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._dashboard import Dashboard
 from ._execution_definition import ExecutionDefinition
-from ._timeline_definition import TimelineDefinition
 from ._resources_definition import ResourcesDefinition
+from ._timeline_definition import TimelineDefinition
 
 
 class CreateWorkItemRequest(JsonModel):

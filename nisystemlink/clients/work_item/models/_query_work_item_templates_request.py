@@ -56,7 +56,7 @@ class QueryWorkItemTemplatesRequest(JsonModel):
 
     filter: str | None = None
     """A string expression to filter the work item templates returned by the query.
-    
+
     `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable.
     """
@@ -89,4 +89,4 @@ class QueryWorkItemTemplatesRequest(JsonModel):
     """
     Gets or sets the projection to be used when retrieving the work item templates. If not specified,
     all properties will be returned.
-    """ 
+    """

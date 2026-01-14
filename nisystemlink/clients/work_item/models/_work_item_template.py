@@ -5,8 +5,8 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._dashboard import Dashboard
 from ._execution_definition import ExecutionDefinition
-from ._timeline_definition import TemplateTimelineDefinition
 from ._resources_definition import TemplateResourcesDefinition
+from ._timeline_definition import TemplateTimelineDefinition
 
 
 class WorkItemTemplateBase(JsonModel):

@@ -64,7 +64,9 @@ class WorkItemClient(BaseClient):
         ...
 
     @post("delete-workitems", args=[Field("ids")])
-    def delete_work_items(self, work_item_ids: List[str]) -> models.DeleteWorkItemsPartialSuccessResponse | None:
+    def delete_work_items(
+        self, work_item_ids: List[str]
+    ) -> models.DeleteWorkItemsPartialSuccessResponse | None:
         """Delete one or more work items by IDs.
 
         Args:

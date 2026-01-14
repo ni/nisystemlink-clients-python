@@ -2,8 +2,8 @@ from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._timeline_definition import TimelineDefinition
 from ._resources_definition import ResourcesDefinition
+from ._timeline_definition import TimelineDefinition
 
 
 class UpdateWorkItemRequest(JsonModel):

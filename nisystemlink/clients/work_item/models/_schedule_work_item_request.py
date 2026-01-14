@@ -1,7 +1,7 @@
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._schedule_definition import ScheduleDefinition
 from ._resources_definition import ScheduleResourcesDefinition
+from ._schedule_definition import ScheduleDefinition
 
 
 class ScheduleWorkItemRequest(JsonModel):

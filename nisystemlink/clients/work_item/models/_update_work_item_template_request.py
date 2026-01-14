@@ -2,11 +2,10 @@ from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from _dashboard import DashboardUrl
+from ._dashboard import DashboardUrl
 from ._execution_definition import ExecutionDefinition
 from ._resources_definition import TemplateResourcesDefinition
 from ._timeline_definition import TemplateTimelineDefinition
-
 
 
 class UpdateWorkItemTemplateRequest(JsonModel):

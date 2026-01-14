@@ -3,8 +3,8 @@ from typing import List
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._work_item import WorkItem
 from ._update_work_item_request import UpdateWorkItemRequest
+from ._work_item import WorkItem
 
 
 class UpdateWorkItemsPartialSuccessResponse(JsonModel):
