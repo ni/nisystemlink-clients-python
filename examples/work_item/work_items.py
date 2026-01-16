@@ -122,13 +122,14 @@ create_work_items_request = [
     )
 ]
 
-# create a work item
-created_work_items_response = client.create_work_items(
+# create work item
+create_work_items_response = client.create_work_items(
     work_items=create_work_items_request
 )
 
-if created_work_items_response.created_work_items:
-    created_work_item_id = created_work_items_response.created_work_items[0].id
+if create_work_items_response.created_work_items:
+    created_work_item_id = create_work_items_response.created_work_items[0].id
+    print(f"Created work item: {created_work_item_id}")
 
 # Query work items using id.
 query_work_items_request = QueryWorkItemsRequest(
@@ -137,26 +138,38 @@ query_work_items_request = QueryWorkItemsRequest(
     descending=False,
     return_count=False,
 )
-client.query_work_items(query_work_items=query_work_items_request)
+query_work_items_response = client.query_work_items(
+    query_work_items=query_work_items_request
+)
+if query_work_items_response.work_items:
+    print(f"Found work item: {query_work_items_response.work_items[0].name}")
 
 # Get work item
-get_work_item = client.get_work_item(work_item_id=created_work_item_id)
+if created_work_item_id is not None:
+    get_work_item_response = client.get_work_item(work_item_id=created_work_item_id)
+    print(f"Retrieved work item: {get_work_item_response.name}")
 
 # Update work item
-update_work_items_request = UpdateWorkItemsRequest(
-    work_items=[
-        UpdateWorkItemRequest(id=created_work_item_id, name="Updated Work Item")
-    ]
-)
-updated_work_items = client.update_work_items(
-    update_work_items=update_work_items_request
-)
+if created_work_item_id is not None:
+    update_work_items_request = UpdateWorkItemsRequest(
+        work_items=[
+            UpdateWorkItemRequest(id=created_work_item_id, name="Updated work item")
+        ]
+    )
+    update_work_items_response = client.update_work_items(
+        update_work_items=update_work_items_request
+    )
+    if update_work_items_response.updated_work_items:
+        print(
+            f"Work item name updated to: {update_work_items_response.updated_work_items[0].name}"
+        )
 
 # Schedule work item
-schedule_work_items_request = ScheduleWorkItemsRequest(
-    work_items=[
-        ScheduleWorkItemRequest(
-            id=created_work_item_id,
+if created_work_item_id is not None:
+    schedule_work_items_request = ScheduleWorkItemsRequest(
+        work_items=[
+            ScheduleWorkItemRequest(
+                id=created_work_item_id,
             schedule=ScheduleDefinition(
                 planned_start_date_time=datetime.strptime(
                     "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -177,12 +190,18 @@ schedule_work_items_request = ScheduleWorkItemsRequest(
                 )
             ),
         )
-    ],
-    replace=True,
-)
-scheduled_work_items = client.schedule_work_items(
-    schedule_work_items=schedule_work_items_request
-)
+        ],
+        replace=True,
+    )
+    schedule_work_items_response = client.schedule_work_items(
+        schedule_work_items=schedule_work_items_request
+    )
+    if schedule_work_items_response.scheduled_work_items:
+        print(
+            f"Scheduled work item with ID: {schedule_work_items_response.scheduled_work_items[0].id}"
+        )
 
 # Delete work item
-client.delete_work_items(ids=[created_work_item_id])
+if created_work_item_id is not None:
+    client.delete_work_items(ids=[created_work_item_id])
+    print("Work item deleted successfully.")

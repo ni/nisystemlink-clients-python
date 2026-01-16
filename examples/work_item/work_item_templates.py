@@ -77,36 +77,47 @@ create_work_item_template_request = [
 ]
 
 # Create work item template
-create_work_item_template_response = client.create_work_item_templates(
+create_work_item_templates_response = client.create_work_item_templates(
     work_item_templates=create_work_item_template_request
 )
 
-if create_work_item_template_response.created_work_item_templates:
+if create_work_item_templates_response.created_work_item_templates:
     create_work_item_template_id = (
-        create_work_item_template_response.created_work_item_templates[0].id
+        create_work_item_templates_response.created_work_item_templates[0].id
     )
+    print(f"Created work item template: {create_work_item_template_id}")
 
 # Query work item templates using id
 query_work_item_template_request = QueryWorkItemTemplatesRequest(
     filter=f'id="{create_work_item_template_id}"', take=1
 )
-client.query_work_item_templates(
+query_work_item_templates_response = client.query_work_item_templates(
     query_work_item_templates=query_work_item_template_request
 )
+if query_work_item_templates_response.work_item_templates:
+    print(
+        f"Found work item template: {query_work_item_templates_response.work_item_templates[0].name}"
+    )
 
 # Update work item template
 if create_work_item_template_id is not None:
     update_work_item_template_request = UpdateWorkItemTemplatesRequest(
         work_item_templates=[
             UpdateWorkItemTemplateRequest(
-                id=create_work_item_template_id, name="Updated Work Item Template"
+                id=create_work_item_template_id, name="Updated work item template"
             )
         ]
     )
-    updated_work_item_templates = client.update_work_item_templates(
+    update_work_item_templates_response = client.update_work_item_templates(
         update_work_item_templates=update_work_item_template_request
     )
+    if update_work_item_templates_response.updated_work_item_templates:
+        print(
+            "Work item template name updated to: "
+            f"{update_work_item_templates_response.updated_work_item_templates[0].name}"
+        )
 
 # Delete work item template
 if create_work_item_template_id is not None:
     client.delete_work_item_templates(ids=[create_work_item_template_id])
+    print("Work item template deleted successfully.")

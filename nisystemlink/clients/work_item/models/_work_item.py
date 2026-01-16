@@ -15,7 +15,7 @@ from ._timeline_definition import TimelineDefinition
 class WorkItem(JsonModel):
     """Contains information about a work item."""
 
-    id: str
+    id: str | None = None
     """The ID of the work item."""
 
     template_id: str | None = None

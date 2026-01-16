@@ -61,7 +61,7 @@ class QueryWorkItemTemplatesRequest(JsonModel):
     query string more simple and reusable.
     """
 
-    substitutions: List[object] | None = None
+    substitutions: List[bool | int | str | None] | None = None
     """Makes substitutions in the query filter expression.
 
     Substitutions for the query expression are indicated by non-negative integers that are
