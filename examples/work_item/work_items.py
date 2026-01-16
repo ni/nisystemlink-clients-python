@@ -170,26 +170,26 @@ if created_work_item_id is not None:
         work_items=[
             ScheduleWorkItemRequest(
                 id=created_work_item_id,
-            schedule=ScheduleDefinition(
-                planned_start_date_time=datetime.strptime(
-                    "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                schedule=ScheduleDefinition(
+                    planned_start_date_time=datetime.strptime(
+                        "2025-05-20T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ),
+                    planned_end_date_time=datetime.strptime(
+                        "2025-05-22T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ),
+                    planned_duration_in_seconds=172800,
                 ),
-                planned_end_date_time=datetime.strptime(
-                    "2025-05-22T15:07:42.527Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+                resources=ScheduleResourcesDefinition(
+                    systems=ScheduleSystemResourceDefinition(
+                        selections=[
+                            SystemResourceSelectionDefinition(
+                                id="system-123",
+                                target_location_id="location-456",
+                            )
+                        ]
+                    )
                 ),
-                planned_duration_in_seconds=172800,
-            ),
-            resources=ScheduleResourcesDefinition(
-                systems=ScheduleSystemResourceDefinition(
-                    selections=[
-                        SystemResourceSelectionDefinition(
-                            id="system-123",
-                            target_location_id="location-456",
-                        )
-                    ]
-                )
-            ),
-        )
+            )
         ],
         replace=True,
     )
