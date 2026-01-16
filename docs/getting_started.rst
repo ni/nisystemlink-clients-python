@@ -440,6 +440,39 @@ Create, query, and remove some systems.
    :language: python
    :linenos:
 
+WorkItem API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.WorkItemClient` class is the primary entry point of the WorkItem API.
+
+When constructing a :class:`.WorkItemClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.WorkItemClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.WorkItemClient` object, you can:
+
+* Create, query, get, update, schedule and delete work items
+* Create, query, update and delete work item templates
+
+Examples
+~~~~~~~~
+
+Create, query, get, update, schedule and delete work items
+
+.. literalinclude:: ../examples/work_item/work_items.py
+   :language: python
+   :linenos:
+
+Create, query, update and delete work item templates.
+
+.. literalinclude:: ../examples/work_item/work_item_templates.py
+   :language: python
+   :linenos:
+
 TestPlan API
 -------
 
