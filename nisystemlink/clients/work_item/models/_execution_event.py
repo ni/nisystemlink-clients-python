@@ -37,7 +37,7 @@ class ExecutionEventBase(JsonModel):
 
 
 class NotebookExecutionEvent(ExecutionEventBase):
-    """Represents an execution event that was triggered by a notebook execution."""
+    """An event tracking a notebook execution triggered from a work item."""
 
     type: Literal["NOTEBOOK"] = Field(default="NOTEBOOK")
     """Type of execution, default is 'NOTEBOOK'."""
@@ -47,7 +47,7 @@ class NotebookExecutionEvent(ExecutionEventBase):
 
 
 class JobExecutionEvent(ExecutionEventBase):
-    """A concrete execution event that represents an event triggered by a job."""
+    """An event tracking a job execution triggered from a work item."""
 
     type: Literal["JOB"] = Field(default="JOB")
     """Type of execution, default is 'JOB'."""

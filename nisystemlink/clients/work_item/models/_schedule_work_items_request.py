@@ -12,4 +12,4 @@ class ScheduleWorkItemsRequest(JsonModel):
     """List of work items to be scheduled."""
 
     replace: bool | None = None
-    """If true, replaces existing scheduled work items."""
+    """When true, existing array fields are replaced instead of merged."""

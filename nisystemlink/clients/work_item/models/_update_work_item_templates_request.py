@@ -12,4 +12,4 @@ class UpdateWorkItemTemplatesRequest(JsonModel):
     """List of work item templates to update."""
 
     replace: bool | None = None
-    """When true, existing array and key-value pair fields are replaced instead of merged."""
+    """When true, existing key-value pair fields are replaced instead of merged."""

@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class WorkItemField(str, Enum):
-    """Model for an object describing an work item with all of its properties."""
+    """Enumeration of work item fields that can be projected in query results."""
 
     ID = "ID"
     NAME = "NAME"

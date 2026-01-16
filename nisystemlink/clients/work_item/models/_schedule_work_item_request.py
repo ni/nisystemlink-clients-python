@@ -14,7 +14,7 @@ class ScheduleWorkItemRequest(JsonModel):
     """The ID of the user to whom the work item is assigned."""
 
     schedule: ScheduleDefinition | None = None
-    """The scheduling properties for the work item."""
+    """Scheduling properties for the work item."""
 
     resources: ScheduleResourcesDefinition | None = None
-    """The resources reserved for the work item."""
+    """Resources reserved for scheduling the work item."""

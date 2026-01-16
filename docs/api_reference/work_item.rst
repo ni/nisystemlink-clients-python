@@ -1,7 +1,7 @@
 .. _api_work_item_page:
 
 nisystemlink.clients.work_item
-===============================
+==============================
 
 .. autoclass:: nisystemlink.clients.work_item.WorkItemClient
    :exclude-members: __init__

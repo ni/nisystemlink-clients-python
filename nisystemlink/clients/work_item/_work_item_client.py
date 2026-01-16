@@ -33,7 +33,7 @@ class WorkItemClient(BaseClient):
 
     @get("workitems/{work_item_id}")
     def get_work_item(self, work_item_id: str) -> models.WorkItem:
-        """Retrieve a work item by its ID.
+        """Retrieves a work item by its ID.
 
         Args:
             work_item_id: The ID of the work item to retrieve.
@@ -50,7 +50,7 @@ class WorkItemClient(BaseClient):
     def create_work_items(
         self, work_items: List[models.CreateWorkItemRequest]
     ) -> models.CreateWorkItemsPartialSuccessResponse:
-        """Create one or more work items.
+        """Creates one or more work items.
 
         Args:
             work_items: A list of work items to create.
@@ -101,7 +101,7 @@ class WorkItemClient(BaseClient):
     def update_work_items(
         self, update_work_items: models.UpdateWorkItemsRequest
     ) -> models.UpdateWorkItemsPartialSuccessResponse:
-        """Update one or more work items.
+        """Updates one or more work items.
 
         Args:
             update_work_items: The update request containing work items to update.
@@ -118,7 +118,7 @@ class WorkItemClient(BaseClient):
     def delete_work_items(
         self, ids: List[str]
     ) -> models.DeleteWorkItemsPartialSuccessResponse | None:
-        """Delete one or more work items by IDs.
+        """Deletes one or more work items by IDs.
 
         Args:
             ids: A list of work item IDs to delete.
@@ -170,7 +170,7 @@ class WorkItemClient(BaseClient):
     def update_work_item_templates(
         self, update_work_item_templates: models.UpdateWorkItemTemplatesRequest
     ) -> models.UpdateWorkItemTemplatesResponse:
-        """Update one or more work item templates.
+        """Updates one or more work item templates.
 
         Args:
             update_work_item_templates: The update request containing work item templates to update.

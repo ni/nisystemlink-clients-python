@@ -5,7 +5,7 @@ from pydantic import Field
 
 
 class Job(JsonModel):
-    """Represents a job to be executed, including its functions, arguments, and metadata."""
+    """Defines a job to be executed by a work item job execution."""
 
     functions: List[str]
     """List of function names to execute."""
@@ -18,10 +18,10 @@ class Job(JsonModel):
 
 
 class NotebookExecution(JsonModel):
-    """Defines the execution of a notebook."""
+    """Defines a notebook execution for a work item."""
 
     action: str
-    """User defined action to perform in workflow (user defined)."""
+    """User defined action to perform in workflow."""
 
     type: Literal["NOTEBOOK"] = Field(default="NOTEBOOK")
     """Type of execution, default is 'NOTEBOOK'."""
@@ -34,20 +34,20 @@ class NotebookExecution(JsonModel):
 
 
 class ManualExecution(JsonModel):
-    """Represents a manual execution definition."""
+    """Defines a manual execution for a work item."""
 
     action: str
-    """User defined action to perform in workflow (user defined)."""
+    """User defined action to perform in workflow."""
 
     type: Literal["MANUAL"] = Field(default="MANUAL")
     """Type of execution, default is 'MANUAL'."""
 
 
 class JobExecution(JsonModel):
-    """Defines the execution of one or more jobs."""
+    """Defines a job execution for a work item."""
 
     action: str
-    """User defined action to perform in workflow (user defined)."""
+    """User defined action to perform in workflow."""
 
     type: Literal["JOB"] = Field(default="JOB")
     """Type of execution, default is 'JOB'."""
@@ -60,10 +60,10 @@ class JobExecution(JsonModel):
 
 
 class NoneExecution(JsonModel):
-    """Represents a definition where no execution is specified."""
+    """Defines an unimplemented execution for a work item."""
 
     action: str
-    """User defined action to perform in workflow (user defined)."""
+    """User defined action to perform in workflow."""
 
     type: Literal["NONE"] = Field(default="NONE")
     """Type of execution, default is 'NONE'."""
