@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.28.0 (2026-01-16)
+
+### Feature
+
+* Add Client for Work Item and Work Item Template APIs ([#189](https://github.com/ni/nisystemlink-clients-python/issues/189)) ([`b34eb60`](https://github.com/ni/nisystemlink-clients-python/commit/b34eb6094d89173de662a86b6c7b959db9a51840))
+
 ## v2.27.0 (2026-01-09)
 
 ### Feature
