@@ -169,7 +169,7 @@ class WorkItemClient(BaseClient):
     @post("update-workitem-templates")
     def update_work_item_templates(
         self, update_work_item_templates: models.UpdateWorkItemTemplatesRequest
-    ) -> models.UpdateWorkItemTemplatesResponse:
+    ) -> models.UpdateWorkItemTemplatesPartialSuccessResponse:
         """Updates one or more work item templates.
 
         Args:

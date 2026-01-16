@@ -93,7 +93,7 @@ class WorkItemOrderBy(str, Enum):
 
 
 class QueryWorkItemsRequest(JsonModel):
-    """Represents the request body for querying work items.
+    """Represents the request body content for querying work items.
     Allows filtering, sorting, and pagination of work item results.
     """
 

@@ -26,7 +26,6 @@ server_configuration: HttpConfiguration | None = None
 
 client = WorkItemClient(configuration=server_configuration)
 
-# Work item template request metadata
 create_work_item_template_request = [
     CreateWorkItemTemplateRequest(
         name="Python integration work item template",

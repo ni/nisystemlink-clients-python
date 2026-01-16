@@ -50,7 +50,7 @@ class WorkItemTemplateOrderBy(str, Enum):
 
 
 class QueryWorkItemTemplatesRequest(JsonModel):
-    """Represents the request body for querying work item templates.
+    """Represents the request body content for querying work item templates.
     Allows filtering, sorting, and pagination of work item template results.
     """
 

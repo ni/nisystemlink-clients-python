@@ -90,5 +90,5 @@ class WorkItem(JsonModel):
     execution_history: List[ExecutionEvent] | None = None
     """The execution history of the work item."""
 
-    dashboard_url: Dict[str, str] | None = None
-    """The URLs for dashboards related to the work item."""
+    workflow_id: str | None = None
+    """The ID of the workflow associated with the work item."""

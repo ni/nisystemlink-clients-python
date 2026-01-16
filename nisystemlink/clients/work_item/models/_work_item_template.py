@@ -57,6 +57,9 @@ class WorkItemTemplateBase(JsonModel):
     dashboard: Dashboard | None = None
     """The dashboard data related to the work item created from this template."""
 
+    workflow_id: str | None = None
+    """The ID of the workflow associated with the work item created from this template."""
+
 
 class WorkItemTemplate(WorkItemTemplateBase):
     """Contains response information for work item template."""

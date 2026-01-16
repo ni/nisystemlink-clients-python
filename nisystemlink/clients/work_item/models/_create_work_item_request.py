@@ -51,7 +51,7 @@ class CreateWorkItemRequest(JsonModel):
     """Resources reserved for the work item."""
 
     execution_actions: List[ExecutionDefinition] | None = None
-    """List of execution actions for the work item."""
+    """The execution actions defined for the work item."""
 
     file_ids_from_template: List[str] | None = None
     """The list of file IDs inherited from the template."""
@@ -61,3 +61,6 @@ class CreateWorkItemRequest(JsonModel):
 
     dashboard: Dashboard | None = None
     """The dashboard associated with the work item."""
+
+    workflow_id: str | None = None
+    """The ID of the workflow associated with the work item."""

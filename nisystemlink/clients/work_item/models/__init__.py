@@ -58,7 +58,6 @@ from ._update_work_items_partial_success_response import (
 )
 from ._update_work_items_request import UpdateWorkItemsRequest
 
-
 from ._create_work_item_template_request import CreateWorkItemTemplateRequest
 from ._create_work_item_templates_partial_success_response import (
     CreateWorkItemTemplatesPartialSuccessResponse,
@@ -70,6 +69,8 @@ from ._paged_work_item_templates import PagedWorkItemTemplates
 from ._query_work_item_templates_request import QueryWorkItemTemplatesRequest
 from ._update_work_item_template_request import UpdateWorkItemTemplateRequest
 from ._update_work_item_templates_request import UpdateWorkItemTemplatesRequest
-from ._update_work_item_templates_response import UpdateWorkItemTemplatesResponse
+from ._update_work_item_templates_partial_success_response import (
+    UpdateWorkItemTemplatesPartialSuccessResponse,
+)
 
 # flake8: noqa

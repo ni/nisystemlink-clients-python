@@ -6,7 +6,7 @@ from ._update_work_item_request import UpdateWorkItemRequest
 
 
 class UpdateWorkItemsRequest(JsonModel):
-    """Represents the request body for updating multiple work items."""
+    """Represents the request body content for updating multiple work items."""
 
     work_items: List[UpdateWorkItemRequest]
     """List of work items to update."""

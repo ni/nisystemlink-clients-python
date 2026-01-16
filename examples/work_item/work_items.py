@@ -82,9 +82,9 @@ create_work_items_request = [
                 selections=[
                     ResourceSelectionDefinition(
                         id="asset-001",
-                        target_location_id="location-003",
+                        target_location_id="location-001",
                         target_system_id="system-001",
-                        target_parent_id="parent-002",
+                        target_parent_id="parent-001",
                     ),
                 ],
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
@@ -95,6 +95,7 @@ create_work_items_request = [
                         id="fixture-001",
                         target_location_id="location-001",
                         target_system_id="system-001",
+                        target_parent_id="parent-001",
                     ),
                 ],
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',

@@ -2,6 +2,8 @@ from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
+from ._dashboard import Dashboard
+from ._execution_definition import ExecutionDefinition
 from ._resources_definition import ResourcesDefinition
 from ._timeline_definition import TimelineDefinition
 
@@ -45,8 +47,14 @@ class UpdateWorkItemRequest(JsonModel):
     resources: ResourcesDefinition | None = None
     """Resources reserved for the work item."""
 
+    execution_actions: List[ExecutionDefinition] | None = None
+    """The execution actions defined for the work item."""
+
     properties: Dict[str, str] | None = None
-    """Additional properties for the work item as key-value pairs."""
+    """Additional properties for the work item."""
 
     file_ids_from_template: List[str] | None = None
-    """List of file IDs from the template to associate with the work item."""
+    """The array of file IDs associated with the work item template."""
+
+    dashboard: Dashboard | None = None
+    """The dashboard associated with the work item."""

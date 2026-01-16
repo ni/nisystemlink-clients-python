@@ -6,7 +6,7 @@ from ._update_work_item_template_request import UpdateWorkItemTemplateRequest
 
 
 class UpdateWorkItemTemplatesRequest(JsonModel):
-    """Request information for the update work item templates API."""
+    """Represents the request body content for updating multiple work item templates."""
 
     work_item_templates: List[UpdateWorkItemTemplateRequest]
     """List of work item templates to update."""
