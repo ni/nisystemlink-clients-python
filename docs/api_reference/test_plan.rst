@@ -3,6 +3,10 @@
 nisystemlink.clients.test_plan
 ======================
 
+.. deprecated:: 2.29.0
+   The Test Plans API will be removed in the future. 
+   Use :class:`~nisystemlink.clients.work_item.WorkItemClient` instead.
+
 .. autoclass:: nisystemlink.clients.test_plan.TestPlanClient
    :exclude-members: __init__
 
