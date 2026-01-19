@@ -2,6 +2,60 @@
 
 <!--next-version-placeholder-->
 
+## v2.28.0 (2026-01-16)
+
+### Feature
+
+* Add Client for Work Item and Work Item Template APIs ([#189](https://github.com/ni/nisystemlink-clients-python/issues/189)) ([`b34eb60`](https://github.com/ni/nisystemlink-clients-python/commit/b34eb6094d89173de662a86b6c7b959db9a51840))
+
+## v2.27.0 (2026-01-09)
+
+### Feature
+
+* Elastic Search (search-files) API Endpoint ([#180](https://github.com/ni/nisystemlink-clients-python/issues/180)) ([`db1b5d9`](https://github.com/ni/nisystemlink-clients-python/commit/db1b5d9882e529e7b703d102f4b5f24ed4c04b12))
+
+## v2.26.2 (2026-01-08)
+
+### Fix
+
+* Standardize HttpConfiguration use within examples ([#188](https://github.com/ni/nisystemlink-clients-python/issues/188)) ([`990a1b6`](https://github.com/ni/nisystemlink-clients-python/commit/990a1b6b99d440fbed291e96c43687838c266ae6))
+
+## v2.26.1 (2026-01-08)
+
+### Fix
+
+* Bump urllib3 from 2.6.0 to 2.6.3 ([#187](https://github.com/ni/nisystemlink-clients-python/issues/187)) ([`663c6b3`](https://github.com/ni/nisystemlink-clients-python/commit/663c6b33171f35bae8b154235666aef335dcc78c))
+
+## v2.26.0 (2026-01-07)
+
+### Feature
+
+* Pagination helper ([#185](https://github.com/ni/nisystemlink-clients-python/issues/185)) ([`1479b6f`](https://github.com/ni/nisystemlink-clients-python/commit/1479b6f3defdafe8023b29d89548d11527a69d96))
+
+## v2.25.1 (2025-12-23)
+
+### Fix
+
+* Alarm Client Severity Level Documentation Changes ([#184](https://github.com/ni/nisystemlink-clients-python/issues/184)) ([`9282075`](https://github.com/ni/nisystemlink-clients-python/commit/9282075f9ec01d614ec2c21f884f7c8940f856c9))
+
+## v2.25.0 (2025-12-22)
+
+### Feature
+
+* Asset Utilization API methods ([#178](https://github.com/ni/nisystemlink-clients-python/issues/178)) ([`83b5f45`](https://github.com/ni/nisystemlink-clients-python/commit/83b5f45db8a5c45507cf0b8a1bae8d6ff5a539de))
+
+## v2.24.0 (2025-12-22)
+
+### Feature
+
+* Add Client for Alarm API ([#173](https://github.com/ni/nisystemlink-clients-python/issues/173)) ([`722b849`](https://github.com/ni/nisystemlink-clients-python/commit/722b849d6c1eef504f216dba196b9e797a6e4b83))
+
+## v2.23.0 (2025-12-22)
+
+### Feature
+
+* Read Minion ID from Client's salt conf ([#179](https://github.com/ni/nisystemlink-clients-python/issues/179)) ([`c8c05b3`](https://github.com/ni/nisystemlink-clients-python/commit/c8c05b37d33b6f6a91fc2508d5dd25ddb0e699c7))
+
 ## v2.22.0 (2025-12-10)
 
 ### Feature

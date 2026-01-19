@@ -7,12 +7,16 @@ from io import BytesIO
 from random import choices, randint
 from typing import BinaryIO
 
+import backoff  # type: ignore
 import pytest  # type: ignore
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
 from nisystemlink.clients.file.models import (
     FileLinqQueryOrderBy,
     FileLinqQueryRequest,
+    SearchFilesOrderBy,
+    SearchFilesRequest,
+    TotalCountRelation,
     UpdateMetadataRequest,
 )
 from nisystemlink.clients.file.utilities import rename_file
@@ -228,7 +232,7 @@ class TestFileClient:
         assert response.available_files is not None
         assert response.total_count is not None
         assert response.total_count.value == 1
-        assert response.total_count.relation == "eq"
+        assert response.total_count.relation == TotalCountRelation.EQUALS
         assert len(response.available_files) == 1
         assert response.available_files[0].id == file_id
         assert response.available_files[0].created is not None
@@ -263,7 +267,175 @@ class TestFileClient:
         assert len(response.available_files) == 0
         assert response.total_count is not None
         assert response.total_count.value == 0
+        assert response.total_count.relation == TotalCountRelation.EQUALS
+
+    def test__query_files_linq__total_count_relation_accepts_string(
+        self, client: FileClient, test_file, random_filename_extension
+    ):
+        """Test backward compatibility: TotalCountRelation should accept string values.
+
+        TotalCountRelation was previously a plain str type. This test ensures that string
+        values like 'eq' and 'gte' are still accepted for backward compatibility.
+        """
+        test_file(file_name=random_filename_extension)
+
+        query_request = FileLinqQueryRequest(
+            filter=f'name == "{random_filename_extension}"',
+        )
+        response = client.query_files_linq(query=query_request)
+
+        assert response.total_count is not None
+        # Test that the relation can be compared with string values
         assert response.total_count.relation == "eq"
+        assert response.total_count.relation in ["eq", "gte"]
+        # Also verify enum comparison still works
+        assert response.total_count.relation == TotalCountRelation.EQUALS  # type: ignore[comparison-overlap]
+
+    def test__query_files_linq__skip_and_take_pagination(
+        self, client: FileClient, test_file
+    ):
+        """Test query_files_linq with skip and take for pagination."""
+        # Upload 5 files to test pagination
+        NUM_FILES = 5
+        file_ids = []
+        file_prefix = f"{PREFIX}pagination_test_"
+
+        for i in range(NUM_FILES):
+            file_name = f"{file_prefix}{i:02d}.bin"
+            file_id = test_file(file_name=file_name)
+            file_ids.append(file_id)
+
+        # Query with skip=1, take=3
+        query_request = FileLinqQueryRequest(
+            filter=f'name.StartsWith("{file_prefix}")',
+            skip=1,
+            take=3,
+            order_by=FileLinqQueryOrderBy.CREATED,
+            order_by_descending=False,
+        )
+        response = client.query_files_linq(query=query_request)
+
+        assert response.available_files is not None
+        assert response.total_count is not None
+        assert response.total_count.value == 3  # skip=1, take=3
+        assert len(response.available_files) == 3
+
+        # Verify that we skipped the first file
+        returned_ids = [f.id for f in response.available_files]
+        for file_id in returned_ids:
+            assert file_id in file_ids
+
+        # Verify skip=1 excluded the first file in creation order
+        returned_names = [
+            f.properties.get("Name", "")
+            for f in response.available_files
+            if f.properties
+        ]
+        expected_skipped_file = f"{file_prefix}00.bin"
+        assert expected_skipped_file not in returned_names
+
+    def test__search_files__succeeds(
+        self, client: FileClient, test_file, random_filename_extension: str
+    ):
+        """Test search_files with filtering, pagination, and ordering.
+
+        Note: search_files() is not guaranteed to return newly created files immediately
+        due to indexing delay (a few seconds). Retry logic with backoff is used to handle
+        this eventual consistency behavior.
+        """
+        # Upload 5 files to test various scenarios
+        NUM_FILES = 5
+        file_ids = []
+        file_prefix = f"{PREFIX}search_test_"
+
+        for i in range(NUM_FILES):
+            file_name = f"{file_prefix}_{i}.bin"
+            file_id = test_file(file_name=file_name)
+            file_ids.append(file_id)
+
+        # Search with filter (by name pattern), pagination, and ordering
+        search_request = SearchFilesRequest(
+            filter=f'(name: ("{file_prefix}*"))',
+            skip=1,
+            take=3,
+            order_by=SearchFilesOrderBy.NAME,
+            order_by_descending=True,
+        )
+
+        # Search with retry logic
+        @backoff.on_exception(
+            backoff.expo,
+            (AssertionError, ApiException),
+            max_tries=5,
+            max_time=10,
+        )
+        def search_and_verify() -> None:
+            response = client.search_files(request=search_request)
+
+            assert response.available_files is not None
+            assert response.total_count is not None
+            assert response.total_count.value == 3
+            assert response.total_count.relation is not None
+            assert len(response.available_files) == 3  # skip=1, take=3
+
+            # Verify all fields in response
+            for file_metadata in response.available_files:
+                assert file_metadata.id in file_ids
+                assert file_metadata.properties is not None
+                assert file_metadata.properties.get("Name") is not None
+                assert file_metadata.properties.get("Name", "").startswith(file_prefix)
+                assert file_metadata.created is not None
+                assert isinstance(file_metadata.created, datetime)
+                assert file_metadata.updated is not None
+                assert isinstance(file_metadata.updated, datetime)
+                assert file_metadata.workspace is not None
+                assert file_metadata.size is not None
+
+            # Verify descending order by name
+            returned_names = [
+                f.properties.get("Name", "")
+                for f in response.available_files
+                if f.properties
+            ]
+            assert returned_names == sorted(returned_names, reverse=True)
+
+            # Verify skip=1 excluded the first file in descending order
+            expected_skipped_file = f"{file_prefix}_4.bin"
+            assert expected_skipped_file not in returned_names
+
+        search_and_verify()
+
+    def test__search_files__no_filter_succeeds(self, client: FileClient, test_file):
+        test_file()
+
+        search_request = SearchFilesRequest(skip=0, take=10)
+        response = client.search_files(request=search_request)
+
+        assert response.available_files is not None
+        assert response.total_count is not None
+        assert response.total_count.value >= 1
+        assert len(response.available_files) >= 1
+
+    def test__search_files__invalid_filter_raises(self, client: FileClient):
+        search_request = SearchFilesRequest(filter="invalid filter syntax")
+
+        with pytest.raises(ApiException):
+            client.search_files(request=search_request)
+
+    def test__search_files__filter_returns_no_results(self, client: FileClient):
+        unique_nonexistent_name = (
+            f"{PREFIX}nonexistent_search_file_{randint(100000, 999999)}.random_ext"
+        )
+
+        search_request = SearchFilesRequest(
+            filter=f'(name: ("{unique_nonexistent_name}"))', skip=0, take=10
+        )
+        response = client.search_files(request=search_request)
+
+        assert response.available_files is not None
+        assert len(response.available_files) == 0
+        assert response.total_count is not None
+        assert response.total_count.value == 0
 
     def test__start_upload_session__with_invalid_workspace__raises(
         self, client: FileClient

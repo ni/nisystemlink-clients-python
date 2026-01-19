@@ -34,11 +34,16 @@ def create_some_products():
     return create_response
 
 
-# Setup the server configuration to point to your instance of SystemLink Enterprise
-server_configuration = HttpConfiguration(
-    server_uri="https://yourserver.yourcompany.com",
-    api_key="YourAPIKeyGeneratedFromSystemLink",
-)
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
+server_configuration: HttpConfiguration | None = None
+
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="",
+# )
+
 client = ProductClient(configuration=server_configuration)
 
 # Get all the products using the continuation token in batches of 100 at a time.

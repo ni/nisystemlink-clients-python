@@ -3,6 +3,55 @@
 Getting Started
 ===============
 
+Alarm API
+---------
+
+Overview
+~~~~~~~~
+
+The :class:`.AlarmClient` class is the primary entry point of the Alarm API.
+
+When constructing an :class:`.AlarmClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.AlarmClient` use the
+default connection. The default connection depends on your environment.
+
+With an :class:`.AlarmClient` object, you can:
+
+* Create and update alarm instances using :meth:`~.AlarmClient.create_or_update_alarm`
+
+  * Alarms have two key identifiers:
+  
+    * ``alarm_id``: A user-defined identifier for the alarm type
+    * ``instance_id``: A server-generated unique identifier for each alarm occurrence
+  
+  * Create alarm transitions (SET, CLEAR) to track alarm state changes
+
+* Query alarms with :meth:`~.AlarmClient.query_alarms`
+
+  * Filter alarms using Dynamic LINQ expressions
+  * Control which transitions are returned (most recent only or all)
+  * Sort and paginate results
+
+* Get a specific alarm by its instance_id using :meth:`~.AlarmClient.get_alarm`
+
+* Acknowledge alarms by its instance_id using :meth:`~.AlarmClient.acknowledge_alarms`
+
+  * Optionally force-clear alarms when acknowledging
+
+* Delete alarms using :meth:`~.AlarmClient.delete_alarm` or 
+  :meth:`~.AlarmClient.delete_alarms`
+
+Examples
+~~~~~~~~
+
+Create, query, acknowledge, and delete alarms
+
+.. literalinclude:: ../examples/alarm/alarm.py
+   :language: python
+   :linenos:
+
+
 Tag API
 -------
 
@@ -203,7 +252,7 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.FileClient` object, you can:
 
-* Get the list of files, download and delete files.
+* Get the list of files, query and search for files, download and delete files.
 * Start upload sessions, upload file chunks, and finish sessions for large file uploads.
 
 Examples
@@ -218,6 +267,14 @@ Get the metadata of a File using its Id and download it.
 Upload a File from disk or memory to SystemLink
 
 .. literalinclude:: ../examples/file/upload_file.py
+   :language: python
+   :linenos:
+
+Search for files with filtering and pagination
+
+.. literalinclude:: ../examples/file/search_files.py
+   :language: python
+   :linenos:
 
 Feeds API
 -------
@@ -339,14 +396,22 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.AssetManagementClient` object, you can:
 
-* Create, delete, get the list of assets and link files to assets.
+* Create, delete, query assets and link files to assets.
+
+* Track asset utilization with start, heartbeat, end, and query history operations.
 
 Examples
 ~~~~~~~~
 
-create, delete, query asset and link files to assets.
+Create, delete, and query assets and link files to assets.
 
 .. literalinclude:: ../examples/assetmanagement/assets.py
+   :language: python
+   :linenos:
+
+Track asset utilization.
+
+.. literalinclude:: ../examples/assetmanagement/asset_utilization.py
    :language: python
    :linenos:
 
@@ -373,6 +438,39 @@ Examples
 Create, query, and remove some systems.
 
 .. literalinclude:: ../examples/systems/systems.py
+   :language: python
+   :linenos:
+
+WorkItem API
+-------
+
+Overview
+~~~~~~~~
+
+The :class:`.WorkItemClient` class is the primary entry point of the WorkItem API.
+
+When constructing a :class:`.WorkItemClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.WorkItemClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.WorkItemClient` object, you can:
+
+* Create, query, get, update, schedule and delete work items
+* Create, query, update and delete work item templates
+
+Examples
+~~~~~~~~
+
+Create, query, get, update, schedule and delete work items
+
+.. literalinclude:: ../examples/work_item/work_items.py
+   :language: python
+   :linenos:
+
+Create, query, update and delete work item templates.
+
+.. literalinclude:: ../examples/work_item/work_item_templates.py
    :language: python
    :linenos:
 

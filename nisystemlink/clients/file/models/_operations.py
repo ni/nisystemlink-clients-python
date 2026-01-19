@@ -7,6 +7,7 @@ class Operations(JsonModel):
     download_data: Operation | None = None
     list_files: Operation | None = None
     query_files: Operation | None = None
+    search_files: Operation | None = None
     update_metadata: Operation | None = None
     upload_files: Operation | None = None
 
@@ -19,6 +20,7 @@ class V1Operations(JsonModel):
     - downloadData: The ability to download file data
     - listFiles: The ability to list available files and service groups
     - queryFiles: The ability to query available files and service groups
+    - searchFiles: The ability to search for files using Elasticsearch
     - updateMetadata: The ability to update file metadata properties
     - uploadFiles: The ability to upload files
     """

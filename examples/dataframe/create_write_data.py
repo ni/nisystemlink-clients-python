@@ -5,6 +5,7 @@ try:
     import pyarrow as pa  # type: ignore
 except Exception:
     pa = None
+from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import (
     AppendTableDataRequest,
@@ -15,7 +16,17 @@ from nisystemlink.clients.dataframe.models import (
     DataType,
 )
 
-client = DataFrameClient()
+# Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
+server_configuration: HttpConfiguration | None = None
+
+# To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
+# the following lines and provide your server URI and API key.
+# server_configuration = HttpConfiguration(
+#     server_uri="https://yourserver.yourcompany.com",
+#     api_key="",
+# )
+
+client = DataFrameClient(configuration=server_configuration)
 
 # Create table
 table_id = client.create_table(
