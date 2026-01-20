@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.29.0 (2026-01-20)
+
+### Feature
+
+* Upload Large File API Methods ([#181](https://github.com/ni/nisystemlink-clients-python/issues/181)) ([`a44feb9`](https://github.com/ni/nisystemlink-clients-python/commit/a44feb9d1f0735e102897cc8c89c81919bec41ec))
+
 ## v2.28.0 (2026-01-16)
 
 ### Feature
