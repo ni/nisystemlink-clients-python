@@ -1,3 +1,4 @@
+import warnings
 from typing import List
 
 from nisystemlink.clients import core
@@ -28,6 +29,12 @@ class TestPlanClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the WorkOrder Service.
         """
+        warnings.warn(
+            "TestPlanClient is deprecated and will be removed in the future. "
+            "Use WorkItemClient instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
 
