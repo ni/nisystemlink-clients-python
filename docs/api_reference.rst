@@ -22,6 +22,7 @@ API Reference
    api_reference/work_item
    api_reference/test_plan
    api_reference/artifact
+   api_reference/notification
 
 Indices and tables
 ------------------
