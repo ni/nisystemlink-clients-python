@@ -7,6 +7,7 @@ from nisystemlink.clients.core._uplink._methods import post
 
 from . import models
 
+
 @retry(
     when=retry.when.status(408, 429, 502, 503, 504),
     stop=retry.stop.after_attempt(1),
@@ -37,7 +38,7 @@ class NotificationClient(BaseClient):
         """Applies the notification strategy from the given request.
 
         Args:
-            request: The request containing message template substitution fields and notification strategies.
+            request: Request with message template substitution fields and notification strategies.
 
         Returns:
             None.

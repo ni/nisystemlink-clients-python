@@ -6,7 +6,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class DynamicStrategyRequest(JsonModel):
-    """Model for an object describing the properties of the strategy to be applied."""
+    """Request model for applying a notification strategy."""
 
     message_template_substitution_fields: Dict[str, str]
     """Gets or sets the message template substitution fields.
@@ -15,4 +15,4 @@ class DynamicStrategyRequest(JsonModel):
     """
 
     notification_strategy: NotificationStrategy
-    """This record defines the dynamic notification strategy model for the v1 endpoint."""
+    """Gets or sets the notification strategy containing configurations for address groups and message templates."""

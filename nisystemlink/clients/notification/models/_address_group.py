@@ -1,10 +1,16 @@
-from typing import Dict, List
+from typing import Dict, List, TypedDict
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
+class AddressFields(TypedDict, total=False):
+    toAddresses: List[str]
+    ccAddresses: List[str]
+    bccAddresses: List[str]
+
+
 class AddressGroup(JsonModel):
-    """Model for address group for v1 endpoint."""
+    """Model for address group defining notification recipients."""
 
     id: str
     """Gets or sets the ID for address group."""
@@ -27,7 +33,7 @@ class AddressGroup(JsonModel):
     Example: { "property": "value" }
     """
 
-    fields: Dict[str, List[str]]
+    fields: AddressFields
     """Gets or sets the address group's fields. Requires at least one valid recipient.
 
     Valid fields:

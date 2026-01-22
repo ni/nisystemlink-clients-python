@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class NotificationConfiguration(JsonModel):
-    """Model for dynamic notification configuration for the v1 endpoint."""
+    """Model for notification configuration defining address groups and message template for the notification."""
 
     address_group_id: str
     """Gets the address group ID"""
@@ -14,7 +14,7 @@ class NotificationConfiguration(JsonModel):
     """Gets the message template ID"""
 
     address_group: AddressGroup
-    """This record defines the address group model for the v1 endpoint."""
+    """Gets the address group defining notification recipients."""
 
     message_template: MessageTemplate
-    """This record defines the message template model for the v1 endpoint."""
+    """Gets the message template defining notification content structure"""
