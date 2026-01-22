@@ -1,8 +1,8 @@
 from typing import Dict
 
-from ._notification_strategy import NotificationStrategy
-
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+from ._notification_strategy import NotificationStrategy
 
 
 class DynamicStrategyRequest(JsonModel):

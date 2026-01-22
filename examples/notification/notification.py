@@ -3,8 +3,10 @@ import uuid
 from nisystemlink.clients.core import ApiException, HttpConfiguration
 from nisystemlink.clients.notification import NotificationClient
 from nisystemlink.clients.notification.models import (
+    AddressFields,
     AddressGroup,
     DynamicStrategyRequest,
+    MessageFieldTemplates,
     MessageTemplate,
     NotificationConfiguration,
     NotificationStrategy,
@@ -34,7 +36,11 @@ address_group = AddressGroup(
     interpreting_service_name="smtp",
     display_name="Address group name",
     properties={"property": "value"},
-    fields={"toAddresses": ["address1@example.com"]},
+    fields={
+        AddressFields.toAddresses: ["address1@example.com"],
+        AddressFields.ccAddresses: ["address2@example.com"],
+        AddressFields.bccAddresses: ["address3@example.com"],
+    },
     referencing_notification_strategies=["reference_notification_strategy"],
 )
 
@@ -44,7 +50,10 @@ message_template = MessageTemplate(
     interpreting_service_name="smtp",
     display_name="Message template name",
     properties={"property": "value"},
-    fields={"subjectTemplate": "subject", "bodyTemplate": "body"},
+    fields={
+        MessageFieldTemplates.subjectTemplate: "subject",
+        MessageFieldTemplates.bodyTemplate: "body",
+    },
     referencing_notification_strategies=["reference_notification_strategy"],
 )
 

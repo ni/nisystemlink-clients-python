@@ -1,7 +1,7 @@
+from nisystemlink.clients.core._uplink._json_model import JsonModel
+
 from ._address_group import AddressGroup
 from ._message_template import MessageTemplate
-
-from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class NotificationConfiguration(JsonModel):

@@ -1,11 +1,13 @@
-from typing import Dict, List, TypedDict
+from enum import Enum
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class MessageFieldTemplates(TypedDict, total=False):
-    subjectTemplate: str
-    bodyTemplate: str
+class MessageFieldTemplates(str, Enum):
+    """Defines valid fields for message template."""
+    subjectTemplate = "subjectTemplate"
+    bodyTemplate = "bodyTemplate"
 
 
 class MessageTemplate(JsonModel):
@@ -32,15 +34,17 @@ class MessageTemplate(JsonModel):
     Example: { "property": "value" }
     """
 
-    fields: MessageFieldTemplates
+    fields: Dict[MessageFieldTemplates, str]
     """Gets or sets the message template's fields.
 
     Valid fields:
         - subjectTemplate (required)
         - bodyTemplate
 
-    Example: { "subjectTemplate": "subject", "bodyTemplate": "body" }
+    Example: { MessageFieldTemplates.subjectTemplate: "subject", MessageFieldTemplates.bodyTemplate: "body" }
     """
 
     referencing_notification_strategies: List[str]
     """Gets or sets the message template's referencing notification strategies."""
+
+    model_config = {"use_enum_values": True}

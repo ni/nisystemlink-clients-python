@@ -1,6 +1,8 @@
 from typing import List
-from ._notification_configuration import NotificationConfiguration
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+from ._notification_configuration import NotificationConfiguration
 
 
 class NotificationStrategy(JsonModel):

@@ -1,12 +1,14 @@
-from typing import Dict, List, TypedDict
+from enum import Enum
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class AddressFields(TypedDict, total=False):
-    toAddresses: List[str]
-    ccAddresses: List[str]
-    bccAddresses: List[str]
+class AddressFields(str, Enum):
+    """Defines valid fields for address group."""
+    toAddresses = "toAddresses"
+    ccAddresses = "ccAddresses"
+    bccAddresses = "bccAddresses"
 
 
 class AddressGroup(JsonModel):
@@ -33,21 +35,23 @@ class AddressGroup(JsonModel):
     Example: { "property": "value" }
     """
 
-    fields: AddressFields
+    fields: Dict[AddressFields, List[str]]
     """Gets or sets the address group's fields. Requires at least one valid recipient.
 
     Valid fields:
         - toAddresses
         - ccAddresses
         - bccAddresses
-    
+
     Example:
-        { 
-            "toAddresses": [ "address1@example.com" ], 
-            "ccAddresses": [ "address2@example.com" ], 
-            "bccAddresses": [ "address3@example.com" ] 
+        {
+            AddressFields.toAddresses: [ "address1@example.com" ],
+            AddressFields.ccAddresses: [ "address2@example.com" ],
+            AddressFields.bccAddresses: [ "address3@example.com" ]
         }
     """
 
     referencing_notification_strategies: List[str]
     """Gets or sets the address group's referencing notification strategies."""
+
+    model_config = {"use_enum_values": True}

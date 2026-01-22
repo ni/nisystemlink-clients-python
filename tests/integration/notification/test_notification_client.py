@@ -1,11 +1,16 @@
 import pytest
-
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.notification import NotificationClient
 from nisystemlink.clients.notification.models import (
-    AddressGroup, DynamicStrategyRequest, MessageTemplate,
-    NotificationConfiguration, NotificationStrategy)
+    AddressFields,
+    AddressGroup,
+    DynamicStrategyRequest,
+    MessageFieldTemplates,
+    MessageTemplate,
+    NotificationConfiguration,
+    NotificationStrategy,
+)
 
 
 @pytest.fixture
@@ -17,7 +22,9 @@ def request_model():
         display_name="name",
         properties={"property": "value"},
         fields={
-            "toAddresses": ["address1@example.com"],
+            AddressFields.toAddresses: ["address1@example.com"],
+            AddressFields.ccAddresses: ["address2@example.com"],
+            AddressFields.bccAddresses: ["address3@example.com"],
         },
         referencing_notification_strategies=["reference_notification_strategy"],
     )
@@ -27,7 +34,10 @@ def request_model():
         interpreting_service_name="smtp",
         display_name="name",
         properties={"property": "value"},
-        fields={"subjectTemplate": "subject", "bodyTemplate": "body"},
+        fields={
+            MessageFieldTemplates.subjectTemplate: "subject",
+            MessageFieldTemplates.bodyTemplate: "body",
+        },
         referencing_notification_strategies=["reference_notification_strategy"],
     )
 
@@ -69,7 +79,7 @@ class TestNotificationClient:
     def test__apply_strategy_with_empty_template_substitution_fields__raises_exception(
         self, client: NotificationClient, request_model: DynamicStrategyRequest
     ):
-        request_model.message_template_substitution_fields = None
+        request_model.message_template_substitution_fields = None  # type: ignore[assignment]
 
         with pytest.raises(ApiException):
             client.apply_notification_strategy(request=request_model)
@@ -89,7 +99,7 @@ class TestNotificationClient:
     ):
         request_model.notification_strategy.notification_configurations[
             0
-        ].address_group.fields = {"toAddresses": ["sample"]}
+        ].address_group.fields = {AddressFields.toAddresses: ["sample"]}
 
         with pytest.raises(ApiException):
             client.apply_notification_strategy(request=request_model)
@@ -107,7 +117,7 @@ class TestNotificationClient:
     ):
         request_model.notification_strategy.notification_configurations[
             0
-        ].address_group = None
+        ].address_group = None  # type: ignore[assignment]
 
         with pytest.raises(ApiException):
             client.apply_notification_strategy(request=request_model)
@@ -117,7 +127,7 @@ class TestNotificationClient:
     ):
         request_model.notification_strategy.notification_configurations[
             0
-        ].message_template = None
+        ].message_template = None  # type: ignore[assignment]
 
         with pytest.raises(ApiException):
             client.apply_notification_strategy(request=request_model)
@@ -127,7 +137,7 @@ class TestNotificationClient:
     ):
         request_model.notification_strategy.notification_configurations[
             0
-        ].message_template.fields = {"bodyTemplate": "body"}
+        ].message_template.fields = {MessageFieldTemplates.bodyTemplate: "body"}
 
         with pytest.raises(ApiException):
             client.apply_notification_strategy(request=request_model)
