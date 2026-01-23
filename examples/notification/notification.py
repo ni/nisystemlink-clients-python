@@ -5,11 +5,11 @@ from nisystemlink.clients.notification import NotificationClient
 from nisystemlink.clients.notification.models import (
     AddressFields,
     AddressGroup,
+    DynamicNotificationConfiguration,
+    DynamicNotificationStrategy,
     DynamicStrategyRequest,
-    MessageFieldTemplates,
     MessageTemplate,
-    NotificationConfiguration,
-    NotificationStrategy,
+    MessageTemplateFields,
 )
 
 # Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
@@ -36,11 +36,11 @@ address_group = AddressGroup(
     interpreting_service_name="smtp",
     display_name="Address group name",
     properties={"property": "value"},
-    fields={
-        AddressFields.toAddresses: ["address1@example.com"],
-        AddressFields.ccAddresses: ["address2@example.com"],
-        AddressFields.bccAddresses: ["address3@example.com"],
-    },
+    fields=AddressFields(
+        toAddresses=["sample1@example.com"],
+        ccAddresses=["sample2@example.com"],
+        bccAddresses=["sample3@example.com"],
+    ),
     referencing_notification_strategies=["reference_notification_strategy"],
 )
 
@@ -50,15 +50,14 @@ message_template = MessageTemplate(
     interpreting_service_name="smtp",
     display_name="Message template name",
     properties={"property": "value"},
-    fields={
-        MessageFieldTemplates.subjectTemplate: "subject",
-        MessageFieldTemplates.bodyTemplate: "body",
-    },
+    fields=MessageTemplateFields(
+        subject_template="Sample Subject", body_template="Sample Body"
+    ),
     referencing_notification_strategies=["reference_notification_strategy"],
 )
 
 # Create notification configuration
-notification_config = NotificationConfiguration(
+dynamic_notification_config = DynamicNotificationConfiguration(
     address_group_id=address_group_id,
     message_template_id=message_template_id,
     address_group=address_group,
@@ -66,18 +65,18 @@ notification_config = NotificationConfiguration(
 )
 
 # Create notification strategy
-notification_strategy = NotificationStrategy(
-    notification_configurations=[notification_config]
+dynamic_notification_strategy = DynamicNotificationStrategy(
+    notification_configurations=[dynamic_notification_config]
 )
 
 # Create request for applying strategy
-apply_strategy_request = DynamicStrategyRequest(
+dynamic_strategy_request = DynamicStrategyRequest(
     message_template_substitution_fields={"replacement": "value"},
-    notification_strategy=notification_strategy,
+    notification_strategy=dynamic_notification_strategy,
 )
 
 try:
-    client.apply_notification_strategy(request=apply_strategy_request)
+    client.apply_notification_strategy(request=dynamic_strategy_request)
     print("Notification strategy applied successfully")
 except ApiException as e:
     if e.http_status_code == 400:

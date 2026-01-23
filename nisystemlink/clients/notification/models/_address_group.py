@@ -1,20 +1,25 @@
-from enum import Enum
 from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class AddressFields(str, Enum):
-    """Defines valid fields for address group."""
-    toAddresses = "toAddresses"
-    ccAddresses = "ccAddresses"
-    bccAddresses = "bccAddresses"
+class AddressFields(JsonModel):
+    """Fields representing the subject and body templates of a message."""
+
+    toAddresses: List[str] | None = None
+    """List of primary recipient addresses."""
+
+    ccAddresses: List[str] | None = None
+    """List of carbon copy recipient addresses."""
+
+    bccAddresses: List[str] | None = None
+    """List of blind carbon copy recipient addresses."""
 
 
 class AddressGroup(JsonModel):
-    """Model for address group defining notification recipients."""
+    """Model defining notification recipients."""
 
-    id: str
+    id: str | None = None
     """Gets or sets the ID for address group."""
 
     interpreting_service_name: str
@@ -23,19 +28,19 @@ class AddressGroup(JsonModel):
     Example: "smtp"
     """
 
-    display_name: str
+    display_name: str | None = None
     """Gets or sets the address group's display name.
 
     Example: "name"
     """
 
-    properties: Dict[str, str]
+    properties: Dict[str, str] | None = None
     """Gets or sets the address group's properties.
 
     Example: { "property": "value" }
     """
 
-    fields: Dict[AddressFields, List[str]]
+    fields: AddressFields
     """Gets or sets the address group's fields. Requires at least one valid recipient.
 
     Valid fields:
@@ -45,13 +50,11 @@ class AddressGroup(JsonModel):
 
     Example:
         {
-            AddressFields.toAddresses: [ "address1@example.com" ],
-            AddressFields.ccAddresses: [ "address2@example.com" ],
-            AddressFields.bccAddresses: [ "address3@example.com" ]
+            toAddresses: [ "address1@example.com" ],
+            ccAddresses: [ "address2@example.com" ],
+            bccAddresses: [ "address3@example.com" ]
         }
     """
 
-    referencing_notification_strategies: List[str]
+    referencing_notification_strategies: List[str] | None = None
     """Gets or sets the address group's referencing notification strategies."""
-
-    model_config = {"use_enum_values": True}
