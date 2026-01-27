@@ -505,3 +505,30 @@ Create, query and delete test plan templates.
 .. literalinclude:: ../examples/test_plan/test_plan_templates.py
    :language: python
    :linenos:
+
+Notification API
+----------------
+
+Overview
+~~~~~~~~
+
+The :class:`.NotificationClient` class is the primary entry point of the Notification API.
+
+When constructing a :class:`.NotificationClient`, you can pass an
+:class:`.HttpConfiguration` (like one retrieved from the
+:class:`.HttpConfigurationManager`), or let :class:`.NotificationClient` use the
+default connection. The default connection depends on your environment.
+
+With a :class:`.NotificationClient` object, you can:
+
+* Apply dynamic notification strategy using :meth:`~.NotificationCLient.
+apply_notification_strategy`
+
+Examples
+~~~~~~~~
+
+Apply a notification strategy
+
+.. literalinclude:: ../examples/notification/notification.py
+   :language: python
+   :linenos:
