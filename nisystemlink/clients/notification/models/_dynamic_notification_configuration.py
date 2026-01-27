@@ -5,7 +5,10 @@ from ._message_template import MessageTemplate
 
 
 class DynamicNotificationConfiguration(JsonModel):
-    """Model for notification configuration defining address groups and message template for the notification."""
+    """Model for notification configuration defining address groups and message template for the notification.
+
+    Requires at least one of addressGroupId or addressGroup, and one of messageTemplateId or messageTemplate.
+    """
 
     address_group_id: str | None = None
     """Gets the address group ID"""
