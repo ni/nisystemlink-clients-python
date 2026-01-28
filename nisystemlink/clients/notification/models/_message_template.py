@@ -1,6 +1,6 @@
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._common_meta_data import BaseNotificationMetadata
+from ._base_notification_metadata import BaseNotificationMetadata
 
 
 class MessageTemplateFields(JsonModel):
