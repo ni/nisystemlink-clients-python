@@ -23,10 +23,7 @@ from nisystemlink.clients.notification.models import (
 )
 
 # Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
-server_configuration: HttpConfiguration | None = HttpConfiguration(
-    server_uri="https://test-api.lifecyclesolutions.ni.com",
-    api_key="TUXSZH0a6WtAVymFBUQZDjBU4lBMW1Kqn1FumfMMg6",
-)
+server_configuration: HttpConfiguration | None = None
 
 
 # To set up the server configuration to point to your instance of SystemLink Enterprise, uncomment
