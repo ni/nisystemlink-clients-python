@@ -34,7 +34,7 @@ def _address_group():
 def _message_template():
     """Returns the created message template."""
     return MessageTemplate(
-        id="message_group_id",
+        id="message_template_id",
         interpreting_service_name="smtp",
         display_name="name",
         properties={"property": "value"},
@@ -50,7 +50,7 @@ def _notification_configuration(
     """Returns the created notification configuration."""
     return DynamicNotificationConfiguration(
         address_group_id="address_group_id",
-        message_template_id="message_group_id",
+        message_template_id="message_template_id",
         address_group=_address_group,
         message_template=_message_template,
     )
@@ -185,7 +185,7 @@ class TestNotificationClient:
 
         assert exc_info.value.http_status_code == 400
 
-    def test__apply_configuration_with_no_address_and_message_template_id__returns_none(
+    def test__apply_strategy_with_no_address_and_message_template_id__returns_none(
         self,
         client: NotificationClient,
         _address_group: AddressGroup,
@@ -201,6 +201,43 @@ class TestNotificationClient:
             notification_strategy=DynamicNotificationStrategy(
                 notification_configurations=[
                     configuration,
+                ]
+            ),
+        )
+        assert client.apply_notification_strategy(request=request_model) is None
+
+    def test__apply_multiple_notification_configurations__returns_none(
+        self,
+        client: NotificationClient,
+        _address_group: AddressGroup,
+    ):
+        first_message_template = MessageTemplate(
+            fields=MessageTemplateFields(
+                subject_template="subject1", body_template="body1"
+            ),
+        )
+        second_message_template = MessageTemplate(
+            fields=MessageTemplateFields(
+                subject_template="subject2", body_template="body2"
+            ),
+        )
+
+        configuration1 = DynamicNotificationConfiguration(
+            address_group=_address_group,
+            message_template=first_message_template,
+        )
+
+        configuration2 = DynamicNotificationConfiguration(
+            address_group=_address_group,
+            message_template=second_message_template,
+        )
+
+        request_model = DynamicStrategyRequest(
+            message_template_substitution_fields={"replacement": "value"},
+            notification_strategy=DynamicNotificationStrategy(
+                notification_configurations=[
+                    configuration1,
+                    configuration2,
                 ]
             ),
         )

@@ -2,7 +2,7 @@ from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._common_meta_data import CommonFields
+from ._common_meta_data import BaseNotificationMetadata
 
 
 class AddressFields(JsonModel):
@@ -18,7 +18,7 @@ class AddressFields(JsonModel):
     """List of blind carbon copy recipient addresses."""
 
 
-class AddressGroup(CommonFields):
+class AddressGroup(BaseNotificationMetadata):
     """Model defining notification recipients."""
 
     interpreting_service_name: str

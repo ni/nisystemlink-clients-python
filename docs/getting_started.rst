@@ -521,8 +521,7 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.NotificationClient` object, you can:
 
-* Apply dynamic notification strategy using :meth:`~.NotificationCLient.
-apply_notification_strategy`
+* Apply dynamic notification strategy using :meth:`~.NotificationClient.apply_notification_strategy`
 
 Examples
 ~~~~~~~~

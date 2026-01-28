@@ -1,6 +1,6 @@
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
-from ._common_meta_data import CommonFields
+from ._common_meta_data import BaseNotificationMetadata
 
 
 class MessageTemplateFields(JsonModel):
@@ -13,7 +13,7 @@ class MessageTemplateFields(JsonModel):
     """Body template of the message."""
 
 
-class MessageTemplate(CommonFields):
+class MessageTemplate(BaseNotificationMetadata):
     """Model defining the notification content structure."""
 
     fields: MessageTemplateFields

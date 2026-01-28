@@ -3,7 +3,7 @@ from typing import Dict, List
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class CommonFields(JsonModel):
+class BaseNotificationMetadata(JsonModel):
     id: str | None = None
     """Gets or sets the ID"""
 
