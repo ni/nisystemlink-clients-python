@@ -1,0 +1,244 @@
+import pytest
+from nisystemlink.clients.core import ApiException
+from nisystemlink.clients.core._http_configuration import HttpConfiguration
+from nisystemlink.clients.notification import NotificationClient
+from nisystemlink.clients.notification.models import (
+    AddressFields,
+    AddressGroup,
+    DynamicNotificationConfiguration,
+    DynamicNotificationStrategy,
+    DynamicStrategyRequest,
+    MessageTemplate,
+    MessageTemplateFields,
+)
+
+
+@pytest.fixture
+def _address_group():
+    """Returns the created address group."""
+    return AddressGroup(
+        id="address_group_id",
+        interpreting_service_name="smtp",
+        display_name="name",
+        properties={"property": "value"},
+        fields=AddressFields(
+            toAddresses=["address1@example.com"],
+            ccAddresses=["address2@example.com"],
+            bccAddresses=["address3@example.com"],
+        ),
+        referencing_notification_strategies=["reference_notification_strategy"],
+    )
+
+
+@pytest.fixture
+def _message_template():
+    """Returns the created message template."""
+    return MessageTemplate(
+        id="message_template_id",
+        interpreting_service_name="smtp",
+        display_name="name",
+        properties={"property": "value"},
+        fields=MessageTemplateFields(subject_template="subject", body_template="body"),
+        referencing_notification_strategies=["reference_notification_strategy"],
+    )
+
+
+@pytest.fixture
+def _notification_configuration(
+    _address_group: AddressGroup, _message_template: MessageTemplate
+):
+    """Returns the created notification configuration."""
+    return DynamicNotificationConfiguration(
+        address_group_id="address_group_id",
+        message_template_id="message_template_id",
+        address_group=_address_group,
+        message_template=_message_template,
+    )
+
+
+@pytest.fixture
+def _notification_strategy(
+    _notification_configuration: DynamicNotificationConfiguration,
+):
+    """Returns the created notification strategy."""
+    return DynamicNotificationStrategy(
+        notification_configurations=[
+            _notification_configuration,
+        ]
+    )
+
+
+@pytest.fixture
+def request_model(
+    _notification_strategy: DynamicNotificationStrategy,
+):
+    """Returns the created request."""
+    return DynamicStrategyRequest(
+        message_template_substitution_fields={"replacement": "value"},
+        notification_strategy=_notification_strategy,
+    )
+
+
+@pytest.fixture(scope="class")
+def client(enterprise_config: HttpConfiguration) -> NotificationClient:
+    """Fixture to create a Notification client."""
+    return NotificationClient(enterprise_config)
+
+
+@pytest.mark.integration
+@pytest.mark.enterprise
+class TestNotificationClient:
+    def test__apply_strategy_with_correct_request__returns_none(
+        self, client: NotificationClient, request_model: DynamicStrategyRequest
+    ):
+        assert client.apply_notification_strategy(request=request_model) is None
+
+    def test__apply_strategy_with_invalid_recipient__raises_exception(
+        self,
+        client: NotificationClient,
+        _message_template: MessageTemplate,
+    ):
+        address_group = AddressGroup(
+            interpreting_service_name="smtp",
+            fields=AddressFields(toAddresses=["invalid-email"]),
+        )
+
+        request_model = DynamicStrategyRequest(
+            message_template_substitution_fields={"replacement": "value"},
+            notification_strategy=DynamicNotificationStrategy(
+                notification_configurations=[
+                    DynamicNotificationConfiguration(
+                        address_group=address_group,
+                        message_template=_message_template,
+                    )
+                ]
+            ),
+        )
+
+        with pytest.raises(ApiException) as exc_info:
+            client.apply_notification_strategy(request=request_model)
+
+        assert exc_info.value.http_status_code == 400
+
+    def test__apply_strategy_with_no_configurations__raises_exception(
+        self, client: NotificationClient
+    ):
+        request_model = DynamicStrategyRequest(
+            message_template_substitution_fields={"replacement": "value"},
+            notification_strategy=DynamicNotificationStrategy(
+                notification_configurations=[]
+            ),
+        )
+
+        with pytest.raises(ApiException) as exc_info:
+            client.apply_notification_strategy(request=request_model)
+
+        assert exc_info.value.http_status_code == 400
+
+    def test__apply_strategy_with_empty_subject_template_fields__raises_exception(
+        self, client: NotificationClient, _address_group: AddressGroup
+    ):
+        message_template = MessageTemplate(
+            interpreting_service_name="smtp",
+            fields=MessageTemplateFields(subject_template=""),
+        )
+
+        request_model = DynamicStrategyRequest(
+            message_template_substitution_fields={"replacement": "value"},
+            notification_strategy=DynamicNotificationStrategy(
+                notification_configurations=[
+                    DynamicNotificationConfiguration(
+                        address_group=_address_group,
+                        message_template=message_template,
+                    )
+                ]
+            ),
+        )
+
+        with pytest.raises(ApiException) as exc_info:
+            client.apply_notification_strategy(request=request_model)
+
+        assert exc_info.value.http_status_code == 400
+
+    def test__apply_strategy_with_invalid_interpreting_service_name__raises_exception(
+        self, client: NotificationClient, _message_template: MessageTemplate
+    ):
+        address_group = AddressGroup(
+            interpreting_service_name="invalid_service",
+            fields=AddressFields(toAddresses=["address1@example.com"]),
+        )
+
+        request_model = DynamicStrategyRequest(
+            message_template_substitution_fields={"replacement": "value"},
+            notification_strategy=DynamicNotificationStrategy(
+                notification_configurations=[
+                    DynamicNotificationConfiguration(
+                        address_group=address_group,
+                        message_template=_message_template,
+                    )
+                ]
+            ),
+        )
+
+        with pytest.raises(ApiException) as exc_info:
+            client.apply_notification_strategy(request=request_model)
+
+        assert exc_info.value.http_status_code == 400
+
+    def test__apply_strategy_with_no_address_and_message_template_id__returns_none(
+        self,
+        client: NotificationClient,
+        _address_group: AddressGroup,
+        _message_template: MessageTemplate,
+    ):
+        configuration = DynamicNotificationConfiguration(
+            address_group=_address_group,
+            message_template=_message_template,
+        )
+
+        request_model = DynamicStrategyRequest(
+            message_template_substitution_fields={"replacement": "value"},
+            notification_strategy=DynamicNotificationStrategy(
+                notification_configurations=[
+                    configuration,
+                ]
+            ),
+        )
+        assert client.apply_notification_strategy(request=request_model) is None
+
+    def test__apply_multiple_notification_configurations__returns_none(
+        self,
+        client: NotificationClient,
+        _address_group: AddressGroup,
+    ):
+        first_message_template = MessageTemplate(
+            fields=MessageTemplateFields(
+                subject_template="subject1", body_template="body1"
+            ),
+        )
+        second_message_template = MessageTemplate(
+            fields=MessageTemplateFields(
+                subject_template="subject2", body_template="body2"
+            ),
+        )
+
+        configuration1 = DynamicNotificationConfiguration(
+            address_group=_address_group,
+            message_template=first_message_template,
+        )
+
+        configuration2 = DynamicNotificationConfiguration(
+            address_group=_address_group,
+            message_template=second_message_template,
+        )
+
+        request_model = DynamicStrategyRequest(
+            message_template_substitution_fields={"replacement": "value"},
+            notification_strategy=DynamicNotificationStrategy(
+                notification_configurations=[
+                    configuration1,
+                    configuration2,
+                ]
+            ),
+        )
+        assert client.apply_notification_strategy(request=request_model) is None
