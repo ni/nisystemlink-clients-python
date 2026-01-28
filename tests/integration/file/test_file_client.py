@@ -3,6 +3,7 @@
 import io
 import string
 from datetime import datetime
+from io import BytesIO
 from random import choices, randint
 from typing import BinaryIO
 
@@ -435,3 +436,104 @@ class TestFileClient:
         assert len(response.available_files) == 0
         assert response.total_count is not None
         assert response.total_count.value == 0
+
+    def test__start_upload_session__with_invalid_workspace__raises(
+        self, client: FileClient
+    ):
+        invalid_workspace_id = "invalid-workspace-id"
+
+        with pytest.raises(ApiException):
+            client.start_upload_session(workspace=invalid_workspace_id)
+
+    def test__append_to_upload_session__uploads_file_in_chunks(
+        self, client: FileClient
+    ):
+        # Create a test file with known content
+        test_content = b"A" * 10485760 + b"B" * 5000000  # 10 MB + 5 MB
+        chunk_size = 10485760  # 10 MB
+
+        # Start upload session
+        session_response = client.start_upload_session()
+
+        # Verify session response
+        assert session_response is not None
+        assert session_response.session_id is not None
+        assert isinstance(session_response.session_id, str)
+        assert session_response.created_at is not None
+        assert isinstance(session_response.created_at, datetime)
+
+        session_id = session_response.session_id
+        file_id = None
+
+        try:
+            # Upload first chunk
+            first_chunk = BytesIO(test_content[:chunk_size])
+            client.append_to_upload_session(
+                session_id=session_id, chunk_index=1, chunk=first_chunk
+            )
+
+            # Upload second chunk (last chunk)
+            second_chunk = BytesIO(test_content[chunk_size:])
+            client.append_to_upload_session(
+                session_id=session_id, chunk_index=2, chunk=second_chunk, close=True
+            )
+
+            # Finish the upload session
+            file_name = f"{PREFIX}chunked_upload_test.bin"
+            file_id = client.finish_upload_session(
+                session_id=session_id,
+                name=file_name,
+                properties={
+                    "Test": "ChunkedUpload",
+                    "Description": "Test file from chunked upload",
+                },
+            )
+
+            # Verify the file was created with correct metadata
+            files = client.get_files(ids=[file_id])
+            assert files.total_count == 1
+            assert len(files.available_files) == 1
+            assert files.available_files[0].id == file_id
+            assert files.available_files[0].properties is not None
+            assert files.available_files[0].properties.get("Name") == file_name
+            assert files.available_files[0].properties.get("Test") == "ChunkedUpload"
+            assert (
+                files.available_files[0].properties.get("Description")
+                == "Test file from chunked upload"
+            )
+
+            # Verify file content
+            downloaded_data = client.download_file(id=file_id)
+            assert downloaded_data.read() == test_content
+        except ApiException:
+            # Finish the upload session if it failed during chunk upload
+            if not file_id:
+                file_name = f"{PREFIX}chunked_upload_test.bin"
+                try:
+                    file_id = client.finish_upload_session(
+                        session_id=session_id,
+                        name=file_name,
+                        properties={"Name": file_name, "Test": "ChunkedUpload"},
+                    )
+                except ApiException:
+                    pass
+
+            raise
+        finally:
+            # Clean up
+            if file_id:
+                try:
+                    client.delete_file(id=file_id)
+                except Exception:
+                    pass  # Ignore cleanup errors
+
+    def test__finish_upload_session__invalid_session_id_raises(
+        self, client: FileClient, invalid_file_id: str
+    ):
+        file_name = f"{PREFIX}invalid_session.txt"
+        properties = {"Name": file_name}
+
+        with pytest.raises(ApiException):
+            client.finish_upload_session(
+                session_id=invalid_file_id, name=file_name, properties=properties
+            )

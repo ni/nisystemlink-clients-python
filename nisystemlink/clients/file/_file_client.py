@@ -300,3 +300,81 @@ class FileClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the File Service.
         """
+
+    @post(
+        "service-groups/Default/upload-sessions/start", args=[Query(name="workspace")]
+    )
+    def start_upload_session(
+        self, workspace: str | None = None
+    ) -> models.UploadSessionStartResponse:
+        """Start an upload session for uploading a file in chunks.
+
+        Args:
+            workspace: The id of the workspace the file belongs to. Defaults to None.
+
+        Returns:
+            Upload session information including the session ID.
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """
+
+    @post(
+        "service-groups/Default/upload-sessions/append",
+        args=[
+            Query(name="sessionId"),
+            Query(name="chunk"),
+            Part(name="file"),
+            Query(name="close"),
+        ],
+    )
+    @response_handler(lambda response: None)
+    def append_to_upload_session(
+        self,
+        session_id: str,
+        chunk_index: int,
+        chunk: BinaryIO,
+        close: bool = False,
+    ) -> None:
+        """Append a chunk to an upload session.
+
+        The chunk needs to be 10485760 bytes (10 MB), unless the close parameter is true,
+        which means that it is the last chunk of the file content. The chunks can be uploaded
+        concurrently, as long as all chunk uploads are completed before finalizing.
+
+        Args:
+            session_id: The id of the upload session.
+            chunk_index: The 1-based index of the chunk to be uploaded.
+            file: The chunk data to upload.
+            close: Set the current chunk as the last chunk to be uploaded. Defaults to False.
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """
+
+    @response_handler(_file_uri_response_handler)
+    @post(
+        "service-groups/Default/upload-sessions/finish",
+        args=[Query(name="sessionId"), Field(name="name"), Field(name="properties")],
+    )
+    def finish_upload_session(
+        self,
+        session_id: str,
+        name: str,
+        properties: Dict[str, str],
+    ) -> str:
+        """Finish an upload session and make the file visible in SystemLink.
+
+        This will trigger file events, such as routines.
+
+        Args:
+            session_id: The id of the upload session.
+            name: The name of the file.
+            properties: The properties of the file.
+
+        Returns:
+            ID of the uploaded file.
+
+        Raises:
+            ApiException: if unable to communicate with the File Service.
+        """

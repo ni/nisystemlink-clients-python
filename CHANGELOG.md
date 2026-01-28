@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v2.29.1 (2026-01-22)
+
+### Fix
+
+* Deprecate TestPlanClient as Test Plans APIs are deprecated ([#190](https://github.com/ni/nisystemlink-clients-python/issues/190)) ([`c3092a6`](https://github.com/ni/nisystemlink-clients-python/commit/c3092a6c9eccc323e8fd7e97aa834c25408d25c8))
+
+## v2.29.0 (2026-01-20)
+
+### Feature
+
+* Upload Large File API Methods ([#181](https://github.com/ni/nisystemlink-clients-python/issues/181)) ([`a44feb9`](https://github.com/ni/nisystemlink-clients-python/commit/a44feb9d1f0735e102897cc8c89c81919bec41ec))
+
 ## v2.28.0 (2026-01-16)
 
 ### Feature
