@@ -24,7 +24,7 @@ class NotificationClient(BaseClient):
                 is used to obtain the configuration.
 
         Raises:
-            ApiException: if unable to communicate with the Notification.
+            ApiException: if unable to communicate with the `/ninotification` service.
         """
         if configuration is None:
             configuration = core.HttpConfigurationManager.get_configuration()
@@ -42,5 +42,8 @@ class NotificationClient(BaseClient):
 
         Returns:
             None.
+
+        Raises:
+            ApiException: if unable to communicate with the `/ninotification` service or provided invalid arguments.
         """
         ...

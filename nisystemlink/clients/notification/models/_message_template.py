@@ -1,6 +1,6 @@
-from typing import Dict, List
-
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+from ._common_meta_data import CommonFields
 
 
 class MessageTemplateFields(JsonModel):
@@ -13,29 +13,8 @@ class MessageTemplateFields(JsonModel):
     """Body template of the message."""
 
 
-class MessageTemplate(JsonModel):
+class MessageTemplate(CommonFields):
     """Model defining the notification content structure."""
-
-    id: str | None = None
-    """Gets or sets the ID for message template."""
-
-    interpreting_service_name: str | None = None
-    """Gets or sets the name of the interpreting service.
-
-    Example: "smtp"
-    """
-
-    display_name: str | None = None
-    """Gets or sets the message template's display name.
-
-    Example: "name"
-    """
-
-    properties: Dict[str, str] | None = None
-    """Gets or sets the message template's properties.
-
-    Example: { "property": "value" }
-    """
 
     fields: MessageTemplateFields
     """Gets or sets the message template's fields.
@@ -46,6 +25,3 @@ class MessageTemplate(JsonModel):
 
     Example: { subjectTemplate: "subject", bodyTemplate: "body" }
     """
-
-    referencing_notification_strategies: List[str] | None = None
-    """Gets or sets the message template's referencing notification strategies."""

@@ -1,6 +1,8 @@
-from typing import Dict, List
+from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+from ._common_meta_data import CommonFields
 
 
 class AddressFields(JsonModel):
@@ -16,28 +18,13 @@ class AddressFields(JsonModel):
     """List of blind carbon copy recipient addresses."""
 
 
-class AddressGroup(JsonModel):
+class AddressGroup(CommonFields):
     """Model defining notification recipients."""
-
-    id: str | None = None
-    """Gets or sets the ID for address group."""
 
     interpreting_service_name: str
     """Gets or sets the name of the interpreting service.
 
     Example: "smtp"
-    """
-
-    display_name: str | None = None
-    """Gets or sets the address group's display name.
-
-    Example: "name"
-    """
-
-    properties: Dict[str, str] | None = None
-    """Gets or sets the address group's properties.
-
-    Example: { "property": "value" }
     """
 
     fields: AddressFields
@@ -55,6 +42,3 @@ class AddressGroup(JsonModel):
             bccAddresses: [ "address3@example.com" ]
         }
     """
-
-    referencing_notification_strategies: List[str] | None = None
-    """Gets or sets the address group's referencing notification strategies."""
