@@ -7,12 +7,6 @@ class BaseNotificationMetadata(JsonModel):
     id: str | None = None
     """identifier of this notification metadata"""
 
-    interpreting_service_name: str
-    """Gets or sets the name of the interpreting service.
-
-    Example: "smtp"
-    """
-
     display_name: str | None = None
     """Display name of the object.
 

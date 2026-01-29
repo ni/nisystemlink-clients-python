@@ -1,16 +1,15 @@
-from nisystemlink.clients.core._api_exception import ApiException
+from typing import Self
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+from nisystemlink.clients.notification.models._address_group import AddressGroup
+from nisystemlink.clients.notification.models._message_template import MessageTemplate
 from nisystemlink.clients.notification.models._smtp_address_group import (
     SmtpAddressGroup,
 )
 from nisystemlink.clients.notification.models._smtp_message_template import (
     SmtpMessageTemplate,
 )
-from pydantic import Field, model_validator
-
-
-from ._address_group import AddressGroup
-from ._message_template import MessageTemplate
+from pydantic import Field, model_validator, ValidationError
 
 
 class DynamicNotificationConfiguration(JsonModel):
@@ -25,22 +24,21 @@ class DynamicNotificationConfiguration(JsonModel):
     message_template_id: str | None = None
     """ID referencing the associated message template."""
 
-    address_group: SmtpAddressGroup | AddressGroup | None = Field(
-        default=None, discriminator="interpreting_service_name"
-    )
-    """Gets the address group defining notification recipients."""
+    address_group: AddressGroup | SmtpAddressGroup | None = Field(default=None)
+    """Address group defining notification recipients."""
 
-    message_template: SmtpMessageTemplate | MessageTemplate | None = Field(
-        default=None, discriminator="interpreting_service_name"
-    )
-    """Gets the message template defining notification content structure"""
+    message_template: MessageTemplate | SmtpMessageTemplate | None = Field(default=None)
+    """Message template defining notification content structure"""
 
     @model_validator(mode="after")
-    def validate_required_pairs(self):
+    def validate_required_pairs(self) -> Self:
+        """Validator to check at least one of address_group_id or address_group, and
+        one of message_template_id or message_template is present.
+        """
         if self.address_group_id is None and self.address_group is None:
-            raise ApiException("AddressGroupId is required.")
+            raise ValidationError("AddressGroupId is required.")
 
         if self.message_template_id is None and self.message_template is None:
-            raise ApiException("MessageTemplateId is required.")
+            raise ValidationError("MessageTemplateId is required.")
 
         return self

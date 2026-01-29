@@ -10,13 +10,13 @@ from nisystemlink.clients.alarm.models._create_or_update_alarm_request import (
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.notification import NotificationClient
 from nisystemlink.clients.notification.models import (
-    AddressFields,
-    AddressGroup,
     DynamicNotificationConfiguration,
     DynamicNotificationStrategy,
     DynamicStrategyRequest,
-    MessageTemplate,
-    MessageTemplateFields,
+    SmtpAddressFields,
+    SmtpAddressGroup,
+    SmtpMessageTemplate,
+    SmtpMessageTemplateFields,
 )
 
 # Server configuration is not required when used with SystemLink Client or run through Jupyter on SystemLink
@@ -33,8 +33,8 @@ server_configuration: HttpConfiguration | None = None
 # Create request for applying strategy
 def create_notification_request_for_alarm(
     alarm: Alarm,
-    address_group: AddressGroup,
-    message_template: MessageTemplate,
+    address_group: SmtpAddressGroup,
+    message_template: SmtpMessageTemplate,
 ) -> DynamicStrategyRequest:
     """Creates and returns a dynamic strategy request."""
     occurred_at = alarm.most_recent_transition_occurred_at
@@ -85,10 +85,10 @@ print("Alarm created successfully")
 retrieved_alarm = alarm_client.get_alarm(instance_id=id)
 
 # Define recipients to notify
-recipients = AddressFields(toAddresses=["sample1@example.com"])
+recipients = SmtpAddressFields(toAddresses=["sample1@example.com"])
 
 # Create address group
-address_group = AddressGroup(
+address_group = SmtpAddressGroup(
     interpreting_service_name="smtp",
     display_name="Alarm Notification Recipients",
     properties={"address group": "Alarm"},
@@ -96,10 +96,10 @@ address_group = AddressGroup(
 )
 
 # Create mail template for alarm creation notification
-alarm_creation_template = MessageTemplate(
+alarm_creation_template = SmtpMessageTemplate(
     interpreting_service_name="smtp",
     display_name="Alarm Creation Template",
-    fields=MessageTemplateFields(
+    fields=SmtpMessageTemplateFields(
         subject_template="Alarm Created: <alarm_id>",
         body_template="An alarm with ID <alarm_id> has been created.\n"
         "Condition: <alarm_condition>\n"

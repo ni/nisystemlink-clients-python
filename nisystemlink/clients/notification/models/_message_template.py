@@ -1,29 +1,13 @@
 from typing import Dict
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
-
 from ._base_notification_metadata import BaseNotificationMetadata
-
-
-class MessageTemplateFields(JsonModel):
-    """Fields representing the subject and body templates of a message."""
-
-    subject_template: str
-    """Subject template of the message."""
-
-    body_template: str | None = None
-    """Body template of the message."""
 
 
 class MessageTemplate(BaseNotificationMetadata):
     """Model defining the notification content structure."""
 
+    interpreting_service_name: str
+    """Service identifier for generic interpretation."""
+
     fields: Dict[str, str]
-    """Gets or sets the message template's fields.
-
-    Valid fields:
-        - subjectTemplate (required)
-        - bodyTemplate
-
-    Example: { subjectTemplate: "subject", bodyTemplate: "body" }
-    """
+    """Template fields for message."""

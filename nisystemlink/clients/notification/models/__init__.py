@@ -1,8 +1,9 @@
-from ._address_group import AddressGroup, AddressFields
+from ._address_group import AddressGroup
 from ._dynamic_strategy_request import DynamicStrategyRequest
-from ._message_template import MessageTemplate, MessageTemplateFields
+from ._message_template import MessageTemplate
 from ._dynamic_notification_configuration import DynamicNotificationConfiguration
 from ._dynamic_notification_strategy import DynamicNotificationStrategy
-from ._smtp_address_group import SmtpAddressFields
-from ._smtp_message_template import SmtpMessageTemplateFields
+from ._smtp_address_group import SmtpAddressFields, SmtpAddressGroup
+from ._smtp_message_template import SmtpMessageTemplateFields, SmtpMessageTemplate
+
 # flake8: noqa

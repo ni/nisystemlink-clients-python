@@ -1,38 +1,13 @@
 from typing import Dict, List
 
-from nisystemlink.clients.core._uplink._json_model import JsonModel
-
 from ._base_notification_metadata import BaseNotificationMetadata
 
 
-class AddressFields(JsonModel):
-    """Fields representing the subject and body templates of a message."""
-
-    toAddresses: List[str] | None = None
-    """List of primary recipient addresses."""
-
-    ccAddresses: List[str] | None = None
-    """List of carbon copy recipient addresses."""
-
-    bccAddresses: List[str] | None = None
-    """List of blind carbon copy recipient addresses."""
-
-
 class AddressGroup(BaseNotificationMetadata):
-    """Model defining notification recipients."""
+    """Model defining notification recipients for generic service."""
+
+    interpreting_service_name: str
+    """Service identifier for generic interpretation."""
 
     fields: Dict[str, List[str]]
-    """Gets or sets the address group's fields. Requires at least one valid recipient.
-
-    Valid fields:
-        - toAddresses
-        - ccAddresses
-        - bccAddresses
-
-    Example:
-        {
-            toAddresses: [ "address1@example.com" ],
-            ccAddresses: [ "address2@example.com" ],
-            bccAddresses: [ "address3@example.com" ]
-        }
-    """
+    """Address group's fields. Requires at least one valid recipient."""
