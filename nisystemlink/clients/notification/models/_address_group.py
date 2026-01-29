@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
@@ -21,13 +21,7 @@ class AddressFields(JsonModel):
 class AddressGroup(BaseNotificationMetadata):
     """Model defining notification recipients."""
 
-    interpreting_service_name: str
-    """Gets or sets the name of the interpreting service.
-
-    Example: "smtp"
-    """
-
-    fields: AddressFields
+    fields: Dict[str, List[str]]
     """Gets or sets the address group's fields. Requires at least one valid recipient.
 
     Valid fields:

@@ -1,3 +1,5 @@
+from typing import Dict
+
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 from ._base_notification_metadata import BaseNotificationMetadata
@@ -16,7 +18,7 @@ class MessageTemplateFields(JsonModel):
 class MessageTemplate(BaseNotificationMetadata):
     """Model defining the notification content structure."""
 
-    fields: MessageTemplateFields
+    fields: Dict[str, str]
     """Gets or sets the message template's fields.
 
     Valid fields:
