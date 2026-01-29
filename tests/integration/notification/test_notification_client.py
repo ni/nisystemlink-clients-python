@@ -120,6 +120,7 @@ class TestNotificationClient:
 
         assert exc_info.value.http_status_code == 400
 
+    # Need to verify
     def test__apply_strategy_with_no_configurations__raises_exception(
         self, client: NotificationClient
     ):
@@ -212,11 +213,13 @@ class TestNotificationClient:
         _address_group: AddressGroup,
     ):
         first_message_template = MessageTemplate(
+            interpreting_service_name="smtp",
             fields=MessageTemplateFields(
                 subject_template="subject1", body_template="body1"
             ),
         )
         second_message_template = MessageTemplate(
+            interpreting_service_name="smtp",
             fields=MessageTemplateFields(
                 subject_template="subject2", body_template="body2"
             ),
