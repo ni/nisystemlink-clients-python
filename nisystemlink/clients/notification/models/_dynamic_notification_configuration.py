@@ -1,4 +1,4 @@
-from typing import TypeVar
+from __future__ import annotations
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.notification.models._address_group import AddressGroup
@@ -10,9 +10,6 @@ from nisystemlink.clients.notification.models._smtp_message_template import (
     SmtpMessageTemplate,
 )
 from pydantic import Field, model_validator, ValidationError
-
-
-T = TypeVar("T", bound="MessageTemplate")
 
 
 class DynamicNotificationConfiguration(JsonModel):
@@ -34,7 +31,7 @@ class DynamicNotificationConfiguration(JsonModel):
     """Message template defining notification content structure"""
 
     @model_validator(mode="after")
-    def validate_required_pairs(self: T) -> T:
+    def validate_required_pairs(self) -> DynamicNotificationConfiguration:
         """Validator to check at least one of address_group_id or address_group, and
         one of message_template_id or message_template is present.
         """
