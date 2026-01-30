@@ -246,3 +246,27 @@ class TestNotificationClient:
             ),
         )
         assert client.apply_dynamic_notification_strategy(request=request_model) is None
+
+    def test__create_configuration_with_no_address_group_id_and_address_group__raise_exception(
+        self, _smtp_message_template: SmtpMessageTemplate
+    ):
+        with pytest.raises(
+            ValidationError,
+            match="One of either AddressGroupId or AddressGroup is required.",
+        ):
+            DynamicNotificationConfiguration(
+                message_template_id="message_template_id",
+                message_template=_smtp_message_template,
+            )
+
+    def test__create_configuration_with_no_message_template_id_and_message_template__raise_exception(
+        self, _smtp_address_group: SmtpAddressGroup
+    ):
+        with pytest.raises(
+            ValidationError,
+            match="One of either MessageTemplateId or MessageTemplate is required.",
+        ):
+            DynamicNotificationConfiguration(
+                address_group_id="address_group_id",
+                address_group=_smtp_address_group,
+            )
