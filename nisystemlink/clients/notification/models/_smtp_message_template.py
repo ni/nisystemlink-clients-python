@@ -19,7 +19,7 @@ class SmtpMessageTemplateFields(JsonModel):
 class SmtpMessageTemplate(BaseNotificationMetadata):
     """Model defining message template for SMTP service"""
 
-    interpreting_service_name: Literal["smtp"]
+    interpreting_service_name: Literal["smtp"] = "smtp"
     """Service name for SMTP-based interpretation."""
 
     fields: SmtpMessageTemplateFields

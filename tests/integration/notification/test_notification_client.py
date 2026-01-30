@@ -94,7 +94,7 @@ class TestNotificationClient:
     def test__apply_strategy_with_correct_request__returns_none(
         self, client: NotificationClient, request_model: DynamicStrategyRequest
     ):
-        assert client.apply_notification_strategy(request=request_model) is None
+        assert client.apply_dynamic_notification_strategy(request=request_model) is None
 
     def test__apply_strategy_with_invalid_recipient__raises_exception(
         self,
@@ -119,7 +119,7 @@ class TestNotificationClient:
         )
 
         with pytest.raises(ApiException) as exc_info:
-            client.apply_notification_strategy(request=request_model)
+            client.apply_dynamic_notification_strategy(request=request_model)
 
         assert exc_info.value.http_status_code == 400
 
@@ -155,7 +155,7 @@ class TestNotificationClient:
         )
 
         with pytest.raises(ApiException) as exc_info:
-            client.apply_notification_strategy(request=request_model)
+            client.apply_dynamic_notification_strategy(request=request_model)
 
         assert exc_info.value.http_status_code == 400
 
@@ -187,7 +187,7 @@ class TestNotificationClient:
                 ]
             ),
         )
-        assert client.apply_notification_strategy(request=request_model) is None
+        assert client.apply_dynamic_notification_strategy(request=request_model) is None
 
     def test__apply_multiple_notification_configurations__returns_none(
         self,
@@ -226,4 +226,4 @@ class TestNotificationClient:
                 ]
             ),
         )
-        assert client.apply_notification_strategy(request=request_model) is None
+        assert client.apply_dynamic_notification_strategy(request=request_model) is None

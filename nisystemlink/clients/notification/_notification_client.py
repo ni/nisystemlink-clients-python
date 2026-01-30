@@ -32,7 +32,7 @@ class NotificationClient(BaseClient):
         super().__init__(configuration, base_path="/ninotification/v1/")
 
     @post("apply-dynamic-strategy")
-    def apply_notification_strategy(
+    def apply_dynamic_notification_strategy(
         self, request: models.DynamicStrategyRequest
     ) -> None:
         """Applies the notification strategy from the given request.

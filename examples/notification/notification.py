@@ -115,5 +115,5 @@ notification_for_alarm_creation = create_notification_request_for_alarm(
     address_group=address_group,
     message_template=alarm_creation_template,
 )
-notification_client.apply_notification_strategy(request=notification_for_alarm_creation)
+notification_client.apply_dynamic_notification_strategy(request=notification_for_alarm_creation)
 print("Notification sent for alarm creation")
