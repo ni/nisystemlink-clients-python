@@ -1,4 +1,5 @@
 import pytest
+import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.notification import NotificationClient
@@ -12,6 +13,8 @@ from nisystemlink.clients.notification.models import (
     SmtpMessageTemplateFields,
 )
 from pydantic import ValidationError
+
+BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
 
 
 @pytest.fixture
@@ -91,9 +94,15 @@ def client(enterprise_config: HttpConfiguration) -> NotificationClient:
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestNotificationClient:
+    @responses.activate
     def test__apply_strategy_with_correct_request__returns_none(
         self, client: NotificationClient, request_model: DynamicStrategyRequest
     ):
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninotification/v1/apply-dynamic-strategy",
+            status=204,
+        )
         assert client.apply_dynamic_notification_strategy(request=request_model) is None
 
     def test__apply_strategy_with_invalid_recipient__raises_exception(
@@ -118,14 +127,12 @@ class TestNotificationClient:
             ),
         )
 
-        with pytest.raises(ApiException) as exc_info:
+        with pytest.raises(ApiException, match="Bad Request") as exc_info:
             client.apply_dynamic_notification_strategy(request=request_model)
 
         assert exc_info.value.http_status_code == 400
 
-    def test__create_strategy_with_no_configurations__raises_exception(
-        self, client: NotificationClient
-    ):
+    def test__create_strategy_with_no_configurations__raises_exception(self):
         with pytest.raises(ValidationError):
             DynamicStrategyRequest(
                 message_template_substitution_fields={"replacement": "value"},
@@ -154,26 +161,30 @@ class TestNotificationClient:
             ),
         )
 
-        with pytest.raises(ApiException) as exc_info:
+        with pytest.raises(ApiException, match="Bad Request") as exc_info:
             client.apply_dynamic_notification_strategy(request=request_model)
 
         assert exc_info.value.http_status_code == 400
 
-    def test__create_smtp_address_group_with_invalid_interpreting_service__raises_exception(
-        self,
-    ):
+    def test__create_smtp_address_group_with_invalid_interpreting_service__raises_exception(self):
         with pytest.raises(ValidationError):
             SmtpAddressGroup(
                 interpreting_service_name="invalid_service",
                 fields=SmtpAddressFields(toAddresses=["address1@example.com"]),
             )
 
+    @responses.activate
     def test__apply_strategy_with_no_address_and_message_template_id__returns_none(
         self,
         client: NotificationClient,
         _address_group: SmtpAddressGroup,
         _message_template: SmtpMessageTemplate,
     ):
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninotification/v1/apply-dynamic-strategy",
+            status=204,
+        )
         configuration = DynamicNotificationConfiguration(
             address_group=_address_group,
             message_template=_message_template,
@@ -189,11 +200,17 @@ class TestNotificationClient:
         )
         assert client.apply_dynamic_notification_strategy(request=request_model) is None
 
+    @responses.activate
     def test__apply_multiple_notification_configurations__returns_none(
         self,
         client: NotificationClient,
         _address_group: SmtpAddressGroup,
     ):
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/ninotification/v1/apply-dynamic-strategy",
+            status=204,
+        )
         first_message_template = SmtpMessageTemplate(
             interpreting_service_name="smtp",
             fields=SmtpMessageTemplateFields(

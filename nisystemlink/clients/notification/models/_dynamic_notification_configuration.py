@@ -36,9 +36,13 @@ class DynamicNotificationConfiguration(JsonModel):
         one of message_template_id or message_template is present.
         """
         if self.address_group_id is None and self.address_group is None:
-            raise ValidationError("One of either AddressGroupId or AddressGroup is required.")
+            raise ValidationError(
+                "One of either AddressGroupId or AddressGroup is required."
+            )
 
         if self.message_template_id is None and self.message_template is None:
-            raise ValidationError("One of either MessageTemplateId or MessageTemplate is required.")
+            raise ValidationError(
+                "One of either MessageTemplateId or MessageTemplate is required."
+            )
 
         return self
