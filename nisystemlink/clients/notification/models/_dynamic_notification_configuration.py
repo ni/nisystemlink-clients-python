@@ -9,7 +9,7 @@ from nisystemlink.clients.notification.models._smtp_address_group import (
 from nisystemlink.clients.notification.models._smtp_message_template import (
     SmtpMessageTemplate,
 )
-from pydantic import Field, model_validator, ValidationError
+from pydantic import Field, model_validator
 
 
 class DynamicNotificationConfiguration(JsonModel):
@@ -36,12 +36,12 @@ class DynamicNotificationConfiguration(JsonModel):
         one of message_template_id or message_template is present.
         """
         if self.address_group_id is None and self.address_group is None:
-            raise ValidationError(
+            raise ValueError(
                 "One of either AddressGroupId or AddressGroup is required."
             )
 
         if self.message_template_id is None and self.message_template is None:
-            raise ValidationError(
+            raise ValueError(
                 "One of either MessageTemplateId or MessageTemplate is required."
             )
 

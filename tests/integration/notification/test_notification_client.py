@@ -95,7 +95,7 @@ def client(enterprise_config: HttpConfiguration) -> NotificationClient:
 @pytest.mark.enterprise
 class TestNotificationClient:
     @responses.activate
-    def test__apply_strategy_with_correct_request__returns_none(
+    def test__apply_dynamic_strategy_with_correct_request__returns_none(
         self, client: NotificationClient, request_model: DynamicStrategyRequest
     ):
         responses.add(
@@ -105,7 +105,7 @@ class TestNotificationClient:
         )
         assert client.apply_dynamic_notification_strategy(request=request_model) is None
 
-    def test__apply_strategy_with_invalid_recipient_for_smtp_service__raises_exception(
+    def test__apply_dynamic_strategy_with_invalid_recipient_for_smtp_service__raises_exception(
         self,
         client: NotificationClient,
         _smtp_message_template: SmtpMessageTemplate,
@@ -141,7 +141,7 @@ class TestNotificationClient:
                 ),
             )
 
-    def test__apply_strategy_with_empty_subject_for_smtp_message_template__raises_exception(
+    def test__apply_dynamic_strategy_with_empty_subject_for_smtp_message_template__raises_exception(
         self, client: NotificationClient, _smtp_address_group: SmtpAddressGroup
     ):
         message_template = SmtpMessageTemplate(
@@ -176,7 +176,7 @@ class TestNotificationClient:
             )
 
     @responses.activate
-    def test__apply_strategy_with_no_address_group_id_and_message_template_id__returns_none(
+    def test__apply_dynamic_strategy_with_no_address_group_id_and_message_template_id_in_config__returns_none(
         self,
         client: NotificationClient,
         _smtp_address_group: SmtpAddressGroup,
@@ -203,7 +203,7 @@ class TestNotificationClient:
         assert client.apply_dynamic_notification_strategy(request=request_model) is None
 
     @responses.activate
-    def test__apply_multiple_notification_configurations__returns_none(
+    def test__apply_dynamic_strategy_with_multiple_notification_configurations__returns_none(
         self,
         client: NotificationClient,
         _smtp_address_group: SmtpAddressGroup,
