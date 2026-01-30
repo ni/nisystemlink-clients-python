@@ -5,7 +5,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 class BaseNotificationMetadata(JsonModel):
     id: str | None = None
-    """identifier of this notification metadata"""
+    """Identifier of the notification metadata"""
 
     display_name: str | None = None
     """Display name of the object.
@@ -20,4 +20,4 @@ class BaseNotificationMetadata(JsonModel):
     """
 
     referencing_notification_strategies: List[str] | None = None
-    """List of strategies used for referencing,"""
+    """List of notification strategies referencing the notification metadata"""

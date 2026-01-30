@@ -18,7 +18,7 @@ BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
 
 
 @pytest.fixture
-def _address_group():
+def _smtp_address_group():
     """Returns the created address group."""
     return SmtpAddressGroup(
         id="address_group_id",
@@ -35,7 +35,7 @@ def _address_group():
 
 
 @pytest.fixture
-def _message_template():
+def _smtp_message_template():
     """Returns the created message template."""
     return SmtpMessageTemplate(
         id="message_template_id",
@@ -51,14 +51,14 @@ def _message_template():
 
 @pytest.fixture
 def _notification_configuration(
-    _address_group: SmtpAddressGroup, _message_template: SmtpMessageTemplate
+    _smtp_address_group: SmtpAddressGroup, _smtp_message_template: SmtpMessageTemplate
 ):
     """Returns the created notification configuration."""
     return DynamicNotificationConfiguration(
         address_group_id="address_group_id",
         message_template_id="message_template_id",
-        address_group=_address_group,
-        message_template=_message_template,
+        address_group=_smtp_address_group,
+        message_template=_smtp_message_template,
     )
 
 
@@ -105,10 +105,10 @@ class TestNotificationClient:
         )
         assert client.apply_dynamic_notification_strategy(request=request_model) is None
 
-    def test__apply_strategy_with_invalid_recipient__raises_exception(
+    def test__apply_strategy_with_invalid_recipient_for_smtp_service__raises_exception(
         self,
         client: NotificationClient,
-        _message_template: SmtpMessageTemplate,
+        _smtp_message_template: SmtpMessageTemplate,
     ):
         address_group = SmtpAddressGroup(
             interpreting_service_name="smtp",
@@ -121,7 +121,7 @@ class TestNotificationClient:
                 notification_configurations=[
                     DynamicNotificationConfiguration(
                         address_group=address_group,
-                        message_template=_message_template,
+                        message_template=_smtp_message_template,
                     )
                 ]
             ),
@@ -141,8 +141,8 @@ class TestNotificationClient:
                 ),
             )
 
-    def test__apply_strategy_with_empty_subject_template_fields__raises_exception(
-        self, client: NotificationClient, _address_group: SmtpAddressGroup
+    def test__apply_strategy_with_empty_subject_for_smtp_message_template__raises_exception(
+        self, client: NotificationClient, _smtp_address_group: SmtpAddressGroup
     ):
         message_template = SmtpMessageTemplate(
             interpreting_service_name="smtp",
@@ -154,7 +154,7 @@ class TestNotificationClient:
             notification_strategy=DynamicNotificationStrategy(
                 notification_configurations=[
                     DynamicNotificationConfiguration(
-                        address_group=_address_group,
+                        address_group=_smtp_address_group,
                         message_template=message_template,
                     )
                 ]
@@ -166,7 +166,7 @@ class TestNotificationClient:
 
         assert exc_info.value.http_status_code == 400
 
-    def test__create_smtp_address_group_with_invalid_interpreting_service__raises_exception(
+    def test__create_address_group_with_invalid_interpreting_service_name__raises_exception(
         self,
     ):
         with pytest.raises(ValidationError):
@@ -176,11 +176,11 @@ class TestNotificationClient:
             )
 
     @responses.activate
-    def test__apply_strategy_with_no_address_and_message_template_id__returns_none(
+    def test__apply_strategy_with_no_address_group_id_and_message_template_id__returns_none(
         self,
         client: NotificationClient,
-        _address_group: SmtpAddressGroup,
-        _message_template: SmtpMessageTemplate,
+        _smtp_address_group: SmtpAddressGroup,
+        _smtp_message_template: SmtpMessageTemplate,
     ):
         responses.add(
             responses.POST,
@@ -188,8 +188,8 @@ class TestNotificationClient:
             status=204,
         )
         configuration = DynamicNotificationConfiguration(
-            address_group=_address_group,
-            message_template=_message_template,
+            address_group=_smtp_address_group,
+            message_template=_smtp_message_template,
         )
 
         request_model = DynamicStrategyRequest(
@@ -206,7 +206,7 @@ class TestNotificationClient:
     def test__apply_multiple_notification_configurations__returns_none(
         self,
         client: NotificationClient,
-        _address_group: SmtpAddressGroup,
+        _smtp_address_group: SmtpAddressGroup,
     ):
         responses.add(
             responses.POST,
@@ -227,12 +227,12 @@ class TestNotificationClient:
         )
 
         configuration1 = DynamicNotificationConfiguration(
-            address_group=_address_group,
+            address_group=_smtp_address_group,
             message_template=first_message_template,
         )
 
         configuration2 = DynamicNotificationConfiguration(
-            address_group=_address_group,
+            address_group=_smtp_address_group,
             message_template=second_message_template,
         )
 

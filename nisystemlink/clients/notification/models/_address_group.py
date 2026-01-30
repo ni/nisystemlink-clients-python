@@ -7,7 +7,7 @@ class AddressGroup(BaseNotificationMetadata):
     """Model defining notification recipients for generic service."""
 
     interpreting_service_name: str
-    """Service identifier for generic interpretation."""
+    """Name of the interpreting service."""
 
     fields: Dict[str, List[str]]
     """Address group's fields. Requires at least one valid recipient."""

@@ -7,7 +7,7 @@ nisystemlink.clients.notification
    :exclude-members: __init__
 
    .. automethod:: __init__
-   .. automethod:: apply_notification_strategy
+   .. automethod:: apply_dynamic_notification_strategy
 
 .. automodule:: nisystemlink.clients.notification.models
    :members:
