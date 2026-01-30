@@ -166,7 +166,9 @@ class TestNotificationClient:
 
         assert exc_info.value.http_status_code == 400
 
-    def test__create_smtp_address_group_with_invalid_interpreting_service__raises_exception(self):
+    def test__create_smtp_address_group_with_invalid_interpreting_service__raises_exception(
+        self,
+    ):
         with pytest.raises(ValidationError):
             SmtpAddressGroup(
                 interpreting_service_name="invalid_service",
