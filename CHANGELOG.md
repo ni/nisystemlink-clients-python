@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.31.0 (2026-02-02)
+
+### Feature
+
+* Example to append pandas df to SystemLink Data Frame Service ([#196](https://github.com/ni/nisystemlink-clients-python/issues/196)) ([`23977c8`](https://github.com/ni/nisystemlink-clients-python/commit/23977c865cb2fd65f2e4c0419a112472a3911e8c))
+
 ## v2.30.0 (2026-02-02)
 
 ### Feature
