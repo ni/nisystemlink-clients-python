@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.30.0 (2026-02-02)
+
+### Feature
+
+* Add Notification Client ([#195](https://github.com/ni/nisystemlink-clients-python/issues/195)) ([`ae4e9c1`](https://github.com/ni/nisystemlink-clients-python/commit/ae4e9c19bfdacdc330f67c9487bd4074559ada7f))
+
 ## v2.29.1 (2026-01-22)
 
 ### Fix

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nisystemlink-clients"
-version = "2.29.1"
+version = "2.30.0"
 description = "NI-SystemLink Python API"
 authors = ["National Instruments"]
 maintainers = [
