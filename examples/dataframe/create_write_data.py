@@ -110,7 +110,7 @@ if pa is not None:
         )
 
         # convert Pandas DataFrame to Arrow RecordBatch
-        batch_single = pa.record_batch(df)
+        batch_single = pa.RecordBatch.from_pandas(df)
 
         client.append_table_data(table_id, batch_single)
 
