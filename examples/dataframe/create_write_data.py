@@ -5,6 +5,10 @@ try:
     import pyarrow as pa  # type: ignore
 except Exception:
     pa = None
+try:
+    import pandas as pd  # type: ignore
+except Exception:
+    pd = None
 from nisystemlink.clients.core import HttpConfiguration
 from nisystemlink.clients.dataframe import DataFrameClient
 from nisystemlink.clients.dataframe.models import (
@@ -40,6 +44,11 @@ table_id = client.create_table(
     )
 )
 
+
+print(f"Created table with ID: {table_id}")
+
+print("Appending data to table...")
+
 # Append via explicit AppendTableDataRequest (JSON)
 frame_request = DataFrame(
     data=[[str(i), str(random.random()), datetime.now().isoformat()] for i in range(3)]
@@ -55,6 +64,7 @@ frame_direct = DataFrame(
 client.append_table_data(table_id, frame_direct)
 
 if pa is not None:
+    print("Appending data to table via Arrow RecordBatches...")
     # Append via single RecordBatch (Arrow)
     batch_single = pa.record_batch(
         [
@@ -79,9 +89,32 @@ if pa is not None:
     ]
     client.append_table_data(table_id, batch_list)
 
-    # Mark end_of_data for the table
-    # Supply `None` and `end_of_data=True`
-    client.append_table_data(table_id, None, end_of_data=True)
-else:
-    # If pyarrow not installed, flush via JSON path
-    client.append_table_data(table_id, None, end_of_data=True)
+    if pd is not None:
+        print("Appending data to table via Pandas DataFrame...")
+        # Append via DataFrame (Pandas)
+        df = pd.DataFrame(
+            {
+                "ix": [11, 12, 13],
+                "Float_Column": [0.6, 0.7, 0.8],
+                "Timestamp_Column": [datetime.now() for _ in range(3)],
+            }
+        )
+
+        # Optional - coerce df types to the dataframe table schema
+        df = df.astype(
+            {
+                "ix": "Int32",
+                "Float_Column": "float32",
+                "Timestamp_Column": "datetime64[ns]",
+            }
+        )
+
+        # convert Pandas DataFrame to Arrow RecordBatch
+        batch_single = pa.record_batch(df)
+
+        client.append_table_data(table_id, batch_single)
+
+# Mark end_of_data for the table
+# Supply `None` and `end_of_data=True`
+print("Finished appending data.")
+client.append_table_data(table_id, None, end_of_data=True)
