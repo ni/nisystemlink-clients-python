@@ -22,7 +22,6 @@ def _smtp_address_group():
     """Returns the created address group."""
     return SmtpAddressGroup(
         id="address_group_id",
-        interpreting_service_name="smtp",
         display_name="name",
         properties={"property": "value"},
         fields=SmtpAddressFields(
@@ -39,7 +38,6 @@ def _smtp_message_template():
     """Returns the created message template."""
     return SmtpMessageTemplate(
         id="message_template_id",
-        interpreting_service_name="smtp",
         display_name="name",
         properties={"property": "value"},
         fields=SmtpMessageTemplateFields(
@@ -111,7 +109,6 @@ class TestNotificationClient:
         _smtp_message_template: SmtpMessageTemplate,
     ):
         address_group = SmtpAddressGroup(
-            interpreting_service_name="smtp",
             fields=SmtpAddressFields(toAddresses=["invalid-email"]),
         )
 
@@ -145,7 +142,6 @@ class TestNotificationClient:
         self, client: NotificationClient, _smtp_address_group: SmtpAddressGroup
     ):
         message_template = SmtpMessageTemplate(
-            interpreting_service_name="smtp",
             fields=SmtpMessageTemplateFields(subject_template=""),
         )
 
@@ -214,13 +210,11 @@ class TestNotificationClient:
             status=204,
         )
         first_message_template = SmtpMessageTemplate(
-            interpreting_service_name="smtp",
             fields=SmtpMessageTemplateFields(
                 subject_template="subject1", body_template="body1"
             ),
         )
         second_message_template = SmtpMessageTemplate(
-            interpreting_service_name="smtp",
             fields=SmtpMessageTemplateFields(
                 subject_template="subject2", body_template="body2"
             ),

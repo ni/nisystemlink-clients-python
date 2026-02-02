@@ -4,6 +4,7 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.notification.models._base_notification_metadata import (
     BaseNotificationMetadata,
 )
+from pydantic import model_validator
 
 
 class SmtpMessageTemplateFields(JsonModel):
@@ -24,3 +25,12 @@ class SmtpMessageTemplate(BaseNotificationMetadata):
 
     fields: SmtpMessageTemplateFields
     """Subject and body template fields for SMTP messages."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def set_interpreting_service_name(
+        cls, data: "SmtpMessageTemplate"
+    ) -> "SmtpMessageTemplate":
+        if isinstance(data, dict) and "interpreting_service_name" not in data:
+            data["interpreting_service_name"] = "smtp"
+        return data

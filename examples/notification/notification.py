@@ -89,7 +89,6 @@ recipients = SmtpAddressFields(toAddresses=["sample1@example.com"])
 
 # Create address group
 address_group = SmtpAddressGroup(
-    interpreting_service_name="smtp",
     display_name="Alarm Notification Recipients",
     properties={"address group": "Alarm"},
     fields=recipients,
@@ -97,7 +96,6 @@ address_group = SmtpAddressGroup(
 
 # Create mail template for alarm creation notification
 alarm_creation_template = SmtpMessageTemplate(
-    interpreting_service_name="smtp",
     display_name="Alarm Creation Template",
     fields=SmtpMessageTemplateFields(
         subject_template="Alarm Created: <alarm_id>",
