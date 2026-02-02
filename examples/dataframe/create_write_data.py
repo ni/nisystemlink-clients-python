@@ -89,30 +89,29 @@ if pa is not None:
     ]
     client.append_table_data(table_id, batch_list)
 
-    if pd is not None:
-        print("Appending data to table via Pandas DataFrame...")
-        # Append via DataFrame (Pandas)
-        df = pd.DataFrame(
-            {
-                "ix": [11, 12, 13],
-                "Float_Column": [0.6, 0.7, 0.8],
-                "Timestamp_Column": [datetime.now() for _ in range(3)],
-            }
-        )
+if pa is not None and pd is not None:
+    print("Appending data to table via Pandas DataFrame...")
+    # Append via DataFrame (Pandas)
+    df = pd.DataFrame(
+        {
+            "ix": [11, 12, 13],
+            "Float_Column": [0.6, 0.7, 0.8],
+            "Timestamp_Column": [datetime.now() for _ in range(3)],
+        }
+    )
 
-        # Optional - coerce df types to the dataframe table schema
-        df = df.astype(
-            {
-                "ix": "Int32",
-                "Float_Column": "float32",
-                "Timestamp_Column": "datetime64[ns]",
-            }
-        )
+    # Optional - coerce df types to the dataframe table schema
+    df = df.astype(
+        {
+            "ix": "Int32",
+            "Float_Column": "float32",
+            "Timestamp_Column": "datetime64[ns]",
+        }
+    )
 
-        # convert Pandas DataFrame to Arrow RecordBatch
-        batch_single = pa.RecordBatch.from_pandas(df)
-
-        client.append_table_data(table_id, batch_single)
+    # convert Pandas DataFrame to Arrow RecordBatch and append
+    record_batch = pa.RecordBatch.from_pandas(df)
+    client.append_table_data(table_id, record_batch)
 
 # Mark end_of_data for the table
 # Supply `None` and `end_of_data=True`
