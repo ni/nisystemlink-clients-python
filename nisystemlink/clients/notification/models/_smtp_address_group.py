@@ -44,7 +44,9 @@ class SmtpAddressGroup(BaseNotificationMetadata):
 
     @model_validator(mode="before")
     @classmethod
-    def set_interpreting_service_name(cls, data: "SmtpAddressGroup") -> "SmtpAddressGroup":
+    def set_interpreting_service_name(
+        cls, data: "SmtpAddressGroup"
+    ) -> "SmtpAddressGroup":
         if isinstance(data, dict) and "interpreting_service_name" not in data:
             data["interpreting_service_name"] = "smtp"
         return data
