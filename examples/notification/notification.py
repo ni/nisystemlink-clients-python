@@ -85,7 +85,7 @@ print("Alarm created successfully")
 retrieved_alarm = alarm_client.get_alarm(instance_id=id)
 
 # Define recipients to notify
-recipients = SmtpAddressFields(toAddresses=["sample1@example.com"])
+recipients = SmtpAddressFields(to_addresses=["sample1@example.com"])
 
 # Create address group
 address_group = SmtpAddressGroup(

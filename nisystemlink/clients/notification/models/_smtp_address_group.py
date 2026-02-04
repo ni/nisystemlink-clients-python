@@ -10,13 +10,13 @@ from pydantic import model_validator
 class SmtpAddressFields(JsonModel):
     """Recipient address fields used in SMTP messaging."""
 
-    toAddresses: List[str] | None = None
+    to_addresses: List[str] | None = None
     """List of primary recipient addresses."""
 
-    ccAddresses: List[str] | None = None
+    cc_addresses: List[str] | None = None
     """List of carbon copy recipient addresses."""
 
-    bccAddresses: List[str] | None = None
+    bcc_addresses: List[str] | None = None
     """List of blind carbon copy recipient addresses."""
 
 
@@ -30,15 +30,15 @@ class SmtpAddressGroup(BaseNotificationMetadata):
     """Recipient address fields used for SMTP notifications.
 
     Valid fields:
-        - toAddresses
-        - ccAddresses
-        - bccAddresses
+        - to_addresses
+        - cc_addresses
+        - bcc_addresses
 
     Example:
         {
-            toAddresses: [ "address1@example.com" ],
-            ccAddresses: [ "address2@example.com" ],
-            bccAddresses: [ "address3@example.com" ]
+            to_addresses: [ "address1@example.com" ],
+            cc_addresses: [ "address2@example.com" ],
+            bcc_addresses: [ "address3@example.com" ]
         }
     """
 

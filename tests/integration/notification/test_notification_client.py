@@ -25,9 +25,9 @@ def _smtp_address_group():
         display_name="name",
         properties={"property": "value"},
         fields=SmtpAddressFields(
-            toAddresses=["address1@example.com"],
-            ccAddresses=["address2@example.com"],
-            bccAddresses=["address3@example.com"],
+            to_addresses=["address1@example.com"],
+            cc_addresses=["address2@example.com"],
+            bcc_addresses=["address3@example.com"],
         ),
         referencing_notification_strategies=["reference_notification_strategy"],
     )
@@ -109,7 +109,7 @@ class TestNotificationClient:
         _smtp_message_template: SmtpMessageTemplate,
     ):
         address_group = SmtpAddressGroup(
-            fields=SmtpAddressFields(toAddresses=["invalid-email"]),
+            fields=SmtpAddressFields(to_addresses=["invalid-email"]),
         )
 
         request_model = DynamicStrategyRequest(
@@ -168,7 +168,7 @@ class TestNotificationClient:
         with pytest.raises(ValidationError):
             SmtpAddressGroup(
                 interpreting_service_name="invalid_service",
-                fields=SmtpAddressFields(toAddresses=["address1@example.com"]),
+                fields=SmtpAddressFields(to_addresses=["address1@example.com"]),
             )
 
     @responses.activate
