@@ -5,7 +5,6 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
 from nisystemlink.clients.work_item import models
-
 from uplink import Body, Field, Path, retry
 
 
@@ -218,5 +217,6 @@ class WorkItemClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
         """
+        ...
         ...
         ...
