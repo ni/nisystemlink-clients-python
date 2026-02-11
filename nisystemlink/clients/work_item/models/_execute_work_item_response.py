@@ -1,7 +1,5 @@
 from typing import Literal
 
-from pydantic import Field
-
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 

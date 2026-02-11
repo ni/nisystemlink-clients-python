@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import List
 
 import pytest
-
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
@@ -583,4 +582,5 @@ class TestWorkItemClient:
                 filter=f'id="{created_work_item_template.id}"', take=1
             )
         )
+        assert len(query_deleted_work_item_template_response.work_item_templates) == 0
         assert len(query_deleted_work_item_template_response.work_item_templates) == 0
