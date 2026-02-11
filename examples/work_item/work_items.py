@@ -212,9 +212,7 @@ if created_work_item_id is not None:
             work_item_id=created_work_item_id, execute_request=execute_request
         )
         if execute_response.result is not None:
-            print(
-                f"Executed action successfully. Type: {execute_response.result.type}"
-            )
+            print(f"Executed action successfully. Type: {execute_response.result.type}")
             if execute_response.result.execution_id:
                 print(f"Execution ID: {execute_response.result.execution_id}")
         elif execute_response.error is not None:

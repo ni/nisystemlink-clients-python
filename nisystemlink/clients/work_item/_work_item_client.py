@@ -132,7 +132,7 @@ class WorkItemClient(BaseClient):
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
         """
         ...
-    
+
     @post("workitems/{workItemId}/execute", args=[Path(name="workItemId"), Body])
     def execute_work_item(
         self, work_item_id: str, execute_request: models.ExecuteWorkItemRequest
