@@ -13,6 +13,7 @@ nisystemlink.clients.work_item
    .. automethod:: update_work_items
    .. automethod:: schedule_work_items
    .. automethod:: delete_work_items
+   .. automethod:: execute_work_item
    .. automethod:: create_work_item_templates
    .. automethod:: query_work_item_templates
    .. automethod:: update_work_item_templates

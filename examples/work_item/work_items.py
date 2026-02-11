@@ -5,6 +5,7 @@ from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
     Dashboard,
+    ExecuteWorkItemRequest,
     Job,
     JobExecution,
     ManualExecution,
@@ -105,6 +106,7 @@ create_work_items_request = [
         dashboard=Dashboard(
             id="DashboardId", variables={"product": "PXIe-4080", "location": "Lab1"}
         ),
+        workflow_id="312064",
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
             JobExecution(
@@ -201,6 +203,24 @@ if created_work_item_id is not None:
         print(
             f"Scheduled work item with ID: {schedule_work_items_response.scheduled_work_items[0].id}"
         )
+
+# Execute work item action
+if created_work_item_id is not None:
+    execute_request = ExecuteWorkItemRequest(action="START")
+    try:
+        execute_response = client.execute_work_item(
+            work_item_id=created_work_item_id, execute_request=execute_request
+        )
+        if execute_response.result is not None:
+            print(
+                f"Executed action successfully. Type: {execute_response.result.type}"
+            )
+            if execute_response.result.execution_id:
+                print(f"Execution ID: {execute_response.result.execution_id}")
+        elif execute_response.error is not None:
+            print(f"Execution returned an error: {execute_response.error.message}")
+    except Exception as e:
+        print(f"Could not execute action: {e}")
 
 # Delete work item
 if created_work_item_id is not None:

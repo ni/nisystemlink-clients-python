@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 
 import pytest
+
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
@@ -11,6 +12,7 @@ from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplateRequest,
     CreateWorkItemTemplatesPartialSuccessResponse,
     Dashboard,
+    ExecuteWorkItemRequest,
     ExecutionDefinition,
     Job,
     JobExecution,
@@ -136,7 +138,7 @@ class TestWorkItemClient:
         CreateWorkItemRequest(
             name="Python integration work item",
             type="testplan",
-            state="NEW",
+            state="SCHEDULED",
             description="Work item for verifying integration flow",
             assigned_to="test.user@example.com",
             requested_by="test.manager@example.com",
@@ -196,6 +198,7 @@ class TestWorkItemClient:
             properties={"env": "staging", "priority": "high"},
             dashboard=_dashboard,
             execution_actions=_execution_actions,
+            workflow_id="312064",
         )
     ]
     """create work item request object."""
@@ -419,6 +422,25 @@ class TestWorkItemClient:
             )
         )
         assert len(query_deleted_work_item_response.work_items) == 0
+
+    def test__execute_work_item__returns_execution_result(
+        self, client: WorkItemClient, create_work_items
+    ):
+        create_work_item_response = create_work_items(self._create_work_item_request)
+        assert create_work_item_response.created_work_items is not None
+        created_work_item = create_work_item_response.created_work_items[0]
+
+        execute_request = ExecuteWorkItemRequest(action="START")
+        execute_response = client.execute_work_item(
+            work_item_id=created_work_item.id, execute_request=execute_request
+        )
+
+        assert execute_response is not None
+        assert execute_response.result is not None or execute_response.error is not None
+        if execute_response.result is not None:
+            assert execute_response.result.type == "MANUAL"
+        if execute_response.error is not None:
+            assert execute_response.error.name is not None
 
     def test__create_work_item_template__returns_created_work_item_template(
         self, create_work_item_templates
