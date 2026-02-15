@@ -595,4 +595,3 @@ class TestWorkItemClient:
             )
         )
         assert len(query_deleted_work_item_template_response.work_item_templates) == 0
-        assert len(query_deleted_work_item_template_response.work_item_templates) == 0
