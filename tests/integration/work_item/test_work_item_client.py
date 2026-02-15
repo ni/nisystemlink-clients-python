@@ -140,7 +140,7 @@ class TestWorkItemClient:
         CreateWorkItemRequest(
             name="Python integration work item",
             type="testplan",
-            state="SCHEDULED",
+            state="NEW",
             description="Work item for verifying integration flow",
             assigned_to="test.user@example.com",
             requested_by="test.manager@example.com",
