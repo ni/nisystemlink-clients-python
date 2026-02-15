@@ -106,7 +106,7 @@ create_work_items_request = [
         dashboard=Dashboard(
             id="DashboardId", variables={"product": "PXIe-4080", "location": "Lab1"}
         ),
-        workflow_id="312064",
+        workflow_id="example-workflow-id",
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
             JobExecution(
