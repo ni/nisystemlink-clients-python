@@ -5,7 +5,7 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
 from nisystemlink.clients.work_item import models
-from uplink import Body, Field, Path, retry
+from uplink import Field, Path, retry
 
 
 @retry(
@@ -132,7 +132,10 @@ class WorkItemClient(BaseClient):
         """
         ...
 
-    @post("workitems/{workItemId}/execute", args=[Path(name="workItemId"), Field("action")])
+    @post(
+        "workitems/{workItemId}/execute",
+        args=[Path(name="workItemId"), Field("action")],
+    )
     def execute_work_item(
         self, work_item_id: str, action: str
     ) -> models.ExecuteWorkItemResponse:

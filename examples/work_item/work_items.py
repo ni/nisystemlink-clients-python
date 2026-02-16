@@ -213,7 +213,7 @@ if created_work_item_id is not None:
             print(f"Execution failed: {execute_response.error.message}")
         elif execute_response.result is not None:
             print(f"Executed action successfully. Type: {execute_response.result.type}")
-            
+
             # Check for result-level error
             if execute_response.result.error is not None:
                 print(f"Execution error: {execute_response.result.error.message}")
@@ -221,7 +221,9 @@ if created_work_item_id is not None:
                 # Handle type-specific fields
                 if execute_response.result.type == "NOTEBOOK":
                     if execute_response.result.execution_id:
-                        print(f"Notebook execution ID: {execute_response.result.execution_id}")
+                        print(
+                            f"Notebook execution ID: {execute_response.result.execution_id}"
+                        )
                 elif execute_response.result.type == "JOB":
                     if execute_response.result.job_ids:
                         print(f"Job IDs: {', '.join(execute_response.result.job_ids)}")
