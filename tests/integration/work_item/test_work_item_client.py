@@ -535,7 +535,7 @@ class TestWorkItemClient:
         assert execute_response.result.error is not None
         assert execute_response.result.error.code == -251050
         assert execute_response.result.error.message is not None
-        assert "execution failed" in execute_response.result.error.message.lower()
+        assert "execution failed" in execute_response.result.error.message
 
     def test__create_work_item_template__returns_created_work_item_template(
         self, create_work_item_templates
