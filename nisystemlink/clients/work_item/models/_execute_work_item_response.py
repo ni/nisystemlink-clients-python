@@ -1,20 +1,23 @@
-from typing import Literal
+from typing import List, Literal
 
 from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
-class ExecuteWorkItemResult(JsonModel):
-    """Represents the result of a work item execution action."""
+class ExecutionResult(JsonModel):
+    """Result of executing a work item action."""
 
-    type: Literal["MANUAL", "JOB", "NOTEBOOK", "NONE"]
-    """Type of execution that was triggered (MANUAL, JOB, NOTEBOOK, or NONE)."""
-
-    execution_id: str | None = None
-    """The execution ID if applicable."""
+    type: Literal["NONE", "MANUAL", "NOTEBOOK", "JOB", "SCHEDULE", "UNSCHEDULE"]
+    """Type of execution."""
 
     error: ApiError | None = None
     """Error information if the execution encountered an error."""
+
+    execution_id: str | None = None
+    """The notebook execution ID. Only populated when type is NOTEBOOK."""
+
+    job_ids: List[str] | None = None
+    """The list of job IDs. Only populated when type is JOB."""
 
 
 class ExecuteWorkItemResponse(JsonModel):
@@ -23,5 +26,5 @@ class ExecuteWorkItemResponse(JsonModel):
     error: ApiError | None = None
     """Error information if the action failed."""
 
-    result: ExecuteWorkItemResult | None = None
+    result: ExecutionResult | None = None
     """Result of the action execution."""

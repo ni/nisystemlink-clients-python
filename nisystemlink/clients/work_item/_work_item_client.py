@@ -132,15 +132,15 @@ class WorkItemClient(BaseClient):
         """
         ...
 
-    @post("workitems/{workItemId}/execute", args=[Path(name="workItemId"), Body])
+    @post("workitems/{workItemId}/execute", args=[Path(name="workItemId"), Field("action")])
     def execute_work_item(
-        self, work_item_id: str, execute_request: models.ExecuteWorkItemRequest
+        self, work_item_id: str, action: str
     ) -> models.ExecuteWorkItemResponse:
         """Executes the specified action for the work item.
 
         Args:
             work_item_id: The ID of the work item the action will be performed on.
-            execute_request: The parameters for executing a work item action.
+            action: The action to execute on the work item.
 
         Returns:
             The response containing the execution result or error information.

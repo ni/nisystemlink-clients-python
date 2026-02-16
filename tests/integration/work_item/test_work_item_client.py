@@ -12,7 +12,6 @@ from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplateRequest,
     CreateWorkItemTemplatesPartialSuccessResponse,
     Dashboard,
-    ExecuteWorkItemRequest,
     ExecutionDefinition,
     Job,
     JobExecution,
@@ -424,14 +423,42 @@ class TestWorkItemClient:
         )
         assert len(query_deleted_work_item_response.work_items) == 0
 
+    @pytest.mark.parametrize(
+        "execution_type,action,extra_fields,expected_values",
+        [
+            ("MANUAL", "START", {}, {}),
+            (
+                "NOTEBOOK",
+                "RUN_NOTEBOOK",
+                {"execution_id": "notebook-execution-123"},
+                {"execution_id": "notebook-execution-123"},
+            ),
+            (
+                "JOB",
+                "RUN_JOBS",
+                {"job_ids": ["job-1", "job-2", "job-3"]},
+                {"job_ids": ["job-1", "job-2", "job-3"]},
+            ),
+            ("SCHEDULE", "SCHEDULE", {}, {}),
+            ("UNSCHEDULE", "UNSCHEDULE", {}, {}),
+        ],
+    )
     @responses.activate
-    def test__execute_work_item__returns_execution_result(self, client: WorkItemClient):
+    def test__execute_work_item_with_action__returns_execution_result(
+        self,
+        client: WorkItemClient,
+        execution_type: str,
+        action: str,
+        extra_fields: dict,
+        expected_values: dict,
+    ):
         work_item_id = "test-work-item-id"
 
         return_value = {
             "result": {
-                "type": "MANUAL",
-                "action": "START",
+                "type": execution_type,
+                "error": None,
+                **extra_fields,
             },
             "error": None,
         }
@@ -443,15 +470,98 @@ class TestWorkItemClient:
             status=200,
         )
 
-        execute_request = ExecuteWorkItemRequest(action="START")
         execute_response = client.execute_work_item(
-            work_item_id=work_item_id, execute_request=execute_request
+            work_item_id=work_item_id, action=action
         )
 
         assert execute_response is not None
-        assert execute_response.result is not None
-        assert execute_response.result.type == "MANUAL"
         assert execute_response.error is None
+        assert execute_response.result is not None
+        assert execute_response.result.type == execution_type
+        assert execute_response.result.error is None
+
+        # Verify type-specific fields
+        for field, expected_value in expected_values.items():
+            assert getattr(execute_response.result, field) == expected_value
+
+    @responses.activate
+    def test__execute_work_item_with_response_level_error__returns_error_no_result(
+        self, client: WorkItemClient
+    ):
+        work_item_id = "invalid-work-item-id"
+
+        return_value = {
+            "result": None,
+            "error": {
+                "name": "Skyline.ResourceNotFound",
+                "code": -251040,
+                "message": "The requested work item was not found.",
+                "resourceType": "WorkItem",
+                "resourceId": work_item_id,
+                "args": [],
+                "innerErrors": [],
+            },
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
+            json=return_value,
+            status=200,
+        )
+
+        execute_response = client.execute_work_item(
+            work_item_id=work_item_id, action="START"
+        )
+
+        assert execute_response is not None
+        assert execute_response.result is None
+        assert execute_response.error is not None
+        assert execute_response.error.code == -251040
+        assert execute_response.error.message is not None
+        assert "not found" in execute_response.error.message.lower()
+
+    @responses.activate
+    def test__execute_work_item_with_result_level_error__returns_result_with_error(
+        self, client: WorkItemClient
+    ):
+        work_item_id = "test-work-item-id"
+
+        return_value = {
+            "result": {
+                "type": "NOTEBOOK",
+                "execution_id": None,
+                "error": {
+                    "name": "Skyline.ExecutionFailed",
+                    "code": -251050,
+                    "message": "Notebook execution failed due to invalid parameters.",
+                    "args": [],
+                    "innerErrors": [],
+                },
+            },
+            "error": None,
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
+            json=return_value,
+            status=200,
+        )
+
+        execute_response = client.execute_work_item(
+            work_item_id=work_item_id, action="RUN_NOTEBOOK"
+        )
+
+        assert execute_response is not None
+        assert execute_response.error is None
+        assert execute_response.result is not None
+        assert execute_response.result.type == "NOTEBOOK"
+        assert execute_response.result.execution_id is None
+        assert execute_response.result.error is not None
+        assert execute_response.result.error.code == -251050
+        assert execute_response.result.error.message is not None
+        assert "execution failed" in execute_response.result.error.message.lower()
 
     def test__create_work_item_template__returns_created_work_item_template(
         self, create_work_item_templates
