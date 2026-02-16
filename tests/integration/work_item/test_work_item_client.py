@@ -4,6 +4,7 @@ from typing import List
 
 import pytest
 import responses
+from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
@@ -484,42 +485,15 @@ class TestWorkItemClient:
         for field, expected_value in expected_values.items():
             assert getattr(execute_response.result, field) == expected_value
 
-    @responses.activate
-    def test__execute_work_item_with_response_level_error__returns_error_no_result(
+    def test__execute_work_item_with_invalid_id__raises_ApiException_NotFound(
         self, client: WorkItemClient
     ):
-        work_item_id = "invalid-work-item-id"
+        invalid_work_item_id = "invalid-work-item-id"
 
-        return_value = {
-            "result": None,
-            "error": {
-                "name": "Skyline.ResourceNotFound",
-                "code": -251040,
-                "message": "The requested work item was not found.",
-                "resourceType": "WorkItem",
-                "resourceId": work_item_id,
-                "args": [],
-                "innerErrors": [],
-            },
-        }
+        with pytest.raises(ApiException) as exception_info:
+            client.execute_work_item(work_item_id=invalid_work_item_id, action="START")
 
-        responses.add(
-            responses.POST,
-            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
-            json=return_value,
-            status=200,
-        )
-
-        execute_response = client.execute_work_item(
-            work_item_id=work_item_id, action="START"
-        )
-
-        assert execute_response is not None
-        assert execute_response.result is None
-        assert execute_response.error is not None
-        assert execute_response.error.code == -251040
-        assert execute_response.error.message is not None
-        assert "not found" in execute_response.error.message.lower()
+        assert exception_info.value.http_status_code == 404
 
     @responses.activate
     def test__execute_work_item_with_result_level_error__returns_result_with_error(
