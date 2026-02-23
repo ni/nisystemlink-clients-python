@@ -187,7 +187,10 @@ class FileClient(BaseClient):
 
                   Example::
 
-                      '(name = "myfile.txt" OR extension = "png") and (DateTime(created) > DateTime.parse("2023-01-01T08:00:00.000Z")) and (size < 1024)'
+                      '(name = "myfile.txt" OR extension = "png")'
+                      ' and (DateTime(created) >'
+                      ' DateTime.parse("2023-01-01T08:00:00.000Z"))'
+                      ' and (size < 1024)'
 
                 - **order_by** (:class:`~nisystemlink.clients.file.models.FileLinqQueryOrderBy`, optional):
                   The file property to order results by. One of ``created``, ``updated``,
