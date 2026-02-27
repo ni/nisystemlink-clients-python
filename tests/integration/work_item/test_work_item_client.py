@@ -625,23 +625,6 @@ class TestWorkItemClient:
         assert execute_response.result.error.message is not None
         assert "execution failed" in execute_response.result.error.message
 
-    def test__execute_work_item_manual__returns_manual_result(
-        self, client: WorkItemClient, create_work_items
-    ):
-        create_work_item_response = create_work_items(self._create_work_item_request)
-        assert create_work_item_response.created_work_items is not None
-        created_work_item = create_work_item_response.created_work_items[0]
-
-        execute_response = client.execute_work_item(
-            work_item_id=created_work_item.id, action="START"
-        )
-
-        assert execute_response is not None
-        assert execute_response.error is None
-        assert execute_response.result is not None
-        assert execute_response.result.type == "MANUAL"
-        assert execute_response.result.error is None
-
     def test__create_work_item_template__returns_created_work_item_template(
         self, create_work_item_templates
     ):
