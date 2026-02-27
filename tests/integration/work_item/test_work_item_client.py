@@ -491,7 +491,8 @@ class TestWorkItemClient:
         self, client: WorkItemClient
     ):
         """404 is a documented status code — the API returns ExecuteWorkItemResponse,
-        so the client should return a structured response rather than raising."""
+        so the client should return a structured response rather than raising.
+        """
         work_item_id = "invalid-work-item-id"
 
         return_value = {
@@ -526,7 +527,8 @@ class TestWorkItemClient:
         self, client: WorkItemClient
     ):
         """500 is a documented status code — the API may return partial results
-        (e.g. cancelled job IDs) alongside the error so callers can act on them."""
+        (e.g. cancelled job IDs) alongside the error so callers can act on them.
+        """
         work_item_id = "test-work-item-id"
 
         return_value = {
