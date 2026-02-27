@@ -7,6 +7,11 @@ from nisystemlink.clients.core._uplink._methods import get, post
 from nisystemlink.clients.work_item import models
 from uplink import Field, Path, retry
 
+# Status codes for which the execute work item API returns ExecuteWorkItemResponse
+# in the body even on failure, allowing callers to recover partial results
+# (e.g. cancelled job IDs). See the API spec for details.
+_EXECUTE_RESPONSE_STATUS_CODES = frozenset({403, 404, 500})
+
 
 @retry(
     when=retry.when.status(408, 429, 502, 503, 504),
@@ -132,10 +137,6 @@ class WorkItemClient(BaseClient):
         """
         ...
 
-    @post(
-        "workitems/{workItemId}/execute",
-        args=[Path(name="workItemId"), Field("action")],
-    )
     def execute_work_item(
         self, work_item_id: str, action: str
     ) -> models.ExecuteWorkItemResponse:
@@ -147,10 +148,31 @@ class WorkItemClient(BaseClient):
 
         Returns:
             The response containing the execution result or error information.
+            For documented error status codes (403, 404, 500), the API returns an
+            :class:`ExecuteWorkItemResponse` body that may contain partial results
+            (e.g. cancelled job IDs). This method surfaces that data instead of
+            raising an exception, so callers always receive a structured response.
 
         Raises:
-            ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
+            ApiException: if unable to communicate with the `/niworkitem` service
+                or provided invalid arguments, or if an undocumented error status
+                code is returned.
         """
+        try:
+            return self._execute_work_item(work_item_id=work_item_id, action=action)
+        except core.ApiException as e:
+            if e.http_status_code in _EXECUTE_RESPONSE_STATUS_CODES and e.response_data:
+                return models.ExecuteWorkItemResponse.model_validate(e.response_data)
+            raise
+
+    @post(
+        "workitems/{workItemId}/execute",
+        args=[Path(name="workItemId"), Field("action")],
+    )
+    def _execute_work_item(
+        self, work_item_id: str, action: str
+    ) -> models.ExecuteWorkItemResponse:
+        """Internal implementation of execute_work_item."""
         ...
 
     @post("workitem-templates", args=[Field("workItemTemplates")])

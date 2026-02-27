@@ -61,6 +61,13 @@ from ._update_work_items_request import UpdateWorkItemsRequest
 from ._execute_work_item_response import (
     ExecuteWorkItemResponse,
     ExecutionResult,
+    ExecutionResultBase,
+    JobExecutionResult,
+    ManualExecutionResult,
+    NoneExecutionResult,
+    NotebookExecutionResult,
+    ScheduleExecutionResult,
+    UnscheduleExecutionResult,
 )
 
 from ._create_work_item_template_request import CreateWorkItemTemplateRequest
