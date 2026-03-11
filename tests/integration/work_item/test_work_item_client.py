@@ -6,7 +6,7 @@ import pytest
 import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.work_item import WorkItemClient
+from nisystemlink.clients.work_item import WorkItemClient, WorkItemExecuteApiException
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
     CreateWorkItemsPartialSuccessResponse,
@@ -487,11 +487,11 @@ class TestWorkItemClient:
             assert getattr(execute_response.result, field) == expected_value
 
     @responses.activate
-    def test__execute_work_item_with_404_error__returns_response_with_error(
+    def test__execute_work_item_with_404_error__raises_WorkItemExecuteApiException(
         self, client: WorkItemClient
     ):
-        """404 is a documented status code — the API returns ExecuteWorkItemResponse,
-        so the client should return a structured response rather than raising.
+        """When the API returns an execute-specific error body, the client raises
+        WorkItemExecuteApiException so callers can access partial results.
         """
         work_item_id = "invalid-work-item-id"
 
@@ -513,21 +513,20 @@ class TestWorkItemClient:
             status=404,
         )
 
-        execute_response = client.execute_work_item(
-            work_item_id=work_item_id, action="START"
-        )
+        with pytest.raises(WorkItemExecuteApiException) as exc_info:
+            client.execute_work_item(work_item_id=work_item_id, action="START")
 
-        assert execute_response is not None
-        assert execute_response.result is None
-        assert execute_response.error is not None
-        assert execute_response.error.code == -251049
+        assert exc_info.value.http_status_code == 404
+        assert exc_info.value.error is not None
+        assert exc_info.value.error.code == -251049
+        assert exc_info.value.result is None
 
     @responses.activate
-    def test__execute_work_item_with_500_error_and_partial_results__returns_response(
+    def test__execute_work_item_with_500_error_and_partial_results__raises_WorkItemExecuteApiException(
         self, client: WorkItemClient
     ):
-        """500 is a documented status code — the API may return partial results
-        (e.g. cancelled job IDs) alongside the error so callers can act on them.
+        """When the API returns a 500 with partial results (e.g. cancelled job IDs),
+        the client raises WorkItemExecuteApiException so callers can recover them.
         """
         work_item_id = "test-work-item-id"
 
@@ -553,16 +552,15 @@ class TestWorkItemClient:
             status=500,
         )
 
-        execute_response = client.execute_work_item(
-            work_item_id=work_item_id, action="RUN_JOBS"
-        )
+        with pytest.raises(WorkItemExecuteApiException) as exc_info:
+            client.execute_work_item(work_item_id=work_item_id, action="RUN_JOBS")
 
-        assert execute_response is not None
-        assert execute_response.error is not None
-        assert execute_response.error.code == -251000
-        assert execute_response.result is not None
-        assert execute_response.result.type == "JOB"
-        assert execute_response.result.job_ids == ["job-1", "job-2"]
+        assert exc_info.value.http_status_code == 500
+        assert exc_info.value.error is not None
+        assert exc_info.value.error.code == -251000
+        assert exc_info.value.result is not None
+        assert exc_info.value.result.type == "JOB"
+        assert exc_info.value.result.job_ids == ["job-1", "job-2"]
 
     @responses.activate
     def test__execute_work_item_with_undocumented_error__raises_ApiException(

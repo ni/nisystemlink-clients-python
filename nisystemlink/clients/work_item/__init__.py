@@ -1,3 +1,3 @@
-from ._work_item_client import WorkItemClient
+from ._work_item_client import WorkItemClient, WorkItemExecuteApiException
 
 # flake8: noqa
