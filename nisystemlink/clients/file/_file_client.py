@@ -153,7 +153,58 @@ class FileClient(BaseClient):
         """Queries file using LINQ filters.
 
         Args:
-            query: The LINQ query request containing the query string and optional parameters.
+            query: The LINQ query request containing the following parameters:
+
+                - **filter** (:class:`str`, optional): The filter criteria for files. Consists of a
+                  string of queries composed using AND/OR operators. String values and date strings
+                  need to be enclosed in double quotes. Parentheses can be used around filters to
+                  better define the order of operations.
+
+                  Filter syntax: ``[property name][operator][operand] and [property name][operator][operand]``
+
+                  Operators:
+
+                  - Equals: ``x = y``
+                  - Not equal: ``x != y``
+                  - Greater than: ``x > y``
+                  - Greater than or equal: ``x >= y``
+                  - Less than: ``x < y``
+                  - Less than or equal: ``x <= y``
+                  - Logical AND: ``x and y`` or ``x && y``
+                  - Logical OR: ``x or y`` or ``x || y``
+                  - Contains: ``x.Contains(y)`` — checks if a list contains an element
+                  - Not Contains: ``!x.Contains(y)`` — checks if a list does not contain an element
+
+                  Valid file properties for filtering:
+
+                  - ``created``: ISO timestamp string (e.g. ``"2023-01-01T08:00:00.000Z"``)
+                  - ``updated``: ISO timestamp string (e.g. ``"2023-01-01T08:00:00.000Z"``)
+                  - ``extension``: File extension (e.g. ``png``, ``txt``, ``pdf``)
+                  - ``size``: File size in bytes (e.g. ``1024``)
+                  - ``userId``: User ID that created the file (e.g. ``"8abc4b87-07d4-4f84-b54f-48eec89b07d4"``)
+                  - ``properties``: File properties (e.g. ``properties['x'] = 'y'``)
+                  - ``workspace``: The workspace of the files (e.g. ``"88974b87-07d4-4f84-b54f-48eec89b11ed"``)
+
+                  Example::
+
+                      '(name = "myfile.txt" OR extension = "png")'
+                      ' and (DateTime(created) >'
+                      ' DateTime.parse("2023-01-01T08:00:00.000Z"))'
+                      ' and (size < 1024)'
+
+                - **order_by** (:class:`~nisystemlink.clients.file.models.FileLinqQueryOrderBy`, optional):
+                  The file property to order results by. One of ``created``, ``updated``,
+                  ``extension``, ``size``, or ``workspace``. Defaults to ``updated``.
+
+                - **order_by_descending** (:class:`bool`, optional): Whether to return the files in
+                  descending order. Defaults to ``True``.
+
+                - **skip** (:class:`int`, optional): How many files to skip in the result when paging.
+                  For example, a list of 100 files with a skip value of 50 will return entries
+                  starting from the 51st file. Defaults to ``0``.
+
+                - **take** (:class:`int`, optional): Maximum number of files to return.
+                  Defaults to ``1000``.
 
         Returns:
             File Query Response
