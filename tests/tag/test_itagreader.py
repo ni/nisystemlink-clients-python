@@ -72,8 +72,7 @@ class TestITagReader:
 
     @pytest.mark.slow
     def test__get_tag_reader__mypy_ensures_correct_type(self):
-        code_template = textwrap.dedent(
-            """
+        code_template = textwrap.dedent("""
             from datetime import datetime
             from nisystemlink.clients.tag import DataType, ITagReader, TagManager
 
@@ -86,8 +85,7 @@ class TestITagReader:
             assert result is not None
             validate_type(result.value)
 
-            """
-        )
+            """)
 
         # Test successful validation of correct code
         try:

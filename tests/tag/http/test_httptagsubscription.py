@@ -356,13 +356,13 @@ class TestHttpTagSubscription(HttpClientTestBase):
 
         assert 2 == len(updates)
         assert "bool" in updates
-        (tag, reader) = updates["bool"]
+        tag, reader = updates["bool"]
         assert tbase.DataType.BOOLEAN == tag.data_type
         with pytest.raises(core.ApiException):
             reader.read()
 
         assert "double" in updates
-        (tag, reader) = updates["double"]
+        tag, reader = updates["double"]
         assert tbase.DataType.DOUBLE == tag.data_type
         value = reader.read(include_timestamp=True, include_aggregates=True)
         assert 3.14 == value.value
@@ -424,7 +424,7 @@ class TestHttpTagSubscription(HttpClientTestBase):
 
         assert 1 == len(updates)
         assert "unknown" in updates
-        (tag, reader) = updates["unknown"]
+        tag, reader = updates["unknown"]
         assert tbase.DataType.UNKNOWN == tag.data_type
 
         assert reader is None
