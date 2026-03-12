@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.31.1 (2026-03-12)
+
+### Fix
+
+* Align FileClient.query_files_linq docstring with Swagger API documentation ([#201](https://github.com/ni/nisystemlink-clients-python/issues/201)) ([`378c54d`](https://github.com/ni/nisystemlink-clients-python/commit/378c54dd11b236ace0d937e302da85ee5279cbe6))
+
 ## v2.31.0 (2026-02-02)
 
 ### Feature
