@@ -335,12 +335,14 @@ def __serialize_numeric_condition_range(value: NumericConditionValue) -> List[st
         return []
 
     return [
-        f"""[{'; '.join(
-            f'{range_key}: {range_value}'
-            for range_key, range_value in vars(range).items()
+        "["
+        + "; ".join(
+            f"{range_key}: {range_value}"
+            for range_key, range_value in vars(value_range).items()
             if range_value is not None
-        )}]"""
-        for range in value.range
+        )
+        + "]"
+        for value_range in value.range
     ]
 
 

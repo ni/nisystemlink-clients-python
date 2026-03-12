@@ -59,8 +59,7 @@ class TestITagWriter:
 
     @pytest.mark.slow
     def test__get_tag_writer__mypy_ensures_correct_type(self):
-        code_template = textwrap.dedent(
-            """
+        code_template = textwrap.dedent("""
             import datetime
             from nisystemlink.clients.tag import DataType, TagManager
 
@@ -70,8 +69,7 @@ class TestITagWriter:
             writer = mgr.create_writer(buffer_size=1)
             tag_writer = writer.get_tag_writer("foo", DataType.%s)
             tag_writer.write(value)
-            """
-        )
+            """)
 
         # Test successful validation of correct code
         try:

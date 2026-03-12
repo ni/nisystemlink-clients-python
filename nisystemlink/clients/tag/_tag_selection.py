@@ -523,7 +523,7 @@ class TagSelection(tbase.ITagReader):
         if self._closed:
             raise ReferenceError("TagSelection")
 
-        (metadata, values) = self._read_tag_metadata_and_values()
+        metadata, values = self._read_tag_metadata_and_values()
         self._update_metadata(metadata)
         self._update_values(values)
 
@@ -544,7 +544,7 @@ class TagSelection(tbase.ITagReader):
         if self._closed:
             raise ReferenceError("TagSelection")
 
-        (metadata, values) = await self._read_tag_metadata_and_values_async()
+        metadata, values = await self._read_tag_metadata_and_values_async()
         self._update_metadata(metadata)
         self._update_values(values)
 
