@@ -5,7 +5,31 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import get, post
 from nisystemlink.clients.work_item import models
-from uplink import Field, retry
+from uplink import Field, Path, retry
+
+
+class WorkItemExecuteApiException(core.ApiException):
+    """Raised when the execute work item API returns an error with a structured response body.
+
+    The API may return partial results (e.g. cancelled job IDs) alongside an error.
+    This exception exposes those results via the :attr:`result` property.
+    """
+
+    def __init__(
+        self,
+        msg: str,
+        *,
+        http_status_code: int,
+        error: core.ApiError | None,
+        result: models.ExecutionResult | None,
+    ) -> None:
+        super().__init__(msg, error=error, http_status_code=http_status_code)
+        self._result = result
+
+    @property
+    def result(self) -> models.ExecutionResult | None:
+        """The partial execution result returned alongside the error, if any."""
+        return self._result
 
 
 @retry(
@@ -130,6 +154,54 @@ class WorkItemClient(BaseClient):
         Raises:
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
         """
+        ...
+
+    def execute_work_item(
+        self, work_item_id: str, action: str
+    ) -> models.ExecuteWorkItemResponse:
+        """Executes the specified action for the work item.
+
+        Args:
+            work_item_id: The ID of the work item the action will be performed on.
+            action: The action to execute on the work item.
+
+        Returns:
+            The response containing the execution result.
+
+        Raises:
+            WorkItemExecuteApiException: if the API returns an error response with
+                an execute-specific body. The :attr:`~WorkItemExecuteApiException.result`
+                property may contain partial results (e.g. cancelled job IDs).
+            ApiException: if unable to communicate with the `/niworkitem` service
+                or provided invalid arguments.
+        """
+        try:
+            return self._execute_work_item(work_item_id=work_item_id, action=action)
+        except core.ApiException as e:
+            data = e.response_data
+            if not data or "result" not in data:
+                raise
+
+            try:
+                response = models.ExecuteWorkItemResponse.model_validate(data)
+            except Exception:
+                raise e
+
+            raise WorkItemExecuteApiException(
+                str(e),
+                http_status_code=e.http_status_code or 0,
+                error=response.error,
+                result=response.result,
+            ) from e
+
+    @post(
+        "workitems/{workItemId}/execute",
+        args=[Path(name="workItemId"), Field("action")],
+    )
+    def _execute_work_item(
+        self, work_item_id: str, action: str
+    ) -> models.ExecuteWorkItemResponse:
+        """Internal implementation of execute_work_item."""
         ...
 
     @post("workitem-templates", args=[Field("workItemTemplates")])

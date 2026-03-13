@@ -456,13 +456,13 @@ default connection. The default connection depends on your environment.
 
 With a :class:`.WorkItemClient` object, you can:
 
-* Create, query, get, update, schedule and delete work items
+* Create, query, get, update, schedule, delete and execute work items
 * Create, query, update and delete work item templates
 
 Examples
 ~~~~~~~~
 
-Create, query, get, update, schedule and delete work items
+Create, query, get, update, schedule, delete and execute work items
 
 .. literalinclude:: ../examples/work_item/work_items.py
    :language: python

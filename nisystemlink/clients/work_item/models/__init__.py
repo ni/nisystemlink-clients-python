@@ -58,6 +58,18 @@ from ._update_work_items_partial_success_response import (
 )
 from ._update_work_items_request import UpdateWorkItemsRequest
 
+from ._execute_work_item_response import (
+    ExecuteWorkItemResponse,
+    ExecutionResult,
+    ExecutionResultBase,
+    JobExecutionResult,
+    ManualExecutionResult,
+    NoneExecutionResult,
+    NotebookExecutionResult,
+    ScheduleExecutionResult,
+    UnscheduleExecutionResult,
+)
+
 from ._create_work_item_template_request import CreateWorkItemTemplateRequest
 from ._create_work_item_templates_partial_success_response import (
     CreateWorkItemTemplatesPartialSuccessResponse,

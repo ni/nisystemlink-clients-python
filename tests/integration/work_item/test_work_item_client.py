@@ -3,8 +3,10 @@ from datetime import datetime
 from typing import List
 
 import pytest
+import responses
+from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from nisystemlink.clients.work_item import WorkItemClient
+from nisystemlink.clients.work_item import WorkItemClient, WorkItemExecuteApiException
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
     CreateWorkItemsPartialSuccessResponse,
@@ -40,6 +42,8 @@ from nisystemlink.clients.work_item.models import (
     WorkItemTemplate,
     WorkItemTemplateField,
 )
+
+BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
 
 
 @pytest.fixture(scope="class")
@@ -419,6 +423,205 @@ class TestWorkItemClient:
             )
         )
         assert len(query_deleted_work_item_response.work_items) == 0
+
+    @pytest.mark.parametrize(
+        "execution_type,action,extra_fields,expected_values",
+        [
+            ("NONE", "NONE", {}, {}),
+            ("MANUAL", "START", {}, {}),
+            (
+                "NOTEBOOK",
+                "RUN_NOTEBOOK",
+                {"execution_id": "notebook-execution-123"},
+                {"execution_id": "notebook-execution-123"},
+            ),
+            (
+                "JOB",
+                "RUN_JOBS",
+                {"job_ids": ["job-1", "job-2", "job-3"]},
+                {"job_ids": ["job-1", "job-2", "job-3"]},
+            ),
+            ("SCHEDULE", "SCHEDULE", {}, {}),
+            ("UNSCHEDULE", "UNSCHEDULE", {}, {}),
+        ],
+    )
+    @responses.activate
+    def test__execute_work_item_with_action__returns_execution_result(
+        self,
+        client: WorkItemClient,
+        execution_type: str,
+        action: str,
+        extra_fields: dict,
+        expected_values: dict,
+    ):
+        work_item_id = "test-work-item-id"
+
+        return_value = {
+            "result": {
+                "type": execution_type,
+                "error": None,
+                **extra_fields,
+            },
+            "error": None,
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
+            json=return_value,
+            status=200,
+        )
+
+        execute_response = client.execute_work_item(
+            work_item_id=work_item_id, action=action
+        )
+
+        assert execute_response is not None
+        assert execute_response.error is None
+        assert execute_response.result is not None
+        assert execute_response.result.type == execution_type
+        assert execute_response.result.error is None
+
+        # Verify type-specific fields
+        for field, expected_value in expected_values.items():
+            assert getattr(execute_response.result, field) == expected_value
+
+    @responses.activate
+    def test__execute_work_item_with_404_error__raises_WorkItemExecuteApiException(
+        self, client: WorkItemClient
+    ):
+        """When the API returns an execute-specific error body, the client raises
+        WorkItemExecuteApiException so callers can access partial results.
+        """
+        work_item_id = "invalid-work-item-id"
+
+        return_value = {
+            "error": {
+                "name": "Skyline.WorkItemNotFound",
+                "code": -251049,
+                "message": f"Work item '{work_item_id}' does not exist.",
+                "args": [work_item_id],
+                "innerErrors": [],
+            },
+            "result": None,
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
+            json=return_value,
+            status=404,
+        )
+
+        with pytest.raises(WorkItemExecuteApiException) as exc_info:
+            client.execute_work_item(work_item_id=work_item_id, action="START")
+
+        assert exc_info.value.http_status_code == 404
+        assert exc_info.value.error is not None
+        assert exc_info.value.error.code == -251049
+        assert exc_info.value.result is None
+
+    @responses.activate
+    def test__execute_work_item_with_500_error_and_partial_results__raises_WorkItemExecuteApiException(
+        self, client: WorkItemClient
+    ):
+        """When the API returns a 500 with partial results (e.g. cancelled job IDs),
+        the client raises WorkItemExecuteApiException so callers can recover them.
+        """
+        work_item_id = "test-work-item-id"
+
+        return_value = {
+            "error": {
+                "name": "Skyline.InternalServerError",
+                "code": -251000,
+                "message": "An internal error occurred while executing the action.",
+                "args": [],
+                "innerErrors": [],
+            },
+            "result": {
+                "type": "JOB",
+                "job_ids": ["job-1", "job-2"],
+                "error": None,
+            },
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
+            json=return_value,
+            status=500,
+        )
+
+        with pytest.raises(WorkItemExecuteApiException) as exc_info:
+            client.execute_work_item(work_item_id=work_item_id, action="RUN_JOBS")
+
+        assert exc_info.value.http_status_code == 500
+        assert exc_info.value.error is not None
+        assert exc_info.value.error.code == -251000
+        assert exc_info.value.result is not None
+        assert exc_info.value.result.type == "JOB"
+        assert exc_info.value.result.job_ids == ["job-1", "job-2"]
+
+    @responses.activate
+    def test__execute_work_item_with_undocumented_error__raises_ApiException(
+        self, client: WorkItemClient
+    ):
+        """401 is NOT a documented status code for execute — should still raise."""
+        work_item_id = "test-work-item-id"
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
+            json={"message": "Unauthorized"},
+            status=401,
+        )
+
+        with pytest.raises(ApiException) as exc_info:
+            client.execute_work_item(work_item_id=work_item_id, action="START")
+
+        assert exc_info.value.http_status_code == 401
+
+    @responses.activate
+    def test__execute_work_item_with_result_level_error__returns_result_with_error(
+        self, client: WorkItemClient
+    ):
+        work_item_id = "test-work-item-id"
+
+        return_value = {
+            "result": {
+                "type": "NOTEBOOK",
+                "execution_id": None,
+                "error": {
+                    "name": "Skyline.ExecutionFailed",
+                    "code": -251050,
+                    "message": "Notebook execution failed due to invalid parameters.",
+                    "args": [],
+                    "innerErrors": [],
+                },
+            },
+            "error": None,
+        }
+
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/niworkitem/v1/workitems/{work_item_id}/execute",
+            json=return_value,
+            status=200,
+        )
+
+        execute_response = client.execute_work_item(
+            work_item_id=work_item_id, action="RUN_NOTEBOOK"
+        )
+
+        assert execute_response is not None
+        assert execute_response.error is None
+        assert execute_response.result is not None
+        assert execute_response.result.type == "NOTEBOOK"
+        assert execute_response.result.execution_id is None
+        assert execute_response.result.error is not None
+        assert execute_response.result.error.code == -251050
+        assert execute_response.result.error.message is not None
+        assert "execution failed" in execute_response.result.error.message
 
     def test__create_work_item_template__returns_created_work_item_template(
         self, create_work_item_templates

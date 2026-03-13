@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from nisystemlink.clients.core import HttpConfiguration
-from nisystemlink.clients.work_item import WorkItemClient
+from nisystemlink.clients.work_item import WorkItemClient, WorkItemExecuteApiException
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
     Dashboard,
@@ -105,6 +105,7 @@ create_work_items_request = [
         dashboard=Dashboard(
             id="DashboardId", variables={"product": "PXIe-4080", "location": "Lab1"}
         ),
+        workflow_id="example-workflow-id",
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
             JobExecution(
@@ -201,6 +202,28 @@ if created_work_item_id is not None:
         print(
             f"Scheduled work item with ID: {schedule_work_items_response.scheduled_work_items[0].id}"
         )
+
+# Execute work item action
+if created_work_item_id is not None:
+    try:
+        execute_response = client.execute_work_item(
+            work_item_id=created_work_item_id, action="START"
+        )
+        if execute_response.result is not None:
+            print(f"Executed action successfully. Type: {execute_response.result.type}")
+
+            # Use type narrowing to access type-specific fields
+            if execute_response.result.type == "NOTEBOOK":
+                print(f"Notebook execution ID: {execute_response.result.execution_id}")
+            elif execute_response.result.type == "JOB":
+                if execute_response.result.job_ids:
+                    print(f"Job IDs: {', '.join(execute_response.result.job_ids)}")
+    except WorkItemExecuteApiException as e:
+        print(f"Execution failed (HTTP {e.http_status_code}): {e.error}")
+        if e.result is not None:
+            print(f"Partial result: {e.result.type}")
+    except Exception as e:
+        print(f"Could not execute action: {e}")
 
 # Delete work item
 if created_work_item_id is not None:

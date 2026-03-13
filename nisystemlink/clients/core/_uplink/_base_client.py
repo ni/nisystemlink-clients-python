@@ -34,7 +34,10 @@ def _handle_http_status(response: Response) -> Response | None:
             err_obj = None
 
         raise core.ApiException(
-            msg, error=err_obj, http_status_code=response.status_code
+            msg,
+            error=err_obj,
+            http_status_code=response.status_code,
+            response_data=content,
         )
     except JSONDecodeError:
         if response.text:
