@@ -258,7 +258,7 @@ class FileClient(BaseClient):
                   - ``id``: File ID (e.g. ``"5afb2ce3741fe11d88838cc9"``)
                   - ``name``: File name within the service group
                   - ``properties``: Key-value pairs of file metadata, filtered using the syntax
-                    ``"properties.[key]": "[value]"``. Example: ``"properties.location": "rack-1"``
+                    ``"properties.[key]": "[value]"``. Example: ``"properties.owner": "admin"``
                   - ``size``: File size in bytes (e.g. ``32``)
                   - ``workspace``: Workspace name (e.g. ``"MyWorkspace"``)
 
