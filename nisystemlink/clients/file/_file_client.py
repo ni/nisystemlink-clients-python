@@ -241,26 +241,26 @@ class FileClient(BaseClient):
                   - Logical AND: ``AND``. Example: ``Name: "name" AND Extension: "json"``
                   - Logical OR: ``OR``. Example: ``Name: "name" OR Extension: "json"``
                   - Negation: ``NOT``. Example: ``Name: (NOT MyFile)``
-                  - Wildcard: ``*``, matches any sequence of characters. Example: ``Name: "file*"``
-                  - Exists: ``_exists_``, matches files where a field has any value.
+                  - Wildcard: ``*`` — matches any sequence of characters. Example: ``Name: "file*"``
+                  - Exists: ``_exists_`` — matches files where a field has any value.
                     Example: ``_exists_: "Properties.property key"``
                   - Range brackets: matches values between two bounds for numeric and date fields.
                     Square brackets ``[`` and ``]`` denote inclusive bounds, curly braces ``{`` and
                     ``}`` denote exclusive bounds, and ``*`` denotes no bound (infinity).
                     Example: ``size: [100 TO 200]`` matches ``100 <= size <= 200``.
-                    Example: ``createdTimestamp: [* TO "2024-01-01T00:00:00Z"]`` matches files
+                    Example: ``created: [* TO "2024-01-01T00:00:00Z"]`` matches files
                     created on or before January 1st, 2024.
 
                   Valid file properties for filtering:
 
                   - ``created``: ISO timestamp string (e.g. ``"2018-05-15T18:54:27.519Z"``)
-                  - ``extension``: File extension string (e.g. ``png``, ``txt``, ``pdf``)
-                  - ``id``: File ID string (e.g. ``"5afb2ce3741fe11d88838cc9"``)
-                  - ``name``: File name string within the service group
+                  - ``extension``: File extension (e.g. ``png``, ``txt``, ``pdf``)
+                  - ``id``: File ID (e.g. ``"5afb2ce3741fe11d88838cc9"``)
+                  - ``name``: File name within the service group
                   - ``properties``: Key-value pairs of file metadata, filtered using the syntax
                     ``"properties.[key]": "[value]"``. Example: ``"properties.location": "rack-1"``
                   - ``size``: File size in bytes (e.g. ``32``)
-                  - ``workspace``: Workspace name string (e.g. ``"MyWorkspace"``)
+                  - ``workspace``: Workspace name (e.g. ``"MyWorkspace"``)
 
                   Example::
 
