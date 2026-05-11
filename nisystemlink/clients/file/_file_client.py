@@ -327,13 +327,13 @@ class FileClient(BaseClient):
             ApiException: if unable to communicate with the File Service.
         """
         if metadata:
-            metadata_str = json.dumps(metadata)
+            metadata_part = (None, json.dumps(metadata), "application/json")
         else:
-            metadata_str = None
+            metadata_part = None
 
         file_id = self.__upload_file(
             file=file,
-            metadata=metadata_str,
+            metadata=metadata_part,
             id=id,
             workspace=workspace,
         )
