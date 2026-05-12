@@ -91,6 +91,32 @@ class TestFileClient:
         api_info = client.api_info()
         assert len(api_info.model_dump()) != 0
 
+    def test__upload_file_with_metadata__succeeds(
+        self, client: FileClient, binary_file_data: BinaryIO, random_filename_extension: str
+    ):
+        file_name = random_filename_extension
+        metadata = {"CustomProp": "CustomValue"}
+
+        # Upload the file with metadata
+        file_id = client.upload_file(file=binary_file_data, metadata=metadata)
+
+        # Verify the file was created with correct metadata
+        files = client.get_files(ids=[file_id])
+        assert files.total_count == 1
+        assert len(files.available_files) == 1
+        assert files.available_files[0].id == file_id
+        assert files.available_files[0].properties is not None
+        assert files.available_files[0].properties["Name"] == file_name
+        assert (
+            len(files.available_files[0].properties.keys()) == len(metadata) + 1
+        )  # Name + 1 custom property
+
+        client.delete_file(id=file_id)
+
+        # confirm that file was deleted
+        files = client.get_files(ids=[file_id])
+        assert files.total_count == 0
+
     def test__upload_get_delete_files__succeeds(
         self, client: FileClient, test_file, random_filename_extension
     ):
