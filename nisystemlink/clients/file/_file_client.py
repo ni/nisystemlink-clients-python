@@ -292,7 +292,9 @@ class FileClient(BaseClient):
 
         Args:
             file: The file to upload.
-            metadata: PART Dictionary with key/value pairs
+            metadata: Multipart part for file metadata, typically ``None`` or a
+                ``(None, json_string, "application/json")`` tuple where
+                ``json_string`` contains the metadata key/value pairs.
             id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.
                 Defaults to None.
             workspace: The id of the workspace the file belongs to. Defaults to None.
