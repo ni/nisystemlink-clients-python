@@ -230,6 +230,57 @@ class FileClient(BaseClient):
         Args:
             request: The search request containing filter, pagination, and sorting parameters.
 
+                - **filter** (:class:`str`, optional): The filter criteria for files using Lucene
+                  query syntax. The default search field is the file name. All searches are
+                  case-insensitive.
+
+                  Filter syntax: ``[property name][operator][operand] AND [property name][operator][operand]``
+
+                  Operators:
+
+                  - Logical AND: ``AND``. Example: ``Name: "name" AND Extension: "json"``
+                  - Logical OR: ``OR``. Example: ``Name: "name" OR Extension: "json"``
+                  - Negation: ``NOT``. Example: ``Name: (NOT MyFile)``
+                  - Wildcard: ``*`` — matches any sequence of characters. Example: ``Name: "file*"``
+                  - Exists: ``_exists_`` — matches files where a field has any value.
+                    Example: ``_exists_: "Properties.property key"``
+                  - Range brackets: matches values between two bounds for numeric and date fields.
+                    Square brackets ``[`` and ``]`` denote inclusive bounds, curly braces ``{`` and
+                    ``}`` denote exclusive bounds, and ``*`` denotes no bound (infinity).
+                    Example: ``size: [100 TO 200]`` matches ``100 <= size <= 200``.
+                    Example: ``created: [* TO "2024-01-01T00:00:00Z"]`` matches files
+                    created on or before January 1st, 2024.
+
+                  Valid file properties for filtering:
+
+                  - ``created``: ISO timestamp string (e.g. ``"2018-05-15T18:54:27.519Z"``)
+                  - ``extension``: File extension (e.g. ``png``, ``txt``, ``pdf``)
+                  - ``id``: File ID (e.g. ``"5afb2ce3741fe11d88838cc9"``)
+                  - ``name``: File name within the service group
+                  - ``properties``: Key-value pairs of file metadata, filtered using the syntax
+                    ``"properties.[key]": "[value]"``. Example: ``"properties.owner": "admin"``
+                  - ``size``: File size in bytes (e.g. ``32``)
+                  - ``workspace``: Workspace name (e.g. ``"MyWorkspace"``)
+
+                  Example::
+
+                      'name: "myfile*" AND size: [* TO 1024000000] AND workspace: "MyWorkspace"'
+
+                - **order_by** (:class:`~nisystemlink.clients.file.models.SearchFilesOrderBy`,
+                  optional): The file property to order results by. When not specified, results
+                  are ordered by relevance score. One of ``name``, ``created``, ``id``, ``size``,
+                  or ``updated``.
+
+                - **order_by_descending** (:class:`bool`, optional): Whether to return the files
+                  in descending order. Defaults to ``False``.
+
+                - **skip** (:class:`int`, optional): How many files to skip in the result when
+                  paging. For example, a list of 100 files with a skip value of 50 will return
+                  entries starting from the 51st file. Defaults to ``0``.
+
+                - **take** (:class:`int`, optional): Maximum number of files to return.
+                  Defaults to ``1000``. Maximum allowed value is ``1000``.
+
         Returns:
             SearchFilesResponse: Response containing matching files and total count.
 
