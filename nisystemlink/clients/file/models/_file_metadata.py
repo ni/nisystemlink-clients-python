@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 from ._link import Link
 
@@ -53,8 +53,13 @@ class BaseFileMetadata(JsonModel):
 
 
 class FileMetadata(BaseFileMetadata):
+    """Metadata for a file."""
 
-    field_links: Dict[str, Link] | None = Field(None, alias="_links")
+    field_links: Dict[str, Link] | None = Field(
+        None,
+        validation_alias=AliasChoices("field_links", "_links"),
+        serialization_alias="_links",
+    )
     """
     The links to access and manipulate the file:
     - data: Link to download the file using a GET request

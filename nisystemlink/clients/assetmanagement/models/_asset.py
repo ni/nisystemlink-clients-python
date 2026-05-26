@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 from ._asset_calibration import (
     CalibrationStatus,
@@ -68,17 +68,25 @@ class Asset(JsonModel):
     self_calibration: SelfCalibration | None = None
     """Gets or sets the last self-calibration of the asset."""
 
-    is_NI_asset: bool | None = Field(alias="isNIAsset", default=None)
+    is_ni_asset: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("is_ni_asset", "is_NI_asset", "isNIAsset"),
+        serialization_alias="isNIAsset",
+    )
     """Gets or sets whether this asset is an NI asset (true) or a third-party asset (false)."""
 
     id: str | None = None
     """Gets or sets unique identifier of the asset."""
 
     location: AssetLocation | None = None
-    """Model for information about the asset location, presence and the connection status of the system"""
+    """Model for information about the asset location, presence,
+    and the connection status of the system.
+    """
 
     calibration_status: CalibrationStatus | None = None
-    """Gets or sets the calibration category the asset belongs to based on the next due calibration date."""
+    """Gets or sets the calibration category the asset belongs to
+    based on the next due calibration date.
+    """
 
     is_system_controller: bool | None = None
     """Gets or sets whether this asset represents a System Controller."""
@@ -96,7 +104,9 @@ class Asset(JsonModel):
     """Gets or sets words or phrases associated with an asset."""
 
     last_updated_timestamp: datetime | None = None
-    """Gets or sets ISO-8601 formatted timestamp specifying the last date that the asset has had a property update."""
+    """Gets or sets an ISO-8601 timestamp for the last date
+    that the asset had a property update.
+    """
 
     file_ids: List[str] | None = None
     """Gets or sets all files linked to the asset."""
