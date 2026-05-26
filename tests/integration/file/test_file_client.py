@@ -44,7 +44,9 @@ def test_file(client: FileClient):
     """Fixture to return a factory that uploads a file."""
     file_ids = []
 
-    def _test_file(file_name: str = TEST_FILE_NAME, cleanup: bool = True, metadata: dict = None) -> str:
+    def _test_file(
+        file_name: str = TEST_FILE_NAME, cleanup: bool = True, metadata: dict = None
+    ) -> str:
         test_file = io.BytesIO(TEST_FILE_DATA)
         test_file.name = file_name
         file_id = client.upload_file(file=test_file, metadata=metadata)
@@ -92,7 +94,10 @@ class TestFileClient:
         assert len(api_info.model_dump()) != 0
 
     def test__upload_file_with_metadata__succeeds(
-        self, client: FileClient, binary_file_data: BinaryIO, random_filename_extension: str
+        self,
+        client: FileClient,
+        binary_file_data: BinaryIO,
+        random_filename_extension: str,
     ):
         file_name = random_filename_extension
         metadata = {"CustomProp": "CustomValue"}
