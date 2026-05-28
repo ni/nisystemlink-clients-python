@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.32.0 (2026-05-28)
+
+### Feature
+
+* Execute work item API ([#199](https://github.com/ni/nisystemlink-clients-python/issues/199)) ([`fa61f4e`](https://github.com/ni/nisystemlink-clients-python/commit/fa61f4e6bdcdf275f3a615720ef53c02c2533c34))
+
+### Fix
+
+* Align FileClient.search_files docstring with Swagger API documentation ([#205](https://github.com/ni/nisystemlink-clients-python/issues/205)) ([`81d7bf4`](https://github.com/ni/nisystemlink-clients-python/commit/81d7bf4e61dd37db6dc2526b2ca2e1f01ad7926e))
+
 ## v2.31.1 (2026-03-12)
 
 ### Fix
