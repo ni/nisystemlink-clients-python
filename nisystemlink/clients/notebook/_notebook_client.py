@@ -97,14 +97,13 @@ class NotebookClient(BaseClient):
             ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
-        metadata_io = None
+        metadata_str = None
         if metadata is not None:
             metadata_str = metadata.model_dump_json(by_alias=True, exclude_unset=True)
-            metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
 
         return self.__update_notebook(
             id=id,
-            metadata=metadata_io,
+            metadata=metadata_str,
             content=content,
         )
 
@@ -160,11 +159,9 @@ class NotebookClient(BaseClient):
             ApiException: if unable to communicate with the ``/ninotebook`` service or provided invalid
                 arguments.
         """
-        metadata_str = metadata.model_dump_json()
-
-        metadata_io = io.BytesIO(metadata_str.encode("utf-8"))
+        metadata_str = metadata.model_dump_json(by_alias=True, exclude_unset=True)
         return self.__create_notebook(
-            metadata=metadata_io,
+            metadata=metadata_str,
             content=content,
         )
 
