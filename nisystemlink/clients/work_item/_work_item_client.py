@@ -7,6 +7,8 @@ from nisystemlink.clients.core._uplink._methods import get, post
 from nisystemlink.clients.work_item import models
 from uplink import Field, Path, retry
 
+from ..core.helpers._partial_success import unwrap_single_item_partial_success
+
 
 class WorkItemExecuteApiException(core.ApiException):
     """Raised when the execute work item API returns an error with a structured response body.
@@ -87,6 +89,32 @@ class WorkItemClient(BaseClient):
         """
         ...
 
+    def create_work_item(
+        self, work_item: models.CreateWorkItemRequest
+    ) -> models.WorkItem:
+        """Creates a single work item.
+
+        Args:
+            work_item: The work item to create.
+
+        Returns:
+            The created work item.
+
+        Raises:
+            ApiException: if the work item could not be created or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.create_work_items([work_item])
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.created_work_items,
+            failed=response.failed_work_items,
+            error=response.error,
+            failure_message="Failed to create work item.",
+            empty_message="Server returned no created work items.",
+        )
+
     @post("query-workitems")
     def query_work_items(
         self, query_work_items: models.QueryWorkItemsRequest
@@ -121,6 +149,37 @@ class WorkItemClient(BaseClient):
         """
         ...
 
+    def schedule_work_item(
+        self,
+        work_item: models.ScheduleWorkItemRequest,
+        replace: bool | None = None,
+    ) -> models.WorkItem:
+        """Schedules a single work item.
+
+        Args:
+            work_item: The work item schedule request.
+            replace: When true, existing array fields are replaced instead of merged.
+
+        Returns:
+            The scheduled work item.
+
+        Raises:
+            ApiException: if the work item could not be scheduled or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.schedule_work_items(
+            models.ScheduleWorkItemsRequest(work_items=[work_item], replace=replace)
+        )
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.scheduled_work_items,
+            failed=response.failed_work_items,
+            error=response.error,
+            failure_message="Failed to schedule work item.",
+            empty_message="Server returned no scheduled work items.",
+        )
+
     @post("update-workitems")
     def update_work_items(
         self, update_work_items: models.UpdateWorkItemsRequest
@@ -137,6 +196,37 @@ class WorkItemClient(BaseClient):
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
         """
         ...
+
+    def update_work_item(
+        self,
+        work_item: models.UpdateWorkItemRequest,
+        replace: bool | None = None,
+    ) -> models.WorkItem:
+        """Updates a single work item.
+
+        Args:
+            work_item: The work item to update.
+            replace: When true, existing array and key-value pair fields are replaced instead of merged.
+
+        Returns:
+            The updated work item.
+
+        Raises:
+            ApiException: if the work item could not be updated or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.update_work_items(
+            models.UpdateWorkItemsRequest(work_items=[work_item], replace=replace)
+        )
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.updated_work_items,
+            failed=response.failed_work_items,
+            error=response.error,
+            failure_message="Failed to update work item.",
+            empty_message="Server returned no updated work items.",
+        )
 
     @post("delete-workitems", args=[Field("ids")])
     def delete_work_items(
@@ -221,6 +311,32 @@ class WorkItemClient(BaseClient):
         """
         ...
 
+    def create_work_item_template(
+        self, work_item_template: models.CreateWorkItemTemplateRequest
+    ) -> models.WorkItemTemplate:
+        """Creates a single work item template.
+
+        Args:
+            work_item_template: The work item template to create.
+
+        Returns:
+            The created work item template.
+
+        Raises:
+            ApiException: if the work item template could not be created or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.create_work_item_templates([work_item_template])
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.created_work_item_templates,
+            failed=response.failed_work_item_templates,
+            error=response.error,
+            failure_message="Failed to create work item template.",
+            empty_message="Server returned no created work item templates.",
+        )
+
     @post("query-workitem-templates")
     def query_work_item_templates(
         self, query_work_item_templates: models.QueryWorkItemTemplatesRequest
@@ -254,6 +370,40 @@ class WorkItemClient(BaseClient):
             ApiException: if unable to communicate with the `/niworkitem` service or provided invalid arguments.
         """
         ...
+
+    def update_work_item_template(
+        self,
+        work_item_template: models.UpdateWorkItemTemplateRequest,
+        replace: bool | None = None,
+    ) -> models.WorkItemTemplate:
+        """Updates a single work item template.
+
+        Args:
+            work_item_template: The work item template to update.
+            replace: When true, existing key-value pair fields are replaced instead of merged.
+
+        Returns:
+            The updated work item template.
+
+        Raises:
+            ApiException: if the work item template could not be updated or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.update_work_item_templates(
+            models.UpdateWorkItemTemplatesRequest(
+                work_item_templates=[work_item_template],
+                replace=replace,
+            )
+        )
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.updated_work_item_templates,
+            failed=response.failed_work_item_templates,
+            error=response.error,
+            failure_message="Failed to update work item template.",
+            empty_message="Server returned no updated work item templates.",
+        )
 
     @post("delete-workitem-templates", args=[Field("ids")])
     def delete_work_item_templates(

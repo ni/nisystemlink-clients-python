@@ -12,6 +12,7 @@ from nisystemlink.clients.testmonitor.models import (
 from uplink import Field, Path, Query, retry, returns
 
 from . import models
+from ..core.helpers._partial_success import unwrap_single_item_partial_success
 
 
 @retry(
@@ -68,6 +69,30 @@ class TestMonitorClient(BaseClient):
                 arguments.
         """
         ...
+
+    def create_result(self, result: CreateResultRequest) -> models.Result:
+        """Creates a single result.
+
+        Args:
+            result: The result to create.
+
+        Returns:
+            The created result.
+
+        Raises:
+            ApiException: if the result could not be created or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.create_results([result])
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.results,
+            failed=response.failed,
+            error=response.error,
+            failure_message="Failed to create result.",
+            empty_message="Server returned no created results.",
+        )
 
     @get(
         "results",
@@ -168,6 +193,33 @@ class TestMonitorClient(BaseClient):
         """
         ...
 
+    def update_result(
+        self, result: UpdateResultRequest, replace: bool = False
+    ) -> models.Result:
+        """Updates a single result.
+
+        Args:
+            result: The result to update.
+            replace: Replace the existing fields instead of merging them.
+
+        Returns:
+            The updated result.
+
+        Raises:
+            ApiException: if the result could not be updated or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.update_results([result], replace=replace)
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.results,
+            failed=response.failed,
+            error=response.error,
+            failure_message="Failed to update result.",
+            empty_message="Server returned no updated results.",
+        )
+
     @delete("results/{id}")
     def delete_result(self, id: str) -> None:
         """Deletes a single result by id.
@@ -224,6 +276,38 @@ class TestMonitorClient(BaseClient):
             invalid arguments.
         """
         ...
+
+    def create_step(
+        self,
+        step: models.CreateStepRequest,
+        update_result_total_time: bool = False,
+    ) -> models.Step:
+        """Creates a single step.
+
+        Args:
+            step: The step to create.
+            update_result_total_time: Determine test result total time from the step total times.
+
+        Returns:
+            The created step.
+
+        Raises:
+            ApiException: if the step could not be created or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.create_steps(
+            [step],
+            update_result_total_time=update_result_total_time,
+        )
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.steps,
+            failed=response.failed,
+            error=response.error,
+            failure_message="Failed to create step.",
+            empty_message="Server returned no created steps.",
+        )
 
     @post("delete-steps", args=[Field("steps")])
     def delete_steps(
@@ -326,6 +410,44 @@ class TestMonitorClient(BaseClient):
             invalid arguments.
         """
         ...
+
+    def update_step(
+        self,
+        step: models.UpdateStepRequest,
+        update_result_total_time: bool = False,
+        replace_keywords: bool = False,
+        replace_properties: bool = False,
+    ) -> models.Step:
+        """Updates a single step.
+
+        Args:
+            step: The step to update.
+            update_result_total_time: Determine test result total time from the step total times.
+            replace_keywords: Replace existing keywords instead of merging them.
+            replace_properties: Replace existing properties instead of merging them.
+
+        Returns:
+            The updated step.
+
+        Raises:
+            ApiException: if the step could not be updated or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.update_steps(
+            [step],
+            update_result_total_time=update_result_total_time,
+            replace_keywords=replace_keywords,
+            replace_properties=replace_properties,
+        )
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.steps,
+            failed=response.failed,
+            error=response.error,
+            failure_message="Failed to update step.",
+            empty_message="Server returned no updated steps.",
+        )
 
     @get(
         "steps",
