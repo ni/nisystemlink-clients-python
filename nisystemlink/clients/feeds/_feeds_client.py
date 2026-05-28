@@ -5,6 +5,9 @@ from typing import BinaryIO, List
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import delete, get, post
+from nisystemlink.clients.core._uplink._multipart_retry import (
+    retryable_multipart_request,
+)
 from uplink import Part, Path, Query, retry
 
 from . import models
@@ -90,6 +93,7 @@ class FeedsClient(BaseClient):
 
         return response
 
+    @retryable_multipart_request()
     @post(
         "feeds/{feedId}/packages",
         args=[Path(name="feedId"), Part(), Query(name="shouldOverwrite")],

@@ -14,6 +14,9 @@ from nisystemlink.clients.notebook.models import (
     QueryExecutionsRequest,
     QueryNotebookRequest,
 )
+from responses import PassthroughResponse
+from responses.registries import OrderedRegistry
+from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
 TEST_FILE_DATA = b"This is a test notebook binary content."
 PREFIX = "Notebook Client Tests-"
@@ -283,6 +286,86 @@ class TestNotebookClient:
     ):
         with pytest.raises(ApiException, match="Not Found"):
             client.get_notebook_content(id="invalid_id")
+
+    def test__create_notebook_after_rate_limit_retry__notebook_created_with_valid_metadata(
+        self,
+        client: NotebookClient,
+        random_filename: str,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        metadata = NotebookMetadata(name=random_filename)
+        notebook = None
+        notebook_id = None
+
+        monkeypatch.setattr(uplink_blocking_strategy.time, "sleep", lambda _: None)
+
+        with responses.RequestsMock(registry=OrderedRegistry) as request_mock:
+            request_mock.add(
+                responses.POST,
+                f"{BASE_URL}/ninotebook/v1/notebook",
+                status=429,
+            )
+            request_mock.add(
+                PassthroughResponse(
+                    responses.POST,
+                    f"{BASE_URL}/ninotebook/v1/notebook",
+                )
+            )
+
+            with open("tests/integration/notebook/sample_file.ipynb", "rb") as file:
+                notebook = client.create_notebook(metadata=metadata, content=file)
+                notebook_id = notebook.id
+
+        try:
+            assert notebook is not None
+            assert notebook.id is not None
+            assert notebook.name == metadata.name
+            assert notebook.workspace is not None
+            assert notebook.created_by is not None
+            assert notebook.created_at is not None
+        finally:
+            if notebook_id:
+                client.delete_notebook(id=notebook_id)
+
+    def test__update_notebook_metadata_after_rate_limit_retry__update_notebook_content_succeeds(
+        self,
+        client: NotebookClient,
+        create_notebook,
+        random_filename: str,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        metadata = NotebookMetadata(name=random_filename)
+        notebook = create_notebook(metadata=metadata)
+
+        [filename, extension] = random_filename.split(".")
+        new_name = f"{filename}-retry-updated.{extension}"
+        notebook.name = new_name
+        notebook.properties = {"key": "value"}
+        response = None
+
+        monkeypatch.setattr(uplink_blocking_strategy.time, "sleep", lambda _: None)
+
+        with responses.RequestsMock(registry=OrderedRegistry) as request_mock:
+            request_mock.add(
+                responses.PUT,
+                f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}",
+                status=429,
+            )
+            request_mock.add(
+                PassthroughResponse(
+                    responses.PUT,
+                    f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}",
+                )
+            )
+
+            response = client.update_notebook(id=notebook.id, metadata=notebook)
+
+        assert response is not None
+        assert response.id == notebook.id
+        assert response.name == new_name
+        assert response.properties == notebook.properties
+        assert response.updated_by is not None
+        assert response.updated_at is not None
 
     @responses.activate
     def test__create_executions_with_valid_notebook_id__returns_executions_with_right_fields(

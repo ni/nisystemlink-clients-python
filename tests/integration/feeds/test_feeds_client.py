@@ -6,10 +6,15 @@ from random import randint
 from typing import BinaryIO, Callable
 
 import pytest
+import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
+from responses import PassthroughResponse
+from responses.registries import OrderedRegistry
+from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
+BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 PACKAGE_PATH = str(
     Path(__file__).parent.resolve()
@@ -235,6 +240,49 @@ class TestFeedsClient:
                 package=binary_pkg_file_data,
                 feed_id=invalid_id,
             )
+
+    def test__upload_package_content_after_rate_limit_retry__upload_package_content_succeeds(
+        self,
+        client: FeedsClient,
+        create_feed: Callable,
+        create_feed_request: Callable,
+        get_feed_name: Callable,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        create_feed_request_body = create_feed_request(
+            feed_name=get_feed_name(),
+            description=FEED_DESCRIPTION,
+            platform=Platform.WINDOWS,
+        )
+        create_feed_resp = create_feed(create_feed_request_body)
+        assert create_feed_resp.id is not None
+
+        response = None
+
+        monkeypatch.setattr(uplink_blocking_strategy.time, "sleep", lambda _: None)
+
+        with responses.RequestsMock(registry=OrderedRegistry) as request_mock:
+            request_mock.add(
+                responses.POST,
+                f"{BASE_URL}/nifeed/v1/feeds/{create_feed_resp.id}/packages",
+                status=429,
+            )
+            request_mock.add(
+                PassthroughResponse(
+                    responses.POST,
+                    f"{BASE_URL}/nifeed/v1/feeds/{create_feed_resp.id}/packages",
+                )
+            )
+
+            with open(PACKAGE_PATH, "rb") as package:
+                response = client.upload_package_content(
+                    feed_id=create_feed_resp.id,
+                    package=package,
+                    overwrite=True,
+                )
+
+        assert response is not None
+        assert response.id is not None
 
     def test__delete_windows_feed__succeeds(
         self,

@@ -9,6 +9,7 @@ from typing import BinaryIO
 
 import backoff  # type: ignore
 import pytest  # type: ignore
+import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.file import FileClient
 from nisystemlink.clients.file.models import (
@@ -20,7 +21,11 @@ from nisystemlink.clients.file.models import (
     UpdateMetadataRequest,
 )
 from nisystemlink.clients.file.utilities import rename_file
+from responses import PassthroughResponse
+from responses.registries import OrderedRegistry
+from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
+BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
 FILE_NOT_FOUND_ERR = "Not Found"
 PREFIX = "File Client Tests-"
 TEST_FILE_DATA = b"This is a test file binary content."
@@ -37,6 +42,45 @@ def client(enterprise_config) -> FileClient:
 def binary_file_data() -> BinaryIO:
     """Test Binary file content."""
     return io.BytesIO(TEST_FILE_DATA)
+
+
+def test__upload_file_after_rate_limit_retry__upload_file_succeeds(
+    client: FileClient, monkeypatch: pytest.MonkeyPatch
+):
+    """Retrying a file upload should succeed against the real endpoint."""
+    test_file = io.BytesIO(TEST_FILE_DATA)
+    test_file.name = "retry-safe-file.bin"
+    file_id = None
+
+    monkeypatch.setattr(uplink_blocking_strategy.time, "sleep", lambda _: None)
+
+    try:
+        with responses.RequestsMock(registry=OrderedRegistry) as request_mock:
+            request_mock.add(
+                responses.POST,
+                f"{BASE_URL}/nifile/v1/service-groups/Default/upload-files",
+                status=429,
+            )
+            request_mock.add(
+                PassthroughResponse(
+                    responses.POST,
+                    f"{BASE_URL}/nifile/v1/service-groups/Default/upload-files",
+                )
+            )
+
+            file_id = client.upload_file(file=test_file)
+
+        assert file_id is not None
+
+        files = client.get_files(ids=[file_id])
+        assert files.total_count == 1
+        assert len(files.available_files) == 1
+        assert files.available_files[0].id == file_id
+        assert files.available_files[0].properties is not None
+        assert files.available_files[0].properties["Name"] == test_file.name
+    finally:
+        if file_id:
+            client.delete_file(id=file_id)
 
 
 @pytest.fixture(scope="class")
