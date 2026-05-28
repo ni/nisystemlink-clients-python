@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 
 class ProductOrderBy(str, Enum):
@@ -26,8 +26,9 @@ class ProductField(str, Enum):
 
 
 class ProductProjection(str, Enum):
-    """An enumeration of all fields in a Product. These are used to project the required fields
-    from the API response.
+    """An enumeration of all fields in a Product.
+
+    These are used to project the required fields from the API response.
     """
 
     ID = "ID"
@@ -42,6 +43,8 @@ class ProductProjection(str, Enum):
 
 
 class QueryProductsBase(JsonModel):
+    """Base class for product query requests."""
+
     filter: str | None = None
     """
     The product query filter in Dynamic Linq format.
@@ -56,8 +59,8 @@ class QueryProductsBase(JsonModel):
     - `properties`: A dictionary of additional string to string properties
     - `fileIds`: A list of string ids for files stored in the file service (`/nifile`)
 
-    See [Dynamic Linq](https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language)
-    documentation for more details.
+    See the Dynamic Linq query language documentation:
+    https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language
 
     `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable.
@@ -75,8 +78,13 @@ class QueryProductsBase(JsonModel):
 
 
 class QueryProductsRequest(QueryProductsBase):
+    """Request model for querying products."""
 
-    order_by: ProductOrderBy | None = Field(None, alias="orderBy")
+    order_by: ProductOrderBy | None = Field(
+        None,
+        validation_alias=AliasChoices("order_by", "orderBy"),
+        serialization_alias="orderBy",
+    )
     """Specifies the fields to use to sort the products.
 
     By default, products are sorted by `id`
@@ -91,8 +99,9 @@ class QueryProductsRequest(QueryProductsBase):
     projection: List[ProductProjection] | None = None
     """Specifies the product fields to project.
 
-    When a field value is given here, the corresponding field will be present in all returned products,
-    and all unspecified fields will be excluded. If no projection is specified, all product fields
+    When a field value is given here, the corresponding field will be
+    present in all returned products, and all unspecified fields will
+    be excluded. If no projection is specified, all product fields
     will be returned.
     """
 
@@ -120,6 +129,8 @@ class QueryProductsRequest(QueryProductsBase):
 
 
 class QueryProductValuesRequest(QueryProductsBase):
+    """Request model for querying product values."""
+
     field: ProductField | None = None
     """The product field to return for this query."""
 
