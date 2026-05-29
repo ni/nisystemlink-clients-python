@@ -45,7 +45,7 @@ def test_file(client: FileClient):
     file_ids = []
 
     def _test_file(
-        file_name: str = TEST_FILE_NAME, cleanup: bool = True, metadata: dict = None
+        file_name: str = TEST_FILE_NAME, cleanup: bool = True, metadata: dict = {}
     ) -> str:
         test_file = io.BytesIO(TEST_FILE_DATA)
         test_file.name = file_name
