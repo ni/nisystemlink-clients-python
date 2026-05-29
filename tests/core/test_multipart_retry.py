@@ -1,9 +1,16 @@
 import io
+from typing import Any, cast
 
-from requests import Response
+import pytest
+import responses
+from nisystemlink.clients.core import ApiException
+from nisystemlink.clients.core._uplink._base_client import _handle_http_status
 from nisystemlink.clients.core._uplink._multipart_retry import (
     _RetryableMultipartRequestTemplate,
+    retryable_multipart_request,
 )
+from requests import Response
+from uplink import Consumer, Part, post, retry
 from uplink.clients.io import state as uplink_state
 
 
@@ -16,8 +23,32 @@ class _NonSeekableStream:
 
 
 class _FailingSeekStream:
+    def __init__(self, data: bytes = b"artifact") -> None:
+        self._buffer = io.BytesIO(data)
+
+    def read(self, size: int = -1) -> bytes:
+        return self._buffer.read(size)
+
     def seek(self, offset: int) -> None:
         raise OSError("cannot rewind")
+
+
+@retry(
+    when=retry.when.status(429),
+    stop=retry.stop.after_attempt(2),
+    backoff=retry.backoff.fixed(0),
+)
+class _MultipartRetryTestConsumer(Consumer):
+    def __init__(self):
+        super().__init__(
+            base_url="https://example.com/",
+            hooks=[_handle_http_status],
+        )
+
+    @retryable_multipart_request()
+    @post("upload", args=[Part("artifact")])
+    def upload(self, artifact):
+        ...
 
 
 class TestRetryableMultipartRequestTemplate:
@@ -130,3 +161,64 @@ class TestRetryableMultipartRequestTemplate:
         action = template.before_request(request)
 
         assert action is None
+
+
+class TestRetryableMultipartRequestIntegration:
+    @responses.activate
+    def test__upload_with_unrewindable_stream_after_rate_limit__raises_original_api_exception(
+        self,
+    ):
+        responses.post("https://example.com/upload", status=429)
+        consumer = _MultipartRetryTestConsumer()
+
+        with pytest.raises(ApiException) as exc_info:
+            consumer.upload(
+                artifact=(
+                    "artifact.bin",
+                    _FailingSeekStream(),
+                    "application/octet-stream",
+                )
+            )
+
+        assert exc_info.value.http_status_code == 429
+        assert len(responses.calls) == 1
+
+    @responses.activate
+    def test__upload_with_rewindable_stream_after_rate_limit__retries_and_succeeds(
+        self,
+    ):
+        request_bodies = []
+
+        def response_callback(request):
+            body = request.body
+            if isinstance(body, str):
+                body = body.encode("utf-8")
+            request_bodies.append(body)
+
+            if len(request_bodies) == 1:
+                return (429, {}, "")
+            return (200, {}, "ok")
+
+        responses.add_callback(
+            responses.POST,
+            "https://example.com/upload",
+            callback=response_callback,
+        )
+        consumer = _MultipartRetryTestConsumer()
+        artifact_content = b"rewindable-artifact"
+
+        consumer.upload(
+            artifact=(
+                "artifact.bin",
+                io.BytesIO(artifact_content),
+                "application/octet-stream",
+            )
+        )
+
+        assert len(responses.calls) == 2
+        last_response = cast(Any, responses.calls[-1]).response
+        assert last_response is not None
+        assert last_response.status_code == 200
+        assert len(request_bodies) == 2
+        assert artifact_content in request_bodies[0]
+        assert artifact_content in request_bodies[1]

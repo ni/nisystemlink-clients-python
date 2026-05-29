@@ -12,18 +12,15 @@ request.
 """
 
 import io
-from enum import Enum, auto
+from enum import auto, Enum
 from typing import Any, Callable, cast, TypeVar
 
-from uplink import decorators
-from uplink.clients.io.interfaces import RequestTemplate
-from uplink.clients.io import transitions
 from requests import Response
+from uplink import decorators
+from uplink.clients.io import transitions
+from uplink.clients.io.interfaces import RequestTemplate
 
 F = TypeVar("F", bound=Callable[..., Any])
-_RETRYABLE_MULTIPART_ATTEMPT_KEY = "_retryable_multipart_attempted"
-_RETRYABLE_MULTIPART_RESPONSE_KEY = "_retryable_multipart_response"
-_RETRYABLE_MULTIPART_EXCEPTION_KEY = "_retryable_multipart_exception"
 
 
 class _RewindResult(Enum):
@@ -41,7 +38,6 @@ def _rewind_retryable_part(part: object) -> _RewindResult:
     rejects it. Returns ``_RewindResult.NOT_NEEDED`` when the part contains no
     stream payload that requires rewinding, such as simple string fields.
     """
-
     if hasattr(part, "seek"):
         seekable = getattr(part, "seekable", None)
         if callable(seekable):
@@ -66,14 +62,14 @@ def _rewind_retryable_part(part: object) -> _RewindResult:
     return _RewindResult.NOT_NEEDED
 
 
-def _get_saved_retry_action(extras: dict[str, Any]) -> Any:
+def _get_saved_retry_action(
+    response: Response | None,
+    exception_info: tuple[type[BaseException], BaseException, Any] | None,
+) -> Any:
     """Return the original retry-triggering failure as an Uplink transition."""
-
-    response = extras.get(_RETRYABLE_MULTIPART_RESPONSE_KEY)
     if response is not None:
         return transitions.finish(response)
 
-    exception_info = extras.get(_RETRYABLE_MULTIPART_EXCEPTION_KEY)
     if exception_info is not None:
         return transitions.fail(*exception_info)
 
@@ -92,23 +88,34 @@ class _RetryableMultipartRequestTemplate(RequestTemplate):
     error handling can surface it to the caller.
     """
 
+    def __init__(self) -> None:
+        self._attempted_request_ids: set[int] = set()
+        self._responses_by_request_id: dict[int, Response] = {}
+        self._exceptions_by_request_id: dict[
+            int, tuple[type[BaseException], BaseException, Any]
+        ] = {}
+
     def before_request(self, request: tuple[str, str, dict[str, Any]]) -> Any:
         _, _, extras = request
-        if not extras.get(_RETRYABLE_MULTIPART_ATTEMPT_KEY):
-            extras[_RETRYABLE_MULTIPART_ATTEMPT_KEY] = True
+        request_id = id(request)
+        if request_id not in self._attempted_request_ids:
+            self._attempted_request_ids.add(request_id)
             return None
 
         for part in extras.get("files", {}).values():
             if _rewind_retryable_part(part) is _RewindResult.FAILED:
-                return _get_saved_retry_action(extras)
+                return _get_saved_retry_action(
+                    self._responses_by_request_id.get(request_id),
+                    self._exceptions_by_request_id.get(request_id),
+                )
         return None
 
     def after_response(
         self, request: tuple[str, str, dict[str, Any]], response: Response
     ) -> None:
-        _, _, extras = request
-        extras[_RETRYABLE_MULTIPART_RESPONSE_KEY] = response
-        extras.pop(_RETRYABLE_MULTIPART_EXCEPTION_KEY, None)
+        request_id = id(request)
+        self._responses_by_request_id[request_id] = response
+        self._exceptions_by_request_id.pop(request_id, None)
         return None
 
     def after_exception(
@@ -118,9 +125,9 @@ class _RetryableMultipartRequestTemplate(RequestTemplate):
         exc_val: BaseException,
         exc_tb: Any,
     ) -> None:
-        _, _, extras = request
-        extras[_RETRYABLE_MULTIPART_EXCEPTION_KEY] = (exc_type, exc_val, exc_tb)
-        extras.pop(_RETRYABLE_MULTIPART_RESPONSE_KEY, None)
+        request_id = id(request)
+        self._exceptions_by_request_id[request_id] = (exc_type, exc_val, exc_tb)
+        self._responses_by_request_id.pop(request_id, None)
         return None
 
 
