@@ -95,6 +95,11 @@ class _RetryableMultipartRequestTemplate(RequestTemplate):
             int, tuple[type[BaseException], BaseException, Any]
         ] = {}
 
+    def _clear_request_state(self, request_id: int) -> None:
+        self._attempted_request_ids.discard(request_id)
+        self._responses_by_request_id.pop(request_id, None)
+        self._exceptions_by_request_id.pop(request_id, None)
+
     def before_request(self, request: tuple[str, str, dict[str, Any]]) -> Any:
         _, _, extras = request
         request_id = id(request)
@@ -104,10 +109,12 @@ class _RetryableMultipartRequestTemplate(RequestTemplate):
 
         for part in extras.get("files", {}).values():
             if _rewind_retryable_part(part) is _RewindResult.FAILED:
-                return _get_saved_retry_action(
+                retry_action = _get_saved_retry_action(
                     self._responses_by_request_id.get(request_id),
                     self._exceptions_by_request_id.get(request_id),
                 )
+                self._clear_request_state(request_id)
+                return retry_action
         return None
 
     def after_response(
@@ -131,13 +138,36 @@ class _RetryableMultipartRequestTemplate(RequestTemplate):
         return None
 
 
+class _RetryableMultipartCleanupTemplate(RequestTemplate):
+    def __init__(self, retry_template: _RetryableMultipartRequestTemplate) -> None:
+        self._retry_template = retry_template
+
+    def after_response(
+        self, request: tuple[str, str, dict[str, Any]], response: Response
+    ) -> None:
+        self._retry_template._clear_request_state(id(request))
+        return None
+
+    def after_exception(
+        self,
+        request: tuple[str, str, dict[str, Any]],
+        exc_type: type[BaseException],
+        exc_val: BaseException,
+        exc_tb: Any,
+    ) -> None:
+        self._retry_template._clear_request_state(id(request))
+        return None
+
+
 class _RetryableMultipartRequest(decorators.MethodAnnotation):
     def modify_request(self, request_builder: Any) -> None:
+        retryable_template = _RetryableMultipartRequestTemplate()
         # Insert ahead of Uplink's retry template so this helper can see the
         # original retry-triggering response/exception and short-circuit future
         # attempts when a multipart stream cannot be rewound safely.
-        request_builder._request_templates.insert(
-            0, _RetryableMultipartRequestTemplate()
+        request_builder._request_templates.insert(0, retryable_template)
+        request_builder._request_templates.append(
+            _RetryableMultipartCleanupTemplate(retryable_template)
         )
 
 

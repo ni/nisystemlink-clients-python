@@ -6,12 +6,15 @@ import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.core._uplink._base_client import _handle_http_status
 from nisystemlink.clients.core._uplink._multipart_retry import (
+    _RetryableMultipartCleanupTemplate,
     _RetryableMultipartRequestTemplate,
     retryable_multipart_request,
 )
 from requests import Response
 from uplink import Consumer, Part, post, retry
+from uplink.clients.io import CompositeRequestTemplate
 from uplink.clients.io import state as uplink_state
+from uplink.clients.io.interfaces import RequestTemplate
 
 
 class _NonSeekableStream:
@@ -31,6 +34,18 @@ class _FailingSeekStream:
 
     def seek(self, offset: int) -> None:
         raise OSError("cannot rewind")
+
+
+class _StaticTransitionTemplate(RequestTemplate):
+    def __init__(self, response_transition=None, exception_transition=None) -> None:
+        self._response_transition = response_transition
+        self._exception_transition = exception_transition
+
+    def after_response(self, request, response):
+        return self._response_transition
+
+    def after_exception(self, request, exc_type, exc_val, exc_tb):
+        return self._exception_transition
 
 
 @retry(
@@ -139,6 +154,92 @@ class TestRetryableMultipartRequestTemplate:
         next_state = action(uplink_state.BeforeRequest(request))
         assert isinstance(next_state, uplink_state.Finish)
         assert next_state.response is response
+        request_id = id(request)
+        assert request_id not in template._attempted_request_ids
+        assert request_id not in template._responses_by_request_id
+        assert request_id not in template._exceptions_by_request_id
+
+    def test__terminal_response_after_retry_pipeline__clears_saved_retry_state(self):
+        request = (
+            "POST",
+            "https://example.com/upload",
+            {
+                "files": {
+                    "artifact": ("artifact.bin", io.BytesIO(b"artifact")),
+                }
+            },
+        )
+        response = Response()
+        response.status_code = 200
+        response.url = "https://example.com/upload"
+        template = _RetryableMultipartRequestTemplate()
+        composite = CompositeRequestTemplate(
+            [template, _StaticTransitionTemplate(), _RetryableMultipartCleanupTemplate(template)]
+        )
+
+        template.before_request(request)
+        composite.after_response(request, response)
+
+        request_id = id(request)
+        assert request_id not in template._attempted_request_ids
+        assert request_id not in template._responses_by_request_id
+        assert request_id not in template._exceptions_by_request_id
+
+    def test__retry_transition_after_response__preserves_saved_retry_state(self):
+        request = (
+            "POST",
+            "https://example.com/upload",
+            {
+                "files": {
+                    "artifact": ("artifact.bin", io.BytesIO(b"artifact")),
+                }
+            },
+        )
+        response = Response()
+        response.status_code = 503
+        response.url = "https://example.com/upload"
+        retry_transition = object()
+        template = _RetryableMultipartRequestTemplate()
+        composite = CompositeRequestTemplate(
+            [
+                template,
+                _StaticTransitionTemplate(response_transition=retry_transition),
+                _RetryableMultipartCleanupTemplate(template),
+            ]
+        )
+
+        template.before_request(request)
+
+        assert composite.after_response(request, response) is retry_transition
+
+        request_id = id(request)
+        assert request_id in template._attempted_request_ids
+        assert template._responses_by_request_id[request_id] is response
+        assert request_id not in template._exceptions_by_request_id
+
+    def test__terminal_exception_after_retry_pipeline__clears_saved_retry_state(self):
+        request = (
+            "POST",
+            "https://example.com/upload",
+            {
+                "files": {
+                    "artifact": ("artifact.bin", io.BytesIO(b"artifact")),
+                }
+            },
+        )
+        exception = RuntimeError("boom")
+        template = _RetryableMultipartRequestTemplate()
+        composite = CompositeRequestTemplate(
+            [template, _StaticTransitionTemplate(), _RetryableMultipartCleanupTemplate(template)]
+        )
+
+        template.before_request(request)
+        composite.after_exception(request, RuntimeError, exception, None)
+
+        request_id = id(request)
+        assert request_id not in template._attempted_request_ids
+        assert request_id not in template._responses_by_request_id
+        assert request_id not in template._exceptions_by_request_id
 
     def test__before_request_on_retry_with_string_only_parts__allows_retry(self):
         request = (

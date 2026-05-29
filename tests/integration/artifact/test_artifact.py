@@ -8,7 +8,6 @@ from nisystemlink.clients.artifact.models._upload_artifact_response import (
     UploadArtifactResponse,
 )
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
-from responses import PassthroughResponse
 from responses.registries import OrderedRegistry
 from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
@@ -69,12 +68,7 @@ class TestArtifact:
                 f"{BASE_URL}/ninbartifact/v1/artifacts",
                 status=429,
             )
-            request_mock.add(
-                PassthroughResponse(
-                    responses.POST,
-                    f"{BASE_URL}/ninbartifact/v1/artifacts",
-                )
-            )
+            request_mock.add_passthru(f"{BASE_URL}/ninbartifact/v1/artifacts")
 
             upload_response: UploadArtifactResponse = create_artifact()
 

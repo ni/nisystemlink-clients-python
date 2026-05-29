@@ -14,7 +14,6 @@ from nisystemlink.clients.notebook.models import (
     QueryExecutionsRequest,
     QueryNotebookRequest,
 )
-from responses import PassthroughResponse
 from responses.registries import OrderedRegistry
 from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
@@ -305,12 +304,7 @@ class TestNotebookClient:
                 f"{BASE_URL}/ninotebook/v1/notebook",
                 status=429,
             )
-            request_mock.add(
-                PassthroughResponse(
-                    responses.POST,
-                    f"{BASE_URL}/ninotebook/v1/notebook",
-                )
-            )
+            request_mock.add_passthru(f"{BASE_URL}/ninotebook/v1/notebook")
 
             with open("tests/integration/notebook/sample_file.ipynb", "rb") as file:
                 notebook = client.create_notebook(metadata=metadata, content=file)
@@ -351,12 +345,7 @@ class TestNotebookClient:
                 f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}",
                 status=429,
             )
-            request_mock.add(
-                PassthroughResponse(
-                    responses.PUT,
-                    f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}",
-                )
-            )
+            request_mock.add_passthru(f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}")
 
             response = client.update_notebook(id=notebook.id, metadata=notebook)
 

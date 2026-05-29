@@ -10,7 +10,6 @@ import responses
 from nisystemlink.clients.core import ApiException
 from nisystemlink.clients.feeds import FeedsClient
 from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
-from responses import PassthroughResponse
 from responses.registries import OrderedRegistry
 from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
@@ -267,11 +266,8 @@ class TestFeedsClient:
                 f"{BASE_URL}/nifeed/v1/feeds/{create_feed_resp.id}/packages",
                 status=429,
             )
-            request_mock.add(
-                PassthroughResponse(
-                    responses.POST,
-                    f"{BASE_URL}/nifeed/v1/feeds/{create_feed_resp.id}/packages",
-                )
+            request_mock.add_passthru(
+                f"{BASE_URL}/nifeed/v1/feeds/{create_feed_resp.id}/packages"
             )
 
             with open(PACKAGE_PATH, "rb") as package:
