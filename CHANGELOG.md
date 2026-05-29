@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.32.1 (2026-05-29)
+
+### Fix
+
+* Fix bad requests when retrying with streams in multi-part requests ([#212](https://github.com/ni/nisystemlink-clients-python/issues/212)) ([`4e34914`](https://github.com/ni/nisystemlink-clients-python/commit/4e3491475ec7ce63d63ea12816b3ba6998795d49))
+
 ## v2.32.0 (2026-05-28)
 
 ### Feature
