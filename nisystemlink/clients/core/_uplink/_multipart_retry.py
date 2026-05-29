@@ -136,7 +136,9 @@ class _RetryableMultipartRequest(decorators.MethodAnnotation):
         # Insert ahead of Uplink's retry template so this helper can see the
         # original retry-triggering response/exception and short-circuit future
         # attempts when a multipart stream cannot be rewound safely.
-        request_builder._request_templates.insert(0, _RetryableMultipartRequestTemplate())
+        request_builder._request_templates.insert(
+            0, _RetryableMultipartRequestTemplate()
+        )
 
 
 def retryable_multipart_request() -> Callable[[F], F]:

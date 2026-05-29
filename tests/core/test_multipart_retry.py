@@ -48,7 +48,7 @@ class _MultipartRetryTestConsumer(Consumer):
     @retryable_multipart_request()
     @post("upload", args=[Part("artifact")])
     def upload(self, artifact):
-        ...
+        pass
 
 
 class TestRetryableMultipartRequestTemplate:
