@@ -343,7 +343,9 @@ class FileClient(BaseClient):
 
         Args:
             file: The file to upload.
-            metadata: JSON Dictionary with key/value pairs
+            metadata: Multipart part for file metadata, typically ``None`` or a
+                ``(None, json_string, "application/json")`` tuple where
+                ``json_string`` contains the metadata key/value pairs.
             id: Specify an unique (among all file) 24-digit Hex string ID of the file once it is uploaded.
                 Defaults to None.
             workspace: The id of the workspace the file belongs to. Defaults to None.
@@ -378,13 +380,13 @@ class FileClient(BaseClient):
             ApiException: if unable to communicate with the File Service.
         """
         if metadata:
-            metadata_str = json.dumps(metadata)
+            metadata_part = (None, json.dumps(metadata), "application/json")
         else:
-            metadata_str = None
+            metadata_part = None
 
         file_id = self.__upload_file(
             file=file,
-            metadata=metadata_str,
+            metadata=metadata_part,
             id=id,
             workspace=workspace,
         )
