@@ -96,7 +96,7 @@ class TestFileClient:
     def test__upload_file_with_metadata__succeeds(
         self,
         client: FileClient,
-        binary_file_data: BinaryIO,
+        test_file,
         random_filename_extension: str,
     ):
         file_name = random_filename_extension
