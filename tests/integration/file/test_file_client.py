@@ -44,45 +44,6 @@ def binary_file_data() -> BinaryIO:
     return io.BytesIO(TEST_FILE_DATA)
 
 
-def test__upload_file_after_rate_limit_retry__upload_file_succeeds(
-    client: FileClient, monkeypatch: pytest.MonkeyPatch
-):
-    """Retrying a file upload should succeed against the real endpoint."""
-    test_file = io.BytesIO(TEST_FILE_DATA)
-    test_file.name = "retry-safe-file.bin"
-    file_id = None
-
-    monkeypatch.setattr(uplink_blocking_strategy.time, "sleep", lambda _: None)
-
-    try:
-        with responses.RequestsMock(registry=OrderedRegistry) as request_mock:
-            request_mock.add(
-                responses.POST,
-                f"{BASE_URL}/nifile/v1/service-groups/Default/upload-files",
-                status=429,
-            )
-            request_mock.add(
-                PassthroughResponse(
-                    responses.POST,
-                    f"{BASE_URL}/nifile/v1/service-groups/Default/upload-files",
-                )
-            )
-
-            file_id = client.upload_file(file=test_file)
-
-        assert file_id is not None
-
-        files = client.get_files(ids=[file_id])
-        assert files.total_count == 1
-        assert len(files.available_files) == 1
-        assert files.available_files[0].id == file_id
-        assert files.available_files[0].properties is not None
-        assert files.available_files[0].properties["Name"] == test_file.name
-    finally:
-        if file_id:
-            client.delete_file(id=file_id)
-
-
 @pytest.fixture(scope="class")
 def test_file(client: FileClient):
     """Fixture to return a factory that uploads a file."""
@@ -134,6 +95,44 @@ class TestFileClient:
     def test__api_info__returns(self, client: FileClient):
         api_info = client.api_info()
         assert len(api_info.model_dump()) != 0
+
+    def test__upload_file_after_rate_limit_retry__upload_file_succeeds(
+        self, client: FileClient, monkeypatch: pytest.MonkeyPatch
+    ):
+        """Retrying a file upload should succeed against the real endpoint."""
+        test_file = io.BytesIO(TEST_FILE_DATA)
+        test_file.name = "retry-safe-file.bin"
+        file_id = None
+
+        monkeypatch.setattr(uplink_blocking_strategy.time, "sleep", lambda _: None)
+
+        try:
+            with responses.RequestsMock(registry=OrderedRegistry) as request_mock:
+                request_mock.add(
+                    responses.POST,
+                    f"{BASE_URL}/nifile/v1/service-groups/Default/upload-files",
+                    status=429,
+                )
+                request_mock.add(
+                    PassthroughResponse(
+                        responses.POST,
+                        f"{BASE_URL}/nifile/v1/service-groups/Default/upload-files",
+                    )
+                )
+
+                file_id = client.upload_file(file=test_file)
+
+            assert file_id is not None
+
+            files = client.get_files(ids=[file_id])
+            assert files.total_count == 1
+            assert len(files.available_files) == 1
+            assert files.available_files[0].id == file_id
+            assert files.available_files[0].properties is not None
+            assert files.available_files[0].properties["Name"] == test_file.name
+        finally:
+            if file_id:
+                client.delete_file(id=file_id)
 
     def test__upload_get_delete_files__succeeds(
         self, client: FileClient, test_file, random_filename_extension

@@ -327,7 +327,7 @@ class TestNotebookClient:
             if notebook_id:
                 client.delete_notebook(id=notebook_id)
 
-    def test__update_notebook_metadata_after_rate_limit_retry__update_notebook_content_succeeds(
+    def test__update_notebook_metadata_after_rate_limit_retry__update_notebook_metadata_succeeds(
         self,
         client: NotebookClient,
         create_notebook,
