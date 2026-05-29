@@ -2,11 +2,17 @@ import io
 from typing import List
 
 import pytest
+import responses
 from nisystemlink.clients.artifact import ArtifactClient
 from nisystemlink.clients.artifact.models._upload_artifact_response import (
     UploadArtifactResponse,
 )
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
+from responses.registries import OrderedRegistry
+from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
+
+BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
+DEFAULT_WORKSPACE = "2300760d-38c4-48a1-9acb-800260812337"
 
 
 @pytest.fixture(scope="class")
@@ -23,7 +29,7 @@ def create_artifact(client: ArtifactClient):
     def _create_artifact(
         content: bytes = b"test content",
         cleanup: bool = True,
-        workspace: str = "2300760d-38c4-48a1-9acb-800260812337",
+        workspace: str = DEFAULT_WORKSPACE,
     ):
         # Used the main-test default workspace since the client for creating a workspace has not been added yet
         artifact_stream = io.BytesIO(content)
@@ -47,6 +53,24 @@ class TestArtifact:
         self, client: ArtifactClient, create_artifact
     ):
         upload_response: UploadArtifactResponse = create_artifact()
+
+        assert upload_response is not None
+        assert upload_response.id is not None
+
+    def test__upload_artifact_after_rate_limit_retry__artifact_uploaded(
+        self, create_artifact, monkeypatch: pytest.MonkeyPatch
+    ):
+        monkeypatch.setattr(uplink_blocking_strategy.time, "sleep", lambda _: None)
+
+        with responses.RequestsMock(registry=OrderedRegistry) as request_mock:
+            request_mock.add(
+                responses.POST,
+                f"{BASE_URL}/ninbartifact/v1/artifacts",
+                status=429,
+            )
+            request_mock.add_passthru(f"{BASE_URL}/ninbartifact/v1/artifacts")
+
+            upload_response: UploadArtifactResponse = create_artifact()
 
         assert upload_response is not None
         assert upload_response.id is not None

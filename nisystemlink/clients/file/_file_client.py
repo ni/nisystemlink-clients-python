@@ -14,6 +14,9 @@ from nisystemlink.clients.core._uplink._methods import (
     post,
     response_handler,
 )
+from nisystemlink.clients.core._uplink._multipart_retry import (
+    retryable_multipart_request,
+)
 from nisystemlink.clients.core.helpers import IteratorFileLike
 from requests.models import Response
 from uplink import Body, Field, params, Part, Path, Query, retry
@@ -331,6 +334,7 @@ class FileClient(BaseClient):
         """
 
     @response_handler(_file_uri_response_handler)
+    @retryable_multipart_request()
     @post("service-groups/Default/upload-files")
     def __upload_file(
         self,
@@ -433,6 +437,7 @@ class FileClient(BaseClient):
         ],
     )
     @response_handler(lambda response: None)
+    @retryable_multipart_request()
     def append_to_upload_session(
         self,
         session_id: str,
