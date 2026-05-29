@@ -3,11 +3,11 @@ from enum import Enum
 from typing import Any, Dict
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 
 class SourceType(str, Enum):
-    """Source type of an execution"""
+    """Source type of an execution."""
 
     MANUAL = "MANUAL"
 
@@ -15,7 +15,7 @@ class SourceType(str, Enum):
 
 
 class Source(JsonModel):
-    """An object that defines properties set by routine service"""
+    """An object that defines properties set by routine service."""
 
     type: SourceType
     """Source type of an execution"""
@@ -38,13 +38,13 @@ class ReportType(str, Enum):
 
 
 class ReportSettings(JsonModel):
-    """A class that defines settings of the Report"""
+    """A class that defines settings of the Report."""
 
     format: ReportType
     """Type for the report that is going to be generated."""
 
     exclude_code: bool
-    """Boolean parameter that will define if the source code should be included in the report or not."""
+    """Whether the source code should be included in the report."""
 
 
 class ExecutionPriority(str, Enum):
@@ -58,6 +58,7 @@ class ExecutionPriority(str, Enum):
 
 
 class ExecutionResourceProfile(str, Enum):
+    """Resource profile of the execution. Can be one of Low, Medium, High or Default."""
 
     DEFAULT = "DEFAULT"
 
@@ -109,7 +110,10 @@ class ExecutionErrorCode(str, Enum):
 
 
 class Execution(JsonModel):
-    """Information about an execution of a Jupyter notebook that has the cachedResult field added."""
+    """Jupyter notebook execution information.
+
+    Includes the cachedResult field.
+    """
 
     id: str | None = None
     """The ID of the execution."""
@@ -117,22 +121,30 @@ class Execution(JsonModel):
     notebook_id: str | None = None
     """The ID of the executed notebook."""
 
-    organization_id: str | None = Field(None, alias="orgId")
+    organization_id: str | None = Field(
+        None,
+        validation_alias=AliasChoices("organization_id", "orgId"),
+        serialization_alias="orgId",
+    )
     """The org ID of the user creating the request."""
 
     user_id: str | None = None
     """The user ID of the user creating the request."""
 
     parameters: Dict[str, Any] | None = None
-    """The input parameters for this execution of the notebook. The keys are strings and the values can be of any
-    valid JSON type."""
+    """The input parameters for this execution.
+
+    The keys are strings and the values can be any valid JSON type.
+    """
 
     workspace_id: str | None = None
     """The ID of the workspace this execution belongs to."""
 
     timeout: int | None = None
-    """The number of seconds the execution runs before it aborts if uncompleted. The timer starts once status is
-    IN_PROGRESS. 0 means infinite."""
+    """The number of seconds the execution runs before it aborts.
+
+    The timer starts once status is IN_PROGRESS. 0 means infinite.
+    """
 
     status: ExecutionStatus | None = None
     """Status of an execution."""

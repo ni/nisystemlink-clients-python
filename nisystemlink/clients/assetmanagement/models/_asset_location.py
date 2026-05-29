@@ -13,10 +13,12 @@ class AssetPresenceStatus(Enum):
 
 
 class SystemConnection(Enum):
-    """Whether or not the minion is connected to the server and has updated the server with its data.
-    To maintain compatibility with previous versions of SystemLink, the values
-    [APPROVED, UNSUPPORTED, ACTIVATED] are considered equivalent to DISCONNECTED and
-    [CONNECTED_UPDATE_PENDING, CONNECTED_UPDATE_SUCCESSFUL, CONNECTED_UPDATE_FAILED] are equivalent to CONNECTED.
+    """Whether the minion is connected to the server.
+
+    For backward compatibility, APPROVED, UNSUPPORTED, and ACTIVATED are
+    treated as DISCONNECTED. CONNECTED_UPDATE_PENDING,
+    CONNECTED_UPDATE_SUCCESSFUL, and CONNECTED_UPDATE_FAILED are treated
+    as CONNECTED.
     """
 
     APPROVED = "APPROVED"
@@ -30,13 +32,15 @@ class SystemConnection(Enum):
 
 
 class AssetPresenceWithSystemConnection(JsonModel):
-    """Model for the presence of an asset and the connection of the system in which it resides."""
+    """Asset presence and system connection information."""
 
     asset_presence: AssetPresenceStatus
     """Gets or sets the status of an asset's presence in a system."""
 
     system_connection: SystemConnection | None = None
-    """Gets or sets whether or not the minion is connected to the server and has updated the server with its data."""
+    """Gets or sets whether the minion is connected to the server
+    and has updated it with its data.
+    """
 
 
 class AssetPresence(JsonModel):
@@ -47,7 +51,7 @@ class AssetPresence(JsonModel):
 
 
 class _AssetLocation(JsonModel):
-    """local model for information about the asset location, presence and the connection status of the system."""
+    """Local model for asset location and presence information."""
 
     minion_id: str | None = None
     """Gets or sets identifier of the minion where the asset is located."""
@@ -66,14 +70,14 @@ class _AssetLocation(JsonModel):
 
 
 class AssetLocation(_AssetLocation):
-    """Model for information about the asset location, presence and the connection status of the system."""
+    """Asset location and system connection information."""
 
     state: AssetPresenceWithSystemConnection
     """Presence of an asset and the connection of the system in which it resides."""
 
 
 class AssetLocationForCreate(_AssetLocation):
-    """Model for information about the asset presence status of the system, used while create"""
+    """Asset presence information used during create."""
 
     state: AssetPresence
     """Model for the presence of an asset."""

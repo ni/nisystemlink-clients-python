@@ -3,7 +3,7 @@ from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
 from nisystemlink.clients.core._uplink._with_paging import WithPaging
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 
 class ResultField(str, Enum):
@@ -74,6 +74,8 @@ class ResultProjection(str, Enum):
 
 
 class QueryResultsBase(JsonModel):
+    """Base class for result query requests."""
+
     filter: str | None = None
     """
     The result query filter in Dynamic Linq format.
@@ -94,9 +96,12 @@ class QueryResultsBase(JsonModel):
     - `keywords`: A list of keyword strings
     - `properties`: A dictionary of additional string to string properties
     - `fileIds`: A list of string ids for files stored in the file service (`/nifile`)
-    - `dataTableIds`: A list of string ids for data tables stored in the data frame service (`/nidataframe`)
+    - `dataTableIds`: A list of string ids for data tables stored in the
+      data frame service (`/nidataframe`)
     - `workspaceId`: String for the workspace identifier of the result
-    See [Dynamic Linq](https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language)
+
+    See the Dynamic Linq query language documentation:
+    https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language
     documentation for more details.
     `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable.
@@ -113,6 +118,8 @@ class QueryResultsBase(JsonModel):
 
 
 class QueryProductsBase(JsonModel):
+    """Base class for product query requests."""
+
     product_filter: str | None = None
     """
     The product query filter in Dynamic Linq format.
@@ -125,7 +132,9 @@ class QueryProductsBase(JsonModel):
     - `keywords`: A list of keyword strings
     - `properties`: A dictionary of additional string to string properties
     - `fileIds`: A list of string ids for files stored in the file service (`/nifile`)
-    See [Dynamic Linq](https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language)
+
+    See the Dynamic Linq query language documentation:
+    https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language
     documentation for more details.
     `"@0"`, `"@1"` etc. can be used in conjunction with the `substitutions` parameter to keep this
     query string more simple and reusable.
@@ -142,20 +151,36 @@ class QueryProductsBase(JsonModel):
 
 
 class QueryResultsRequest(QueryResultsBase, QueryProductsBase, WithPaging):
+    """Request model for querying results."""
 
-    order_by: ResultOrderByField | None = Field(None, alias="orderBy")
+    order_by: ResultOrderByField | None = Field(
+        None,
+        validation_alias=AliasChoices("order_by", "orderBy"),
+        serialization_alias="orderBy",
+    )
     """Specifies the fields to use to sort the results.
     By default, results are sorted by `id`
     """
-    order_by_key: str | None = Field(None, alias="orderByKey")
+    order_by_key: str | None = Field(
+        None,
+        validation_alias=AliasChoices("order_by_key", "orderByKey"),
+        serialization_alias="orderByKey",
+    )
     """Specifies the property to use to sort the results when ordering by PROPERTIES.
     Results that do not contain the orderByKey will be considered the smallest value.
     """
     order_by_comparison_type: ComparisonType | None = Field(
-        None, alias="orderByComparisonType"
+        None,
+        validation_alias=AliasChoices(
+            "order_by_comparison_type",
+            "orderByComparisonType",
+        ),
+        serialization_alias="orderByComparisonType",
     )
     """An enumeration of comparison types that can be used for ordered queries.
-    For non-DEFAULT comparisons, values that cannot be converted will be considered the smallest value.
+
+    For non-DEFAULT comparisons, values that cannot be converted
+    will be considered the smallest value.
     """
     descending: bool | None = None
     """Specifies whether to return the results in descending order.
@@ -177,6 +202,8 @@ class QueryResultsRequest(QueryResultsBase, QueryProductsBase, WithPaging):
 
 
 class QueryResultValuesRequest(QueryResultsBase):
+    """Request model for querying result values."""
+
     field: ResultField | None = None
     """The result field to return for this query."""
 
