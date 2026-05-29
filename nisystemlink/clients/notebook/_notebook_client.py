@@ -1,5 +1,5 @@
 import io
-from typing import List
+from typing import BinaryIO, List
 
 from nisystemlink.clients import core
 from nisystemlink.clients.core._api_error import ApiError
@@ -13,6 +13,9 @@ from nisystemlink.clients.core._uplink._methods import (
     post,
     put,
     response_handler,
+)
+from nisystemlink.clients.core._uplink._multipart_retry import (
+    retryable_multipart_request,
 )
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
 from uplink import Part, Path, retry
@@ -54,12 +57,16 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @put("ninotebook/v1/notebook/{id}")
+    @retryable_multipart_request()
+    @put(
+        "ninotebook/v1/notebook/{id}",
+        args=[Path("id"), Part("metadata"), Part("content")],
+    )
     def __update_notebook(
         self,
-        id: Path,
-        metadata: Part = None,
-        content: Part = None,
+        id: str,
+        metadata: io.BytesIO | None = None,
+        content: BinaryIO | None = None,
     ) -> models.NotebookMetadata:
         """Updates a notebook metadata by ID.
 
@@ -81,7 +88,7 @@ class NotebookClient(BaseClient):
         self,
         id: str,
         metadata: models.NotebookMetadata | None = None,
-        content: io.BufferedReader | None = None,
+        content: BinaryIO | None = None,
     ) -> models.NotebookMetadata:
         """Updates a notebook metadata by ID.
 
@@ -121,11 +128,15 @@ class NotebookClient(BaseClient):
         """
         ...
 
-    @post("ninotebook/v1/notebook")
+    @retryable_multipart_request()
+    @post(
+        "ninotebook/v1/notebook",
+        args=[Part("metadata"), Part("content")],
+    )
     def __create_notebook(
         self,
-        metadata: Part,
-        content: Part,
+        metadata: io.BytesIO,
+        content: BinaryIO,
     ) -> models.NotebookMetadata:
         """Creates a new notebook.
 
@@ -145,7 +156,7 @@ class NotebookClient(BaseClient):
     def create_notebook(
         self,
         metadata: models.NotebookMetadata,
-        content: io.BufferedReader,
+        content: BinaryIO,
     ) -> models.NotebookMetadata:
         """Creates a new notebook.
 

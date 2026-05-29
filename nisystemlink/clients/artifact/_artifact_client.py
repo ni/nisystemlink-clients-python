@@ -10,13 +10,21 @@ from nisystemlink.clients.core._uplink._methods import (
     post,
     response_handler,
 )
+from nisystemlink.clients.core._uplink._multipart_retry import (
+    retryable_multipart_request,
+)
 from nisystemlink.clients.core.helpers._iterator_file_like import IteratorFileLike
 from requests.models import Response
-from uplink import Part, Path
+from uplink import Part, Path, retry
 
 from . import models
 
 
+def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
+    return IteratorFileLike(response.iter_content(chunk_size=4096))
+
+
+@retry(when=retry.when.status(429), stop=retry.stop.after_attempt(5))
 class ArtifactClient(BaseClient):
     def __init__(self, configuration: core.HttpConfiguration | None = None):
         """Initialize an instance.
@@ -35,9 +43,10 @@ class ArtifactClient(BaseClient):
 
         super().__init__(configuration, base_path="/ninbartifact/v1/")
 
-    @post("artifacts")
+    @retryable_multipart_request()
+    @post("artifacts", args=[Part("workspace"), Part("artifact")])
     def __upload_artifact(
-        self, workspace: Part, artifact: Part
+        self, workspace: str, artifact: BinaryIO
     ) -> models.UploadArtifactResponse:
         """Uploads an artifact  using multipart/form-data headers to send the file payload in the HTTP body.
 
@@ -49,6 +58,7 @@ class ArtifactClient(BaseClient):
             UploadArtifactResponse: The response containing the artifact ID.
 
         """
+        ...
 
     def upload_artifact(
         self, workspace: str, artifact: BinaryIO
@@ -69,9 +79,6 @@ class ArtifactClient(BaseClient):
         )
 
         return response
-
-    def _iter_content_filelike_wrapper(response: Response) -> IteratorFileLike:
-        return IteratorFileLike(response.iter_content(chunk_size=4096))
 
     @response_handler(_iter_content_filelike_wrapper)
     @get("artifacts/{id}")
