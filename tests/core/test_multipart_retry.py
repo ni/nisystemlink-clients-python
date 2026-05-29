@@ -174,7 +174,11 @@ class TestRetryableMultipartRequestTemplate:
         response.url = "https://example.com/upload"
         template = _RetryableMultipartRequestTemplate()
         composite = CompositeRequestTemplate(
-            [template, _StaticTransitionTemplate(), _RetryableMultipartCleanupTemplate(template)]
+            [
+                template,
+                _StaticTransitionTemplate(),
+                _RetryableMultipartCleanupTemplate(template),
+            ]
         )
 
         template.before_request(request)
@@ -230,7 +234,11 @@ class TestRetryableMultipartRequestTemplate:
         exception = RuntimeError("boom")
         template = _RetryableMultipartRequestTemplate()
         composite = CompositeRequestTemplate(
-            [template, _StaticTransitionTemplate(), _RetryableMultipartCleanupTemplate(template)]
+            [
+                template,
+                _StaticTransitionTemplate(),
+                _RetryableMultipartCleanupTemplate(template),
+            ]
         )
 
         template.before_request(request)

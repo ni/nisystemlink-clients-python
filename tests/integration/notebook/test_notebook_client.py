@@ -345,7 +345,9 @@ class TestNotebookClient:
                 f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}",
                 status=429,
             )
-            request_mock.add_passthru(f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}")
+            request_mock.add_passthru(
+                f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}"
+            )
 
             response = client.update_notebook(id=notebook.id, metadata=notebook)
 
