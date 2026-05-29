@@ -62,13 +62,13 @@ def create_asset(
 
 @pytest.fixture(scope="class")
 def client(enterprise_config: HttpConfiguration) -> AssetManagementClient:
-    """Fixture to create a AssetManagementClient instance"""
+    """Fixture to create an AssetManagementClient instance."""
     return AssetManagementClient(enterprise_config)
 
 
 @pytest.fixture
 def unique_identifier() -> str:
-    """Fixture to generate a unique identifier using UUID"""
+    """Fixture to generate a unique identifier using UUID."""
     return str(uuid4())
 
 
@@ -123,9 +123,10 @@ def start_utilization(
 @pytest.mark.integration
 @pytest.mark.enterprise
 class TestAssetManagement:
+    """Integration tests for the asset management client."""
+
     _workspace = "2300760d-38c4-48a1-9acb-800260812337"
-    """Used the main-test default workspace since the client
-    for creating a workspace has not been added yet"""
+    """Use the main-test default workspace until workspace creation is supported."""
 
     _create_assets_request = [
         CreateAssetRequest(
@@ -148,7 +149,7 @@ class TestAssetManagement:
                 is_limited=False,
                 date=datetime(2022, 6, 7, 18, 58, 5, tzinfo=timezone.utc),
             ),
-            is_NI_asset=True,
+            is_ni_asset=True,
             workspace=_workspace,
             location=AssetLocationForCreate(
                 state=AssetPresence(asset_presence=AssetPresenceStatus.PRESENT)
@@ -312,7 +313,7 @@ class TestAssetManagement:
             and asset.file_ids is None
             and asset.firmware_version is None
             and asset.hardware_version is None
-            and asset.is_NI_asset is None
+            and asset.is_ni_asset is None
             and asset.is_system_controller is None
             and asset.keywords is None
             and asset.last_updated_timestamp is None
@@ -531,7 +532,7 @@ class TestAssetManagement:
         assert isinstance(utilization.end_timestamp, datetime)
         assert isinstance(utilization.heartbeat_timestamp, datetime)
 
-    def test__start_utilization_with_nonexistent_asset__raises_ApiException(
+    def test__start_utilization_with_nonexistent_asset__raises_api_exception(
         self, client: AssetManagementClient, unique_identifier: str
     ):
         start_request = StartUtilizationRequest(
@@ -576,7 +577,7 @@ class TestAssetManagement:
         assert response.updated_utilization_ids is not None
         assert len(response.updated_utilization_ids) == 0
 
-    def test__query_utilization_history_with_invalid_filter__raises_ApiException(
+    def test__query_utilization_history_with_invalid_filter__raises_api_exception(
         self, client: AssetManagementClient
     ):
         query_request = QueryAssetUtilizationHistoryRequest(

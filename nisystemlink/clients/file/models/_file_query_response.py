@@ -3,16 +3,19 @@ from __future__ import annotations
 from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 from ._file_metadata import FileMetadata
 from ._link import Link
 
 
 class FileQueryResponse(JsonModel):
-    """The result of a file query"""
+    """The result of a file query."""
 
-    field_links: Dict[str, Link] = Field(alias="_links")
+    field_links: Dict[str, Link] = Field(
+        validation_alias=AliasChoices("field_links", "_links"),
+        serialization_alias="_links",
+    )
     """The links that apply to the collection of files for a service group:
     - deleteFiles: Link to delete multiple files from the service group using a POST
     - query: Link to query for available files in the service group using a POST

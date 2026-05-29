@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 from ._asset import (
     AssetBusType,
@@ -65,14 +65,20 @@ class CreateAssetRequest(JsonModel):
     self_calibration: SelfCalibration | None = None
     """Gets or sets the last self-calibration of the asset."""
 
-    is_NI_asset: bool | None = Field(alias="isNIAsset", default=None)
+    is_ni_asset: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("is_ni_asset", "is_NI_asset", "isNIAsset"),
+        serialization_alias="isNIAsset",
+    )
     """Gets or sets whether this asset is an NI asset (true) or a third-party asset (false)."""
 
     workspace: str | None = None
     """Gets or sets the ID of the workspace."""
 
     location: AssetLocationForCreate
-    """Model for information about the asset location, presence and the connection status of the system"""
+    """Model for information about the asset location, presence,
+    and the connection status of the system.
+    """
 
     external_calibration: ExternalCalibration | None = None
     """Gets or sets the last external calibration of the asset."""
