@@ -77,3 +77,24 @@ def test__unwrap_single_item_partial_success__raises_on_empty_success_payload():
     assert exc_info.value.response_data == response.model_dump(
         mode="json", by_alias=True
     )
+
+
+def test__unwrap_single_item_partial_success__raises_on_multiple_success_items():
+    """Raise ApiException when the response unexpectedly contains multiple items."""
+    response = _FakeResponse({"items": ["created-item", "extra-item"]})
+
+    with pytest.raises(
+        ApiException, match="Expected exactly one successful item but received 2"
+    ) as exc_info:
+        unwrap_single_item_partial_success(
+            response=response,
+            items=["created-item", "extra-item"],
+            failed=None,
+            error=None,
+            failure_message="Failed to create item.",
+            empty_message="Server returned no created items.",
+        )
+
+    assert exc_info.value.response_data == response.model_dump(
+        mode="json", by_alias=True
+    )

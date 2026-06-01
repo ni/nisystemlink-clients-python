@@ -38,4 +38,10 @@ def unwrap_single_item_partial_success(
             response_data=response_data,
         )
 
+    if len(items) != 1:
+        raise core.ApiException(
+            f"Expected exactly one successful item but received {len(items)}.",
+            response_data=response_data,
+        )
+
     return items[0]
