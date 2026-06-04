@@ -58,6 +58,39 @@ def test__unwrap_single_item_partial_success__raises_on_partial_failure():
     )
 
 
+def test__unwrap_single_item_partial_success__unwraps_single_inner_error():
+    """Raise ApiException with the inner error for one-or-more wrappers."""
+    response = _FakeResponse(
+        {
+            "items": [],
+            "failed": [{"id": "request-id"}],
+            "error": {"message": "One or more errors occurred."},
+        }
+    )
+    inner_error = ApiError(message="Create failed")
+    error = ApiError(
+        name="Skyline.OneOrMoreErrorsOccurred",
+        code=-251041,
+        message="One or more errors occurred.",
+        inner_errors=[inner_error],
+    )
+
+    with pytest.raises(ApiException) as exc_info:
+        unwrap_single_item_partial_success(
+            response=response,
+            items=[],
+            failed=[{"id": "request-id"}],
+            error=error,
+            failure_message="Failed to create item.",
+            empty_message="Server returned no created items.",
+        )
+
+    assert exc_info.value.error == inner_error
+    assert exc_info.value.response_data == response.model_dump(
+        mode="json", by_alias=True
+    )
+
+
 def test__unwrap_single_item_partial_success__raises_on_empty_success_payload():
     """Raise ApiException when the response succeeds but contains no created item."""
     response = _FakeResponse({"items": []})

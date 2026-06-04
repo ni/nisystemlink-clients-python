@@ -3,6 +3,24 @@ from typing import Any, Sequence, TypeVar
 from nisystemlink.clients import core
 
 _ItemT = TypeVar("_ItemT")
+_ONE_OR_MORE_ERRORS_OCCURRED_NAME = "Skyline.OneOrMoreErrorsOccurred"
+_ONE_OR_MORE_ERRORS_OCCURRED_CODE = -251041
+
+
+def _unwrap_single_inner_error(error: core.ApiError | None) -> core.ApiError | None:
+    if error is None:
+        return None
+
+    if len(error.inner_errors) != 1:
+        return error
+
+    if (
+        error.name == _ONE_OR_MORE_ERRORS_OCCURRED_NAME
+        or error.code == _ONE_OR_MORE_ERRORS_OCCURRED_CODE
+    ):
+        return error.inner_errors[0]
+
+    return error
 
 
 def unwrap_single_item_partial_success(
@@ -28,7 +46,7 @@ def unwrap_single_item_partial_success(
     if failed or error:
         raise core.ApiException(
             failure_message,
-            error=error,
+            error=_unwrap_single_inner_error(error),
             response_data=response_data,
         )
 
