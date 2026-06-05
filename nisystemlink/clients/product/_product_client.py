@@ -8,6 +8,7 @@ from nisystemlink.clients.core._uplink._methods import delete, get, post
 from uplink import Field, Query, retry, returns
 
 from . import models
+from ..core.helpers._partial_success import unwrap_single_item_partial_success
 
 
 @retry(
@@ -49,6 +50,30 @@ class ProductClient(BaseClient):
                 arguments.
         """
         ...
+
+    def create_product(self, product: models.CreateProductRequest) -> models.Product:
+        """Creates a single product.
+
+        Args:
+            product: The product to create.
+
+        Returns:
+            The created product.
+
+        Raises:
+            ApiException: if the product could not be created or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.create_products([product])
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.products,
+            failed=response.failed,
+            error=response.error,
+            failure_message="Failed to create product.",
+            empty_message="Server returned no created products.",
+        )
 
     @get(
         "products",
@@ -152,6 +177,33 @@ class ProductClient(BaseClient):
                 or provided an invalid argument.
         """
         ...
+
+    def update_product(
+        self, product: models.UpdateProductRequest, replace: bool = False
+    ) -> models.Product:
+        """Updates a single product.
+
+        Args:
+            product: The product to update.
+            replace: Replace the existing fields instead of merging them.
+
+        Returns:
+            The updated product.
+
+        Raises:
+            ApiException: if the product could not be updated or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.update_products([product], replace=replace)
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.products,
+            failed=response.failed,
+            error=response.error,
+            failure_message="Failed to update product.",
+            empty_message="Server returned no updated products.",
+        )
 
     @delete("products/{id}")
     def delete_product(self, id: str) -> None:

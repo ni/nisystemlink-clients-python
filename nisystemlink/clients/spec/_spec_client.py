@@ -8,6 +8,7 @@ from nisystemlink.clients.core._uplink._methods import get, post
 from uplink import Field, retry
 
 from . import models
+from ..core.helpers._partial_success import unwrap_single_item_partial_success
 
 
 @retry(
@@ -62,6 +63,32 @@ class SpecClient(BaseClient):
             invalid arguments.
         """
         ...
+
+    def create_spec(
+        self, spec: models.CreateSpecificationsRequestObject
+    ) -> models.CreatedSpecification:
+        """Creates a single specification.
+
+        Args:
+            spec: The specification to create.
+
+        Returns:
+            The created specification.
+
+        Raises:
+            ApiException: if the specification could not be created or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.create_specs(models.CreateSpecificationsRequest(specs=[spec]))
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.created_specs,
+            failed=response.failed_specs,
+            error=response.error,
+            failure_message="Failed to create spec.",
+            empty_message="Server returned no created specs.",
+        )
 
     @post("delete-specs", args=[Field("ids")])
     def delete_specs(
@@ -129,3 +156,29 @@ class SpecClient(BaseClient):
             with error messages for updates that failed.
         """
         ...
+
+    def update_spec(
+        self, spec: models.UpdateSpecificationsRequestObject
+    ) -> models.UpdatedSpecification:
+        """Updates a single specification.
+
+        Args:
+            spec: The specification to update.
+
+        Returns:
+            The updated specification.
+
+        Raises:
+            ApiException: if the specification could not be updated or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.update_specs(models.UpdateSpecificationsRequest(specs=[spec]))
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.updated_specs if response is not None else None,
+            failed=response.failed_specs if response is not None else None,
+            error=response.error if response is not None else None,
+            failure_message="Failed to update spec.",
+            empty_message="Server returned no updated specs.",
+        )

@@ -13,6 +13,7 @@ from nisystemlink.clients.core._uplink._methods import post
 from uplink import Field, Path, retry
 
 from . import models
+from ..core.helpers._partial_success import unwrap_single_item_partial_success
 
 
 @retry(
@@ -55,6 +56,30 @@ class AssetManagementClient(BaseClient):
             arguments.
         """
         ...
+
+    def create_asset(self, asset: models.CreateAssetRequest) -> models.Asset:
+        """Create a single asset.
+
+        Args:
+            asset: The asset to create.
+
+        Returns:
+            The created asset.
+
+        Raises:
+            ApiException: if the asset could not be created or the service returns an
+                unexpected partial-success payload.
+        """
+        response = self.create_assets([asset])
+
+        return unwrap_single_item_partial_success(
+            response=response,
+            items=response.assets,
+            failed=response.failed,
+            error=response.error,
+            failure_message="Failed to create asset.",
+            empty_message="Server returned no created assets.",
+        )
 
     @post("query-assets")
     def __query_assets(
