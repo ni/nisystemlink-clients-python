@@ -6,7 +6,9 @@ from ._data_type import DataType
 from ._retention_type import RetentionType
 from ._tag_data import TagData
 from ._tag_with_aggregates import TagWithAggregates  # noqa: I100
-from ._async_tag_query_result_collection import AsyncTagQueryResultCollection  # noqa: I100
+from ._async_tag_query_result_collection import (
+    AsyncTagQueryResultCollection,
+)  # noqa: I100
 from ._itag_reader import ITagReader
 from ._itag_writer import ITagWriter
 from ._buffered_tag_writer import BufferedTagWriter  # noqa: I100
