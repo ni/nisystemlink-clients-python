@@ -1,3 +1,5 @@
+"""Start here with DataFrameClient for dataframe operations."""
+
 from ._data_frame_client import DataFrameClient
 
-# flake8: noqa
+__all__ = ["DataFrameClient"]

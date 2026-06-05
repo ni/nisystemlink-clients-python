@@ -1,3 +1,5 @@
+"""Start here with WorkItemClient for work item operations."""
+
 from ._work_item_client import WorkItemClient, WorkItemExecuteApiException
 
-# flake8: noqa
+__all__ = ["WorkItemClient", "WorkItemExecuteApiException"]

@@ -1,3 +1,5 @@
+"""Start here with FeedsClient for feed management."""
+
 from ._feeds_client import FeedsClient
 
-# flake8: noqa
+__all__ = ["FeedsClient"]
