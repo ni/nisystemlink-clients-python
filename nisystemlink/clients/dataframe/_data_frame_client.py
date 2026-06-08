@@ -7,7 +7,7 @@ from typing import List, Union
 try:
     import pyarrow as pa  # type: ignore
 except Exception:
-    pa = None
+    pa = None  # type: ignore[assignment]
 from nisystemlink.clients import core
 from nisystemlink.clients.core._uplink._base_client import BaseClient
 from nisystemlink.clients.core._uplink._methods import (

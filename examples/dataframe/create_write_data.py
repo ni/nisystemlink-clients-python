@@ -4,7 +4,7 @@ from datetime import datetime
 try:
     import pyarrow as pa  # type: ignore
 except Exception:
-    pa = None
+    pa = None  # type: ignore[assignment]
 try:
     import pandas as pd  # type: ignore
 except Exception:
