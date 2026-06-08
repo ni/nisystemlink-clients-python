@@ -57,7 +57,8 @@ class TestServicePackageExports(unittest.TestCase):
                 module_docstring = ast.get_docstring(module)
 
                 self.assertIsNotNone(module_docstring)
-                assert module_docstring is not None
+                if module_docstring is None:
+                    self.fail(f"Missing module docstring in {module_path}")
                 self.assertTrue(module_docstring.startswith("Start here with "))
 
                 for node in module.body:
