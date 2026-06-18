@@ -1,3 +1,5 @@
+"""Start here with NotebookClient for notebook management."""
+
 from ._notebook_client import NotebookClient
 
-# flake8: noqa
+__all__ = ["NotebookClient"]

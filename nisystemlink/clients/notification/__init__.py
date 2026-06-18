@@ -1,3 +1,5 @@
+"""Start here with NotificationClient for notification management."""
+
 from ._notification_client import NotificationClient
 
-# flake8: noqa
+__all__ = ["NotificationClient"]

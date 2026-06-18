@@ -1,3 +1,5 @@
+"""Start here with SpecClient for specification management."""
+
 from ._spec_client import SpecClient
 
-# flake8: noqa
+__all__ = ["SpecClient"]

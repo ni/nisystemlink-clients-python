@@ -1,5 +1,7 @@
+"""Start here with AssetManagementClient for asset management."""
+
 from nisystemlink.clients.assetmanagement._asset_management_client import (
     AssetManagementClient,
 )
 
-# flake8: noqa
+__all__ = ["AssetManagementClient"]
