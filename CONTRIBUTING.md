@@ -74,6 +74,23 @@ To only run the tests in one particular folder, run
 pytest tests/myfolder
 ```
 
+## Maintaining package exports
+
+Package `__init__.py` files are part of the public API surface for this library.
+When adding, renaming, or removing a public client or model type, update the
+corresponding package exports in the same change.
+
+- Keep `__all__` aligned with the intended public symbols exposed by the package.
+- Do not include underscore-prefixed helper types in `__all__` unless they are
+  intentionally part of the public API for compatibility reasons.
+- If code is generated or assisted by AI, review the package exports explicitly;
+  generated updates should preserve the same public/private distinction.
+- Run the export contract tests locally after changing package exports:
+
+```sh
+pytest tests/test_service_package_exports.py tests/test_models_package_exports.py
+```
+
 To run the SystemLink Cloud tests,
 [create an API key](https://www.ni.com/documentation/en/systemlink-cloud/latest/manual/creating-an-api-key/)
 and then run

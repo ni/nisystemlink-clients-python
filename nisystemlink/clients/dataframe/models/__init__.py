@@ -28,4 +28,37 @@ from ._table_rows import TableRows
 # Alias to provide backwards compatibility for misnamed class, fixed in 1.0.2
 TableMetdataModification = TableMetadataModification
 
+__all__ = [
+    "AppendTableDataRequest",
+    "ApiInfo",
+    "Operation",
+    "OperationsV1",
+    "CreateTableRequest",
+    "Column",
+    "FilterOperation",
+    "ColumnFilter",
+    "ColumnOrderBy",
+    "ColumnType",
+    "DataFrame",
+    "DataType",
+    "DeleteTablesPartialSuccess",
+    "ExportTableDataRequest",
+    "ExportFormat",
+    "ModifyTablesPartialSuccess",
+    "ColumnMetadataPatch",
+    "ModifyTableRequest",
+    "ModifyTablesRequest",
+    "TableMetadataModification",
+    "OrderBy",
+    "PagedTables",
+    "PagedTableRows",
+    "DecimationMethod",
+    "DecimationOptions",
+    "QueryDecimatedDataRequest",
+    "QueryTableDataRequest",
+    "QueryTablesRequest",
+    "TableMetadata",
+    "TableRows",
+    "TableMetdataModification",
+]
 # flake8: noqa
