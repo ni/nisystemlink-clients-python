@@ -41,8 +41,8 @@ class TestModelsPackageExports(unittest.TestCase):
                                 seen.add(target.id)
                                 exported_names.append(target.id)
 
-                self.assertIsNotNone(declared_exports)
-                if declared_exports is None:
-                    self.fail(f"Missing __all__ in {module_path}")
+                self.assertIsNotNone(
+                    declared_exports, f"Missing __all__ in {module_path}"
+                )
 
                 self.assertEqual(declared_exports, exported_names)
