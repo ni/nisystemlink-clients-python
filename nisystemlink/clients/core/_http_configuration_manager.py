@@ -140,7 +140,7 @@ class HttpConfigurationManager:
             return configurations
         try:
             json_files = path.glob("*.json")
-        except PermissionError as e:
+        except PermissionError:
             # don't raise when lacking read (list) permission on the HttpConfigurations directory,
             # to allow falling back to reading envvars
             return configurations
