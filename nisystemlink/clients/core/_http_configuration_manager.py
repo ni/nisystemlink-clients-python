@@ -141,9 +141,9 @@ class HttpConfigurationManager:
         try:
             json_files = path.glob("*.json")
         except PermissionError as e:
-            raise core.ApiException(
-                "Not authorized to access HTTP configurations directory: " + str(e)
-            )
+            # don't except when lacking read (list) permission on the HttpConfigurations directory,
+            # to allow falling back to reading envvars
+            return configurations
         except OSError as e:
             raise core.ApiException(
                 "Error while accessing HTTP configurations directory: " + str(e)
