@@ -84,7 +84,8 @@ markers = [
 exclude = ".*\\.pyi"
 
 [tool.semantic_release]
-branch        = "master"
+# Allow releasing from master and branches of the form "1.x", "1.2.x", etc.
+branch        = "^(master|\\d+(?:\\.\\d+)*\\.x)$"
 version_toml  = ["pyproject.toml:tool.poetry.version"]
 build_command = "poetry build"
 
