@@ -2,9 +2,9 @@ name: Python package
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, '*.x']
   pull_request:
-    branches: [master, main]
+    branches: [master, main, '*.x']
 
 jobs:
   build-lint-unit-test:
@@ -49,7 +49,16 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs: [build-lint-unit-test, integration-test]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    if: >
+      github.event_name == 'push' &&
+      (
+        github.ref == 'refs/heads/master' ||
+        github.ref == 'refs/heads/main' ||
+        (
+          startsWith(github.ref, 'refs/heads/') &&
+          endsWith(github.ref, '.x')
+        )
+      )
     steps:
       - uses: actions/checkout@v3
         with:
@@ -64,9 +73,29 @@ jobs:
       - run: poetry install
       - name: Semantic release
         run: |
-          pip install python-semantic-release==7.34.6
+          pip install python-semantic-release==10.6.1
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
+          semantic-release version
+        env:
+          # To generate a new token use the following guide, providing access to the "repo" scope.
+          # https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+          # Once you update the secret on the repo, ensure you update the master/main protected branch policy
+          # to allow your user permission to "bypass required pull requests".
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
+      - name: Publish package distributions to PyPI using Twine
+        # Only publish if Semantic release built packages under "dist/"; hashFiles returns '' when no files match the given pattern.
+        if: hashFiles('dist/*') != ''
+        run: |
+          pip install twine==6.1.0
+          python -m twine upload dist/*
+        env:
+          TWINE_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
+          TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
+      - name: Semantic release - Publish package distributions to GitHub Releases
+        # Only publish if Semantic release built packages under "dist/"; hashFiles returns '' when no files match the given pattern.      
+        if: hashFiles('dist/*') != ''
+        run: |
           semantic-release publish
         env:
           # To generate a new token use the following guide, providing access to the "repo" scope.
@@ -74,5 +103,3 @@ jobs:
           # Once you update the secret on the repo, ensure you update the master/main protected branch policy
           # to allow your user permission to "bypass required pull requests".
           GH_TOKEN: ${{secrets.GH_TOKEN}}
-          REPOSITORY_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
-          REPOSITORY_PASSWORD: ${{secrets.PYPI_PASSWORD}}
