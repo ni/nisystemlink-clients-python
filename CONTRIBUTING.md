@@ -6,7 +6,7 @@ Contributions to *nisystemlink-clients-python* are welcome from all!
 the canonical upstream repository hosted on
 [GitHub](https://github.com/ni/nisystemlink-clients-python/).
 
-*nisystemlink-clients-python* follows a pull-request model for development.  If
+*nisystemlink-clients-python* follows ax ypull-request model for development.  If
 you wish to contribute, you will need to create a GitHub account, fork this
 project, push a branch with your changes to your project, and then submit a
 pull request.
@@ -33,6 +33,28 @@ To contribute to this project, it is recommended that you follow these steps:
 5. Run all the unit tests again (which include the tests you just added),
    and confirm that they all pass.
 6. Send a GitHub Pull Request to the main repository's master branch. GitHub
+   Pull Requests are the expected method of code collaboration on this project.
+
+## Patching older versions
+1. Contact the [repository owners](https://github.com/AlexDanDuna/nisystemlink-clients-python/blob/master/.github/CODEOWNERS) for approval and ask them to create a
+   branch based on the commit that was used to generate the release to be patched.
+   The naming for this branch should follow this guideline:
+   - "1.x", if we want to create a new minor version for version 1
+   - "1.3.x", if we want to create a new patch version for version 1.3
+
+2. Fork the repository on GitHub.
+3. Create and switch to a branch based on the commit that
+   was used to generate the release that you want to patch.
+4. Run the unit tests on your system (see Testing section). At this point,
+   if any tests fail, do not begin development. Try to investigate these
+   failures. If you're unable to do so, report an issue through our
+   [GitHub issues page](https://github.com/ni/nisystemlink-clients-python/issues).
+5. Write new tests that demonstrate your bug or feature. Ensure that these
+   new tests fail.
+6. Make your change.
+7. Run all the unit tests again (which include the tests you just added),
+   and confirm that they all pass.
+8. Send a GitHub Pull Request to the main repository branch that was created as a result of step 1. GitHub
    Pull Requests are the expected method of code collaboration on this project.
 
 ## Testing
