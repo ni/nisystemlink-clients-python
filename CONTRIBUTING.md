@@ -43,8 +43,8 @@ To contribute to this project, it is recommended that you follow these steps:
    - "1.3.x", if we want to create a new patch version for version 1.3
 
 2. Fork the repository on GitHub.
-3. Create and switch to a branch based on the commit that
-   was used to generate the release that you want to patch.
+3. Fetch and check out the maintenance branch created in step 1, then create and
+   switch to a working branch from it.
 4. Run the unit tests on your system (see Testing section). At this point,
    if any tests fail, do not begin development. Try to investigate these
    failures. If you're unable to do so, report an issue through our
