@@ -82,7 +82,7 @@ jobs:
           # https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
           # Once you update the secret on the repo, ensure you update the master/main protected branch policy
           # to allow your user permission to "bypass required pull requests".
-          GH_TOKEN: ${{secrets.GH_TOKEN}}     
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
       - name: Publish package distributions to PyPI using Twine
         # Only publish if Semantic release built packages under "dist/"; hashFiles returns '' when no files match the given pattern.
         if: hashFiles('dist/*') != ''
