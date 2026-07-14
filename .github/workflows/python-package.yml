@@ -71,10 +71,23 @@ jobs:
           cache: "poetry"
       - run: poetry install
       - name: Semantic release
+        id: release
         run: |
-          pip install python-semantic-release==7.34.6
+          pip install python-semantic-release==10.6.1
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
+          semantic-release version
+      - name: Publish package distributions to PyPI using Twine
+        if: steps.release.outputs.released == 'true'
+        run: |
+          pip install twine==6.1.0
+          python -m twine upload dist/*
+        env:
+          TWINE_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
+          TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
+      - name: Publish package distributions to GitHub Releases
+        if: steps.release.outputs.released == 'true'
+        run: |
           semantic-release publish
         env:
           # To generate a new token use the following guide, providing access to the "repo" scope.
@@ -82,5 +95,3 @@ jobs:
           # Once you update the secret on the repo, ensure you update the master/main protected branch policy
           # to allow your user permission to "bypass required pull requests".
           GH_TOKEN: ${{secrets.GH_TOKEN}}
-          REPOSITORY_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
-          REPOSITORY_PASSWORD: ${{secrets.PYPI_PASSWORD}}
