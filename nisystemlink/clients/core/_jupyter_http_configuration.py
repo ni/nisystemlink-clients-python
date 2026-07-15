@@ -30,7 +30,7 @@ class JupyterHttpConfiguration(core.HttpConfiguration):
         # `HttpConfigurations` are no longer readable, creating client objects from this library, from SLS notebooks,
         # will default to using this `JupyterHttpConfiguration`. However, this does not set a `cert_path`, so HTTPS
         # requests will fail.
-        # When running SystemLink Server notebooks (Windows), we will therefore pass the Web Server CA certificate's path as the 
+        # When running SystemLink Server notebooks (Windows), we will therefore pass the Web Server CA certificate's path as the
         # `cert_path`, if the file exists. This will allow clients created with the default configuration to use this CA certificate.
         # If the file does not exist (when the Web Server is configured in HTTP mode), do not pass it; an invalid `cert_path`
         # will lead to errors.
