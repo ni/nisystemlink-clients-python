@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry
-        run: pipx install poetry
+        run: pipx install poetry==1.8.5
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -47,7 +47,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
       - name: Install poetry
-        run: pipx install poetry
+        run: pipx install poetry==1.8.5
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8
