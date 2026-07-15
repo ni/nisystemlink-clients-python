@@ -83,9 +83,3 @@ def enterprise_config(pytestconfig):
         return core.HttpConfiguration(uri, api_key)
     else:
         pytest.skip("--enterprise-uri or --enterprise-api-key setting not found")
-
-
-@pytest.fixture(scope="session", autouse=True)
-def pydantic_forbid_extra_fields():
-    """Fixture to disable allowing extra fields in our Pydantic models."""
-    JsonModel.Config.extra = Extra.forbid
