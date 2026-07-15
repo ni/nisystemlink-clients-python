@@ -6,6 +6,7 @@ import os
 import sys
 
 from nisystemlink.clients import core
+from nisystemlink.clients.core._internal._path_constants import PathConstants
 
 
 class JupyterHttpConfiguration(core.HttpConfiguration):
@@ -14,8 +15,10 @@ class JupyterHttpConfiguration(core.HttpConfiguration):
     _HTTP_URI_ENV_VAR = "SYSTEMLINK_HTTP_URI"
     _HTTP_API_KEY_ENV_VAR = "SYSTEMLINK_API_KEY"
     _SYSTEMLINK_SERVER_CERT_PATH = (
-        r"C:\ProgramData\National Instruments\Skyline"
-        r"\Certificates\http-server\http-server.cer"
+        PathConstants.application_data_directory
+        / "Certificates"
+        / "http-server"
+        / "http-server.cer"
     )
 
     def __init__(self) -> None:
@@ -29,7 +32,7 @@ class JupyterHttpConfiguration(core.HttpConfiguration):
         api_key = os.environ[self._HTTP_API_KEY_ENV_VAR]
 
         # SystemLink Server 26Q3 restricts notebook executions (by default). Access to the `HttpConfigurations` folder
-        # is no longer granted for notebooks running under the JupyterHub/NotebookExecution services. Since config
+        #  is no longer granted for notebooks running under the JupyterHub/NotebookExecution services. Since config
         # files under `HttpConfigurations` are no longer readable, creating client objects from this library, from SLS
         # notebooks, will default to using this `JupyterHttpConfiguration`. However, this does not set a `cert_path`,
         # so HTTPS requests will fail.
@@ -41,12 +44,8 @@ class JupyterHttpConfiguration(core.HttpConfiguration):
         if sys.platform.startswith("win") and os.path.exists(
             self._SYSTEMLINK_SERVER_CERT_PATH
         ):
-            import pathlib
-
             super().__init__(
-                http_uri,
-                api_key,
-                cert_path=pathlib.Path(self._SYSTEMLINK_SERVER_CERT_PATH),
+                http_uri, api_key, cert_path=self._SYSTEMLINK_SERVER_CERT_PATH
             )
         else:
             super().__init__(http_uri, api_key)
