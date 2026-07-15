@@ -17,6 +17,12 @@ _SYSTEMLINK_API_KEY_HEADER = "x-ni-api-key"
 
 
 class TestJupyterHttpConfiguration:
+    # Patch PathConstants._application_data_directory so that we have the proper Windows path
+    # when running the tests on Linux.
+    @patch(
+        "nisystemlink.clients.core._internal._path_constants.PathConstants._application_data_directory",
+        pathlib.Path(r"C:\ProgramData\National Instruments\Skyline"),
+    )
     def test__cert_file_exists_on_windows__cert_path_is_passed(self):
         def mock_exists(path):
             if path == _SYSTEMLINK_SERVER_CERT_PATH:
