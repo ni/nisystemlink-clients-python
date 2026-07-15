@@ -26,7 +26,9 @@ class JupyterHttpConfiguration(core.HttpConfiguration):
         api_key = os.environ[self._HTTP_API_KEY_ENV_VAR]
         systemlink_server_cert_path = (
             PathConstants.application_data_directory
-            / "Certificates" / "http-server" / "http-server.cer"
+            / "Certificates"
+            / "http-server"
+            / "http-server.cer"
         )
 
         # SystemLink Server 26Q3 restricts notebook executions (by default). Access to the `HttpConfigurations` folder
@@ -39,9 +41,9 @@ class JupyterHttpConfiguration(core.HttpConfiguration):
         # to use this CA certificate.
         # If the file does not exist (when the Web Server is configured in HTTP mode), do not pass it; an invalid
         # `cert_path` will lead to errors.
-        if sys.platform.startswith("win") and os.path.exists(systemlink_server_cert_path):
-            super().__init__(
-                http_uri, api_key, cert_path=systemlink_server_cert_path
-            )
+        if sys.platform.startswith("win") and os.path.exists(
+            systemlink_server_cert_path
+        ):
+            super().__init__(http_uri, api_key, cert_path=systemlink_server_cert_path)
         else:
             super().__init__(http_uri, api_key)
