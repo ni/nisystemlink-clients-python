@@ -25,7 +25,13 @@ class JupyterHttpConfiguration(core.HttpConfiguration):
         http_uri = os.environ[self._HTTP_URI_ENV_VAR]
         api_key = os.environ[self._HTTP_API_KEY_ENV_VAR]
 
-        if sys.platform.startswith("win"):
+        # When running SystemLink Server notebooks (Windows), pass Web Server CA certificate's path as the `cert_path`,
+        # if the file exists. This will allow clients created with the default configuration to use this CA certificate.
+        # If the file does not exist (when the Web Server is configured in HTTP mode), do not pass it; an invalid `cert_path`
+        # will lead to errors.
+        if sys.platform.startswith("win") and os.path.exists(
+            self._SYSTEMLINK_SERVER_CERT_PATH
+        ):
             super().__init__(
                 http_uri, api_key, cert_path=self._SYSTEMLINK_SERVER_CERT_PATH
             )
