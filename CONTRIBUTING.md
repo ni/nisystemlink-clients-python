@@ -36,7 +36,7 @@ To contribute to this project, it is recommended that you follow these steps:
    Pull Requests are the expected method of code collaboration on this project.
 
 ## Patching older versions
-1. Contact the [repository owners](https://github.com/ni/nisystemlink-clients-python/blob/master/.github/CODEOWNERS) for approval and ask them to create a
+1. Contact the [repository owners](/.github/CODEOWNERS) for approval and ask them to create a
    branch based on the commit that was used to generate the release to be patched.
    The naming for this branch should follow this guideline:
    - "1.x", if we want to create a new minor version for version 1
