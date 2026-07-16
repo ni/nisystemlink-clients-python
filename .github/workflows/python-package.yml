@@ -93,10 +93,15 @@ jobs:
           TWINE_USERNAME: ${{secrets.REPOSITORY_USERNAME}}
           TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
       - name: Semantic release - Publish package distributions to GitHub Releases
-        # Only publish if Semantic release built packages under "dist/"; hashFiles returns '' when no files match the given pattern.      
+        # Only publish if Semantic release built packages under "dist/"; hashFiles returns '' when no files match the given pattern.
         if: hashFiles('dist/*') != ''
         run: |
-          semantic-release publish
+          # Publish packages to the latest GitHub release reachable from the current branch.
+          # This is so that releases from maintenance branches (e.g. "1.6.x") don't upload
+          # packages to the latest release on the repo (default behavior of 'publish' when
+          # no tag is passed), which would likely be one that was published from master.
+          RELEASE_TAG="$(git describe --tags --abbrev=0)"
+          semantic-release publish --tag "$RELEASE_TAG"
         env:
           # To generate a new token use the following guide, providing access to the "repo" scope.
           # https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
