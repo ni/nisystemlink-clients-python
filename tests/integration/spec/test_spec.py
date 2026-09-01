@@ -412,8 +412,21 @@ class TestSpec:
         assert "condition_unit" in spec_columns
         assert "condition_type" not in spec_columns
 
-    def test__query_specs_order_by_updated_at__returns_in_ascending_order(
-        self, client: SpecClient, create_specs, product
+    @pytest.mark.parametrize(
+        "order_by_descending, expected_first, expected_second",
+        [
+            (False, "spec_2_id", "spec_1_id"),
+            (True, "spec_1_id", "spec_2_id"),
+        ],
+    )
+    def test__query_specs_order_by_updated_at__returns_in_expected_order(
+        self,
+        client: SpecClient,
+        create_specs,
+        product,
+        order_by_descending: bool,
+        expected_first: str,
+        expected_second: str,
     ):
         # Create two specs, then update the first so it has a later updated_at than the second.
         spec_1_id = uuid.uuid1().hex
@@ -458,65 +471,11 @@ class TestSpec:
         request = QuerySpecificationsRequest(
             product_ids=[product],
             order_by=SpecificationOrderBy.UPDATED_AT,
-            order_by_descending=False,
+            order_by_descending=order_by_descending,
         )
         response = client.query_specs(request)
 
+        ids = {"spec_1_id": spec_1_id, "spec_2_id": spec_2_id}
         assert response.specs
-        # spec_2 was not updated, so it has an earlier updated_at — must come first
-        assert response.specs[0].spec_id == spec_2_id
-        assert response.specs[1].spec_id == spec_1_id
-
-    def test__query_specs_order_by_updated_at_descending__returns_in_descending_order(
-        self, client: SpecClient, create_specs, product
-    ):
-        spec_1_id = uuid.uuid1().hex
-        spec_2_id = uuid.uuid1().hex
-        response = create_specs(
-            CreateSpecificationsRequest(
-                specs=[
-                    CreateSpecificationsRequestObject(
-                        product_id=product,
-                        spec_id=spec_1_id,
-                        type=SpecificationType.FUNCTIONAL,
-                    ),
-                    CreateSpecificationsRequestObject(
-                        product_id=product,
-                        spec_id=spec_2_id,
-                        type=SpecificationType.FUNCTIONAL,
-                    ),
-                ]
-            )
-        )
-        spec_1 = next(
-            spec for spec in response.created_specs if spec.spec_id == spec_1_id
-        )
-        update_response = client.update_specs(
-            UpdateSpecificationsRequest(
-                specs=[
-                    UpdateSpecificationsRequestObject(
-                        id=spec_1.id,
-                        product_id=spec_1.product_id,
-                        spec_id=spec_1.spec_id,
-                        type=SpecificationType.PARAMETRIC,
-                        version=spec_1.version,
-                        workspace=spec_1.workspace,
-                    )
-                ]
-            )
-        )
-        assert update_response
-        assert update_response.updated_specs
-        assert len(update_response.updated_specs) == 1
-
-        request = QuerySpecificationsRequest(
-            product_ids=[product],
-            order_by=SpecificationOrderBy.UPDATED_AT,
-            order_by_descending=True,
-        )
-        response = client.query_specs(request)
-
-        assert response.specs
-        # spec_1 was updated last, so it has a later updated_at — must come first
-        assert response.specs[0].spec_id == spec_1_id
-        assert response.specs[1].spec_id == spec_2_id
+        assert response.specs[0].spec_id == ids[expected_first]
+        assert response.specs[1].spec_id == ids[expected_second]
