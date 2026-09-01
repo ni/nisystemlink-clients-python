@@ -437,7 +437,7 @@ class TestSpec:
         spec_1 = next(
             spec for spec in response.created_specs if spec.spec_id == spec_1_id
         )
-        client.update_specs(
+        update_response = client.update_specs(
             UpdateSpecificationsRequest(
                 specs=[
                     UpdateSpecificationsRequestObject(
@@ -451,6 +451,9 @@ class TestSpec:
                 ]
             )
         )
+        assert update_response
+        assert update_response.updated_specs
+        assert len(update_response.updated_specs) == 1
 
         request = QuerySpecificationsRequest(
             product_ids=[product],
@@ -488,7 +491,7 @@ class TestSpec:
         spec_1 = next(
             spec for spec in response.created_specs if spec.spec_id == spec_1_id
         )
-        client.update_specs(
+        update_response = client.update_specs(
             UpdateSpecificationsRequest(
                 specs=[
                     UpdateSpecificationsRequestObject(
@@ -502,6 +505,9 @@ class TestSpec:
                 ]
             )
         )
+        assert update_response
+        assert update_response.updated_specs
+        assert len(update_response.updated_specs) == 1
 
         request = QuerySpecificationsRequest(
             product_ids=[product],
