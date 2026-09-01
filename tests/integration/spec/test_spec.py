@@ -319,7 +319,11 @@ class TestSpec:
     ):
         request = QuerySpecificationsRequest(
             product_ids=[product],
-            projection=[SpecificationProjection.SPEC_ID, SpecificationProjection.NAME],
+            projection=[
+                SpecificationProjection.SPEC_ID,
+                SpecificationProjection.NAME,
+                SpecificationProjection.UPDATED_AT,
+            ],
         )
 
         response = client.query_specs(request)
@@ -330,9 +334,10 @@ class TestSpec:
 
         assert response.specs
         assert len(response.specs) == 3
-        assert len(spec_columns) == 2
+        assert len(spec_columns) == 3
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
+        assert "updated_at" in spec_columns
 
     def test__query_specs__returns_condition_value_type_correctly(
         self, client: SpecClient, create_specs, create_specs_for_query, product
@@ -506,21 +511,4 @@ class TestSpec:
         assert response.specs[0].spec_id == spec_1_id
         assert response.specs[1].spec_id == spec_2_id
 
-    def test__query_specs_with_updated_at_projection__returns_updated_at_field(
-        self, client: SpecClient, create_specs, create_specs_for_query, product
-    ):
-        request = QuerySpecificationsRequest(
-            product_ids=[product],
-            projection=[SpecificationProjection.UPDATED_AT],
-        )
 
-        response = client.query_specs(request)
-        specs = [vars(spec) for spec in response.specs or []]
-        non_none_fields = {
-            key for spec in specs for key, val in spec.items() if val is not None
-        }
-
-        assert response.specs
-        assert len(response.specs) == 3
-        assert "updated_at" in non_none_fields
-        assert len(non_none_fields) == 1
