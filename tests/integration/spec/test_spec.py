@@ -408,36 +408,103 @@ class TestSpec:
         assert "condition_type" not in spec_columns
 
     def test__query_specs_order_by_updated_at__returns_in_ascending_order(
-        self, client: SpecClient, create_specs, create_specs_for_query, product
+        self, client: SpecClient, create_specs, product
     ):
+        # Create two specs, then update the first so it has a later updated_at than the second.
+        spec_1_id = uuid.uuid1().hex
+        spec_2_id = uuid.uuid1().hex
+        response = create_specs(
+            CreateSpecificationsRequest(
+                specs=[
+                    CreateSpecificationsRequestObject(
+                        product_id=product,
+                        spec_id=spec_1_id,
+                        type=SpecificationType.FUNCTIONAL,
+                    ),
+                    CreateSpecificationsRequestObject(
+                        product_id=product,
+                        spec_id=spec_2_id,
+                        type=SpecificationType.FUNCTIONAL,
+                    ),
+                ]
+            )
+        )
+        spec_1 = next(s for s in response.created_specs if s.spec_id == spec_1_id)
+        client.update_specs(
+            UpdateSpecificationsRequest(
+                specs=[
+                    UpdateSpecificationsRequestObject(
+                        id=spec_1.id,
+                        product_id=spec_1.product_id,
+                        spec_id=spec_1.spec_id,
+                        type=SpecificationType.PARAMETRIC,
+                        version=spec_1.version,
+                        workspace=spec_1.workspace,
+                    )
+                ]
+            )
+        )
+
         request = QuerySpecificationsRequest(
             product_ids=[product],
             order_by=SpecificationOrderBy.UPDATED_AT,
             order_by_descending=False,
         )
-
         response = client.query_specs(request)
 
         assert response.specs
-        assert len(response.specs) == 3
-        updated_ats = [spec.updated_at for spec in response.specs if spec.updated_at]
-        assert updated_ats == sorted(updated_ats)
+        # spec_2 was not updated, so it has an earlier updated_at — must come first
+        assert response.specs[0].spec_id == spec_2_id
+        assert response.specs[1].spec_id == spec_1_id
 
     def test__query_specs_order_by_updated_at_descending__returns_in_descending_order(
-        self, client: SpecClient, create_specs, create_specs_for_query, product
+        self, client: SpecClient, create_specs, product
     ):
+        spec_1_id = uuid.uuid1().hex
+        spec_2_id = uuid.uuid1().hex
+        response = create_specs(
+            CreateSpecificationsRequest(
+                specs=[
+                    CreateSpecificationsRequestObject(
+                        product_id=product,
+                        spec_id=spec_1_id,
+                        type=SpecificationType.FUNCTIONAL,
+                    ),
+                    CreateSpecificationsRequestObject(
+                        product_id=product,
+                        spec_id=spec_2_id,
+                        type=SpecificationType.FUNCTIONAL,
+                    ),
+                ]
+            )
+        )
+        spec_1 = next(s for s in response.created_specs if s.spec_id == spec_1_id)
+        client.update_specs(
+            UpdateSpecificationsRequest(
+                specs=[
+                    UpdateSpecificationsRequestObject(
+                        id=spec_1.id,
+                        product_id=spec_1.product_id,
+                        spec_id=spec_1.spec_id,
+                        type=SpecificationType.PARAMETRIC,
+                        version=spec_1.version,
+                        workspace=spec_1.workspace,
+                    )
+                ]
+            )
+        )
+
         request = QuerySpecificationsRequest(
             product_ids=[product],
             order_by=SpecificationOrderBy.UPDATED_AT,
             order_by_descending=True,
         )
-
         response = client.query_specs(request)
 
         assert response.specs
-        assert len(response.specs) == 3
-        updated_ats = [spec.updated_at for spec in response.specs if spec.updated_at]
-        assert updated_ats == sorted(updated_ats, reverse=True)
+        # spec_1 was updated last, so it has a later updated_at — must come first
+        assert response.specs[0].spec_id == spec_1_id
+        assert response.specs[1].spec_id == spec_2_id
 
     def test__query_specs_with_updated_at_projection__returns_updated_at_field(
         self, client: SpecClient, create_specs, create_specs_for_query, product
