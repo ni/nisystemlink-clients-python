@@ -434,7 +434,9 @@ class TestSpec:
                 ]
             )
         )
-        spec_1 = next(spec for spec in response.created_specs if spec.spec_id == spec_1_id)
+        spec_1 = next(
+            spec for spec in response.created_specs if spec.spec_id == spec_1_id
+        )
         client.update_specs(
             UpdateSpecificationsRequest(
                 specs=[
@@ -483,7 +485,9 @@ class TestSpec:
                 ]
             )
         )
-        spec_1 = next(spec for spec in response.created_specs if spec.spec_id == spec_1_id)
+        spec_1 = next(
+            spec for spec in response.created_specs if spec.spec_id == spec_1_id
+        )
         client.update_specs(
             UpdateSpecificationsRequest(
                 specs=[
@@ -510,5 +514,3 @@ class TestSpec:
         # spec_1 was updated last, so it has a later updated_at — must come first
         assert response.specs[0].spec_id == spec_1_id
         assert response.specs[1].spec_id == spec_2_id
-
-
