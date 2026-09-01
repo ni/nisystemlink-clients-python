@@ -16,6 +16,7 @@ from nisystemlink.clients.spec.models import (
     NumericConditionValue,
     QuerySpecificationsRequest,
     SpecificationLimit,
+    SpecificationOrderBy,
     SpecificationProjection,
     SpecificationType,
     StringConditionValue,
@@ -405,3 +406,54 @@ class TestSpec:
         assert "condition_name" in spec_columns
         assert "condition_unit" in spec_columns
         assert "condition_type" not in spec_columns
+
+    def test__query_specs_order_by_updated_at__returns_in_ascending_order(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            order_by=SpecificationOrderBy.UPDATED_AT,
+            order_by_descending=False,
+        )
+
+        response = client.query_specs(request)
+
+        assert response.specs
+        assert len(response.specs) == 3
+        updated_ats = [spec.updated_at for spec in response.specs if spec.updated_at]
+        assert updated_ats == sorted(updated_ats)
+
+    def test__query_specs_order_by_updated_at_descending__returns_in_descending_order(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            order_by=SpecificationOrderBy.UPDATED_AT,
+            order_by_descending=True,
+        )
+
+        response = client.query_specs(request)
+
+        assert response.specs
+        assert len(response.specs) == 3
+        updated_ats = [spec.updated_at for spec in response.specs if spec.updated_at]
+        assert updated_ats == sorted(updated_ats, reverse=True)
+
+    def test__query_specs_with_updated_at_projection__returns_updated_at_field(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            projection=[SpecificationProjection.UPDATED_AT],
+        )
+
+        response = client.query_specs(request)
+        specs = [vars(spec) for spec in response.specs or []]
+        non_none_fields = {
+            key for spec in specs for key, val in spec.items() if val is not None
+        }
+
+        assert response.specs
+        assert len(response.specs) == 3
+        assert "updated_at" in non_none_fields
+        assert len(non_none_fields) == 1
