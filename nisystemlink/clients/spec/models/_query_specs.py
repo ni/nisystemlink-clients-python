@@ -32,6 +32,7 @@ class SpecificationProjection(str, Enum):
     WORKSPACE = "WORKSPACE"
     CREATED_AT = "CREATED_AT"
     CREATED_BY = "CREATED_BY"
+    UPDATED_AT = "UPDATED_AT"
 
 
 class SpecificationOrderBy(Enum):
@@ -39,6 +40,7 @@ class SpecificationOrderBy(Enum):
 
     ID = "ID"
     SPEC_ID = "SPEC_ID"
+    UPDATED_AT = "UPDATED_AT"
 
 
 class QuerySpecificationsRequest(JsonModel):

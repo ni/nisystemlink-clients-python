@@ -16,6 +16,7 @@ from ._delete_specs_request import DeleteSpecificationsPartialSuccess
 from ._query_specs import (
     QuerySpecificationsRequest,
     PagedSpecifications,
+    SpecificationOrderBy,
     SpecificationProjection,
 )
 from ._specification import (
