@@ -4,4 +4,11 @@ from ._package import Package
 from ._platform import Platform
 from ._query_feeds import QueryFeedsResponse
 
+__all__ = [
+    "CreateFeedRequest",
+    "Feed",
+    "Package",
+    "Platform",
+    "QueryFeedsResponse",
+]
 # flake8: noqa
