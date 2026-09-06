@@ -11,7 +11,11 @@ from nisystemlink.clients.spec.models._specification import (
     SpecificationLimit,
     SpecificationType,
 )
-from nisystemlink.clients.spec.utilities._constants import DataFrameHeaders
+from nisystemlink.clients.spec.utilities._constants import (
+    DataFrameHeaders,
+    TempNumericCondition,
+    TempStringCondition,
+)
 
 
 def summarize_conditions_as_a_string(
@@ -44,6 +48,27 @@ def summarize_conditions_as_a_string(
     ]
 
 
+def convert_condition(
+    condition_value: NumericConditionValue | StringConditionValue,
+) -> TempNumericCondition | TempStringCondition:
+    """Creates a TempCondition object and removes None values."""
+    if isinstance(condition_value, NumericConditionValue):
+        return TempNumericCondition(
+            condition_type=condition_value.condition_type.value,
+            range=condition_value.range,
+            discrete=condition_value.discrete,
+            unit=condition_value.unit,
+        )
+
+    elif isinstance(condition_value, StringConditionValue):
+        return TempStringCondition(
+            condition_type=condition_value.condition_type.value,
+            discrete=condition_value.discrete,
+        )
+
+    return None
+
+
 def normalize_conditions_per_column(
     conditions: List[Condition],
 ) -> List[Dict[str, Any]]:
@@ -61,7 +86,9 @@ def normalize_conditions_per_column(
     """
     return [
         {
-            f"{DataFrameHeaders.CONDITION_COLUMN_HEADER_PREFIX}{condition.name}": condition.value
+            f"{DataFrameHeaders.CONDITION_COLUMN_HEADER_PREFIX}{condition.name}": convert_condition(
+                condition.value
+            )
             for condition in conditions
             if condition.name and condition.value
         }
@@ -86,7 +113,10 @@ def normalize_conditions_per_row(
         separate row in the dataframe.
     """
     return [
-        {"condition.name": condition.name, "condition.value": condition.value}
+        {
+            "condition.name": condition.name,
+            "condition.value": convert_condition(condition.value),
+        }
         for condition in conditions
         if condition.name and condition.value
     ]
