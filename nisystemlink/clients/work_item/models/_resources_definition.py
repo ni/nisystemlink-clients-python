@@ -1,6 +1,14 @@
+from enum import Enum
 from typing import List
 
 from nisystemlink.clients.core._uplink._json_model import JsonModel
+
+
+class FilterType(str, Enum):
+    """The type of filter used to select the resources for the work item."""
+
+    LINQ = "LINQ"
+    LUCENE = "LUCENE"
 
 
 class ResourceSelectionDefinition(JsonModel):
@@ -64,6 +72,9 @@ class ResourcesDefinition(JsonModel):
     systems: SystemResourceDefinition | None = None
     """System reservations for the work item."""
 
+    filter_type: FilterType | None = None
+    """The type of filter used to select the resources for the work item."""
+
 
 class TemplateResourceDefinition(JsonModel):
     """Resource reserved for the work item created from a template."""
@@ -86,6 +97,9 @@ class TemplateResourcesDefinition(JsonModel):
 
     systems: TemplateResourceDefinition | None = None
     """System reservations for the work item."""
+
+    filter_type: FilterType | None = None
+    """The type of filter used to select the resources for the work item."""
 
 
 class ScheduleResourceDefinition(JsonModel):

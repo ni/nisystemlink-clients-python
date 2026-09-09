@@ -3,6 +3,7 @@ from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplateRequest,
     Dashboard,
+    FilterType,
     Job,
     JobExecution,
     ManualExecution,
@@ -50,6 +51,7 @@ create_work_item_template_request = [
             fixtures=TemplateResourceDefinition(
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
             ),
+            filter_type=FilterType.LINQ,
         ),
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
@@ -103,7 +105,14 @@ if create_work_item_template_id is not None:
     update_work_item_template_request = UpdateWorkItemTemplatesRequest(
         work_item_templates=[
             UpdateWorkItemTemplateRequest(
-                id=create_work_item_template_id, name="Updated work item template"
+                id=create_work_item_template_id,
+                name="Updated work item template",
+                resources=TemplateResourcesDefinition(
+                    systems=TemplateResourceDefinition(
+                        filter='properties.data["Lab"] = "Battery Pack Lab"',
+                    ),
+                    filter_type=FilterType.LINQ,
+                ),
             )
         ]
     )

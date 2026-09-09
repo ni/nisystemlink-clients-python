@@ -5,6 +5,7 @@ from nisystemlink.clients.work_item import WorkItemClient, WorkItemExecuteApiExc
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
     Dashboard,
+    FilterType,
     Job,
     JobExecution,
     ManualExecution,
@@ -100,6 +101,7 @@ create_work_items_request = [
                 ],
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
             ),
+            filter_type=FilterType.LINQ,
         ),
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(
@@ -155,7 +157,16 @@ if created_work_item_id is not None:
 if created_work_item_id is not None:
     update_work_items_request = UpdateWorkItemsRequest(
         work_items=[
-            UpdateWorkItemRequest(id=created_work_item_id, name="Updated work item")
+            UpdateWorkItemRequest(
+                id=created_work_item_id,
+                name="Updated work item",
+                resources=ResourcesDefinition(
+                    systems=SystemResourceDefinition(
+                        filter='properties.data["Lab"] = "Battery Pack Lab"',
+                    ),
+                    filter_type=FilterType.LINQ,
+                ),
+            )
         ]
     )
     update_work_items_response = client.update_work_items(
