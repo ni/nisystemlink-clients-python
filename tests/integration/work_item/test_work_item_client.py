@@ -14,6 +14,7 @@ from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplatesPartialSuccessResponse,
     Dashboard,
     ExecutionDefinition,
+    FilterType,
     Job,
     JobExecution,
     ManualExecution,
@@ -195,7 +196,7 @@ class TestWorkItemClient:
                     ],
                     filter='os = "linux" && arch = "x64"',
                 ),
-                filter_type="LINQ",
+                filter_type=FilterType.LINQ,
             ),
             file_ids_from_template=["file1", "file2"],
             properties={"env": "staging", "priority": "high"},
@@ -231,7 +232,7 @@ class TestWorkItemClient:
                 systems=TemplateResourceDefinition(
                     filter='os = "linux" && arch = "x64"'
                 ),
-                filter_type="LINQ",
+                filter_type=FilterType.LINQ,
             ),
             execution_actions=_execution_actions,
             file_ids=["file1", "file2"],
@@ -331,7 +332,7 @@ class TestWorkItemClient:
                         systems=SystemResourceDefinition(
                             filter="os:linux AND arch:x64",
                         ),
-                        filter_type="LUCENE",
+                        filter_type=FilterType.LUCENE,
                     ),
                 )
             ]
@@ -749,7 +750,7 @@ class TestWorkItemClient:
                         systems=TemplateResourceDefinition(
                             filter="os:linux AND arch:x64",
                         ),
-                        filter_type="LUCENE",
+                        filter_type=FilterType.LUCENE,
                     ),
                 )
             ]

@@ -5,6 +5,7 @@ from nisystemlink.clients.work_item import WorkItemClient, WorkItemExecuteApiExc
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
     Dashboard,
+    FilterType,
     Job,
     JobExecution,
     ManualExecution,
@@ -100,7 +101,7 @@ create_work_items_request = [
                 ],
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
             ),
-            filter_type="LINQ",
+            filter_type=FilterType.LINQ,
         ),
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(
@@ -163,7 +164,7 @@ if created_work_item_id is not None:
                     systems=SystemResourceDefinition(
                         filter='properties.data["location"] = "Lab 1"',
                     ),
-                    filter_type="LINQ",
+                    filter_type=FilterType.LINQ,
                 ),
             )
         ]
