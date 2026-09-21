@@ -5,7 +5,6 @@ from nisystemlink.clients.work_item import WorkItemClient, WorkItemExecuteApiExc
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemRequest,
     Dashboard,
-    FilterType,
     Job,
     JobExecution,
     ManualExecution,

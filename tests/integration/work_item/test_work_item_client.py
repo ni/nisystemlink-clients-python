@@ -14,7 +14,6 @@ from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplatesPartialSuccessResponse,
     Dashboard,
     ExecutionDefinition,
-    FilterType,
     Job,
     JobExecution,
     ManualExecution,

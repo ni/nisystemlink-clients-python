@@ -3,7 +3,6 @@ from nisystemlink.clients.work_item import WorkItemClient
 from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplateRequest,
     Dashboard,
-    FilterType,
     Job,
     JobExecution,
     ManualExecution,
