@@ -109,7 +109,7 @@ if create_work_item_template_id is not None:
                 name="Updated work item template",
                 resources=TemplateResourcesDefinition(
                     systems=TemplateResourceDefinition(
-                        filter='properties.data["Lab"] = "Battery Pack Lab"',
+                        filter='properties.data["Location"] = "Lab 1"',
                     ),
                     filter_type=FilterType.LINQ,
                 ),
