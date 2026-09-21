@@ -229,7 +229,9 @@ class TestWorkItemClient:
                 fixtures=TemplateResourceDefinition(
                     filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'"
                 ),
-                systems=TemplateResourceDefinition(filter='os = "linux" && arch = "x64"'),
+                systems=TemplateResourceDefinition(
+                    filter='os = "linux" && arch = "x64"'
+                ),
                 filter_type="LINQ",
             ),
             execution_actions=_execution_actions,
@@ -269,7 +271,6 @@ class TestWorkItemClient:
             ids=[template_id]
         )
         assert delete_work_item_template_response is None
-
 
     def test__get_work_item__returns_work_item(
         self, client: WorkItemClient, create_work_items
@@ -684,7 +685,6 @@ class TestWorkItemClient:
             created_work_item_template.name == "Python integration work item template"
         )
         assert created_work_item_template.type == "testplan"
-
 
     def test__update_work_item_template__returns_updated_work_item_template(
         self, client: WorkItemClient, create_work_item_templates
