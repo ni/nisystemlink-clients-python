@@ -5,10 +5,10 @@ from nisystemlink.clients.core._uplink._json_model import JsonModel
 
 
 class FilterType(str, Enum):
-    """The type of filter used to select the resources for the work item."""
+    """The query language used to interpret resource filters in the reservation."""
 
-    LINQ = "LINQ"
     LUCENE = "LUCENE"
+    LINQ = "LINQ"
 
 
 class ResourceSelectionDefinition(JsonModel):
@@ -73,7 +73,7 @@ class ResourcesDefinition(JsonModel):
     """System reservations for the work item."""
 
     filter_type: FilterType | None = None
-    """The type of filter used to select the resources for the work item."""
+    """The query language used to interpret resource filters for the work item."""
 
 
 class TemplateResourceDefinition(JsonModel):
@@ -99,7 +99,7 @@ class TemplateResourcesDefinition(JsonModel):
     """System reservations for the work item."""
 
     filter_type: FilterType | None = None
-    """The type of filter used to select the resources for the work item."""
+    """The query language used to interpret resource filters for the work item template."""
 
 
 class ScheduleResourceDefinition(JsonModel):

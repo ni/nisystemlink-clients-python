@@ -51,7 +51,7 @@ create_work_item_template_request = [
             fixtures=TemplateResourceDefinition(
                 filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
             ),
-            filter_type=FilterType.LINQ,
+            filter_type="LINQ",
         ),
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
@@ -111,7 +111,7 @@ if create_work_item_template_id is not None:
                     systems=TemplateResourceDefinition(
                         filter='properties.data["Lab"] = "Battery Pack Lab"',
                     ),
-                    filter_type=FilterType.LINQ,
+                    filter_type="LINQ",
                 ),
             )
         ]

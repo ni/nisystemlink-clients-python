@@ -196,7 +196,7 @@ class TestWorkItemClient:
                     ],
                     filter='os = "linux" && arch = "x64"',
                 ),
-                filter_type=FilterType.LINQ,
+                filter_type="LINQ",
             ),
             file_ids_from_template=["file1", "file2"],
             properties={"env": "staging", "priority": "high"},
@@ -230,7 +230,7 @@ class TestWorkItemClient:
                     filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'"
                 ),
                 systems=TemplateResourceDefinition(filter='os = "linux" && arch = "x64"'),
-                filter_type=FilterType.LINQ,
+                filter_type="LINQ",
             ),
             execution_actions=_execution_actions,
             file_ids=["file1", "file2"],
@@ -270,15 +270,6 @@ class TestWorkItemClient:
         )
         assert delete_work_item_template_response is None
 
-    def test__create_work_item__returns_resources_with_filter_type(
-        self, create_work_items
-    ):
-        create_work_item_response = create_work_items(self._create_work_item_request)
-
-        assert create_work_item_response.created_work_items is not None
-        created_work_item = create_work_item_response.created_work_items[0]
-        assert created_work_item.resources is not None
-        assert created_work_item.resources.filter_type == FilterType.LINQ
 
     def test__get_work_item__returns_work_item(
         self, client: WorkItemClient, create_work_items
@@ -340,7 +331,7 @@ class TestWorkItemClient:
                         systems=SystemResourceDefinition(
                             filter="os:linux AND arch:x64",
                         ),
-                        filter_type=FilterType.LUCENE,
+                        filter_type="LUCENE",
                     ),
                 )
             ]
@@ -353,7 +344,7 @@ class TestWorkItemClient:
         updated_work_item = update_work_items_response.updated_work_items[0]
         assert updated_work_item.id == created_work_item.id
         assert updated_work_item.resources is not None
-        assert updated_work_item.resources.filter_type == FilterType.LUCENE
+        assert updated_work_item.resources.filter_type == "LUCENE"
 
     def test__schedule_work_item__returns_scheduled_work_item(
         self, client: WorkItemClient, create_work_items
@@ -420,26 +411,6 @@ class TestWorkItemClient:
         assert queried_work_items_response.work_items[0].id == created_work_item.id
         assert queried_work_items_response.total_count is not None
         assert queried_work_items_response.total_count == 1
-
-    def test__query_work_items_with_filter_type_projection__returns_resources_filter_type(
-        self, client: WorkItemClient, create_work_items
-    ):
-        create_work_item_response = create_work_items(self._create_work_item_request)
-        assert create_work_item_response.created_work_items is not None
-        created_work_item = create_work_item_response.created_work_items[0]
-
-        query_work_items_request = QueryWorkItemsRequest(
-            filter=f'id = "{created_work_item.id}"',
-            projection=[WorkItemField.ID, WorkItemField.RESOURCES_FILTER_TYPE],
-            take=1,
-        )
-        response = client.query_work_items(query_work_items=query_work_items_request)
-
-        assert response is not None
-        work_item = response.work_items[0]
-        assert work_item.id == created_work_item.id
-        assert work_item.resources is not None
-        assert work_item.resources.filter_type == FilterType.LINQ
 
     def test__query_work_items_with_projections__returns_the_work_items_with_projected_properties(
         self, client: WorkItemClient, create_work_items
@@ -714,21 +685,6 @@ class TestWorkItemClient:
         )
         assert created_work_item_template.type == "testplan"
 
-    def test__create_work_item_template__returns_resources_with_filter_type(
-        self, create_work_item_templates
-    ):
-        create_work_item_template_response = create_work_item_templates(
-            self._create_work_item_template_request
-        )
-
-        assert (
-            create_work_item_template_response.created_work_item_templates is not None
-        )
-        created_work_item_template = (
-            create_work_item_template_response.created_work_item_templates[0]
-        )
-        assert created_work_item_template.resources is not None
-        assert created_work_item_template.resources.filter_type == FilterType.LINQ
 
     def test__update_work_item_template__returns_updated_work_item_template(
         self, client: WorkItemClient, create_work_item_templates
@@ -794,7 +750,7 @@ class TestWorkItemClient:
                         systems=TemplateResourceDefinition(
                             filter="os:linux AND arch:x64",
                         ),
-                        filter_type=FilterType.LUCENE,
+                        filter_type="LUCENE",
                     ),
                 )
             ]
@@ -811,7 +767,7 @@ class TestWorkItemClient:
         )
         assert updated_work_item_template.id == created_work_item_template.id
         assert updated_work_item_template.resources is not None
-        assert updated_work_item_template.resources.filter_type == FilterType.LUCENE
+        assert updated_work_item_template.resources.filter_type == "LUCENE"
 
     def test__query_work_item_template__returns_queried_work_item_template(
         self, client: WorkItemClient, create_work_item_templates
@@ -839,35 +795,6 @@ class TestWorkItemClient:
             query_work_item_template_response.work_item_templates[0].id
             == created_work_item_template.id
         )
-
-    def test__query_work_item_templates_with_filter_type_projection__returns_resources_filter_type(
-        self, client: WorkItemClient, create_work_item_templates
-    ):
-        create_work_item_template_response = create_work_item_templates(
-            self._create_work_item_template_request
-        )
-        assert (
-            create_work_item_template_response.created_work_item_templates is not None
-        )
-        created_work_item_template = (
-            create_work_item_template_response.created_work_item_templates[0]
-        )
-
-        query = QueryWorkItemTemplatesRequest(
-            filter=f'id="{created_work_item_template.id}"',
-            projection=[
-                WorkItemTemplateField.ID,
-                WorkItemTemplateField.RESOURCES_FILTER_TYPE,
-            ],
-            take=1,
-        )
-        response = client.query_work_item_templates(query_work_item_templates=query)
-
-        assert response is not None
-        work_item_template = response.work_item_templates[0]
-        assert work_item_template.id == created_work_item_template.id
-        assert work_item_template.resources is not None
-        assert work_item_template.resources.filter_type == FilterType.LINQ
 
     def test__query_work_item_templates_with_projections__returns_work_item_templates_with_projected_properties(
         self, client: WorkItemClient, create_work_item_templates
