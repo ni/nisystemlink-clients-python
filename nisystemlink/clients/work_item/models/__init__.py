@@ -9,6 +9,7 @@ from ._query_work_item_templates_request import (
 )
 from ._dashboard import Dashboard, DashboardUrl
 from ._resources_definition import (
+    FilterType,
     ResourceDefinition,
     ResourceSelectionDefinition,
     ResourcesDefinition,

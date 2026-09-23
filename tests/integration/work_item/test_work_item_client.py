@@ -14,6 +14,7 @@ from nisystemlink.clients.work_item.models import (
     CreateWorkItemTemplatesPartialSuccessResponse,
     Dashboard,
     ExecutionDefinition,
+    FilterType,
     Job,
     JobExecution,
     ManualExecution,
@@ -162,7 +163,7 @@ class TestWorkItemClient:
                             target_parent_id="parent-002",
                         )
                     ],
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
+                    filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'",
                 ),
                 duts=ResourceDefinition(
                     selections=[
@@ -173,7 +174,7 @@ class TestWorkItemClient:
                             target_parent_id="parent-002",
                         )
                     ],
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
+                    filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'",
                 ),
                 fixtures=ResourceDefinition(
                     selections=[
@@ -184,7 +185,7 @@ class TestWorkItemClient:
                             target_parent_id="parent-002",
                         )
                     ],
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'",
+                    filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'",
                 ),
                 systems=SystemResourceDefinition(
                     selections=[
@@ -193,8 +194,9 @@ class TestWorkItemClient:
                             target_location_id="location-001",
                         )
                     ],
-                    filter="os:linux AND arch:x64",
+                    filter='os = "linux" && arch = "x64"',
                 ),
+                filter_type=FilterType.LINQ,
             ),
             file_ids_from_template=["file1", "file2"],
             properties={"env": "staging", "priority": "high"},
@@ -219,15 +221,18 @@ class TestWorkItemClient:
             ),
             resources=TemplateResourcesDefinition(
                 assets=TemplateResourceDefinition(
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'"
+                    filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'"
                 ),
                 duts=TemplateResourceDefinition(
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'"
+                    filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'"
                 ),
                 fixtures=TemplateResourceDefinition(
-                    filter="modelName = 'cRIO-9045' AND serialNumber = '01E82ED0'"
+                    filter="modelName = 'cRIO-9045' && serialNumber = '01E82ED0'"
                 ),
-                systems=TemplateResourceDefinition(filter="os:linux AND arch:x64"),
+                systems=TemplateResourceDefinition(
+                    filter='os = "linux" && arch = "x64"'
+                ),
+                filter_type=FilterType.LINQ,
             ),
             execution_actions=_execution_actions,
             file_ids=["file1", "file2"],
@@ -302,6 +307,45 @@ class TestWorkItemClient:
         updated_work_item = update_work_items_response.updated_work_items[0]
         assert updated_work_item.id == created_work_item.id
         assert updated_work_item.name == "Updated Work Item"
+
+    def test__update_work_item__updates_resources_filter_type(
+        self, client: WorkItemClient, create_work_items
+    ):
+        create_work_item_response = create_work_items(self._create_work_item_request)
+        assert create_work_item_response.created_work_items is not None
+        created_work_item = create_work_item_response.created_work_items[0]
+
+        update_work_items_request = UpdateWorkItemsRequest(
+            work_items=[
+                UpdateWorkItemRequest(
+                    id=created_work_item.id,
+                    resources=ResourcesDefinition(
+                        assets=ResourceDefinition(
+                            filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
+                        ),
+                        duts=ResourceDefinition(
+                            filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
+                        ),
+                        fixtures=ResourceDefinition(
+                            filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
+                        ),
+                        systems=SystemResourceDefinition(
+                            filter="os:linux AND arch:x64",
+                        ),
+                        filter_type=FilterType.LUCENE,
+                    ),
+                )
+            ]
+        )
+        update_work_items_response = client.update_work_items(
+            update_work_items=update_work_items_request
+        )
+
+        assert update_work_items_response.updated_work_items is not None
+        updated_work_item = update_work_items_response.updated_work_items[0]
+        assert updated_work_item.id == created_work_item.id
+        assert updated_work_item.resources is not None
+        assert updated_work_item.resources.filter_type == "LUCENE"
 
     def test__schedule_work_item__returns_scheduled_work_item(
         self, client: WorkItemClient, create_work_items
@@ -675,6 +719,55 @@ class TestWorkItemClient:
         )
         assert updated_work_item_template.id == created_work_item_template.id
         assert updated_work_item_template.name == "Updated Work Item Template"
+
+    def test__update_work_item_template__updates_resources_filter_type(
+        self, client: WorkItemClient, create_work_item_templates
+    ):
+        create_work_item_template_response = create_work_item_templates(
+            self._create_work_item_template_request
+        )
+        assert (
+            create_work_item_template_response.created_work_item_templates is not None
+        )
+        created_work_item_template = (
+            create_work_item_template_response.created_work_item_templates[0]
+        )
+
+        update_work_item_templates_request = UpdateWorkItemTemplatesRequest(
+            work_item_templates=[
+                UpdateWorkItemTemplateRequest(
+                    id=created_work_item_template.id,
+                    resources=TemplateResourcesDefinition(
+                        assets=TemplateResourceDefinition(
+                            filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
+                        ),
+                        duts=TemplateResourceDefinition(
+                            filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
+                        ),
+                        fixtures=TemplateResourceDefinition(
+                            filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
+                        ),
+                        systems=TemplateResourceDefinition(
+                            filter="os:linux AND arch:x64",
+                        ),
+                        filter_type=FilterType.LUCENE,
+                    ),
+                )
+            ]
+        )
+        update_work_item_templates_response = client.update_work_item_templates(
+            update_work_item_templates=update_work_item_templates_request
+        )
+
+        assert (
+            update_work_item_templates_response.updated_work_item_templates is not None
+        )
+        updated_work_item_template = (
+            update_work_item_templates_response.updated_work_item_templates[0]
+        )
+        assert updated_work_item_template.id == created_work_item_template.id
+        assert updated_work_item_template.resources is not None
+        assert updated_work_item_template.resources.filter_type == "LUCENE"
 
     def test__query_work_item_template__returns_queried_work_item_template(
         self, client: WorkItemClient, create_work_item_templates
