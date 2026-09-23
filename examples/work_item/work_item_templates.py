@@ -40,18 +40,18 @@ create_work_item_template_request = [
         timeline=TemplateTimelineDefinition(estimated_duration_in_seconds=86400),
         resources=TemplateResourcesDefinition(
             systems=TemplateResourceDefinition(
-                filter='properties.data["Lab"] = "Battery Pack Lab" && state = "Available"'
+                filter='properties.data.Lab:"Battery Pack Lab" AND state:Available'
             ),
             duts=TemplateResourceDefinition(
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
+                filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"'
             ),
             assets=TemplateResourceDefinition(
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
+                filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"'
             ),
             fixtures=TemplateResourceDefinition(
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"'
+                filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"'
             ),
-            filter_type=FilterType.LINQ,
+            filter_type=FilterType.LUCENE,
         ),
         execution_actions=[
             ManualExecution(action="boot", type="MANUAL"),
@@ -109,9 +109,9 @@ if create_work_item_template_id is not None:
                 name="Updated work item template",
                 resources=TemplateResourcesDefinition(
                     systems=TemplateResourceDefinition(
-                        filter='properties.data["Location"] = "Lab 1"',
+                        filter='properties.data.Location:"Lab 1"',
                     ),
-                    filter_type=FilterType.LINQ,
+                    filter_type=FilterType.LUCENE,
                 ),
             )
         ]

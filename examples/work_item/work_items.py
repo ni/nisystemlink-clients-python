@@ -66,7 +66,7 @@ create_work_items_request = [
                         target_location_id="location-001",
                     ),
                 ],
-                filter='properties.data["Lab"] = "Battery Pack Lab"',
+                filter='properties.data.Lab:"Battery Pack Lab"',
             ),
             duts=ResourceDefinition(
                 selections=[
@@ -77,7 +77,7 @@ create_work_items_request = [
                         target_parent_id="parent-001",
                     ),
                 ],
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
+                filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
             ),
             assets=ResourceDefinition(
                 selections=[
@@ -88,7 +88,7 @@ create_work_items_request = [
                         target_parent_id="parent-001",
                     ),
                 ],
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
+                filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
             ),
             fixtures=ResourceDefinition(
                 selections=[
@@ -99,9 +99,9 @@ create_work_items_request = [
                         target_parent_id="parent-001",
                     ),
                 ],
-                filter='modelName = "cRIO-9045" && serialNumber = "01E82ED0"',
+                filter='modelName:"cRIO-9045" AND serialNumber:"01E82ED0"',
             ),
-            filter_type=FilterType.LINQ,
+            filter_type=FilterType.LUCENE,
         ),
         file_ids_from_template=["file1", "file2"],
         dashboard=Dashboard(
@@ -162,9 +162,9 @@ if created_work_item_id is not None:
                 name="Updated work item",
                 resources=ResourcesDefinition(
                     systems=SystemResourceDefinition(
-                        filter='properties.data["location"] = "Lab 1"',
+                        filter='properties.data.location:"Lab 1"',
                     ),
-                    filter_type=FilterType.LINQ,
+                    filter_type=FilterType.LUCENE,
                 ),
             )
         ]
