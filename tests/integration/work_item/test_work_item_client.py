@@ -44,7 +44,7 @@ from nisystemlink.clients.work_item.models import (
     WorkItemTemplateField,
 )
 
-BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
+BASE_URL = "https://test-api.systemlink.ni.dev"
 
 
 @pytest.fixture(scope="class")

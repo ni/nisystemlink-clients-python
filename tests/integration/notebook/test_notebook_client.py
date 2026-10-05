@@ -19,8 +19,7 @@ from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
 TEST_FILE_DATA = b"This is a test notebook binary content."
 PREFIX = "Notebook Client Tests-"
-BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
-REDIRECT_URL = "https://test-api.systemlink.ni.dev"
+BASE_URL = "https://test-api.systemlink.ni.dev"
 
 
 @pytest.fixture(scope="class")
@@ -306,7 +305,6 @@ class TestNotebookClient:
                 status=429,
             )
             request_mock.add_passthru(f"{BASE_URL}/ninotebook/v1/notebook")
-            request_mock.add_passthru(f"{REDIRECT_URL}/ninotebook/v1/notebook")
 
             with open("tests/integration/notebook/sample_file.ipynb", "rb") as file:
                 notebook = client.create_notebook(metadata=metadata, content=file)
@@ -349,9 +347,6 @@ class TestNotebookClient:
             )
             request_mock.add_passthru(
                 f"{BASE_URL}/ninotebook/v1/notebook/{notebook.id}"
-            )
-            request_mock.add_passthru(
-                f"{REDIRECT_URL}/ninotebook/v1/notebook/{notebook.id}"
             )
 
             response = client.update_notebook(id=notebook.id, metadata=notebook)

@@ -13,8 +13,7 @@ from nisystemlink.clients.feeds.models import CreateFeedRequest, Platform
 from responses.registries import OrderedRegistry
 from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
-BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
-REDIRECT_URL = "https://test-api.systemlink.ni.dev"
+BASE_URL = "https://test-api.systemlink.ni.dev"
 FEED_DESCRIPTION = "Sample feed for uploading packages"
 PACKAGE_PATH = str(
     Path(__file__).parent.resolve()
@@ -269,9 +268,6 @@ class TestFeedsClient:
             )
             request_mock.add_passthru(
                 f"{BASE_URL}/nifeed/v1/feeds/{create_feed_resp.id}/packages"
-            )
-            request_mock.add_passthru(
-                f"{REDIRECT_URL}/nifeed/v1/feeds/{create_feed_resp.id}/packages"
             )
 
             with open(PACKAGE_PATH, "rb") as package:

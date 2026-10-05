@@ -11,8 +11,7 @@ from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from responses.registries import OrderedRegistry
 from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
-BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
-REDIRECT_URL = "https://test-api.systemlink.ni.dev"
+BASE_URL = "https://test-api.systemlink.ni.dev"
 DEFAULT_WORKSPACE = "2300760d-38c4-48a1-9acb-800260812337"
 
 
@@ -70,7 +69,6 @@ class TestArtifact:
                 status=429,
             )
             request_mock.add_passthru(f"{BASE_URL}/ninbartifact/v1/artifacts")
-            request_mock.add_passthru(f"{REDIRECT_URL}/ninbartifact/v1/artifacts")
 
             upload_response: UploadArtifactResponse = create_artifact()
 

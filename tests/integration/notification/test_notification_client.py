@@ -14,7 +14,7 @@ from nisystemlink.clients.notification.models import (
 )
 from pydantic import ValidationError
 
-BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
+BASE_URL = "https://test-api.systemlink.ni.dev"
 
 
 @pytest.fixture
