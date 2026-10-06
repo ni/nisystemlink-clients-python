@@ -45,7 +45,7 @@ jobs:
           poetry run pytest
           -m integration
           --cloud-api-key "${{ secrets.CLOUD_API_KEY }}"
-          --enterprise-uri "https://test-api.lifecyclesolutions.ni.com" --enterprise-api-key "${{ secrets.ENTERPRISE_API_KEY }}"
+          --enterprise-uri "https://test-api.systemlink.ni.dev" --enterprise-api-key "${{ secrets.ENTERPRISE_API_KEY }}"
   release:
     runs-on: ubuntu-latest
     needs: [build-lint-unit-test, integration-test]

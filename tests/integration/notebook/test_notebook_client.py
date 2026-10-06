@@ -19,7 +19,7 @@ from uplink.clients.io import blocking_strategy as uplink_blocking_strategy
 
 TEST_FILE_DATA = b"This is a test notebook binary content."
 PREFIX = "Notebook Client Tests-"
-BASE_URL = "https://test-api.lifecyclesolutions.ni.com"
+BASE_URL = "https://test-api.systemlink.ni.dev"
 
 
 @pytest.fixture(scope="class")
