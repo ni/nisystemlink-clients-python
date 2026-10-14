@@ -19,3 +19,9 @@ class TestIteratorFileLike:
         assert iterator_file_like.read(4) == b"1234"
         assert iterator_file_like.read(6) == b"56789a"
         assert iterator_file_like.read(6) == b"bcde"
+
+    def test__many_chunks__read__reads_all_data(self):
+        chunk = b"x" * 4096
+        iterator_file_like = IteratorFileLike(iter([chunk] * 4096))
+
+        assert iterator_file_like.read() == chunk * 4096
