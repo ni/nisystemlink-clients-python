@@ -47,6 +47,7 @@ create_work_items_request = [
         requested_by="test.manager@example.com",
         properties={"env": "staging", "priority": "high"},
         part_number="px40482",
+        product_family="BatteryModules",
         test_program="TP-Integration-001",
         workspace="your_workspace_id",
         timeline=TimelineDefinition(
