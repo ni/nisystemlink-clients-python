@@ -38,6 +38,9 @@ class UpdateWorkItemRequest(JsonModel):
     part_number: str | None = None
     """The part number associated with the work item."""
 
+    product_family: str | None = None
+    """The product family associated with the work item."""
+
     workspace: str | None = None
     """The workspace to which the work item belongs."""
 
