@@ -147,6 +147,7 @@ class TestWorkItemClient:
             requested_by="test.manager@example.com",
             test_program="TP-Integration-001",
             part_number="px40482",
+            product_family="BatteryModules",
             workspace=_workspace,
             timeline=TimelineDefinition(
                 earliest_start_date_time=datetime(2026, 1, 15, 8, 0, 0),
@@ -267,6 +268,7 @@ class TestWorkItemClient:
         assert created_work_item.name == "Python integration work item"
         assert created_work_item.type == "testplan"
         assert created_work_item.part_number == "px40482"
+        assert created_work_item.product_family == "BatteryModules"
         delete_work_item_template_response = client.delete_work_item_templates(
             ids=[template_id]
         )
@@ -283,6 +285,7 @@ class TestWorkItemClient:
 
         assert get_work_item_response is not None
         assert get_work_item_response.id == created_work_item_id
+        assert get_work_item_response.product_family == "BatteryModules"
 
     def test__update_work_item__returns_updated_work_item(
         self, client: WorkItemClient, create_work_items
@@ -296,6 +299,7 @@ class TestWorkItemClient:
                 UpdateWorkItemRequest(
                     id=created_work_item.id,
                     name="Updated Work Item",
+                    product_family="CellModules",
                 )
             ]
         )
@@ -307,6 +311,7 @@ class TestWorkItemClient:
         updated_work_item = update_work_items_response.updated_work_items[0]
         assert updated_work_item.id == created_work_item.id
         assert updated_work_item.name == "Updated Work Item"
+        assert updated_work_item.product_family == "CellModules"
 
     def test__update_work_item__updates_resources_filter_type(
         self, client: WorkItemClient, create_work_items
@@ -384,6 +389,7 @@ class TestWorkItemClient:
         assert schedule_work_items_response.scheduled_work_items is not None
         scheduled_work_item = schedule_work_items_response.scheduled_work_items[0]
         assert scheduled_work_item.id == created_work_item.id
+        assert scheduled_work_item.product_family == "BatteryModules"
         assert scheduled_work_item.schedule is not None
         assert (
             scheduled_work_item.schedule.planned_start_date_time
@@ -421,8 +427,13 @@ class TestWorkItemClient:
         created_work_item = create_work_item_response.created_work_items[0]
 
         query_work_items_request = QueryWorkItemsRequest(
-            filter=f'id = "{created_work_item.id}"',
-            projection=[WorkItemField.ID, WorkItemField.NAME],
+            filter="id == @0 && productFamily == @1",
+            substitutions=[created_work_item.id, created_work_item.product_family],
+            projection=[
+                WorkItemField.ID,
+                WorkItemField.NAME,
+                WorkItemField.PRODUCT_FAMILY,
+            ],
             take=1,
         )
         response = client.query_work_items(query_work_items=query_work_items_request)
@@ -432,6 +443,7 @@ class TestWorkItemClient:
         assert (
             work_item.id is not None
             and work_item.name is not None
+            and work_item.product_family is not None
             and work_item.template_id is None
             and work_item.state is None
             and work_item.description is None
