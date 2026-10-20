@@ -136,9 +136,10 @@ if create_work_items_response.created_work_items:
     created_work_item_id = create_work_items_response.created_work_items[0].id
     print(f"Created work item: {created_work_item_id}")
 
-# Query work items using id.
+# Query work items using id and product family.
 query_work_items_request = QueryWorkItemsRequest(
-    filter=f'id = "{created_work_item_id}"',
+    filter="id == @0 && productFamily == @1",
+    substitutions=[created_work_item_id, "BatteryModules"],
     take=1,
     descending=False,
     return_count=False,
@@ -147,12 +148,19 @@ query_work_items_response = client.query_work_items(
     query_work_items=query_work_items_request
 )
 if query_work_items_response.work_items:
-    print(f"Found work item: {query_work_items_response.work_items[0].name}")
+    found_work_item = query_work_items_response.work_items[0]
+    print(
+        f"Found work item: {found_work_item.name} "
+        f"(product family: {found_work_item.product_family})"
+    )
 
 # Get work item
 if created_work_item_id is not None:
     get_work_item_response = client.get_work_item(work_item_id=created_work_item_id)
-    print(f"Retrieved work item: {get_work_item_response.name}")
+    print(
+        f"Retrieved work item: {get_work_item_response.name} "
+        f"(product family: {get_work_item_response.product_family})"
+    )
 
 # Update work item
 if created_work_item_id is not None:
