@@ -47,6 +47,7 @@ __all__ = [
     "DeleteSpecificationsPartialSuccess",
     "QuerySpecificationsRequest",
     "PagedSpecifications",
+    "SpecificationOrderBy",
     "SpecificationProjection",
     "Specification",
     "SpecificationDefinition",
