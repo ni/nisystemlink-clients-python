@@ -97,6 +97,7 @@ __all__ = [
     "WorkItemTemplateOrderBy",
     "Dashboard",
     "DashboardUrl",
+    "FilterType",
     "ResourceDefinition",
     "ResourceSelectionDefinition",
     "ResourcesDefinition",
