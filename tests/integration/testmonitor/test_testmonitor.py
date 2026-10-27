@@ -23,6 +23,7 @@ from nisystemlink.clients.testmonitor.models import (
     Step,
     StepField,
     StepIdResultIdPair,
+    StepOrderBy,
     UpdateResultRequest,
     UpdateStepRequest,
     UpdateStepsPartialSuccess,
@@ -701,7 +702,7 @@ class TestTestMonitor:
         assert get_response is not None
         assert len(get_response.steps) == 1
 
-    def test__get_steps_with_return_count__steps_and_count_returned(
+    def test__query_steps_with_return_count__steps_and_count_returned(
         self, client: TestMonitorClient, create_results, create_steps, unique_identifier
     ):
         results = [
@@ -720,14 +721,20 @@ class TestTestMonitor:
                 name="Step 1",
             ),
             CreateStepRequest(
-                step_id=unique_identifier,
+                step_id=f"{unique_identifier}-2",
                 result_id=result_id,
                 name="Step 2",
             ),
         ]
         create_steps(steps)
 
-        get_response: PagedSteps = client.get_steps(return_count=True, take=5)
+        query_request = QueryStepsRequest(
+            filter=f'resultId="{result_id}"',
+            order_by=StepOrderBy.STEP_ID,
+            return_count=True,
+            take=5,
+        )
+        get_response: PagedSteps = client.query_steps(query_request)
 
         assert get_response is not None
         assert get_response.total_count is not None and get_response.total_count >= 2
