@@ -721,7 +721,7 @@ class TestTestMonitor:
                 name="Step 1",
             ),
             CreateStepRequest(
-                step_id=unique_identifier,
+                step_id=f"{unique_identifier}-2",
                 result_id=result_id,
                 name="Step 2",
             ),
