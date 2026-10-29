@@ -7,6 +7,7 @@ from nisystemlink.clients.product.models import Product
 from nisystemlink.clients.product.utilities import convert_products_to_dataframe
 from pandas import DataFrame
 
+# Python datetime fixtures infer nanoseconds in pandas 2 and microseconds in pandas 3.
 DATETIME_DTYPE = (
     "datetime64[ns, UTC]" if pd.__version__.startswith("2.") else "datetime64[us, UTC]"
 )

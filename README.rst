@@ -46,11 +46,6 @@ helpers follow the installed pandas version's native behavior. Moving to Python
 microseconds instead of nanoseconds), and missing-value representations. Review
 downstream dtype assumptions and serialization when upgrading.
 
-This split avoids forcing pandas major-version changes into existing NbExec
-(notebook execution) images. See
-`ADR-001 <https://github.com/ni/nisystemlink-clients-python/blob/master/docs/decisions/ADR-001-python-specific-pandas-majors.md>`_
-for the decision and its trade-offs.
-
 .. _installation_section:
 
 Installation

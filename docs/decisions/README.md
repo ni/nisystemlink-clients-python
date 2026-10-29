@@ -5,6 +5,12 @@ compatibility promises, architectural boundaries, and implementation decisions
 that future changes need to understand, not routine coding details or task lists.
 All records share one repository-wide index and `ADR-NNN` sequence.
 
+## Index
+
+| ID | Date | Status | Type | Summary | Superseded by |
+| --- | --- | --- | --- | --- | --- |
+| [ADR-001](ADR-001-python-specific-pandas-majors.md) | 2026-10-29 | `accepted` | implementation | Retain pandas 2 below Python 3.15; use native pandas 3 behavior on Python 3.15+ without forcing NbExec image upgrades. | |
+
 ## Finding applicable decisions
 
 Before designing or changing behavior, scan the index for relevant topics and
@@ -41,7 +47,8 @@ rather than silently choosing a direction.
    task order, and method-by-method instructions in the implementation plan.
 7. Search existing documentation and code for both the new direction and the
    values it replaces. Reconcile contradictions explicitly. Link the record from
-   relevant contributor/user documentation rather than copying its rationale.
+   relevant contributor documentation rather than copying its rationale. Keep
+   internal decision references and deployment rationale out of public user docs.
 8. Add or update the index row in the same PR and obtain normal maintainer review.
 
 ## Status and lifecycle
@@ -83,9 +90,3 @@ the maintainer confirm it through review.
   or dependencies.
 - No placeholder text, guidance comments, conflicting active decisions, or
   implementation task lists remain in a completed record.
-
-## Index
-
-| ID | Date | Status | Type | Summary | Superseded by |
-| --- | --- | --- | --- | --- | --- |
-| [ADR-001](ADR-001-python-specific-pandas-majors.md) | 2026-10-29 | `accepted` | implementation | Retain pandas 2 below Python 3.15; use native pandas 3 behavior on Python 3.15+ without forcing NbExec image upgrades. | |

@@ -23,6 +23,7 @@ from nisystemlink.clients.spec.utilities._dataframe_utilities import (
     summarize_conditions_as_a_string,
 )
 
+# Python datetime fixtures infer nanoseconds in pandas 2 and microseconds in pandas 3.
 DATETIME_DTYPE = (
     "datetime64[ns, UTC]" if pd.__version__.startswith("2.") else "datetime64[us, UTC]"
 )
