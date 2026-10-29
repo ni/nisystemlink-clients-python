@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime, timezone
 from typing import Dict, List
 
-import numpy as np
 import pandas as pd
 import pytest
 from nisystemlink.clients.spec.models._condition import (
@@ -22,6 +21,11 @@ from nisystemlink.clients.spec.utilities._dataframe_utilities import (
     normalize_conditions_per_column,
     normalize_conditions_per_row,
     summarize_conditions_as_a_string,
+)
+
+# Python datetime fixtures infer nanoseconds in pandas 2 and microseconds in pandas 3.
+DATETIME_DTYPE = (
+    "datetime64[ns, UTC]" if pd.__version__.startswith("2.") else "datetime64[us, UTC]"
 )
 
 
@@ -173,8 +177,8 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         assert len(specs_df) == 3
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
-        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
-        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["created_at"].dtype == DATETIME_DTYPE
+        assert specs_df["updated_at"].dtype == DATETIME_DTYPE
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
@@ -241,8 +245,8 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         assert len(specs_df) == 3
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
-        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
-        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["created_at"].dtype == DATETIME_DTYPE
+        assert specs_df["updated_at"].dtype == DATETIME_DTYPE
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
@@ -345,8 +349,8 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         assert len(specs_df) == 3
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
-        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
-        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["created_at"].dtype == DATETIME_DTYPE
+        assert specs_df["updated_at"].dtype == DATETIME_DTYPE
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
@@ -424,8 +428,8 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         assert len(specs_df) == 5
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
-        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
-        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["created_at"].dtype == DATETIME_DTYPE
+        assert specs_df["updated_at"].dtype == DATETIME_DTYPE
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
@@ -454,8 +458,8 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         assert len(specs_df) == 3
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
-        assert specs_df["created_at"].dtype == "datetime64[ns, UTC]"
-        assert specs_df["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert specs_df["created_at"].dtype == DATETIME_DTYPE
+        assert specs_df["updated_at"].dtype == DATETIME_DTYPE
         assert specs_df["keywords"].dtype == "object"
         assert isinstance(specs_df["keywords"].iloc[0], List)
 
@@ -620,13 +624,16 @@ class TestSpecDataframeUtilities:
                             "limit.typical": spec.limit.typical if spec.limit else None,
                             "limit.max": spec.limit.max if spec.limit else None,
                         },
-                        **{key: value for key, value in condition.items()},
+                        **{
+                            key: float("nan") if value is None else value
+                            for key, value in condition.items()
+                        },
                         **(keywords_dict[index] if keywords_dict else {}),
                         **(properties_dict[index] if properties_dict else {}),
                     }
                 )
             index += 1
-        expected_specs_df = pd.DataFrame(specs_dict).replace({None: np.nan})
+        expected_specs_df = pd.DataFrame(specs_dict)
         expected_specs_df.dropna(axis="columns", how="all", inplace=True)
 
         return expected_specs_df

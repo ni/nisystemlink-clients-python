@@ -7,6 +7,11 @@ from nisystemlink.clients.product.models import Product
 from nisystemlink.clients.product.utilities import convert_products_to_dataframe
 from pandas import DataFrame
 
+# Python datetime fixtures infer nanoseconds in pandas 2 and microseconds in pandas 3.
+DATETIME_DTYPE = (
+    "datetime64[ns, UTC]" if pd.__version__.startswith("2.") else "datetime64[us, UTC]"
+)
+
 
 @pytest.fixture
 def mock_products_data() -> List[Product]:
@@ -83,7 +88,7 @@ class TestProductDataframeUtilities:
             products_dataframe.columns.to_list()
             == expected_products_dataframe.columns.to_list()
         )
-        assert products_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert products_dataframe["updated_at"].dtype == DATETIME_DTYPE
         assert products_dataframe["file_ids"].dtype == "object"
         assert isinstance(products_dataframe["file_ids"].iloc[0], List)
         assert products_dataframe["keywords"].dtype == "object"
