@@ -18,6 +18,10 @@ from nisystemlink.clients.testmonitor.utilities._dataframe_utilities import (
     convert_steps_to_dataframe,
 )
 
+DATETIME_DTYPE = (
+    "datetime64[ns, UTC]" if pd.__version__.startswith("2.") else "datetime64[us, UTC]"
+)
+
 
 @pytest.fixture(scope="class")
 def results() -> List[Result]:
@@ -214,8 +218,8 @@ class TestTestmonitorDataframeUtilities:
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
         assert isinstance(results_dataframe["status"].iloc[0], str)
-        assert results_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
-        assert results_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert results_dataframe["started_at"].dtype == DATETIME_DTYPE
+        assert results_dataframe["updated_at"].dtype == DATETIME_DTYPE
         assert results_dataframe["file_ids"].dtype == "object"
         assert isinstance(results_dataframe["file_ids"].iloc[0], List)
         assert results_dataframe["data_table_ids"].dtype == "object"
@@ -258,8 +262,8 @@ class TestTestmonitorDataframeUtilities:
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
         assert isinstance(results_dataframe["status"].iloc[0], str)
-        assert results_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
-        assert results_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert results_dataframe["started_at"].dtype == DATETIME_DTYPE
+        assert results_dataframe["updated_at"].dtype == DATETIME_DTYPE
         assert results_dataframe["file_ids"].dtype == "object"
         assert isinstance(results_dataframe["file_ids"].iloc[0], List)
         assert results_dataframe["keywords"].dtype == "object"
@@ -281,8 +285,8 @@ class TestTestmonitorDataframeUtilities:
             results_dataframe, expected_results_dataframe, check_dtype=True
         )
         assert isinstance(results_dataframe["status"].iloc[0], str)
-        assert results_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
-        assert results_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
+        assert results_dataframe["started_at"].dtype == DATETIME_DTYPE
+        assert results_dataframe["updated_at"].dtype == DATETIME_DTYPE
         assert results_dataframe["file_ids"].dtype == "object"
         assert isinstance(results_dataframe["file_ids"].iloc[0], List)
         assert results_dataframe["data_table_ids"].dtype == "object"
@@ -339,8 +343,8 @@ class TestTestmonitorDataframeUtilities:
             == expected_steps_dataframe.columns.to_list()
         )
 
-        assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
-        assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["updated_at"].dtype == DATETIME_DTYPE
+        assert steps_dataframe["started_at"].dtype == DATETIME_DTYPE
         assert steps_dataframe["path_ids"].dtype == "object"
         assert isinstance(steps_dataframe["path_ids"].iloc[0], List)
         assert steps_dataframe["keywords"].dtype == "object"
@@ -428,8 +432,8 @@ class TestTestmonitorDataframeUtilities:
             steps_dataframe.columns.to_list()
             == expected_steps_dataframe.columns.to_list()
         )
-        assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
-        assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["updated_at"].dtype == DATETIME_DTYPE
+        assert steps_dataframe["started_at"].dtype == DATETIME_DTYPE
         assert steps_dataframe["path_ids"].dtype == "object"
         assert isinstance(steps_dataframe["path_ids"].iloc[0], List)
         assert steps_dataframe["keywords"].dtype == "object"
@@ -584,8 +588,8 @@ class TestTestmonitorDataframeUtilities:
             == expected_steps_dataframe.columns.to_list()
         )
 
-        assert steps_dataframe["updated_at"].dtype == "datetime64[ns, UTC]"
-        assert steps_dataframe["started_at"].dtype == "datetime64[ns, UTC]"
+        assert steps_dataframe["updated_at"].dtype == DATETIME_DTYPE
+        assert steps_dataframe["started_at"].dtype == DATETIME_DTYPE
         assert steps_dataframe["path_ids"].dtype == "object"
         assert isinstance(steps_dataframe["path_ids"].iloc[0], List)
         assert steps_dataframe["keywords"].dtype == "object"
@@ -641,7 +645,12 @@ class TestTestmonitorDataframeUtilities:
                 }
             )
 
-        results_df = pd.DataFrame(results_dict)
+        results_df = pd.DataFrame(
+            [
+                {key: value for key, value in result.items() if value is not None}
+                for result in results_dict
+            ]
+        )
         results_df = results_df[
             ["status"] + [col for col in results_df.columns if col != "status"]
         ]
