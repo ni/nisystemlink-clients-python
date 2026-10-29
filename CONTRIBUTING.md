@@ -59,7 +59,8 @@ To contribute to this project, it is recommended that you follow these steps:
 
 ## Testing
 
-Before running any tests, you must have a supported version of Python (3.10+) and [Poetry](https://python-poetry.org/docs/) installed locally.
+Before running any tests, you must have a supported version of Python (3.11+) and [Poetry](https://python-poetry.org/docs/) installed locally.
+The tested Python versions are currently 3.11-3.15.
 
 It is also helpful to install SystemLink Server and configure the NI Web Server
 to run on localhost.
@@ -96,6 +97,13 @@ To only run the tests in one particular folder, run
 pytest tests/myfolder
 ```
 
+## Decision records
+
+Before changing compatibility policy or significant design behavior, consult
+the [decision index](docs/decisions/README.md) and read the relevant records.
+Use its templates and lifecycle guidance to capture durable maintainer decisions
+in the same PR as the related changes.
+
 ## Copilot cloud agent environment
 
 The [Copilot setup workflow](.github/workflows/copilot-setup-steps.yml) prepares
@@ -130,6 +138,48 @@ merged into the default branch, it can also be run manually from the Actions
 tab. Pull requests changing the workflow or its dependency inputs validate the
 setup automatically. If setup fails, inspect the workflow or agent session logs;
 the agent may still start with an incomplete environment.
+
+## Maintaining Python support and dependencies
+
+Review Python support annually against the
+[CPython lifecycle](https://devguide.python.org/versions/). Support stable releases
+that have not reached end of life, including releases receiving security-only
+updates. Keep the Python constraint and classifiers in `pyproject.toml`, both CI
+matrices, the release and Read the Docs interpreters, and the documented
+requirements consistent. Package metadata allows future Python 3.x releases;
+classifiers and CI identify the versions that have been tested.
+The [pandas major-version decision](docs/decisions/ADR-001-python-specific-pandas-majors.md)
+retains pandas 2 on Python 3.11-3.14 and uses native pandas 3 behavior on 3.15+;
+do not replace that split with a global major upgrade.
+
+To refresh all dependency resolutions within the declared constraints, run:
+
+```sh
+poetry lock --regenerate
+poetry check --lock
+```
+
+Ordinary `poetry lock` retains existing resolutions; `poetry check --lock` checks
+consistency, not vulnerabilities. Change dependency constraints only when needed
+for supported-Python compatibility or a security fix.
+
+Audit every distinct package/version pair in `poetry.lock`, including development
+dependencies, optional extras, and all Python/platform marker branches. An audit
+of one installed environment does not cover the complete lock. Use isolated
+`pip-audit` tooling with fully pinned requirements derived from the lock; split
+alternate versions of a package into separate inputs and audit each input:
+
+```sh
+pip-audit --no-deps --disable-pip --strict -r requirements-audit.txt
+```
+
+Do not treat skipped packages or collection errors as a clean audit, or suppress
+advisories to make checks pass. Keep temporary audit inputs and reports outside
+the repository. Validate the base install and the `pyarrow` extra, and use the PR
+workflow for the supported-version matrix and credentialed integration tests.
+Integration jobs are deliberately serialized to avoid shared-service collisions.
+When retiring a CI version, ask a repository administrator to replace its required
+branch-protection check with checks for the newly supported versions.
 
 ## Maintaining package exports
 

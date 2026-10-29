@@ -36,7 +36,15 @@ Requirements
 **nisystemlink-clients** has the following requirements:
 
 * Access to a SystemLink Server or SystemLink Enterprise installation
-* CPython 3.10+
+* CPython 3.11+ (tested on 3.11-3.15)
+
+DataFrame compatibility
+-----------------------
+Python 3.11-3.14 uses pandas 2; Python 3.15+ uses pandas 3. DataFrame conversion
+helpers follow the installed pandas version's native behavior. Moving to Python
+3.15 can therefore change inferred string dtypes, timestamp units (for example,
+microseconds instead of nanoseconds), and missing-value representations. Review
+downstream dtype assumptions and serialization when upgrading.
 
 .. _installation_section:
 

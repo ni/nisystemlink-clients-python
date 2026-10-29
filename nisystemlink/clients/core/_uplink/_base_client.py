@@ -13,8 +13,7 @@ from uplink.auth import BasicAuth
 from ._json_model import JsonModel
 
 
-@response_handler
-def _handle_http_status(response: Response) -> Response | None:
+def _check_http_status(response: Response) -> Response | None:
     """Checks an HTTP response's status code and raises an exception if necessary."""
     if 200 <= response.status_code < 300:
         # Return None for "204 No Content" responses.
@@ -45,6 +44,7 @@ def _handle_http_status(response: Response) -> Response | None:
         raise core.ApiException(msg, http_status_code=response.status_code)
 
 
+_handle_http_status = response_handler(_check_http_status)
 _type_adapters: Dict[Type, TypeAdapter] = dict()
 
 
