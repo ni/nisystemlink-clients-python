@@ -96,6 +96,41 @@ To only run the tests in one particular folder, run
 pytest tests/myfolder
 ```
 
+## Copilot cloud agent environment
+
+The [Copilot setup workflow](.github/workflows/copilot-setup-steps.yml) prepares
+an Ubuntu environment with Python 3.11, Poetry, development dependencies,
+the optional PyArrow extra, and documentation tooling. The project is installed
+in editable mode, and commands run in the shared environment with `poetry run`.
+
+The setup uses `poetry.lock` for development dependencies and
+[the documentation requirements](docs/requirements.txt) for Sphinx tooling.
+Documentation installation is constrained to preserve the locked development
+dependencies. Incompatible requirements fail setup rather than silently
+changing those versions.
+
+Useful validation commands include:
+
+```sh
+poetry run poe test
+poetry run poe check
+poetry run poe lint
+poetry run poe types
+poetry run poe doctest
+poetry run sphinx-build -b html docs docs/_build/html
+```
+
+Setup performs lightweight environment checks, not the full validation suite.
+Cloud, Enterprise, and web-server integration tests still require the
+configuration described in this guide; the workflow does not provide service
+credentials.
+
+The workflow supports Copilot sessions that run on GitHub Actions. After it is
+merged into the default branch, it can also be run manually from the Actions
+tab. Pull requests changing the workflow or its dependency inputs validate the
+setup automatically. If setup fails, inspect the workflow or agent session logs;
+the agent may still start with an incomplete environment.
+
 ## Maintaining package exports
 
 Package `__init__.py` files are part of the public API surface for this library.
