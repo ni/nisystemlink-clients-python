@@ -13,6 +13,7 @@ from nisystemlink.clients.spec.models import (
     CreateSpecificationsPartialSuccess,
     CreateSpecificationsRequest,
     CreateSpecificationsRequestObject,
+    MeasurementMappingItem,
     NumericConditionValue,
     QuerySpecificationsRequest,
     SpecificationLimit,
@@ -71,6 +72,12 @@ def create_specs_for_query(create_specs, product):
             name="output voltage",
             limit=SpecificationLimit(min=1.2, max=1.5),
             unit="mV",
+            measurement_mapping=[
+                MeasurementMappingItem(
+                    filter='data.parameters.Any(it["name"] == "Output Voltage")',
+                    result_filter='partNumber == "VR1234"',
+                )
+            ],
         ),
         CreateSpecificationsRequestObject(
             product_id=product,
@@ -208,7 +215,7 @@ class TestSpec:
         spec = CreateSpecificationsRequestObject(
             product_id=product,
             spec_id="spec1",
-            type=SpecificationType.FUNCTIONAL,
+            type=SpecificationType.PARAMETRIC,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
             block="newBlock",
@@ -223,9 +230,12 @@ class TestSpec:
             id=created_spec.id,
             product_id=created_spec.product_id,
             spec_id=created_spec.spec_id,
-            type=SpecificationType.FUNCTIONAL,
+            type=SpecificationType.PARAMETRIC,
             keywords=["work", "reveiwed"],
             block="modifiedBlock",
+            measurement_mapping=[
+                MeasurementMappingItem(filter="mapped == true", result_filter=None)
+            ],
             version=created_spec.version,
             workspace=created_spec.workspace,
         )
@@ -239,6 +249,59 @@ class TestSpec:
         updated_spec = update_response.updated_specs[0]
         assert updated_spec.version == 1
 
+        stored_spec = client.get_spec(created_spec.id)
+        assert stored_spec.measurement_mapping == [
+            MeasurementMappingItem(filter="mapped == true")
+        ]
+
+    def test__update_spec_measurement_mapping__omitted_is_kept_and_none_clears(
+        self, client: SpecClient, create_specs, product
+    ):
+        mapping = [MeasurementMappingItem(filter="mapped == true")]
+        response = create_specs(
+            CreateSpecificationsRequest(
+                specs=[
+                    CreateSpecificationsRequestObject(
+                        product_id=product,
+                        spec_id=uuid.uuid1().hex,
+                        type=SpecificationType.PARAMETRIC,
+                        measurement_mapping=mapping,
+                    )
+                ]
+            )
+        )
+        assert response.created_specs
+        created_spec = response.created_specs[0]
+
+        def update(**fields) -> int:
+            update_response = client.update_specs(
+                UpdateSpecificationsRequest(
+                    specs=[
+                        UpdateSpecificationsRequestObject(
+                            id=created_spec.id,
+                            product_id=created_spec.product_id,
+                            spec_id=created_spec.spec_id,
+                            type=SpecificationType.PARAMETRIC,
+                            version=version,
+                            workspace=created_spec.workspace,
+                            **fields,
+                        )
+                    ]
+                )
+            )
+            assert update_response is not None
+            assert update_response.updated_specs
+            return update_response.updated_specs[0].version
+
+        version = created_spec.version
+        version = update(block="otherBlock")
+        kept_spec = client.get_spec(created_spec.id)
+        assert kept_spec.measurement_mapping == mapping
+
+        version = update(measurement_mapping=None)
+        cleared_spec = client.get_spec(created_spec.id)
+        assert cleared_spec.measurement_mapping is None
+
     def test__get_spec_by_id__spec_matches_expected(
         self, client: SpecClient, create_specs, product
     ):
@@ -246,10 +309,15 @@ class TestSpec:
         spec = CreateSpecificationsRequestObject(
             product_id=productId,
             spec_id="spec1",
-            type=SpecificationType.FUNCTIONAL,
+            type=SpecificationType.PARAMETRIC,
             keywords=["work", "reviewed"],
             category="Parametric Specs",
             block="newBlock",
+            measurement_mapping=[
+                MeasurementMappingItem(
+                    filter="mapped == true", result_filter='partNumber == "VR1234"'
+                )
+            ],
         )
 
         response = create_specs(CreateSpecificationsRequest(specs=[spec]))
@@ -263,6 +331,7 @@ class TestSpec:
         assert get_spec_response is not None
         assert get_spec_response.id == created_spec.id
         assert get_spec_response.product_id == productId
+        assert get_spec_response.measurement_mapping == spec.measurement_mapping
 
     def test__get_non_existant_spec_by_id__get_spec_fails(self, client: SpecClient):
         non_existant_spec_id = "10"
@@ -301,6 +370,25 @@ class TestSpec:
         assert response.specs
         assert len(response.specs) == 1
 
+    def test__query_spec_measurement_mapping_filter__only_mapped_spec_returned(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        request = QuerySpecificationsRequest(
+            product_ids=[product],
+            filter='measurementMapping.Any(m => m.resultFilter.Contains("VR1234"))',
+        )
+        response = client.query_specs(request)
+        assert response.specs
+        assert len(response.specs) == 1
+        assert response.specs[0].name == "output voltage"
+
+        request = QuerySpecificationsRequest(
+            product_ids=[product], filter="!measurementMapping.Any()"
+        )
+        response = client.query_specs(request)
+        assert response.specs
+        assert len(response.specs) == 2
+
     def test__query_input_voltage__conditions_match(
         self, client: SpecClient, create_specs, create_specs_for_query, product
     ):
@@ -323,6 +411,7 @@ class TestSpec:
                 SpecificationProjection.SPEC_ID,
                 SpecificationProjection.NAME,
                 SpecificationProjection.UPDATED_AT,
+                SpecificationProjection.MEASUREMENT_MAPPING,
             ],
         )
 
@@ -334,10 +423,11 @@ class TestSpec:
 
         assert response.specs
         assert len(response.specs) == 3
-        assert len(spec_columns) == 3
+        assert len(spec_columns) == 4
         assert "spec_id" in spec_columns
         assert "name" in spec_columns
         assert "updated_at" in spec_columns
+        assert "measurement_mapping" in spec_columns
 
     def test__query_specs__returns_condition_value_type_correctly(
         self, client: SpecClient, create_specs, create_specs_for_query, product

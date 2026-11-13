@@ -12,6 +12,7 @@ from nisystemlink.clients.spec.models._condition import (
     StringConditionValue,
 )
 from nisystemlink.clients.spec.models._specification import (
+    MeasurementMappingItem,
     Specification,
     SpecificationLimit,
     SpecificationType,
@@ -65,6 +66,16 @@ def specs() -> List[Specification]:
             ],
             keywords=["Test specification only", "First"],
             properties={"Comments": "comma separated with unicode"},
+            measurement_mapping=[
+                MeasurementMappingItem(
+                    filter='data.parameters.Any(it["name"] == "Output Voltage")',
+                    result_filter='partNumber == "VR1234"',
+                ),
+                MeasurementMappingItem(
+                    filter='data.parameters.Any(it["name"] == "Input Voltage")',
+                    result_filter='partNumber == "VR5678"',
+                ),
+            ],
             workspace=uuid.uuid1().hex,
             id=uuid.uuid1().hex,
             created_at=datetime(2024, 3, 28, 13, 59, 12, 744000, tzinfo=timezone.utc),
@@ -103,6 +114,9 @@ def specs() -> List[Specification]:
                         unit="mV",
                     ),
                 ),
+            ],
+            measurement_mapping=[
+                MeasurementMappingItem(result_filter='programName == "Production Test"')
             ],
         ),
         Specification(
@@ -273,6 +287,55 @@ class TestSpecDataframeUtilities:
         specs_df = convert_specs_to_dataframe(specs=specs)
 
         assert not specs_df.empty
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+
+    @pytest.mark.parametrize(
+        "mapping, expected_mapping_columns",
+        [
+            (None, []),
+            ([], []),
+            ([MeasurementMappingItem()], []),
+            (
+                [MeasurementMappingItem(filter='name == "Output Voltage"')],
+                ["measurement_mapping.filter"],
+            ),
+            (
+                [MeasurementMappingItem(result_filter='partNumber == "VR1234"')],
+                ["measurement_mapping.result_filter"],
+            ),
+            (
+                [MeasurementMappingItem(filter="", result_filter="")],
+                ["measurement_mapping.filter", "measurement_mapping.result_filter"],
+            ),
+        ],
+        ids=[
+            "none",
+            "empty_list",
+            "empty_item",
+            "filter_only",
+            "result_filter_only",
+            "empty_strings_are_kept",
+        ],
+    )
+    def test__convert_specs_to_dataframe_with_empty_or_partial_measurement_mapping__returns_expected_mapping_columns(
+        self, mapping, expected_mapping_columns
+    ):
+        specs = [
+            Specification(
+                product_id=uuid.uuid1().hex,
+                spec_id=uuid.uuid1().hex,
+                name="Output voltage",
+                measurement_mapping=mapping,
+            ),
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(specs=specs)
+
+        specs_df = convert_specs_to_dataframe(specs=specs)
+
+        mapping_columns = [
+            c for c in specs_df.columns if c.startswith("measurement_mapping")
+        ]
+        assert mapping_columns == expected_mapping_columns
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
     def test__convert_specs_to_dataframe_with_condition_per_column__returns_dataframe_with_condition_per_column(
@@ -623,6 +686,16 @@ class TestSpecDataframeUtilities:
                             "limit.min": spec.limit.min if spec.limit else None,
                             "limit.typical": spec.limit.typical if spec.limit else None,
                             "limit.max": spec.limit.max if spec.limit else None,
+                            "measurement_mapping.filter": (
+                                spec.measurement_mapping[0].filter
+                                if spec.measurement_mapping
+                                else float("nan")
+                            ),
+                            "measurement_mapping.result_filter": (
+                                spec.measurement_mapping[0].result_filter
+                                if spec.measurement_mapping
+                                else float("nan")
+                            ),
                         },
                         **{
                             key: float("nan") if value is None else value

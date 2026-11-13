@@ -40,6 +40,22 @@ class SpecificationType(Enum):
     """Functional specs only have pass/fail status."""
 
 
+class MeasurementMappingItem(JsonModel):
+    """Filters that map a specification to its measurement data."""
+
+    filter: str | None = None
+    """Dynamic LINQ filter selecting the test steps mapped to the specification.
+
+    Uses the format of the `filter` of the Test Monitor query-steps API.
+    """
+
+    result_filter: str | None = None
+    """Dynamic LINQ filter selecting the test results containing the mapped steps.
+
+    Uses the format of the `resultFilter` of the Test Monitor query-steps API.
+    """
+
+
 class SpecificationDefinition(JsonModel):
 
     product_id: str | None = None
@@ -83,6 +99,9 @@ class SpecificationDefinition(JsonModel):
 
     properties: Dict[str, str] | None = None
     """Additional properties associated with the specification."""
+
+    measurement_mapping: List[MeasurementMappingItem] | None = None
+    """Query filters used to associate the specification with its measurement data."""
 
     workspace: str | None = None
     """Id of the workspace to which the specification will be associated.
