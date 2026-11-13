@@ -66,6 +66,16 @@ def specs() -> List[Specification]:
             ],
             keywords=["Test specification only", "First"],
             properties={"Comments": "comma separated with unicode"},
+            measurement_mapping=[
+                MeasurementMappingItem(
+                    filter='data.parameters.Any(it["name"] == "Output Voltage")',
+                    result_filter='partNumber == "VR1234"',
+                ),
+                MeasurementMappingItem(
+                    filter='data.parameters.Any(it["name"] == "Input Voltage")',
+                    result_filter='partNumber == "VR5678"',
+                ),
+            ],
             workspace=uuid.uuid1().hex,
             id=uuid.uuid1().hex,
             created_at=datetime(2024, 3, 28, 13, 59, 12, 744000, tzinfo=timezone.utc),
@@ -104,6 +114,9 @@ def specs() -> List[Specification]:
                         unit="mV",
                     ),
                 ),
+            ],
+            measurement_mapping=[
+                MeasurementMappingItem(result_filter='programName == "Production Test"')
             ],
         ),
         Specification(
@@ -274,6 +287,55 @@ class TestSpecDataframeUtilities:
         specs_df = convert_specs_to_dataframe(specs=specs)
 
         assert not specs_df.empty
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+
+    @pytest.mark.parametrize(
+        "mapping, expected_mapping_columns",
+        [
+            (None, []),
+            ([], []),
+            ([MeasurementMappingItem()], []),
+            (
+                [MeasurementMappingItem(filter='name == "Output Voltage"')],
+                ["measurement_mapping.filter"],
+            ),
+            (
+                [MeasurementMappingItem(result_filter='partNumber == "VR1234"')],
+                ["measurement_mapping.result_filter"],
+            ),
+            (
+                [MeasurementMappingItem(filter="", result_filter="")],
+                ["measurement_mapping.filter", "measurement_mapping.result_filter"],
+            ),
+        ],
+        ids=[
+            "none",
+            "empty_list",
+            "empty_item",
+            "filter_only",
+            "result_filter_only",
+            "empty_strings_are_kept",
+        ],
+    )
+    def test__convert_specs_to_dataframe_with_empty_or_partial_measurement_mapping__returns_expected_mapping_columns(
+        self, mapping, expected_mapping_columns
+    ):
+        specs = [
+            Specification(
+                product_id=uuid.uuid1().hex,
+                spec_id=uuid.uuid1().hex,
+                name="Output voltage",
+                measurement_mapping=mapping,
+            ),
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(specs=specs)
+
+        specs_df = convert_specs_to_dataframe(specs=specs)
+
+        mapping_columns = [
+            c for c in specs_df.columns if c.startswith("measurement_mapping")
+        ]
+        assert mapping_columns == expected_mapping_columns
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
     def test__convert_specs_to_dataframe_with_condition_per_column__returns_dataframe_with_condition_per_column(
@@ -592,138 +654,6 @@ class TestSpecDataframeUtilities:
 
         assert conditions_dict == expected_conditions_dict
 
-    @pytest.mark.parametrize(
-        "condition_format",
-        [
-            normalize_conditions_per_column,
-            normalize_conditions_per_row,
-            summarize_conditions_as_a_string,
-            None,
-        ],
-    )
-    def test__convert_specs_to_dataframe_with_measurement_mapping__flattens_first_item(
-        self, specs, condition_format
-    ):
-        mapped_specs = [
-            specs[0].model_copy(
-                update={
-                    "measurement_mapping": [
-                        MeasurementMappingItem(filter="f1", result_filter="r1"),
-                        MeasurementMappingItem(filter="f2", result_filter="r2"),
-                    ]
-                }
-            ),
-            specs[1],
-        ]
-
-        df = convert_specs_to_dataframe(mapped_specs, condition_format)
-
-        assert "measurement_mapping" not in df.columns
-        mapping_columns = [
-            "measurement_mapping.filter",
-            "measurement_mapping.result_filter",
-        ]
-        pd.testing.assert_frame_equal(
-            df[mapping_columns].iloc[[0, -1]].reset_index(drop=True),
-            pd.DataFrame(
-                {
-                    "measurement_mapping.filter": ["f1", None],
-                    "measurement_mapping.result_filter": ["r1", None],
-                }
-            ),
-            check_dtype=True,
-        )
-        columns = df.columns.to_list()
-        assert columns.index("measurement_mapping.result_filter") == (
-            columns.index("measurement_mapping.filter") + 1
-        )
-        last_mapping = columns.index("measurement_mapping.result_filter")
-        assert all(
-            columns.index(c) > last_mapping
-            for c in columns
-            if c.startswith(("condition_", "properties.")) or c == "keywords"
-        )
-
-    def test__convert_specs_to_dataframe_with_partial_measurement_mapping__leaves_missing_value_empty(
-        self, specs
-    ):
-        mapped = [
-            specs[0].model_copy(
-                update={"measurement_mapping": [MeasurementMappingItem(filter="f1")]}
-            ),
-            specs[1].model_copy(
-                update={
-                    "measurement_mapping": [MeasurementMappingItem(result_filter="r2")]
-                }
-            ),
-        ]
-
-        df = convert_specs_to_dataframe(mapped)
-
-        expected_mapping_df = pd.DataFrame(
-            {
-                "measurement_mapping.filter": ["f1", None],
-                "measurement_mapping.result_filter": [None, "r2"],
-            }
-        )
-        pd.testing.assert_frame_equal(
-            df[["measurement_mapping.filter", "measurement_mapping.result_filter"]],
-            expected_mapping_df,
-            check_dtype=True,
-        )
-
-    @pytest.mark.parametrize("mapping", [None, []])
-    def test__convert_specs_to_dataframe_without_measurement_mapping__adds_no_mapping_columns(
-        self, specs, mapping
-    ):
-        no_mapping_specs = [
-            spec.model_copy(update={"measurement_mapping": mapping}) for spec in specs
-        ]
-
-        df = convert_specs_to_dataframe(no_mapping_specs)
-
-        assert not any(c.startswith("measurement_mapping") for c in df.columns)
-
-    @pytest.mark.parametrize(
-        "mapping, expected_columns",
-        [
-            (
-                [MeasurementMappingItem(filter="f", result_filter="r")],
-                {
-                    "measurement_mapping.filter": "f",
-                    "measurement_mapping.result_filter": "r",
-                },
-            ),
-            ([MeasurementMappingItem(filter="f")], {"measurement_mapping.filter": "f"}),
-            (
-                [MeasurementMappingItem(result_filter="r")],
-                {"measurement_mapping.result_filter": "r"},
-            ),
-            ([MeasurementMappingItem()], {}),
-            (
-                [
-                    MeasurementMappingItem(filter="f1", result_filter="r1"),
-                    MeasurementMappingItem(filter="f2", result_filter="r2"),
-                ],
-                {
-                    "measurement_mapping.filter": "f1",
-                    "measurement_mapping.result_filter": "r1",
-                },
-            ),
-            ([], {}),
-            (None, {}),
-        ],
-    )
-    def test__convert_specs_to_dataframe_with_single_spec_mapping__returns_expected_mapping_columns(
-        self, mapping, expected_columns
-    ):
-        df = convert_specs_to_dataframe(
-            [Specification(spec_id="s1", measurement_mapping=mapping)]
-        )
-
-        assert df.columns.to_list() == ["spec_id", *expected_columns]
-        assert df.iloc[0].to_dict() == {"spec_id": "s1", **expected_columns}
-
     def __expected_specs_dataframe(
         self, specs, conditions_dict=None, keywords_dict=None, properties_dict=None
     ):
@@ -756,6 +686,16 @@ class TestSpecDataframeUtilities:
                             "limit.min": spec.limit.min if spec.limit else None,
                             "limit.typical": spec.limit.typical if spec.limit else None,
                             "limit.max": spec.limit.max if spec.limit else None,
+                            "measurement_mapping.filter": (
+                                spec.measurement_mapping[0].filter
+                                if spec.measurement_mapping
+                                else float("nan")
+                            ),
+                            "measurement_mapping.result_filter": (
+                                spec.measurement_mapping[0].result_filter
+                                if spec.measurement_mapping
+                                else float("nan")
+                            ),
                         },
                         **{
                             key: float("nan") if value is None else value
