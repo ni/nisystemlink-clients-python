@@ -289,6 +289,7 @@ class TestSpec:
                     ]
                 )
             )
+            assert update_response is not None
             assert update_response.updated_specs
             return update_response.updated_specs[0].version
 
