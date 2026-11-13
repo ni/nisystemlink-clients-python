@@ -619,9 +619,20 @@ class TestSpecDataframeUtilities:
         df = convert_specs_to_dataframe(mapped_specs, condition_format)
 
         assert "measurement_mapping" not in df.columns
-        assert df["measurement_mapping.filter"].iloc[0] == "f1"
-        assert df["measurement_mapping.result_filter"].iloc[0] == "r1"
-        assert pd.isna(df["measurement_mapping.filter"].iloc[-1])
+        mapping_columns = [
+            "measurement_mapping.filter",
+            "measurement_mapping.result_filter",
+        ]
+        pd.testing.assert_frame_equal(
+            df[mapping_columns].iloc[[0, -1]].reset_index(drop=True),
+            pd.DataFrame(
+                {
+                    "measurement_mapping.filter": ["f1", None],
+                    "measurement_mapping.result_filter": ["r1", None],
+                }
+            ),
+            check_dtype=True,
+        )
         columns = df.columns.to_list()
         assert columns.index("measurement_mapping.result_filter") == (
             columns.index("measurement_mapping.filter") + 1
@@ -649,10 +660,17 @@ class TestSpecDataframeUtilities:
 
         df = convert_specs_to_dataframe(mapped)
 
-        assert df["measurement_mapping.filter"].iloc[0] == "f1"
-        assert pd.isna(df["measurement_mapping.filter"].iloc[1])
-        assert pd.isna(df["measurement_mapping.result_filter"].iloc[0])
-        assert df["measurement_mapping.result_filter"].iloc[1] == "r2"
+        expected_mapping_df = pd.DataFrame(
+            {
+                "measurement_mapping.filter": ["f1", None],
+                "measurement_mapping.result_filter": [None, "r2"],
+            }
+        )
+        pd.testing.assert_frame_equal(
+            df[["measurement_mapping.filter", "measurement_mapping.result_filter"]],
+            expected_mapping_df,
+            check_dtype=True,
+        )
 
     @pytest.mark.parametrize("mapping", [None, []])
     def test__convert_specs_to_dataframe_without_measurement_mapping__adds_no_mapping_columns(
