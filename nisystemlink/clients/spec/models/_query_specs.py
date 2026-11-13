@@ -33,6 +33,7 @@ class SpecificationProjection(str, Enum):
     CREATED_AT = "CREATED_AT"
     CREATED_BY = "CREATED_BY"
     UPDATED_AT = "UPDATED_AT"
+    MEASUREMENT_MAPPING = "MEASUREMENT_MAPPING"
 
 
 class SpecificationOrderBy(Enum):
@@ -82,6 +83,8 @@ class QuerySpecificationsRequest(JsonModel):
     - `createdAt`: ISO-8601 formatted UTC timestamp indicating when the specification was created.
     - `updatedBy`: String representing the ID of the user who updated the specification.
     - `updatedAt`: ISO-8601 formatted UTC timestamp indicating when the specification was updated.
+    - `measurementMapping`: List of measurement mapping items of a specification, each with
+        `filter` and `resultFilter` strings.
 
     See [Dynamic Linq](https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language)
     documentation for more details.

@@ -20,6 +20,7 @@ from ._query_specs import (
     SpecificationProjection,
 )
 from ._specification import (
+    MeasurementMappingItem,
     Specification,
     SpecificationDefinition,
     SpecificationLimit,
@@ -45,6 +46,7 @@ __all__ = [
     "CreateSpecificationsRequest",
     "CreateSpecificationsRequestObject",
     "DeleteSpecificationsPartialSuccess",
+    "MeasurementMappingItem",
     "QuerySpecificationsRequest",
     "PagedSpecifications",
     "SpecificationOrderBy",

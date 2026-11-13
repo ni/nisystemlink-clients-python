@@ -7,6 +7,7 @@ from nisystemlink.clients.spec.models._condition import (
     StringConditionValue,
 )
 from nisystemlink.clients.spec.models._specification import (
+    MeasurementMappingItem,
     Specification,
     SpecificationLimit,
     SpecificationType,
@@ -126,6 +127,9 @@ def convert_specs_to_dataframe(
         Following fields are split into sub-columns.
             - conditions: format of the condition columns are decided by the  `condition_format`
             argument of this function.
+            - measurement_mapping: The first mapping item is split into the
+            `measurement_mapping.filter` and `measurement_mapping.result_filter`
+            columns. These columns are omitted if no spec has a mapping.
             - Properties: All the unique properties across all specs will be split into separate columns.
             For example, properties.property1, properties.property2, etc.
     """
@@ -162,11 +166,35 @@ def __convert_spec_to_dict(
         **{
             key: value
             for key, value in vars(spec).items()
-            if key not in ["type", "limit", "conditions"]
+            if key not in ["type", "limit", "conditions", "measurement_mapping"]
         },
         **(__serialize_type(spec.type) if spec.type else {}),
         **(__serialize_limits(spec.limit) if spec.limit else {}),
+        **__serialize_measurement_mapping(spec.measurement_mapping),
         **{key: value for key, value in condition.items()},
+    }
+
+
+def __serialize_measurement_mapping(
+    measurement_mapping: List[MeasurementMappingItem] | None,
+) -> Dict[str, str | None]:
+    """Serialize the first measurement mapping item into
+    measurement_mapping.filter and measurement_mapping.result_filter.
+
+    Args:
+        measurement_mapping: Measurement mapping of a spec.
+
+    Returns:
+        Mapping as a dictionary. Empty if the spec has no mapping. Only the first
+        item is used since a spec currently allows a single mapping item.
+    """
+    if not measurement_mapping:
+        return {}
+
+    item = measurement_mapping[0]
+    return {
+        "measurement_mapping.filter": item.filter,
+        "measurement_mapping.result_filter": item.result_filter,
     }
 
 
