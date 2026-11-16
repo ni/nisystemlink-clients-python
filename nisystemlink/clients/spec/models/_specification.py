@@ -44,15 +44,17 @@ class MeasurementMappingItem(JsonModel):
     """Filters that map a specification to its measurement data."""
 
     filter: str | None = None
-    """Dynamic LINQ filter selecting the test steps mapped to the specification.
+    """Query string specifying the filter criteria for selecting test steps mapped to the
+    specification.
 
-    Uses the format of the `filter` of the Test Monitor query-steps API.
+    Uses the Dynamic LINQ format of the Test Monitor query-steps API filter.
     """
 
     result_filter: str | None = None
-    """Dynamic LINQ filter selecting the test results containing the mapped steps.
+    """Query string specifying the filter criteria for selecting test results containing steps
+    mapped to the specification.
 
-    Uses the format of the `resultFilter` of the Test Monitor query-steps API.
+    Uses the Dynamic LINQ format of the Test Monitor query-steps API resultFilter.
     """
 
 

@@ -83,8 +83,8 @@ class QuerySpecificationsRequest(JsonModel):
     - `createdAt`: ISO-8601 formatted UTC timestamp indicating when the specification was created.
     - `updatedBy`: String representing the ID of the user who updated the specification.
     - `updatedAt`: ISO-8601 formatted UTC timestamp indicating when the specification was updated.
-    - `measurementMapping`: List of measurement mapping items of a specification, each with
-        `filter` and `resultFilter` strings.
+    - `measurementMapping`: Query filters used to associate the specification with its measurement
+        data.
 
     See [Dynamic Linq](https://github.com/ni/systemlink-OpenAPI-documents/wiki/Dynamic-Linq-Query-Language)
     documentation for more details.
