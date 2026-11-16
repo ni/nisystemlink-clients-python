@@ -139,6 +139,28 @@ def specs() -> List[Specification]:
     return specs
 
 
+@pytest.fixture(scope="class")
+def measurement_mapping_specs() -> List[Specification]:
+    """Two specs covering the measurement mapping cases.
+
+    S1 has a full item, filter only, empty item, result filter only and empty strings.
+    S2 has only an empty item.
+    """
+    return [
+        Specification(
+            spec_id="S1",
+            measurement_mapping=[
+                MeasurementMappingItem(filter="F1", result_filter="R1"),
+                MeasurementMappingItem(filter="F2"),
+                MeasurementMappingItem(),
+                MeasurementMappingItem(result_filter="R4"),
+                MeasurementMappingItem(filter="", result_filter=""),
+            ],
+        ),
+        Specification(spec_id="S2", measurement_mapping=[MeasurementMappingItem()]),
+    ]
+
+
 @pytest.mark.unit
 class TestSpecDataframeUtilities:
     def test__convert_specs_to_dataframe_with_summarize_conditions__returns_specs_dataframe_with_string_conditions(
@@ -293,179 +315,75 @@ class TestSpecDataframeUtilities:
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
     @pytest.mark.parametrize(
-        "mapping, expected_mapping_columns",
+        "measurement_mapping_format, expected_spec_ids, expected_columns",
         [
-            (None, []),
-            ([], []),
-            ([MeasurementMappingItem()], []),
             (
-                [MeasurementMappingItem(filter='name == "Output Voltage"')],
-                ["measurement_mapping[0].filter"],
+                normalize_measurement_mappings_per_column,
+                ["S1", "S2"],
+                {
+                    "measurement_mapping[0].filter": ["F1", float("nan")],
+                    "measurement_mapping[0].result_filter": ["R1", float("nan")],
+                    "measurement_mapping[1].filter": ["F2", float("nan")],
+                    "measurement_mapping[3].result_filter": ["R4", float("nan")],
+                    "measurement_mapping[4].filter": ["", float("nan")],
+                    "measurement_mapping[4].result_filter": ["", float("nan")],
+                },
             ),
             (
-                [MeasurementMappingItem(result_filter='partNumber == "VR1234"')],
-                ["measurement_mapping[0].result_filter"],
+                normalize_measurement_mappings_per_row,
+                ["S1", "S1", "S1", "S1", "S2"],
+                {
+                    "measurement_mapping.filter": [
+                        "F1",
+                        "F2",
+                        float("nan"),
+                        "",
+                        float("nan"),
+                    ],
+                    "measurement_mapping.result_filter": [
+                        "R1",
+                        float("nan"),
+                        "R4",
+                        "",
+                        float("nan"),
+                    ],
+                },
             ),
             (
-                [MeasurementMappingItem(filter="", result_filter="")],
-                [
-                    "measurement_mapping[0].filter",
-                    "measurement_mapping[0].result_filter",
-                ],
+                summarize_measurement_mappings_as_a_string,
+                ["S1", "S2"],
+                {
+                    "measurement_mapping": [
+                        "[filter: F1; result_filter: R1], [filter: F2], "
+                        "[result_filter: R4], [filter: ; result_filter: ]",
+                        float("nan"),
+                    ],
+                },
             ),
+            (None, ["S1", "S2"], {}),
             (
-                [
-                    MeasurementMappingItem(filter='name == "Output Voltage"'),
-                    MeasurementMappingItem(filter='name == "Input Voltage"'),
-                ],
-                ["measurement_mapping[0].filter", "measurement_mapping[1].filter"],
+                lambda items: [{"mapped_filters": [item.filter for item in items]}],
+                ["S1", "S2"],
+                {"mapped_filters": [["F1", "F2", None, None, ""], [None]]},
             ),
         ],
-        ids=[
-            "none",
-            "empty_list",
-            "empty_item",
-            "filter_only",
-            "result_filter_only",
-            "empty_strings_are_kept",
-            "multiple_items",
-        ],
+        ids=["per_column", "per_row", "summary", "none", "custom"],
     )
-    def test__convert_specs_to_dataframe_with_empty_or_partial_measurement_mapping__returns_expected_mapping_columns(
-        self, mapping, expected_mapping_columns
-    ):
-        specs = [
-            Specification(
-                product_id=uuid.uuid1().hex,
-                spec_id=uuid.uuid1().hex,
-                name="Output voltage",
-                measurement_mapping=mapping,
-            ),
-        ]
-        expected_specs_df = self.__expected_specs_dataframe(specs=specs)
-
-        specs_df = convert_specs_to_dataframe(specs=specs)
-
-        mapping_columns = [
-            c for c in specs_df.columns if c.startswith("measurement_mapping")
-        ]
-        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
-
-    def test__convert_specs_to_dataframe_with_measurement_mapping_per_row__returns_row_per_mapping(
+    def test__convert_specs_to_dataframe_with_measurement_mapping_format__returns_expected_dataframe(
         self,
+        measurement_mapping_specs,
+        measurement_mapping_format,
+        expected_spec_ids,
+        expected_columns,
     ):
-        specs = [
-            Specification(
-                spec_id="S1",
-                measurement_mapping=[
-                    MeasurementMappingItem(filter="F1", result_filter="R1"),
-                    MeasurementMappingItem(filter="F2"),
-                ],
-            ),
-            Specification(spec_id="S2"),
-        ]
+        expected_df = pd.DataFrame({"spec_id": expected_spec_ids, **expected_columns})
 
         specs_df = convert_specs_to_dataframe(
-            specs=specs,
-            measurement_mapping_format=normalize_measurement_mappings_per_row,
+            specs=measurement_mapping_specs,
+            measurement_mapping_format=measurement_mapping_format,
         )
 
-        assert specs_df["spec_id"].to_list() == ["S1", "S1", "S2"]
-        assert specs_df["measurement_mapping.filter"].to_list()[:2] == ["F1", "F2"]
-        assert specs_df["measurement_mapping.result_filter"].iloc[0] == "R1"
-        assert pd.isna(specs_df["measurement_mapping.result_filter"].iloc[1])
-        assert pd.isna(specs_df["measurement_mapping.filter"].iloc[2])
-
-    def test__convert_specs_to_dataframe_with_measurement_mapping_summary__returns_string_summary(
-        self,
-    ):
-        specs = [
-            Specification(
-                spec_id="S1",
-                measurement_mapping=[
-                    MeasurementMappingItem(filter="F1", result_filter="R1"),
-                    MeasurementMappingItem(filter="F2"),
-                ],
-            ),
-        ]
-
-        specs_df = convert_specs_to_dataframe(
-            specs=specs,
-            measurement_mapping_format=summarize_measurement_mappings_as_a_string,
-        )
-
-        assert len(specs_df) == 1
-        assert (
-            specs_df["measurement_mapping"].iloc[0]
-            == "[filter: F1; result_filter: R1], [filter: F2]"
-        )
-
-    def test__convert_specs_to_dataframe_when_measurement_mapping_format_none__returns_dataframe_without_mapping(
-        self,
-    ):
-        specs = [
-            Specification(
-                spec_id="S1",
-                measurement_mapping=[MeasurementMappingItem(filter="F1")],
-            ),
-        ]
-
-        specs_df = convert_specs_to_dataframe(
-            specs=specs, measurement_mapping_format=None
-        )
-
-        assert len(specs_df) == 1
-        assert not [c for c in specs_df.columns if c.startswith("measurement_mapping")]
-
-    def test__convert_specs_to_dataframe_with_custom_measurement_mapping_format__uses_custom_format(
-        self,
-    ):
-        specs = [
-            Specification(
-                spec_id="S1",
-                measurement_mapping=[
-                    MeasurementMappingItem(filter="F1"),
-                    MeasurementMappingItem(filter="F2"),
-                ],
-            ),
-        ]
-
-        specs_df = convert_specs_to_dataframe(
-            specs=specs,
-            measurement_mapping_format=lambda items: [
-                {"mapped_filters": [item.filter for item in items]}
-            ],
-        )
-
-        assert specs_df["mapped_filters"].iloc[0] == ["F1", "F2"]
-
-    def test__normalize_measurement_mappings__returns_expected_formats(self):
-        mappings = [
-            MeasurementMappingItem(filter="F1", result_filter="R1"),
-            MeasurementMappingItem(),
-            MeasurementMappingItem(result_filter="R3"),
-        ]
-
-        assert normalize_measurement_mappings_per_column(mappings) == [
-            {
-                "measurement_mapping[0].filter": "F1",
-                "measurement_mapping[0].result_filter": "R1",
-                "measurement_mapping[2].result_filter": "R3",
-            }
-        ]
-        assert normalize_measurement_mappings_per_row(mappings) == [
-            {
-                "measurement_mapping.filter": "F1",
-                "measurement_mapping.result_filter": "R1",
-            },
-            {"measurement_mapping.result_filter": "R3"},
-        ]
-        assert summarize_measurement_mappings_as_a_string(mappings) == [
-            {
-                "measurement_mapping": "[filter: F1; result_filter: R1], [result_filter: R3]"
-            }
-        ]
-        assert normalize_measurement_mappings_per_column([]) == []
+        pd.testing.assert_frame_equal(specs_df, expected_df, check_dtype=True)
 
     def test__convert_specs_to_dataframe_with_condition_per_column__returns_dataframe_with_condition_per_column(
         self, specs
