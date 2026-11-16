@@ -21,7 +21,10 @@ from nisystemlink.clients.spec.utilities import convert_specs_to_dataframe
 from nisystemlink.clients.spec.utilities._dataframe_utilities import (
     normalize_conditions_per_column,
     normalize_conditions_per_row,
+    normalize_measurement_mappings_per_column,
+    normalize_measurement_mappings_per_row,
     summarize_conditions_as_a_string,
+    summarize_measurement_mappings_as_a_string,
 )
 
 # Python datetime fixtures infer nanoseconds in pandas 2 and microseconds in pandas 3.
@@ -297,15 +300,25 @@ class TestSpecDataframeUtilities:
             ([MeasurementMappingItem()], []),
             (
                 [MeasurementMappingItem(filter='name == "Output Voltage"')],
-                ["measurement_mapping.filter"],
+                ["measurement_mapping[0].filter"],
             ),
             (
                 [MeasurementMappingItem(result_filter='partNumber == "VR1234"')],
-                ["measurement_mapping.result_filter"],
+                ["measurement_mapping[0].result_filter"],
             ),
             (
                 [MeasurementMappingItem(filter="", result_filter="")],
-                ["measurement_mapping.filter", "measurement_mapping.result_filter"],
+                [
+                    "measurement_mapping[0].filter",
+                    "measurement_mapping[0].result_filter",
+                ],
+            ),
+            (
+                [
+                    MeasurementMappingItem(filter='name == "Output Voltage"'),
+                    MeasurementMappingItem(filter='name == "Input Voltage"'),
+                ],
+                ["measurement_mapping[0].filter", "measurement_mapping[1].filter"],
             ),
         ],
         ids=[
@@ -315,6 +328,7 @@ class TestSpecDataframeUtilities:
             "filter_only",
             "result_filter_only",
             "empty_strings_are_kept",
+            "multiple_items",
         ],
     )
     def test__convert_specs_to_dataframe_with_empty_or_partial_measurement_mapping__returns_expected_mapping_columns(
@@ -335,8 +349,123 @@ class TestSpecDataframeUtilities:
         mapping_columns = [
             c for c in specs_df.columns if c.startswith("measurement_mapping")
         ]
-        assert mapping_columns == expected_mapping_columns
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+
+    def test__convert_specs_to_dataframe_with_measurement_mapping_per_row__returns_row_per_mapping(
+        self,
+    ):
+        specs = [
+            Specification(
+                spec_id="S1",
+                measurement_mapping=[
+                    MeasurementMappingItem(filter="F1", result_filter="R1"),
+                    MeasurementMappingItem(filter="F2"),
+                ],
+            ),
+            Specification(spec_id="S2"),
+        ]
+
+        specs_df = convert_specs_to_dataframe(
+            specs=specs,
+            measurement_mapping_format=normalize_measurement_mappings_per_row,
+        )
+
+        assert specs_df["spec_id"].to_list() == ["S1", "S1", "S2"]
+        assert specs_df["measurement_mapping.filter"].to_list()[:2] == ["F1", "F2"]
+        assert specs_df["measurement_mapping.result_filter"].iloc[0] == "R1"
+        assert pd.isna(specs_df["measurement_mapping.result_filter"].iloc[1])
+        assert pd.isna(specs_df["measurement_mapping.filter"].iloc[2])
+
+    def test__convert_specs_to_dataframe_with_measurement_mapping_summary__returns_string_summary(
+        self,
+    ):
+        specs = [
+            Specification(
+                spec_id="S1",
+                measurement_mapping=[
+                    MeasurementMappingItem(filter="F1", result_filter="R1"),
+                    MeasurementMappingItem(filter="F2"),
+                ],
+            ),
+        ]
+
+        specs_df = convert_specs_to_dataframe(
+            specs=specs,
+            measurement_mapping_format=summarize_measurement_mappings_as_a_string,
+        )
+
+        assert len(specs_df) == 1
+        assert (
+            specs_df["measurement_mapping"].iloc[0]
+            == "[filter: F1; result_filter: R1], [filter: F2]"
+        )
+
+    def test__convert_specs_to_dataframe_when_measurement_mapping_format_none__returns_dataframe_without_mapping(
+        self,
+    ):
+        specs = [
+            Specification(
+                spec_id="S1",
+                measurement_mapping=[MeasurementMappingItem(filter="F1")],
+            ),
+        ]
+
+        specs_df = convert_specs_to_dataframe(
+            specs=specs, measurement_mapping_format=None
+        )
+
+        assert len(specs_df) == 1
+        assert not [c for c in specs_df.columns if c.startswith("measurement_mapping")]
+
+    def test__convert_specs_to_dataframe_with_custom_measurement_mapping_format__uses_custom_format(
+        self,
+    ):
+        specs = [
+            Specification(
+                spec_id="S1",
+                measurement_mapping=[
+                    MeasurementMappingItem(filter="F1"),
+                    MeasurementMappingItem(filter="F2"),
+                ],
+            ),
+        ]
+
+        specs_df = convert_specs_to_dataframe(
+            specs=specs,
+            measurement_mapping_format=lambda items: [
+                {"mapped_filters": [item.filter for item in items]}
+            ],
+        )
+
+        assert specs_df["mapped_filters"].iloc[0] == ["F1", "F2"]
+
+    def test__normalize_measurement_mappings__returns_expected_formats(self):
+        mappings = [
+            MeasurementMappingItem(filter="F1", result_filter="R1"),
+            MeasurementMappingItem(),
+            MeasurementMappingItem(result_filter="R3"),
+        ]
+
+        assert normalize_measurement_mappings_per_column(mappings) == [
+            {
+                "measurement_mapping[0].filter": "F1",
+                "measurement_mapping[0].result_filter": "R1",
+                "measurement_mapping[2].result_filter": "R3",
+            }
+        ]
+        assert normalize_measurement_mappings_per_row(mappings) == [
+            {
+                "measurement_mapping.filter": "F1",
+                "measurement_mapping.result_filter": "R1",
+            },
+            {"measurement_mapping.result_filter": "R3"},
+        ]
+        assert summarize_measurement_mappings_as_a_string(mappings) == [
+            {
+                "measurement_mapping": "[filter: F1; result_filter: R1], [result_filter: R3]"
+            }
+        ]
+        assert normalize_measurement_mappings_per_column([]) == []
 
     def test__convert_specs_to_dataframe_with_condition_per_column__returns_dataframe_with_condition_per_column(
         self, specs
@@ -686,16 +815,17 @@ class TestSpecDataframeUtilities:
                             "limit.min": spec.limit.min if spec.limit else None,
                             "limit.typical": spec.limit.typical if spec.limit else None,
                             "limit.max": spec.limit.max if spec.limit else None,
-                            "measurement_mapping.filter": (
-                                spec.measurement_mapping[0].filter
-                                if spec.measurement_mapping
-                                else float("nan")
-                            ),
-                            "measurement_mapping.result_filter": (
-                                spec.measurement_mapping[0].result_filter
-                                if spec.measurement_mapping
-                                else float("nan")
-                            ),
+                            **{
+                                f"measurement_mapping[{mapping_index}].{key}": value
+                                for mapping_index, mapping in enumerate(
+                                    spec.measurement_mapping or []
+                                )
+                                for key, value in (
+                                    ("filter", mapping.filter),
+                                    ("result_filter", mapping.result_filter),
+                                )
+                                if value is not None
+                            },
                         },
                         **{
                             key: float("nan") if value is None else value

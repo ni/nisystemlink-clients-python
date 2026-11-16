@@ -93,11 +93,89 @@ def normalize_conditions_per_row(
     ]
 
 
+def summarize_measurement_mappings_as_a_string(
+    measurement_mappings: List[MeasurementMappingItem],
+) -> List[Dict[str, str]]:
+    """Converts the measurement mappings to an easily readable string format.
+
+    Args:
+        measurement_mappings: List of all measurement mappings in a spec.
+
+    Returns:
+        A list with a single dictionary. The key will be "measurement_mapping" and the value
+        will be "[filter: <value>; result_filter: <value>], [filter: <value>]" where each
+        bracketed group is a mapping item. Fields that are None are left out and items
+        without any field are skipped. The list is empty if there is nothing to summarize.
+    """
+    summaries = []
+    for item in measurement_mappings:
+        fields = __serialize_measurement_mapping_fields(item)
+        if fields:
+            summaries.append(
+                "["
+                + "; ".join(f"{key}: {value}" for key, value in fields.items())
+                + "]"
+            )
+
+    return [{"measurement_mapping": ", ".join(summaries)}] if summaries else []
+
+
+def normalize_measurement_mappings_per_column(
+    measurement_mappings: List[MeasurementMappingItem],
+) -> List[Dict[str, Any]]:
+    """Convert measurement mappings into a single dictionary where each mapping item is
+    split into indexed keys.
+
+    Args:
+        measurement_mappings: List of all measurement mappings in a spec.
+
+    Returns:
+        A list with a single dictionary. The keys will be
+        "measurement_mapping[<index>].filter" and "measurement_mapping[<index>].result_filter"
+        and the values will be the corresponding mapping item field. Fields that are None
+        are left out. The list is empty if no mapping item has a value.
+    """
+    columns = {
+        f"measurement_mapping[{index}].{key}": value
+        for index, item in enumerate(measurement_mappings)
+        for key, value in __serialize_measurement_mapping_fields(item).items()
+    }
+
+    return [columns] if columns else []
+
+
+def normalize_measurement_mappings_per_row(
+    measurement_mappings: List[MeasurementMappingItem],
+) -> List[Dict[str, Any]]:
+    """Convert measurement mappings into list of dictionaries where dictionary keys will be
+    'measurement_mapping.filter' and 'measurement_mapping.result_filter'.
+
+    Args:
+        measurement_mappings: List of all measurement mappings in a spec.
+
+    Returns:
+        A list of dictionaries, one for each mapping item that has a value. Fields that
+        are None are left out. Each mapping item will be logged as separate dictionary
+        entry in the list which translates to separate row in the dataframe.
+    """
+    return [
+        {f"measurement_mapping.{key}": value for key, value in fields.items()}
+        for fields in (
+            __serialize_measurement_mapping_fields(item)
+            for item in measurement_mappings
+        )
+        if fields
+    ]
+
+
 def convert_specs_to_dataframe(
     specs: List[Specification],
     condition_format: (
         Callable[[List[Condition]], List[Dict[str, Any]]] | None
     ) = normalize_conditions_per_column,
+    measurement_mapping_format: (
+        Callable[[List[MeasurementMappingItem]], List[Dict[str, Any]]] | None
+    ) = normalize_measurement_mappings_per_column,
 ) -> pd.DataFrame:
     """Creates a Pandas DataFrame for the specs.
 
@@ -121,24 +199,50 @@ def convert_specs_to_dataframe(
                           If condition value is needed as a string summary of condition data, the public method
                           `summarize_conditions_as_a_string` can be provided as this callback function.
                           If None is passed, conditions will not be included in the dataframe.
+        measurement_mapping_format: A callback function which takes in a list of measurement mapping
+                          items of a spec and returns a list of dictionary of measurement mapping
+                          data. Dataframe rows will be constructed based on these list of
+                          dictionaries. Each dictionary in the list indicates a row. If there is
+                          more than one dictionary in the list, it will be considered as a new
+                          row and other spec column data will be duplicated. Keys will be used as
+                          the dataframe column header and values will be used as the row cells
+                          for the respective column header.
+                          If not passed, each mapping item will be split into the indexed columns
+                          `measurement_mapping[<index>].filter` and
+                          `measurement_mapping[<index>].result_filter`.
+                          If measurement mapping is needed as one row per mapping item, the public
+                          method `normalize_measurement_mappings_per_row` can be provided as the
+                          callback function.
+                          If measurement mapping is needed as a string summary, the public method
+                          `summarize_measurement_mappings_as_a_string` can be provided as this
+                          callback function.
+                          If None is passed, measurement mappings will not be included in the dataframe.
 
     Returns:
         A Pandas DataFrame with the each spec fields having a separate column.
         Following fields are split into sub-columns.
             - conditions: format of the condition columns are decided by the  `condition_format`
             argument of this function.
-            - measurement_mapping: The first mapping item is split into the
-            `measurement_mapping.filter` and `measurement_mapping.result_filter`
-            columns. These columns are omitted if no spec has a mapping.
+            - measurement_mapping: format of the measurement mapping columns are decided by the
+            `measurement_mapping_format` argument of this function.
             - Properties: All the unique properties across all specs will be split into separate columns.
             For example, properties.property1, properties.property2, etc.
     """
     specs_dict = [
-        __convert_spec_to_dict(spec=spec, condition=condition)
+        __convert_spec_to_dict(
+            spec=spec,
+            condition=condition,
+            measurement_mapping=measurement_mapping,
+        )
         for spec in specs
         for condition in (
             condition_format(spec.conditions)
             if (spec.conditions and condition_format)
+            else [{}]
+        )
+        for measurement_mapping in (
+            (measurement_mapping_format(spec.measurement_mapping) or [{}])
+            if (spec.measurement_mapping and measurement_mapping_format)
             else [{}]
         )
     ]
@@ -151,16 +255,19 @@ def convert_specs_to_dataframe(
 
 
 def __convert_spec_to_dict(
-    spec: Specification, condition: Dict[str, Any]
+    spec: Specification,
+    condition: Dict[str, Any],
+    measurement_mapping: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Converts a spec into dictionary.
 
     Args:
         spec: Spec object.
         condition: Condition as a dictionary which is added to the output spec dictionary.
+        measurement_mapping: Measurement mapping as a dictionary which is added to the output spec dictionary.
 
     Returns:
-        Spec as a dictionary with the provided condition dictionary included.
+        Spec as a dictionary with the provided condition and measurement mapping dictionaries included.
     """
     return {
         **{
@@ -170,31 +277,29 @@ def __convert_spec_to_dict(
         },
         **(__serialize_type(spec.type) if spec.type else {}),
         **(__serialize_limits(spec.limit) if spec.limit else {}),
-        **__serialize_measurement_mapping(spec.measurement_mapping),
+        **{key: value for key, value in measurement_mapping.items()},
         **{key: value for key, value in condition.items()},
     }
 
 
-def __serialize_measurement_mapping(
-    measurement_mapping: List[MeasurementMappingItem] | None,
-) -> Dict[str, str | None]:
-    """Serialize the first measurement mapping item into
-    measurement_mapping.filter and measurement_mapping.result_filter.
+def __serialize_measurement_mapping_fields(
+    measurement_mapping: MeasurementMappingItem,
+) -> Dict[str, str]:
+    """Get the fields of a measurement mapping item that have a value.
 
     Args:
-        measurement_mapping: Measurement mapping of a spec.
+        measurement_mapping: Measurement mapping item of a spec.
 
     Returns:
-        Mapping as a dictionary. Empty if the spec has no mapping. Only the first
-        item is used since a spec currently allows a single mapping item.
+        Dictionary with the keys "filter" and "result_filter" when their values are not None.
     """
-    if not measurement_mapping:
-        return {}
-
-    item = measurement_mapping[0]
     return {
-        "measurement_mapping.filter": item.filter,
-        "measurement_mapping.result_filter": item.result_filter,
+        key: value
+        for key, value in (
+            ("filter", measurement_mapping.filter),
+            ("result_filter", measurement_mapping.result_filter),
+        )
+        if value is not None
     }
 
 
