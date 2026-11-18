@@ -113,12 +113,3 @@ response = client.query_specs(
 )
 noise_category = response.specs
 print(noise_category)
-
-# Query specs that have a measurement mapping
-response = client.query_specs(
-    QuerySpecificationsRequest(
-        product_ids=[product],
-        filter='measurementMapping.Any(m => m.resultFilter.Contains("VR1234"))',
-    )
-)
-specs_mapped_to_part_number = response.specs
