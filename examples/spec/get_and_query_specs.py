@@ -6,6 +6,7 @@ from nisystemlink.clients.spec.models import (
     ConditionType,
     CreateSpecificationsRequest,
     CreateSpecificationsRequestObject,
+    MeasurementMappingItem,
     NumericConditionValue,
     QuerySpecificationsRequest,
     SpecificationLimit,
@@ -44,6 +45,12 @@ spec_requests = [
         name="input voltage",
         limit=SpecificationLimit(min=0.02, max=0.15),
         unit="mV",
+        measurement_mapping=[
+            MeasurementMappingItem(
+                filter='data.parameters.Any(it["name"] == "Input Voltage")',
+                result_filter='partNumber == "VR1234"',
+            )
+        ],
         conditions=[
             Condition(
                 name="Temperature",
