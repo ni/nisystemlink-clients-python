@@ -314,6 +314,28 @@ class TestSpecDataframeUtilities:
         assert not specs_df.empty
         pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
 
+    def test__convert_specs_to_dataframe_without_condition_format__returns_condition_per_column(
+        self,
+    ):
+        condition_value = StringConditionValue(
+            condition_type=ConditionType.STRING, discrete=["D", "QFIN"]
+        )
+        specs = [
+            Specification(
+                spec_id="S1",
+                conditions=[Condition(name="Package", value=condition_value)],
+            )
+        ]
+        expected_specs_df = self.__expected_specs_dataframe(
+            specs=specs,
+            conditions_dict=[[{"condition_Package": condition_value}]],
+        )
+
+        specs_df = convert_specs_to_dataframe(specs=specs)
+
+        assert len(specs_df) == 1
+        pd.testing.assert_frame_equal(specs_df, expected_specs_df, check_dtype=True)
+
     @pytest.mark.parametrize(
         "measurement_mapping_format, expected_spec_ids, expected_columns",
         [
@@ -383,6 +405,29 @@ class TestSpecDataframeUtilities:
             measurement_mapping_format=measurement_mapping_format,
         )
 
+        pd.testing.assert_frame_equal(specs_df, expected_df, check_dtype=True)
+
+    def test__convert_specs_to_dataframe_without_measurement_mapping_format__returns_measurement_mapping_per_column(
+        self,
+    ):
+        specs = [
+            Specification(
+                spec_id="S1",
+                measurement_mapping=[
+                    MeasurementMappingItem(filter="F1", result_filter="R1")
+                ],
+            )
+        ]
+
+        specs_df = convert_specs_to_dataframe(specs=specs)
+
+        expected_df = pd.DataFrame(
+            {
+                "spec_id": ["S1"],
+                "measurement_mapping[0].filter": ["F1"],
+                "measurement_mapping[0].result_filter": ["R1"],
+            }
+        )
         pd.testing.assert_frame_equal(specs_df, expected_df, check_dtype=True)
 
     def test__convert_specs_to_dataframe_with_condition_per_column__returns_dataframe_with_condition_per_column(
