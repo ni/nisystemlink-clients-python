@@ -2,6 +2,7 @@ import uuid
 from typing import List
 
 import pytest
+from nisystemlink.clients.core._api_error import ApiError
 from nisystemlink.clients.core._api_exception import ApiException
 from nisystemlink.clients.core._http_configuration import HttpConfiguration
 from nisystemlink.clients.spec import SpecClient
@@ -115,6 +116,47 @@ def create_specs_for_query(create_specs, product):
         ),
     ]
     return create_specs(CreateSpecificationsRequest(specs=spec_requests))
+
+
+def _create_spec(create_specs, product, **fields) -> CreatedSpecification:
+    fields.setdefault("type", SpecificationType.PARAMETRIC)
+    response = create_specs(
+        CreateSpecificationsRequest(
+            specs=[
+                CreateSpecificationsRequestObject(
+                    product_id=product, spec_id=uuid.uuid1().hex, **fields
+                )
+            ]
+        )
+    )
+    assert response.created_specs
+    return response.created_specs[0]
+
+
+def _update_request(
+    created_spec: CreatedSpecification, **fields
+) -> UpdateSpecificationsRequest:
+    fields.setdefault("type", SpecificationType.PARAMETRIC)
+    return UpdateSpecificationsRequest(
+        specs=[
+            UpdateSpecificationsRequestObject(
+                id=created_spec.id,
+                product_id=created_spec.product_id,
+                spec_id=created_spec.spec_id,
+                version=created_spec.version,
+                workspace=created_spec.workspace,
+                **fields,
+            )
+        ]
+    )
+
+
+def _error_names(error: ApiError) -> List[str]:
+    """Names of the error and all of its nested inner errors."""
+    names = [error.name or ""]
+    for inner in error.inner_errors:
+        names.extend(_error_names(inner))
+    return names
 
 
 @pytest.mark.integration
@@ -302,6 +344,136 @@ class TestSpec:
         cleared_spec = client.get_spec(created_spec.id)
         assert cleared_spec.measurement_mapping is None
 
+    @pytest.mark.parametrize(
+        "mapping, expected",
+        [
+            ([], []),
+            (
+                [MeasurementMappingItem(filter="a == 1", result_filter="b == 2")],
+                [MeasurementMappingItem(filter="a == 1", result_filter="b == 2")],
+            ),
+        ],
+        ids=["empty_list", "items"],
+    )
+    def test__update_spec_measurement_mapping__stored_value_matches_update(
+        self, client: SpecClient, create_specs, product, mapping, expected
+    ):
+        created_spec = _create_spec(
+            create_specs,
+            product,
+            measurement_mapping=[MeasurementMappingItem(filter="mapped == true")],
+        )
+
+        response = client.update_specs(
+            _update_request(created_spec, measurement_mapping=mapping)
+        )
+
+        assert response is not None
+        assert response.updated_specs
+        stored_spec = client.get_spec(created_spec.id)
+        assert (stored_spec.measurement_mapping or []) == expected
+
+    @pytest.mark.parametrize(
+        "spec_type, mapping, expected_error",
+        [
+            (
+                SpecificationType.FUNCTIONAL,
+                [MeasurementMappingItem(filter="a == 1")],
+                "MeasurementMappingProvidedForFunctionalSpecification",
+            ),
+            (
+                SpecificationType.PARAMETRIC,
+                [
+                    MeasurementMappingItem(filter="a == 1"),
+                    MeasurementMappingItem(filter="b == 2"),
+                ],
+                "MeasurementMappingCountExceeded",
+            ),
+        ],
+        ids=["functional_with_mapping", "two_items"],
+    )
+    def test__create_spec_with_invalid_measurement_mapping__returned_in_failed_specs(
+        self,
+        client: SpecClient,
+        create_specs,
+        product,
+        spec_type,
+        mapping,
+        expected_error,
+    ):
+        spec_id = uuid.uuid1().hex
+
+        response = create_specs(
+            CreateSpecificationsRequest(
+                specs=[
+                    CreateSpecificationsRequestObject(
+                        product_id=product,
+                        spec_id=spec_id,
+                        type=spec_type,
+                        measurement_mapping=mapping,
+                    )
+                ]
+            )
+        )
+
+        assert not response.created_specs
+        assert response.failed_specs
+        assert [spec.spec_id for spec in response.failed_specs] == [spec_id]
+        assert response.error is not None
+        assert expected_error in _error_names(response.error)
+        assert response.error.message
+
+    @pytest.mark.parametrize(
+        "spec_type, mapping, expected_error",
+        [
+            (
+                SpecificationType.FUNCTIONAL,
+                [MeasurementMappingItem(filter="a == 1")],
+                "MeasurementMappingProvidedForFunctionalSpecification",
+            ),
+            (
+                SpecificationType.PARAMETRIC,
+                [
+                    MeasurementMappingItem(filter="a == 1"),
+                    MeasurementMappingItem(filter="b == 2"),
+                ],
+                "MeasurementMappingCountExceeded",
+            ),
+        ],
+        ids=["functional_with_mapping", "two_items"],
+    )
+    def test__update_spec_with_invalid_measurement_mapping__returned_in_failed_specs(
+        self,
+        client: SpecClient,
+        create_specs,
+        product,
+        spec_type,
+        mapping,
+        expected_error,
+    ):
+        created_spec = _create_spec(create_specs, product, type=spec_type)
+
+        response = client.update_specs(
+            _update_request(created_spec, type=spec_type, measurement_mapping=mapping)
+        )
+
+        assert response is not None
+        assert not response.updated_specs
+        assert response.failed_specs
+        assert [spec.spec_id for spec in response.failed_specs] == [
+            created_spec.spec_id
+        ]
+        assert response.error is not None
+        assert expected_error in _error_names(response.error)
+        assert response.error.message
+
+    def test__create_spec_without_measurement_mapping__get_spec_returns_none(
+        self, client: SpecClient, create_specs, product
+    ):
+        created_spec = _create_spec(create_specs, product)
+
+        assert client.get_spec(created_spec.id).measurement_mapping is None
+
     def test__get_spec_by_id__spec_matches_expected(
         self, client: SpecClient, create_specs, product
     ):
@@ -388,6 +560,29 @@ class TestSpec:
         response = client.query_specs(request)
         assert response.specs
         assert len(response.specs) == 2
+
+    def test__query_specs_without_projection__measurement_mapping_returned(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        response = client.query_specs(QuerySpecificationsRequest(product_ids=[product]))
+
+        assert response.specs
+        mappings = {spec.name: spec.measurement_mapping for spec in response.specs}
+        assert mappings["output voltage"]
+        assert mappings["input voltage"] is None
+
+    def test__query_specs_projection_without_measurement_mapping__mapping_is_none(
+        self, client: SpecClient, create_specs, create_specs_for_query, product
+    ):
+        response = client.query_specs(
+            QuerySpecificationsRequest(
+                product_ids=[product],
+                projection=[SpecificationProjection.SPEC_ID],
+            )
+        )
+
+        assert response.specs
+        assert all(spec.measurement_mapping is None for spec in response.specs)
 
     def test__query_input_voltage__conditions_match(
         self, client: SpecClient, create_specs, create_specs_for_query, product
