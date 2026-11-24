@@ -26,6 +26,11 @@ from nisystemlink.clients.spec.models import (
     UpdateSpecificationsRequestObject,
 )
 
+OUTPUT_VOLTAGE_FILTER = 'data.parameters.Any(it["name"] == "Output Voltage")'
+OUTPUT_VOLTAGE_RESULT_FILTER = 'partNumber == "VR1234"'
+INPUT_VOLTAGE_FILTER = 'data.parameters.Any(it["name"] == "Input Voltage")'
+INPUT_VOLTAGE_RESULT_FILTER = 'partNumber == "VR5678"'
+
 
 @pytest.fixture(scope="class")
 def product() -> str:
@@ -234,14 +239,14 @@ class TestSpec:
         [
             (
                 SpecificationType.FUNCTIONAL,
-                [MeasurementMappingItem(filter="a == 1")],
+                [MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER)],
                 "MeasurementMappingProvidedForFunctionalSpecification",
             ),
             (
                 SpecificationType.PARAMETRIC,
                 [
-                    MeasurementMappingItem(filter="a == 1"),
-                    MeasurementMappingItem(filter="b == 2"),
+                    MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER),
+                    MeasurementMappingItem(filter=INPUT_VOLTAGE_FILTER),
                 ],
                 "MeasurementMappingCountExceeded",
             ),
@@ -327,7 +332,7 @@ class TestSpec:
             keywords=["work", "reveiwed"],
             block="modifiedBlock",
             measurement_mapping=[
-                MeasurementMappingItem(filter="mapped == true", result_filter=None)
+                MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER, result_filter=None)
             ],
             version=created_spec.version,
             workspace=created_spec.workspace,
@@ -344,13 +349,13 @@ class TestSpec:
 
         stored_spec = client.get_spec(created_spec.id)
         assert stored_spec.measurement_mapping == [
-            MeasurementMappingItem(filter="mapped == true")
+            MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER)
         ]
 
     def test__update_spec_measurement_mapping__omitted_is_kept_and_none_clears(
         self, client: SpecClient, create_specs, product
     ):
-        mapping = [MeasurementMappingItem(filter="mapped == true")]
+        mapping = [MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER)]
         response = create_specs(
             CreateSpecificationsRequest(
                 specs=[
@@ -400,8 +405,18 @@ class TestSpec:
         [
             ([], []),
             (
-                [MeasurementMappingItem(filter="a == 1", result_filter="b == 2")],
-                [MeasurementMappingItem(filter="a == 1", result_filter="b == 2")],
+                [
+                    MeasurementMappingItem(
+                        filter=INPUT_VOLTAGE_FILTER,
+                        result_filter=INPUT_VOLTAGE_RESULT_FILTER,
+                    )
+                ],
+                [
+                    MeasurementMappingItem(
+                        filter=INPUT_VOLTAGE_FILTER,
+                        result_filter=INPUT_VOLTAGE_RESULT_FILTER,
+                    )
+                ],
             ),
         ],
         ids=["empty_list", "items"],
@@ -412,7 +427,7 @@ class TestSpec:
         created_spec = _create_spec(
             create_specs,
             product,
-            measurement_mapping=[MeasurementMappingItem(filter="mapped == true")],
+            measurement_mapping=[MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER)],
         )
 
         response = client.update_specs(
@@ -429,14 +444,14 @@ class TestSpec:
         [
             (
                 SpecificationType.FUNCTIONAL,
-                [MeasurementMappingItem(filter="a == 1")],
+                [MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER)],
                 "MeasurementMappingProvidedForFunctionalSpecification",
             ),
             (
                 SpecificationType.PARAMETRIC,
                 [
-                    MeasurementMappingItem(filter="a == 1"),
-                    MeasurementMappingItem(filter="b == 2"),
+                    MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER),
+                    MeasurementMappingItem(filter=INPUT_VOLTAGE_FILTER),
                 ],
                 "MeasurementMappingCountExceeded",
             ),
@@ -481,7 +496,8 @@ class TestSpec:
             block="newBlock",
             measurement_mapping=[
                 MeasurementMappingItem(
-                    filter="mapped == true", result_filter='partNumber == "VR1234"'
+                    filter=OUTPUT_VOLTAGE_FILTER,
+                    result_filter=OUTPUT_VOLTAGE_RESULT_FILTER,
                 )
             ],
         )

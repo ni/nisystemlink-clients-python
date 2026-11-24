@@ -21,8 +21,11 @@ from nisystemlink.clients.spec.models import (
 
 BASE_URL = "https://example.com"
 
-MAPPING = [MeasurementMappingItem(filter="F1", result_filter="R1")]
-MAPPING_JSON = [{"filter": "F1", "resultFilter": "R1"}]
+FILTER = 'data.parameters.Any(it["name"] == "Output Voltage")'
+RESULT_FILTER = 'partNumber == "VR1234"'
+
+MAPPING = [MeasurementMappingItem(filter=FILTER, result_filter=RESULT_FILTER)]
+MAPPING_JSON = [{"filter": FILTER, "resultFilter": RESULT_FILTER}]
 
 SPEC_JSON = {
     "id": "1",
