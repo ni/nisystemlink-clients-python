@@ -229,6 +229,56 @@ class TestSpec:
         assert len(fail_response.created_specs) == 0
         assert fail_response.failed_specs[0].spec_id == duplicate_id
 
+    @pytest.mark.parametrize(
+        "spec_type, mapping, expected_error",
+        [
+            (
+                SpecificationType.FUNCTIONAL,
+                [MeasurementMappingItem(filter="a == 1")],
+                "MeasurementMappingProvidedForFunctionalSpecification",
+            ),
+            (
+                SpecificationType.PARAMETRIC,
+                [
+                    MeasurementMappingItem(filter="a == 1"),
+                    MeasurementMappingItem(filter="b == 2"),
+                ],
+                "MeasurementMappingCountExceeded",
+            ),
+        ],
+        ids=["functional_with_mapping", "two_items"],
+    )
+    def test__create_spec_with_invalid_measurement_mapping__returned_in_failed_specs(
+        self,
+        client: SpecClient,
+        create_specs,
+        product,
+        spec_type,
+        mapping,
+        expected_error,
+    ):
+        spec_id = uuid.uuid1().hex
+
+        response = create_specs(
+            CreateSpecificationsRequest(
+                specs=[
+                    CreateSpecificationsRequestObject(
+                        product_id=product,
+                        spec_id=spec_id,
+                        type=spec_type,
+                        measurement_mapping=mapping,
+                    )
+                ]
+            )
+        )
+
+        assert not response.created_specs
+        assert response.failed_specs
+        assert [spec.spec_id for spec in response.failed_specs] == [spec_id]
+        assert response.error is not None
+        assert expected_error in _error_names(response.error)
+        assert response.error.message
+
     def test__delete_existing_spec__succeeds(self, client: SpecClient, product):
         # Not using the fixture here so that we can inspect delete response.
         specId = uuid.uuid1().hex
@@ -393,56 +443,6 @@ class TestSpec:
         ],
         ids=["functional_with_mapping", "two_items"],
     )
-    def test__create_spec_with_invalid_measurement_mapping__returned_in_failed_specs(
-        self,
-        client: SpecClient,
-        create_specs,
-        product,
-        spec_type,
-        mapping,
-        expected_error,
-    ):
-        spec_id = uuid.uuid1().hex
-
-        response = create_specs(
-            CreateSpecificationsRequest(
-                specs=[
-                    CreateSpecificationsRequestObject(
-                        product_id=product,
-                        spec_id=spec_id,
-                        type=spec_type,
-                        measurement_mapping=mapping,
-                    )
-                ]
-            )
-        )
-
-        assert not response.created_specs
-        assert response.failed_specs
-        assert [spec.spec_id for spec in response.failed_specs] == [spec_id]
-        assert response.error is not None
-        assert expected_error in _error_names(response.error)
-        assert response.error.message
-
-    @pytest.mark.parametrize(
-        "spec_type, mapping, expected_error",
-        [
-            (
-                SpecificationType.FUNCTIONAL,
-                [MeasurementMappingItem(filter="a == 1")],
-                "MeasurementMappingProvidedForFunctionalSpecification",
-            ),
-            (
-                SpecificationType.PARAMETRIC,
-                [
-                    MeasurementMappingItem(filter="a == 1"),
-                    MeasurementMappingItem(filter="b == 2"),
-                ],
-                "MeasurementMappingCountExceeded",
-            ),
-        ],
-        ids=["functional_with_mapping", "two_items"],
-    )
     def test__update_spec_with_invalid_measurement_mapping__returned_in_failed_specs(
         self,
         client: SpecClient,
@@ -467,13 +467,6 @@ class TestSpec:
         assert response.error is not None
         assert expected_error in _error_names(response.error)
         assert response.error.message
-
-    def test__create_spec_without_measurement_mapping__get_spec_returns_none(
-        self, client: SpecClient, create_specs, product
-    ):
-        created_spec = _create_spec(create_specs, product)
-
-        assert client.get_spec(created_spec.id).measurement_mapping is None
 
     def test__get_spec_by_id__spec_matches_expected(
         self, client: SpecClient, create_specs, product
@@ -505,6 +498,13 @@ class TestSpec:
         assert get_spec_response.id == created_spec.id
         assert get_spec_response.product_id == productId
         assert get_spec_response.measurement_mapping == spec.measurement_mapping
+
+    def test__get_spec_created_without_measurement_mapping__returns_none(
+        self, client: SpecClient, create_specs, product
+    ):
+        created_spec = _create_spec(create_specs, product)
+
+        assert client.get_spec(created_spec.id).measurement_mapping is None
 
     def test__get_non_existant_spec_by_id__get_spec_fails(self, client: SpecClient):
         non_existant_spec_id = "10"
