@@ -332,7 +332,7 @@ class TestSpec:
             keywords=["work", "reveiwed"],
             block="modifiedBlock",
             measurement_mapping=[
-                MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER, result_filter=None)
+                MeasurementMappingItem(filter="mapped == true", result_filter=None)
             ],
             version=created_spec.version,
             workspace=created_spec.workspace,
@@ -349,13 +349,13 @@ class TestSpec:
 
         stored_spec = client.get_spec(created_spec.id)
         assert stored_spec.measurement_mapping == [
-            MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER)
+            MeasurementMappingItem(filter="mapped == true")
         ]
 
     def test__update_spec_measurement_mapping__omitted_is_kept_and_none_clears(
         self, client: SpecClient, create_specs, product
     ):
-        mapping = [MeasurementMappingItem(filter=OUTPUT_VOLTAGE_FILTER)]
+        mapping = [MeasurementMappingItem(filter="mapped == true")]
         response = create_specs(
             CreateSpecificationsRequest(
                 specs=[
@@ -496,8 +496,7 @@ class TestSpec:
             block="newBlock",
             measurement_mapping=[
                 MeasurementMappingItem(
-                    filter=OUTPUT_VOLTAGE_FILTER,
-                    result_filter=OUTPUT_VOLTAGE_RESULT_FILTER,
+                    filter="mapped == true", result_filter='partNumber == "VR1234"'
                 )
             ],
         )
