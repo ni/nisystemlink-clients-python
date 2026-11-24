@@ -437,7 +437,7 @@ class TestSpec:
         assert response is not None
         assert response.updated_specs
         stored_spec = client.get_spec(created_spec.id)
-        assert (stored_spec.measurement_mapping or []) == expected
+        assert stored_spec.measurement_mapping == expected
 
     @pytest.mark.parametrize(
         "spec_type, mapping, expected_error",

@@ -1,7 +1,4 @@
-"""Unit tests for client-side behavior of SpecClient.
-
-Server-side behavior (validation, storage, projections) is covered by the integration tests.
-"""
+"""Unit tests for client-side behavior of SpecClient."""
 
 import json
 
@@ -155,11 +152,20 @@ class TestSpecClientResponseParsing:
         assert response.specs[0].measurement_mapping is None
 
     @pytest.mark.parametrize("operation", ["create", "update"])
+    @pytest.mark.parametrize(
+        "error_name",
+        [
+            "MeasurementMappingProvidedForFunctionalSpecification",
+            "MeasurementMappingCountExceeded",
+        ],
+    )
     @responses.activate
-    def test__failed_specs_response__error_name_and_message_preserved(self, operation):
+    def test__failed_specs_response__error_name_and_message_preserved(
+        self, operation, error_name
+    ):
         error = {
-            "name": "MeasurementMappingCountExceeded",
-            "message": "Some server message.",
+            "name": error_name,
+            "message": f"Server message for {error_name}.",
             "innerErrors": [],
         }
         failed_spec = {**SPEC_JSON, "measurementMapping": MAPPING_JSON}
