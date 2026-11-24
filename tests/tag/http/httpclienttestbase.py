@@ -39,6 +39,7 @@ class MockHttpClient(HttpClient):
     def __init__(self, is_async):
         # don't call super().__init__
 
+        self.workspace = None
         self.__is_async = is_async
 
         self.all_requests = mock.Mock()

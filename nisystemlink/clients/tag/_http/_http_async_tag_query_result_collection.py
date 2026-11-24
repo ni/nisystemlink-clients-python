@@ -34,6 +34,7 @@ class HttpAsyncTagQueryResultCollection(tbase.AsyncTagQueryResultCollection):
 
         api = client.at_uri("/nitag/v2")
         base_params = {
+            "workspace": client.workspace,
             "path": paths,
             "keywords": keywords,
             "properties": properties,

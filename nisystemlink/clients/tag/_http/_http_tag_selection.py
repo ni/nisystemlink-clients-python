@@ -3,7 +3,7 @@
 """Implementation of HttpTagSelection."""
 
 import datetime
-from typing import Any, Awaitable, Callable, List, Sequence, Tuple, TypeVar
+from typing import Any, Awaitable, Callable, Dict, List, Sequence, Tuple, TypeVar
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient, HttpResponse
@@ -65,7 +65,10 @@ class HttpTagSelection(tbase.TagSelection):
         """
         api = client.at_uri("/nitag/v2/selections")
 
-        selection, http_response = api.post("", data={"searchPaths": list(paths)})
+        data: Dict[str, Any] = {"searchPaths": list(paths)}
+        if client.workspace is not None:
+            data["workspace"] = client.workspace
+        selection, http_response = api.post("", data=data)
 
         if selection is None or selection.get("id") is None:
             raise tbase.TagManager.invalid_response(http_response)
@@ -112,7 +115,10 @@ class HttpTagSelection(tbase.TagSelection):
         """
         api = client.at_uri("/nitag/v2/selections").as_async
 
-        selection, http_response = await api.post("", data={"searchPaths": list(paths)})
+        data: Dict[str, Any] = {"searchPaths": list(paths)}
+        if client.workspace is not None:
+            data["workspace"] = client.workspace
+        selection, http_response = await api.post("", data=data)
 
         if selection is None or selection.get("id") is None:
             raise tbase.TagManager.invalid_response(http_response)
@@ -338,9 +344,7 @@ class HttpTagSelection(tbase.TagSelection):
         await self._ensure_selection_and_call_async(fn)
 
     def _create_selection_on_server(self) -> None:
-        selection, http_response = self._api.post(
-            "", data={"searchPaths": list(self.paths)}
-        )
+        selection, http_response = self._api.post("", data=self._selection_data())
 
         if selection is None or selection.get("id") is None:
             raise tbase.TagManager.invalid_response(http_response)
@@ -350,7 +354,7 @@ class HttpTagSelection(tbase.TagSelection):
 
     async def _create_selection_on_server_async(self) -> None:
         selection, http_response = await self._api.as_async.post(
-            "", data={"searchPaths": list(self.paths)}
+            "", data=self._selection_data()
         )
 
         if selection is None or selection.get("id") is None:
@@ -363,7 +367,7 @@ class HttpTagSelection(tbase.TagSelection):
         if self._selection_stale:
             self._api.put(
                 "/{id}",
-                data={"searchPaths": list(self.paths), "id": self._token},
+                data={**self._selection_data(), "id": self._token},
                 params={"id": self._token},
             )
             self._selection_stale = False
@@ -372,10 +376,16 @@ class HttpTagSelection(tbase.TagSelection):
         if self._selection_stale:
             await self._api.as_async.put(
                 "/{id}",
-                data={"searchPaths": list(self.paths), "id": self._token},
+                data={**self._selection_data(), "id": self._token},
                 params={"id": self._token},
             )
             self._selection_stale = False
+
+    def _selection_data(self) -> Dict[str, Any]:
+        data: Dict[str, Any] = {"searchPaths": list(self.paths)}
+        if self._client.workspace is not None:
+            data["workspace"] = self._client.workspace
+        return data
 
     def _ensure_selection_and_call(self, api_call: Callable[[str], T]) -> T:
         if self._token is not None:

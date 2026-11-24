@@ -3,7 +3,7 @@
 """Implementation of TemporaryTagSelection."""
 
 from types import TracebackType
-from typing import Awaitable, List, Type
+from typing import Any, Awaitable, Dict, List, Type
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient
@@ -60,6 +60,7 @@ class TemporaryTagSelection:
             magic == self.__MAGIC
         ), "Do not construct a TemporaryTagSelection directly. Use create() instead."
         self._api = client.at_uri("/nitag/v2/selections")
+        self._workspace = client.workspace
         self._id: str | None = None
 
     @property
@@ -121,13 +122,7 @@ class TemporaryTagSelection:
         self.close()
 
     def _create(self, paths: List[str]) -> None:
-        selection, http_response = self._api.post(
-            "",
-            data={
-                "searchPaths": paths,
-                "inactivityTimeout": self._TEMPORARY_SELECTION_TIMEOUT_SECONDS,
-            },
-        )
+        selection, http_response = self._api.post("", data=self._selection_data(paths))
 
         if selection is None or selection.get("id") is None:
             raise tbase.TagManager.invalid_response(http_response)
@@ -136,14 +131,19 @@ class TemporaryTagSelection:
 
     async def _create_async(self, paths: List[str]) -> None:
         selection, http_response = await self._api.as_async.post(
-            "",
-            data={
-                "searchPaths": paths,
-                "inactivityTimeout": self._TEMPORARY_SELECTION_TIMEOUT_SECONDS,
-            },
+            "", data=self._selection_data(paths)
         )
 
         if selection is None or selection.get("id") is None:
             raise tbase.TagManager.invalid_response(http_response)
 
         self._id = selection["id"]
+
+    def _selection_data(self, paths: List[str]) -> Dict[str, Any]:
+        data: Dict[str, Any] = {
+            "searchPaths": paths,
+            "inactivityTimeout": self._TEMPORARY_SELECTION_TIMEOUT_SECONDS,
+        }
+        if self._workspace is not None:
+            data["workspace"] = self._workspace
+        return data
