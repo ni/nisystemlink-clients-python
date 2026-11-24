@@ -73,7 +73,9 @@ def _update_request(**fields) -> UpdateSpecificationsRequest:
 def _sent_spec() -> dict:
     call = responses.calls[0]
     assert isinstance(call, responses.Call)
-    return json.loads(call.request.body)["specs"][0]
+    body = call.request.body
+    assert isinstance(body, (str, bytes))
+    return json.loads(body)["specs"][0]
 
 
 class TestSpecClientRequestPayload:
@@ -81,9 +83,11 @@ class TestSpecClientRequestPayload:
         "fields, expected",
         [
             ({}, None),
+            ({"measurement_mapping": None}, "null"),
+            ({"measurement_mapping": []}, []),
             ({"measurement_mapping": MAPPING}, MAPPING_JSON),
         ],
-        ids=["not_set", "items"],
+        ids=["not_set", "explicit_none", "empty_list", "items"],
     )
     @responses.activate
     def test__create_specs_measurement_mapping__payload_reflects_what_was_set(
@@ -96,6 +100,9 @@ class TestSpecClientRequestPayload:
         spec = _sent_spec()
         if expected is None:
             assert "measurementMapping" not in spec
+        elif expected == "null":
+            assert "measurementMapping" in spec
+            assert spec["measurementMapping"] is None
         else:
             assert spec["measurementMapping"] == expected
 
