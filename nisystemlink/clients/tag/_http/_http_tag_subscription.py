@@ -4,7 +4,7 @@
 
 import datetime
 import weakref
-from typing import Iterable, List
+from typing import Any, Dict, Iterable, List
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient
@@ -104,6 +104,7 @@ class HttpTagSubscription(tbase.TagSubscription):
         ), "Do not construct an HttpTagSubscription directly. Use create() instead."
         super().__init__(paths, heartbeat_timer)
         self._api = client.at_uri("/nitag/v2/subscriptions")
+        self._workspace = client.workspace
         if update_timer is not None:
             self._update_timer = update_timer
         else:
@@ -157,9 +158,10 @@ class HttpTagSubscription(tbase.TagSubscription):
             pass
 
     def _create_subscription_on_server(self, paths: List[str]) -> None:
-        response, http_response = self._api.post(
-            "", data={"updatesOnly": True, "tags": paths}
-        )
+        data: Dict[str, Any] = {"updatesOnly": True, "tags": paths}
+        if self._workspace is not None:
+            data["workspace"] = self._workspace
+        response, http_response = self._api.post("", data=data)
 
         if response is None or response.get("subscriptionId") is None:
             raise tbase.TagManager.invalid_response(http_response)
@@ -175,9 +177,10 @@ class HttpTagSubscription(tbase.TagSubscription):
         self._update_timer.start()
 
     async def _create_subscription_on_server_async(self, paths: List[str]) -> None:
-        response, http_response = await self._api.as_async.post(
-            "", data={"updatesOnly": True, "tags": paths}
-        )
+        data: Dict[str, Any] = {"updatesOnly": True, "tags": paths}
+        if self._workspace is not None:
+            data["workspace"] = self._workspace
+        response, http_response = await self._api.as_async.post("", data=data)
 
         if response is None or response.get("subscriptionId") is None:
             raise tbase.TagManager.invalid_response(http_response)

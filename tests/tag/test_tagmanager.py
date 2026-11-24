@@ -1,15 +1,240 @@
 import asyncio
+import json
 import time
 import uuid
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from unittest import mock
 
+import httpx
 import pytest  # type: ignore
+import pytest_asyncio
 from nisystemlink.clients import core, tag as tbase
+from nisystemlink.clients.core._internal._http_client import HttpClient
 
 from .http.httpclienttestbase import HttpClientTestBase, MockResponse
 from ..anyorderlist import AnyOrderList
+
+
+@pytest_asyncio.fixture
+async def workspace_api():
+    """Provide a workspace-configured manager with mocked HTTP responses."""
+    requests = []
+    responses = []
+
+    def handle(request):
+        requests.append(request)
+        status, body = responses.pop(0)
+        return httpx.Response(status, json=body)
+
+    transport = httpx.MockTransport(handle)
+    with httpx.Client(transport=transport) as client:
+        async with httpx.AsyncClient(transport=transport) as async_client:
+            with (
+                mock.patch.object(
+                    HttpClient,
+                    "_client",
+                    new_callable=mock.PropertyMock,
+                    return_value=client,
+                ),
+                mock.patch.object(
+                    HttpClient,
+                    "_async_client",
+                    new_callable=mock.PropertyMock,
+                    return_value=async_client,
+                ),
+            ):
+                manager = tbase.TagManager(
+                    core.HttpConfiguration(
+                        "https://example.com", workspace="workspace-123"
+                    )
+                )
+                yield manager, requests, responses
+                assert not responses
+
+
+async def _call(asynchronous, target, method, *args, **kwargs):
+    if asynchronous:
+        return await getattr(target, method + "_async")(*args, **kwargs)
+    return getattr(target, method)(*args, **kwargs)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("asynchronous", [False, True])
+class TestTagManagerWorkspace:
+    async def test__open_create_and_delete__uses_workspace(
+        self, workspace_api, asynchronous
+    ):
+        manager, requests, responses = workspace_api
+        responses.extend(
+            [
+                (404, {"error": {"name": "Tag.NoSuchTag"}}),
+                (200, None),
+                (200, None),
+            ]
+        )
+
+        tag = await _call(
+            asynchronous, manager, "open", "tag /?#", tbase.DataType.INT32
+        )
+        await _call(asynchronous, manager, "delete", [tag])
+
+        assert (
+            requests[0].url.raw_path == b"/nitag/v2/tags/workspace-123/tag%20%2F%3F%23"
+        )
+        assert json.loads(requests[1].content) == {
+            "path": tag.path,
+            "type": "INT",
+            "workspace": "workspace-123",
+        }
+        assert requests[2].url == requests[0].url
+
+    @pytest.mark.parametrize("include_timestamp", [False, True])
+    @pytest.mark.parametrize("include_aggregates", [False, True])
+    async def test__read__uses_workspace_and_preserves_requested_fields(
+        self, workspace_api, asynchronous, include_timestamp, include_aggregates
+    ):
+        manager, requests, responses = workspace_api
+        responses.append(
+            (
+                200,
+                {
+                    "current": {
+                        "value": {"type": "INT", "value": "3"},
+                        "timestamp": "2026-01-01T00:00:00.000000Z",
+                    },
+                    "aggregates": {"count": 2, "min": "1", "max": "3", "avg": 2},
+                },
+            )
+        )
+
+        value = await _call(
+            asynchronous,
+            manager,
+            "read",
+            "tag",
+            include_timestamp=include_timestamp,
+            include_aggregates=include_aggregates,
+        )
+
+        assert requests[0].url.path == "/nitag/v2/tags/workspace-123/tag/values"
+        assert value.value == 3
+        assert (value.timestamp is not None) == include_timestamp
+        assert value.count == (2 if include_aggregates else None)
+        assert value.min == (1 if include_aggregates else None)
+        assert value.max == (3 if include_aggregates else None)
+        assert value.mean == (2 if include_aggregates else None)
+
+    async def test__query_pages_and_refresh__stay_in_workspace(
+        self, workspace_api, asynchronous
+    ):
+        manager, requests, responses = workspace_api
+        responses.extend(
+            [
+                (200, {"tags": [{"path": "tag1", "type": "INT"}], "totalCount": 2}),
+                (200, {"tags": [{"path": "tag2", "type": "INT"}], "totalCount": 2}),
+                (200, {"tags": [{"path": "tag1", "type": "INT"}]}),
+            ]
+        )
+
+        query = await _call(asynchronous, manager, "query", take=1)
+        if asynchronous:
+            tags = list(query.current_page)
+            tags.extend(await query.move_next_page_async())
+        else:
+            tags = [tag for page in query for tag in page]
+        await _call(asynchronous, manager, "refresh", [tags[0]])
+
+        assert [tag.path for tag in tags] == ["tag1", "tag2"]
+        assert all(
+            request.url.params["workspace"] == "workspace-123" for request in requests
+        )
+        assert requests[1].url.params["skip"] == "1"
+
+    @pytest.mark.parametrize("merge", [False, True])
+    async def test__update_metadata_and_values__includes_workspace_per_tag(
+        self, workspace_api, asynchronous, merge
+    ):
+        manager, requests, responses = workspace_api
+        responses.extend([(200, None), (200, None)])
+        tags = [tbase.TagData(path, tbase.DataType.INT32) for path in ["tag1", "tag2"]]
+        updates = (
+            [
+                tbase.TagDataUpdate.from_tagdata(tag, tbase.TagUpdateFields.ALL)
+                for tag in tags
+            ]
+            if merge
+            else tags
+        )
+
+        await _call(asynchronous, manager, "update", updates)
+        with manager.create_writer(buffer_size=10) as writer:
+            for tag in tags:
+                await _call(asynchronous, writer, "write", tag.path, tag.data_type, 3)
+            await _call(asynchronous, writer, "send_buffered_writes")
+
+        metadata = json.loads(requests[0].content)
+        assert metadata["merge"] == merge
+        assert all(tag["workspace"] == "workspace-123" for tag in metadata["tags"])
+        values = json.loads(requests[1].content)
+        assert [tag["path"] for tag in values] == ["tag1", "tag2"]
+        assert all(tag["workspace"] == "workspace-123" for tag in values)
+
+    @pytest.mark.parametrize("open_selection", [False, True])
+    async def test__selection_creation_and_update__retain_workspace(
+        self, workspace_api, asynchronous, open_selection
+    ):
+        manager, requests, responses = workspace_api
+        responses.extend([(200, {"id": "selection"}), (200, [])])
+        if open_selection:
+            selection = await _call(asynchronous, manager, "open_selection", ["tag1"])
+        else:
+            selection = manager.create_selection(
+                [tbase.TagData("tag1", tbase.DataType.INT32)]
+            )
+            await _call(asynchronous, selection, "refresh_metadata")
+        selection.add_tags([tbase.TagData("tag2", tbase.DataType.INT32)])
+        responses.extend([(200, None), (200, []), (200, None)])
+        await _call(asynchronous, selection, "refresh_metadata")
+        await _call(asynchronous, selection, "close")
+
+        assert json.loads(requests[0].content)["workspace"] == "workspace-123"
+        assert json.loads(requests[2].content)["workspace"] == "workspace-123"
+
+    async def test__bulk_delete__creates_selection_in_workspace(
+        self, workspace_api, asynchronous
+    ):
+        manager, requests, responses = workspace_api
+        responses.extend([(200, {"id": "selection"}), (200, None), (200, None)])
+
+        await _call(asynchronous, manager, "delete", ["tag1", "tag2", "tag3", "tag4"])
+
+        assert json.loads(requests[0].content)["workspace"] == "workspace-123"
+        assert requests[1].url.path == "/nitag/v2/selections/selection/tags"
+
+    async def test__subscription__uses_selection_workspace(
+        self, workspace_api, asynchronous
+    ):
+        manager, requests, responses = workspace_api
+        responses.extend(
+            [(200, {"subscriptionId": "subscription"}), (200, {}), (200, None)]
+        )
+        with manager.create_selection(
+            [tbase.TagData("tag1", tbase.DataType.INT32)]
+        ) as selection:
+            subscription = await _call(
+                asynchronous,
+                selection,
+                "create_subscription",
+                update_interval=timedelta(hours=1),
+            )
+            await _call(asynchronous, subscription, "close")
+
+        assert json.loads(requests[0].content) == {
+            "tags": ["tag1"],
+            "updatesOnly": True,
+            "workspace": "workspace-123",
+        }
 
 
 def _wait_for_call_count(mock_obj, expected: int, *, timeout: float = 3.0):

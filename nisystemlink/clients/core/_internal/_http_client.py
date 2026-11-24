@@ -24,6 +24,7 @@ class HttpClient:
 
     def __init__(self, configuration: core.HttpConfiguration) -> None:
         self._server = configuration.server_uri.rstrip("/")
+        self.workspace = configuration.workspace
 
         self._kwargs = {}  # type: Dict[str, Any]
         self._kwargs["headers"] = {

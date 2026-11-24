@@ -28,11 +28,15 @@ class HttpBufferedTagWriter(tbase.BufferedTagWriter):
     ) -> None:
         super().__init__(stamper, buffer_size, flush_timer)
         self._api = client.at_uri("/nitag/v2")
+        self._workspace = client.workspace
         self._buffer: OrderedDict[str, Dict[str, Any]] = OrderedDict()
 
     def _buffer_value(self, path: str, value: Dict[str, Any]) -> None:
         if path not in self._buffer:
-            self._buffer.setdefault(path, {"path": path, "updates": []})
+            item: Dict[str, Any] = {"path": path, "updates": []}
+            if self._workspace is not None:
+                item["workspace"] = self._workspace
+            self._buffer[path] = item
         self._buffer[path]["updates"].append(value)
 
     def _clear_buffer(self) -> None:

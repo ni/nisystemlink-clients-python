@@ -5,6 +5,7 @@
 import asyncio
 import datetime
 from typing import Any, Awaitable, Dict, Iterable, List, Sequence, Tuple
+from urllib.parse import quote
 
 from nisystemlink.clients import core, tag as tbase
 from nisystemlink.clients.core._internal._http_client import HttpClient, HttpResponse
@@ -42,7 +43,9 @@ class TagManager(tbase.ITagReader):
 
         Args:
             configuration: Defines the web server to connect to and information about
-                how to connect.
+                how to connect. If a workspace is specified, all tag operations use
+                that workspace. Otherwise, the server's default workspace behavior
+                is preserved.
 
         Raises:
             ApiException: if the current system cannot communicate with a SystemLink
@@ -54,6 +57,10 @@ class TagManager(tbase.ITagReader):
 
         self._http_client = HttpClient(configuration)
         self._api = self._http_client.at_uri("/nitag/v2")
+        tag_uri = "/nitag/v2/tags"
+        if self._http_client.workspace is not None:
+            tag_uri += "/" + quote(self._http_client.workspace, safe="")
+        self._tag_api = self._http_client.at_uri(tag_uri)
 
     def create_selection(self, tags: List[tbase.TagData]) -> tbase.TagSelection:
         """Create an :class:`TagSelection` that initially contains the given ``tags``
@@ -153,8 +160,8 @@ class TagManager(tbase.ITagReader):
 
         tag: Dict[str, Any] | None = None
         try:
-            tag, _ = self._api.get(
-                "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
+            tag, _ = self._tag_api.get(
+                "/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
             )
         except core.ApiException as ex:
             error_name = None if ex.error is None else ex.error.name
@@ -173,7 +180,10 @@ class TagManager(tbase.ITagReader):
                 raise ValueError("data_type cannot be None when create is True")
 
             # Tag didn't already exist, so try to create it.
-            self._api.post("/tags", data={"type": data_type.api_name, "path": path})
+            data = {"type": data_type.api_name, "path": path}
+            if self._http_client.workspace is not None:
+                data["workspace"] = self._http_client.workspace
+            self._api.post("/tags", data=data)
             return tbase.TagData(path, data_type)
 
     async def open_async(
@@ -216,8 +226,8 @@ class TagManager(tbase.ITagReader):
 
         tag: Dict[str, Any] | None = None
         try:
-            tag, _ = await self._api.as_async.get(
-                "/tags/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
+            tag, _ = await self._tag_api.as_async.get(
+                "/{path}", params={"path": tbase.TagPathUtilities.validate(path)}
             )
         except core.ApiException as ex:
             error_name = None if ex.error is None else ex.error.name
@@ -236,9 +246,10 @@ class TagManager(tbase.ITagReader):
                 raise ValueError("data_type cannot be None when create is True")
 
             # Tag didn't already exist, so try to create it.
-            await self._api.as_async.post(
-                "/tags", data={"type": data_type.api_name, "path": path}
-            )
+            data = {"type": data_type.api_name, "path": path}
+            if self._http_client.workspace is not None:
+                data["workspace"] = self._http_client.workspace
+            await self._api.as_async.post("/tags", data=data)
             return tbase.TagData(path, data_type)
 
     def refresh(self, tags: List[tbase.TagData]) -> None:
@@ -257,9 +268,10 @@ class TagManager(tbase.ITagReader):
             ApiException: if the API call fails.
         """
         paths = self._prepare_refresh(tags)
-        response, http_response = self._api.get(
-            "/tags", params={"path": paths, "take": str(len(tags))}
-        )
+        params: Dict[str, str | None] = {"path": paths, "take": str(len(tags))}
+        if self._http_client.workspace is not None:
+            params["workspace"] = self._http_client.workspace
+        response, http_response = self._api.get("/tags", params=params)
         self._handle_refresh(tags, response, http_response)
 
     async def refresh_async(self, tags: List[tbase.TagData]) -> None:
@@ -281,9 +293,10 @@ class TagManager(tbase.ITagReader):
             ApiException: if the API call fails.
         """
         paths = self._prepare_refresh(tags)
-        response, http_response = await self._api.as_async.get(
-            "/tags", params={"path": paths, "take": str(len(tags))}
-        )
+        params: Dict[str, str | None] = {"path": paths, "take": str(len(tags))}
+        if self._http_client.workspace is not None:
+            params["workspace"] = self._http_client.workspace
+        response, http_response = await self._api.as_async.get("/tags", params=params)
         self._handle_refresh(tags, response, http_response)
 
     def _prepare_refresh(self, tags: List[tbase.TagData]) -> str:
@@ -353,6 +366,7 @@ class TagManager(tbase.ITagReader):
             paths, keywords, properties, skip, take
         )
         params = {
+            "workspace": self._http_client.workspace,
             "path": path_str,
             "keywords": keyword_str,
             "properties": prop_str,
@@ -409,6 +423,7 @@ class TagManager(tbase.ITagReader):
             paths, keywords, properties, skip, take
         )
         params = {
+            "workspace": self._http_client.workspace,
             "path": path_str,
             "keywords": keyword_str,
             "properties": prop_str,
@@ -555,7 +570,11 @@ class TagManager(tbase.ITagReader):
 
         merge = isinstance(updates[0], tbase.TagDataUpdate)
 
-        return [u.to_json_dict() for u in updates], merge
+        tag_models = [u.to_json_dict() for u in updates]
+        if self._http_client.workspace is not None:
+            for tag in tag_models:
+                tag["workspace"] = self._http_client.workspace
+        return tag_models, merge
 
     def delete(self, tags: Iterable[tbase.TagData | str]) -> None:
         """Delete one or more tags from the server.
@@ -626,8 +645,8 @@ class TagManager(tbase.ITagReader):
 
             for path in paths:
                 try:
-                    self._api.delete(
-                        "/tags/{path}",
+                    self._tag_api.delete(
+                        "/{path}",
                         params={"path": tbase.TagPathUtilities.validate(path)},
                     )
                 except core.ApiException as ex:
@@ -644,8 +663,8 @@ class TagManager(tbase.ITagReader):
             # Few enough to make multiple, single deletes rather than creating a selection.
             await asyncio.gather(
                 *[
-                    self._api.as_async.delete(
-                        "/tags/{path}",
+                    self._tag_api.as_async.delete(
+                        "/{path}",
                         params={"path": tbase.TagPathUtilities.validate(p)},
                     )
                     for p in paths
@@ -730,23 +749,24 @@ class TagManager(tbase.ITagReader):
         """
         path = tbase.TagPathUtilities.validate(path)
 
-        if include_aggregates:
-            response, http_response = self._api.get(
-                "/tags/{path}/values", params={"path": path}
+        if include_aggregates or self._http_client.workspace is not None:
+            # Only the full values endpoint supports a workspace in the path.
+            response, http_response = self._tag_api.get(
+                "/{path}/values", params={"path": path}
             )
             return self._handle_read(
-                path, response, http_response, include_timestamp, True
+                path, response, http_response, include_timestamp, include_aggregates
             )
         elif include_timestamp:
-            response2, http_response = self._api.get(
-                "/tags/{path}/values/current", params={"path": path}
+            response2, http_response = self._tag_api.get(
+                "/{path}/values/current", params={"path": path}
             )
             return self._handle_read(
                 path, response2, http_response, include_timestamp, False
             )
         else:
-            response3, http_response = self._api.get(
-                "/tags/{path}/values/current/value", params={"path": path}
+            response3, http_response = self._tag_api.get(
+                "/{path}/values/current/value", params={"path": path}
             )
             return self._handle_read(path, response3, http_response)
 
@@ -777,23 +797,23 @@ class TagManager(tbase.ITagReader):
         """
         path = tbase.TagPathUtilities.validate(path)
 
-        if include_aggregates:
-            response, http_response = await self._api.as_async.get(
-                "/tags/{path}/values", params={"path": path}
+        if include_aggregates or self._http_client.workspace is not None:
+            response, http_response = await self._tag_api.as_async.get(
+                "/{path}/values", params={"path": path}
             )
             return self._handle_read(
-                path, response, http_response, include_timestamp, True
+                path, response, http_response, include_timestamp, include_aggregates
             )
         elif include_timestamp:
-            response2, http_response = await self._api.as_async.get(
-                "/tags/{path}/values/current", params={"path": path}
+            response2, http_response = await self._tag_api.as_async.get(
+                "/{path}/values/current", params={"path": path}
             )
             return self._handle_read(
                 path, response2, http_response, include_timestamp, False
             )
         else:
-            response3, http_response = await self._api.as_async.get(
-                "/tags/{path}/values/current/value", params={"path": path}
+            response3, http_response = await self._tag_api.as_async.get(
+                "/{path}/values/current/value", params={"path": path}
             )
             return self._handle_read(path, response3, http_response)
 
@@ -808,7 +828,9 @@ class TagManager(tbase.ITagReader):
         if response is None:
             return None
 
-        agg: Dict[str, Any] = response.get("aggregates") or {}
+        agg: Dict[str, Any] = (
+            (response.get("aggregates") or {}) if include_aggregates else {}
+        )
         current: Dict[str, Any] = response.get("current", response)
         if current is None:
             return None
