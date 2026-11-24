@@ -58,7 +58,8 @@ def create_specs(client: SpecClient):
     for response in responses:
         if response.created_specs:
             created_specs = created_specs + response.created_specs
-    client.delete_specs(ids=[spec.id for spec in created_specs])
+    if created_specs:
+        client.delete_specs(ids=[spec.id for spec in created_specs])
 
 
 @pytest.fixture
@@ -152,8 +153,8 @@ def _update_request(
 
 
 def _error_names(error: ApiError) -> List[str]:
-    """Names of the error and all of its nested inner errors."""
-    names = [error.name or ""]
+    """Short names (namespace prefix removed) of the error and its nested inner errors."""
+    names = [(error.name or "").rsplit(".", 1)[-1]]
     for inner in error.inner_errors:
         names.extend(_error_names(inner))
     return names
